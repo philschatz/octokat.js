@@ -1,0 +1,18 @@
+{
+  "name": "octokat",
+  "version": "0.1.0",
+  "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
+  "main": "octokat.js",
+  "dependencies": {
+    "blanket": "#development",
+    "mocha": "~1.16.2"
+  },
+  "devDependencies": {
+    "requirejs": "~2.1.9",
+    "require-cs": "~0.4.4",
+    "coffee-script": ">=1.3"
+  },
+  "resolutions": {
+    "coffee-script": ">=1.3"
+  }
+}
