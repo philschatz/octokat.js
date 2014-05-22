@@ -1,11 +1,4 @@
-# TODO: Use requirejs and require('chai')
-assert = @chai.assert
-expect = @chai.expect
-
-require ['cs!octokat'], (Octokat) ->
-
-  @makeTests(assert, expect, btoa, @Octokat)
-
+require ['cs!./all'], () ->
 
   # from http://www.geekdave.com/2013/08/02/automated-code-coverage-enforcement-for-mocha-using-grunt-and-blanket/
   if @PHANTOMJS

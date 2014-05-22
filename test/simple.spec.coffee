@@ -1,32 +1,17 @@
-makeTests = (assert, expect, base64encode, Octokat) ->
+define = window?.define or (cb) -> cb ((dep) -> require(dep.replace('cs!', '')))
+define (require) ->
 
-  USERNAME = 'octokit-test'
-  TOKEN = 'dca7f85a5911df8e9b7aeb4c5be8f5f50806ac49'
-
-  ORG_NAME = 'octokit-test-org'
-
-  REPO_USER = USERNAME
-  REPO_NAME = 'octokit-test-repo' # Cannot use '.' because najax does not like it
-
-  REPO_HOMEPAGE = 'https:/github.com/philschatz/octokat.js'
-  OTHER_HOMEPAGE = 'http://example.com'
-
-  OTHER_USERNAME = 'octokit-test2'
-
-  DEFAULT_BRANCH = 'master'
-
-  LONG_TIMEOUT = 10 * 1000 # 10 seconds
-  SHORT_TIMEOUT = 5 * 1000 # 5 seconds
+  {assert, expect} = require 'chai'
+  Octokat = require 'cs!../src/octokat'
 
 
-  IS_NODE = !! module?
+  # NodeJS does not have a btoa
+  btoa = @btoa or (str) ->
+    buffer = new Buffer str, 'binary'
+    buffer.toString 'base64'
 
-  some = (arr, fn) ->
-    for entry in arr
-      do (entry) ->
-        if fn(entry) == true
-          return true
-    return false
+
+  {USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT} = require 'cs!./test-config'
 
   trapFail = (promise) ->
     onError = (err) ->
@@ -35,21 +20,24 @@ makeTests = (assert, expect, base64encode, Octokat) ->
     # Depending on the Promise implementation the fail method could be:
     # - `.catch` (native Promise)
     # - `.fail` (jQuery or angularjs)
-    promise.catch?(onError) or promise.fail(onError)
+    promise.then(null, onError)
     return promise
 
   helper1 = (done, promise, func) ->
-    return trapFail(promise)
+    return trapFail promise
     .then(func)
     .then () -> done()
 
-  helper2 = (promise, func) ->
-    return trapFail(promise)
-    .then(func)
+  some = (arr, fn) ->
+    for entry in arr
+      do (entry) ->
+        if fn(entry) is true
+          return true
+    return false
 
   arrayContainsKey = (arr, key, value) ->
     some arr, (entry) ->
-      return entry[key] == value
+      return entry[key] is value
 
   GH = 'octo'
   REPO = 'myRepo'
@@ -116,9 +104,9 @@ makeTests = (assert, expect, base64encode, Octokat) ->
         {finalArgs, context} = constructMethod()
         # If the last arg was something like 'fetch' then
         if isFuncArgs
-          helper1 done, context(), cb
+          context().then(cb).then(()-> done())
         else
-          helper1 done, context(finalArgs...), cb
+          context(finalArgs...).then(cb).then(()-> done())
 
       it "#{obj}#{code} (callback ver)", (done) ->
         {finalArgs, context} = constructMethod()
@@ -145,8 +133,6 @@ makeTests = (assert, expect, base64encode, Octokat) ->
         # PhantomJS does not support the `PATCH` verb yet.
         # See https://github.com/ariya/phantomjs/issues/11384 for updates
         usePostInsteadOfPatch:true
-
-      options.useETags = false if IS_NODE
 
       STATE[GH] = new Octokat(options)
 
@@ -181,7 +167,7 @@ makeTests = (assert, expect, base64encode, Octokat) ->
     describe 'Paged Results', () ->
 
       it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", (done) ->
-        trapFail(STATE[GH].gists.public.fetch())
+        trapFail STATE[GH].gists.public.fetch()
         .then (results) ->
           results.nextPage()
           .then (moreResults) ->
@@ -251,7 +237,7 @@ makeTests = (assert, expect, base64encode, Octokat) ->
               done()
 
         it '.git.blobs.create(...) and .blobs(...).readBinary()', (done) ->
-          STATE[REPO].git.blobs.create({content:base64encode('Hello'), encoding: 'base64'})
+          STATE[REPO].git.blobs.create({content:btoa('Hello'), encoding: 'base64'})
           .then ({sha}) ->
             expect(sha).to.be.ok
             STATE[REPO].git.blobs(sha).readBinary()
@@ -270,18 +256,18 @@ makeTests = (assert, expect, base64encode, Octokat) ->
 
       describe 'Collaborator changes', () ->
         it 'gets a list of collaborators', (done) ->
-          trapFail(STATE[REPO].collaborators.fetch())
+          trapFail STATE[REPO].collaborators.fetch()
           .then (v) -> expect(v).to.be.an.array; done()
 
         it 'tests membership', (done) ->
-          trapFail(STATE[REPO].collaborators.contains(REPO_USER))
+          trapFail STATE[REPO].collaborators.contains(REPO_USER)
           .then (v) -> expect(v).to.be.true; done()
 
         it 'adds and removes a collaborator', (done) ->
-          trapFail(STATE[REPO].collaborators(OTHER_USERNAME).add())
+          trapFail STATE[REPO].collaborators(OTHER_USERNAME).add()
           .then (v) ->
             expect(v).to.be.ok
-            trapFail(STATE[REPO].collaborators(OTHER_USERNAME).remove())
+            trapFail STATE[REPO].collaborators(OTHER_USERNAME).remove()
             .then (v) ->
               expect(v).to.be.true
               done()
@@ -340,7 +326,7 @@ makeTests = (assert, expect, base64encode, Octokat) ->
       describe 'Multistep operations', () ->
 
         it '.starred.add(OWNER, REPO), .starred.is(...), and then .starred.remove(...)', (done) ->
-          trapFail(STATE[ME].starred(REPO_USER, REPO_NAME).add())
+          trapFail STATE[ME].starred(REPO_USER, REPO_NAME).add()
           .then () ->
             STATE[ME].starred.contains(REPO_USER, REPO_NAME)
             .then (isStarred) ->
@@ -398,14 +384,8 @@ makeTests = (assert, expect, base64encode, Octokat) ->
         itIsOk(REPO, 'issues.comments', 43218269, 'fetch')
 
         it 'comment.issue()', (done) ->
-          trapFail(STATE[REPO].issues.comments(43218269).fetch())
+          trapFail STATE[REPO].issues.comments(43218269).fetch()
           .then (comment) ->
             comment.issue()
             .then (v) ->
               done()
-
-
-if exports?
-  exports.makeTests = makeTests
-else
-  @makeTests = makeTests

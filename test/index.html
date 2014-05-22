@@ -12,9 +12,6 @@
 <script src="../node_modules/es6-promise/dist/promise-0.1.2.js"></script>
 <script src="../bower_components/coffee-script/extras/coffee-script.js"></script>
 <script src="../bower_components/mocha/mocha.js"></script>
-<script src="../node_modules/chai/chai.js"></script>
-<!-- <script src="../bower_components/blanket/dist/mocha/blanket_mocha.js"></script>
-<script type="text/javascript" src="../node_modules/grunt-blanket-mocha/support/mocha-blanket.js"></script> -->
 <script>
   mocha.setup('bdd');
 </script>
@@ -27,9 +24,8 @@
 require.config({
   // baseUrl: './src',
   paths: {
-    'underscore-plus' : '../node_modules/underscore-plus/lib/underscore-plus',
-    'underscore'      : '../bower_components/underscore/dist/underscore',
     'octokat'         : '../src/octokat',
+    'chai'            : '../node_modules/chai/chai',
     'cs'              : '../bower_components/require-cs/cs',
     'coffee-script'   : '../bower_components/coffee-script/extras/coffee-script'
   }
@@ -38,7 +34,6 @@ require.config({
 </script>
 
 
-<script type="text/coffeescript" src="common.coffee"></script>
 <script type="text/coffeescript" src="browser.coffee"></script>
 
 

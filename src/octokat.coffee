@@ -69,6 +69,7 @@ define () ->
             repos
           | issues
           | members
+          | events
         )
 
       | users/ [^/]+
@@ -79,8 +80,9 @@ define () ->
           | followers
           | following (/[^/]+){0,2}
           | keys
-          | events
-          | received_events
+          | received_events (/public)?
+          | events          (/public)?
+          | events/orgs/ [^/]+
         )
 
       | search/ (
@@ -99,6 +101,11 @@ define () ->
       | repos (/[^/]+){2}
       | repos (/[^/]+){2} / (
             readme
+          | tarball (/[^/]+)?
+          | zipball (/[^/]+)?
+          | compare / [a-f0-9]{40} \.{3} [a-f0-9]{40}
+          | deployments
+          | deployments / [0-9]+ / statuses ([0-9]+)?
           | hooks
           | hooks /[^/]+
           | hooks /[^/]+ /tests
@@ -108,20 +115,26 @@ define () ->
           | contributors
           | subscribers
           | subscription
-          | comments
-          | downloads
+          | comments (/[0-9]+)?
+          | downloads (/[0-9]+)?
           | milestones
           | labels
           | releases
           | events
+          | merges
           | commits
+          | commits / [a-f0-9]{40}
+          | commits / [a-f0-9]{40} / comments
           | contents (/[^/]+)* # The path is allowed in the URL
           | collaborators (/[^/]+)?
           | issues
           | issues/ (
-                events
+              | events
+              | events/ [0-9]+
               | comments (/[0-9]+)?
-              | [0-9]+ (/comments)?
+              | [0-9]+
+              | [0-9]+ /events
+              | [0-9]+ /comments
               )
 
           | git/ (
@@ -169,6 +182,7 @@ define () ->
       'repos'     : false
       'issues'    : false
       'members'   : false
+      'events'    : false
     'users':
       'repos'     : false
       'orgs'      : false
@@ -176,8 +190,11 @@ define () ->
       'followers' : false
       'following' : false
       'keys'      : false
-      'events'    : false
-      'received_events': false
+      'received_events':
+        'public'  : false
+      'events':
+        'public'  : false
+        'orgs'    : false
     'search':
       'repositories' : false
       'issues'    : false
@@ -188,6 +205,11 @@ define () ->
       'star'      : false
     'repos':
       'readme'        : false
+      'tarball'       : false
+      'zipball'       : false
+      'compare'       : false
+      'deployments':
+        'statuses'    : false
       'hooks':
         'tests'       : false
       'assignees'     : false
@@ -202,7 +224,9 @@ define () ->
       'labels'        : false
       'releases'      : false
       'events'        : false
-      'commits'       : false
+      'merges'        : false
+      'commits':
+        'comments'    : false
       'contents'      : false
       'collaborators' : false
       'issues':
@@ -246,6 +270,13 @@ define () ->
       /orgs/ [^/]+
       $
     ///
+    'repos.comments': /// ^
+      (https?://[^/]+)? # Optional protocol, host, and port
+      (/api/v3)?        # Optional API root for enterprise GitHub users
+      /repos/ [^/]+ / [^/]+
+      /comments/ [^/]+
+      $
+    ///
 
 
 
@@ -284,10 +315,15 @@ define () ->
       console.warn(err)
 
 
-  Chainer = (request, _path, contextTree, fn) ->
+  Chainer = (request, _path, name, contextTree, fn) ->
     fn ?= (args...) ->
       throw new Error('BUG! must be called with at least one argument') unless args.length
-      return Chainer(request, "#{_path}/#{args.join('/')}", contextTree)
+      # Special-case compare because its args turn into '...' instead of the usual '/'
+      if name is 'compare'
+        separator = '...'
+      else
+        separator = '/'
+      return Chainer(request, "#{_path}/#{args.join(separator)}", name, contextTree)
 
 
     verbs =
@@ -318,7 +354,7 @@ define () ->
     for name of contextTree or {}
       do (name) ->
         fn.__defineGetter__ plus.camelize(name), () ->
-          return Chainer(request, "#{_path}/#{name}", contextTree[name])
+          return Chainer(request, "#{_path}/#{name}", name, contextTree[name])
 
 
     return fn
@@ -567,7 +603,7 @@ define () ->
         if 4 == xhr.readyState
           options.statusCode?[xhr.status]?()
 
-          if xhr.status >= 200 and xhr.status < 300 or xhr.status == 304
+          if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302
             resolve(xhr)
           else
             reject(xhr)
@@ -690,6 +726,10 @@ define () ->
           # return true.
           else if jqXHR.status is 204 and options.isBoolean
             resolve(true, status, jqXHR)
+          # Respond with the redirect URL (for archive links)
+          # TODO: implement a `followRedirects` flag
+          else if jqXHR.status is 302
+            resolve(jqXHR.getResponseHeader('Location'))
           else
             if jqXHR.responseText and ajaxConfig.dataType is 'json'
               data = JSON.parse(jqXHR.responseText)
@@ -776,13 +816,18 @@ define () ->
       .then (val) ->
         return val if options.raw
         obj = replacer.replace(val)
+        url = obj.url or path
         for key, re of OBJECT_MATCHER
-          Chainer(request, obj.url, TREE_OPTIONS[key], obj) if re.test(obj.url)
+          if re.test(url)
+            context = TREE_OPTIONS
+            for k in key.split('.')
+              context = context[k]
+            Chainer(request, url, k, context, obj)
         return obj
 
     path = ''
     obj = {}
-    Chainer(request, path, TREE_OPTIONS, obj)
+    Chainer(request, path, null, TREE_OPTIONS, obj)
 
     # Special case for `me`
     obj.me = obj.user
