@@ -656,8 +656,9 @@ define () ->
       mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
 
       headers = {
-        'Accept': 'application/vnd.github.raw'
+        'Accept': 'application/vnd.github.v3+json'
       }
+      headers['Accept'] = 'application/vnd.github.raw' if options.raw
 
       # Set the `User-Agent` because it is required and NodeJS
       # does not send one by default.

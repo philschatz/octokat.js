@@ -34,16 +34,28 @@ define (require) ->
 
     context 'With a file', () ->
       before (done) ->
+        removeFile = (content) ->
+          console.log 'removing file'
+          config =
+            sha: content.sha
+            message: 'Removing as prep for testing'
+          client.repos(test_repo).contents("test_create.txt").remove(config)
+          .then () -> done()
+
+        client.repos(test_repo).contents("test_create.txt").fetch()
+        # If the file exists, remove it. Otherwise, done.
+        .then(removeFile, (err) -> done())
+
+      it "creates repository contents at a path", (done) ->
         config =
           message: "I am commit-ing"
           content: btoa("Here be the content\n")
         client.repos(test_repo).contents("test_create.txt").add(config)
+        .then(null, (err) -> console.log(err); throw new Error(err))
         .then (response) =>
           @content = response
+          expect(@content.commit.sha).to.match(/[a-z0-9]{40}/)
           done()
-
-      it "creates repository contents at a path", () ->
-        expect(@content.commit.sha).to.match(/[a-z0-9]{40}/)
 
       it "updates repository contents at a path", (done) ->
         config =
@@ -61,7 +73,6 @@ define (require) ->
           sha: @updated_content.content.sha
           message: "I am rm-ing"
         client.repos(test_repo).contents("test_create.txt").remove(config)
-        .then(null, (err) -> console.log err)
         .then (response) ->
           # TODO: have a non-boolean form of remove()
           # expect(response.commit.sha).to match(/[a-z0-9]{40}/)
