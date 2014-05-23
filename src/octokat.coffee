@@ -125,6 +125,9 @@ define () ->
           | releases
           | events
           | merges
+          | pages
+          | pages / builds
+          | pages / builds / latest
           | commits
           | commits / [a-f0-9]{40}
           | commits / [a-f0-9]{40} / comments
@@ -231,6 +234,9 @@ define () ->
       'releases'      : false
       'events'        : false
       'merges'        : false
+      'pages':
+        'builds':
+          'latest'    : false
       'commits':
         'comments'    : false
       'contents'      : false
