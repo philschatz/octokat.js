@@ -841,6 +841,11 @@ define () ->
     obj.me = obj.user
     delete obj.user
 
+    # Add the GitHub Status API https://status.github.com/api
+    obj.status =      () -> request 'GET', 'https://status.github.com/api/status.json'
+    obj.status.api =  () -> request 'GET', 'https://status.github.com/api.json'
+    obj.status.lastMessage = () -> request 'GET', 'https://status.github.com/api/last-message.json'
+    obj.status.messages = () -> request 'GET', 'https://status.github.com/api/messages.json'
 
     return obj
 

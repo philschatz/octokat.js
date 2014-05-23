@@ -8,3 +8,7 @@ define (require) ->
   require 'cs!./downloads.spec'
   require 'cs!./events.spec'
   require 'cs!./gists.spec'
+  # require 'cs!./gitignore.spec' This is already handled by simple
+  # require 'cs!./hooks.spec' This is already handled by simple
+
+  require 'cs!./status.spec'
