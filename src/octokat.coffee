@@ -133,8 +133,8 @@ define () ->
           | commits / [a-f0-9]{40} / comments
           | contents (/[^/]+)* # The path is allowed in the URL
           | collaborators (/[^/]+)?
-          | issues
-          | issues/ (
+          | (issues|pulls)
+          | (issues|pulls) / (
               | events
               | events/ [0-9]+
               | comments (/[0-9]+)?
@@ -142,7 +142,10 @@ define () ->
               | [0-9]+ /events
               | [0-9]+ /comments
               )
-
+          | pulls/ [0-9]+ / (
+                files
+              | commits
+              )
           | git/ (
                 refs
               | refs / heads (/[^/]+)?
@@ -234,6 +237,11 @@ define () ->
       'releases'      : false
       'events'        : false
       'merges'        : false
+      'pulls':
+        'merge'       : false
+        'comments'    : false
+        'commits'     : false
+        'files'       : false
       'pages':
         'builds':
           'latest'    : false
