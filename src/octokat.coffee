@@ -642,7 +642,7 @@ define () ->
     #
     return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}) ->
 
-      console.log method, path, data
+      # console.log method, path, data
 
       if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
         method = 'POST'

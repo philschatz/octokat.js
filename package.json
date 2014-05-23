@@ -20,6 +20,7 @@
     "coffee-script": "~1.6.3"
   },
   "devDependencies": {
+    "bower": "*",
     "grunt": "~0.4.2",
     "grunt-coffeelint": "~0.0.7",
     "grunt-bump": "~0.0.10",
