@@ -94,8 +94,11 @@ define () ->
 
       | gists/ (
             public
-          | [a-f0-9]{20} (/star)?
-          | [0-9]+       (/star)?
+          | starred
+          | ([a-f0-9]{20}|[0-9]+)
+          | ([a-f0-9]{20}|[0-9]+) /forks
+          | ([a-f0-9]{20}|[0-9]+) /comments (/[0-9]+)?
+          | ([a-f0-9]{20}|[0-9]+) /star
         )
 
       | repos (/[^/]+){2}
@@ -202,7 +205,10 @@ define () ->
       'code'      : false
     'gists':
       'public'    : false
+      'starred'   : false
       'star'      : false
+      'comments'  : false
+      'forks'     : false
     'repos':
       'readme'        : false
       'tarball'       : false
@@ -635,6 +641,8 @@ define () ->
     # =======
     #
     return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}) ->
+
+      console.log method, path, data
 
       if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
         method = 'POST'

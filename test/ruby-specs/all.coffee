@@ -7,3 +7,4 @@ define (require) ->
   require 'cs!./deployments.spec'
   require 'cs!./downloads.spec'
   require 'cs!./events.spec'
+  require 'cs!./gists.spec'
