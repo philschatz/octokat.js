@@ -12,3 +12,4 @@ define (require) ->
   # require 'cs!./hooks.spec' This is already handled by simple
 
   require 'cs!./status.spec'
+  require 'cs!./stats.spec'
