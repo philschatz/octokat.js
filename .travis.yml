@@ -4,6 +4,8 @@ node_js:
 # Drop multiple versions because there were interleavings on Travis
 #  - "0.8"
 
+before_install:
+  - npm install -g bower
+
 before_script:
   - npm install -g grunt-cli
-  - npm install -g bower
