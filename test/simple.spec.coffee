@@ -1,17 +1,11 @@
-define = window?.define or (cb) -> cb ((dep) -> require(dep.replace('cs!', '')))
-define (require) ->
-
-  {assert, expect} = require 'chai'
-  Octokat = require 'cs!../src/octokat'
-
+define = window?.define or (deps, cb) -> cb((require(dep.replace('cs!./', './')) for dep in deps)...)
+define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT}) ->
 
   # NodeJS does not have a btoa
   btoa = @btoa or (str) ->
     buffer = new Buffer str, 'binary'
     buffer.toString 'base64'
 
-
-  {USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT} = require 'cs!./test-config'
 
   trapFail = (promise) ->
     onError = (err) ->
@@ -128,13 +122,7 @@ define (require) ->
         expect(val).to.be.false
 
     before () ->
-      options =
-        token: TOKEN
-        # PhantomJS does not support the `PATCH` verb yet.
-        # See https://github.com/ariya/phantomjs/issues/11384 for updates
-        usePostInsteadOfPatch:true
-
-      STATE[GH] = new Octokat(options)
+      STATE[GH] = client
 
     describe 'Miscellaneous APIs', () ->
       itIsOk(GH, 'zen.read')

@@ -1,7 +1,7 @@
-define = window?.define or (cb) -> cb ((dep) -> require(dep.replace('cs!', '')))
+define = window?.define or (cb) -> cb ((dep) -> require(dep.replace('cs!octokat', '../src/octokat')))
 define (require) ->
 
-  Octokat = require 'cs!../src/octokat'
+  Octokat = require 'cs!octokat'
 
   config =
     USERNAME: 'octokit-test'
