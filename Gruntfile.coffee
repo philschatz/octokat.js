@@ -27,7 +27,7 @@ module.exports = (grunt) ->
         no_unnecessary_fat_arrows:
           level: "ignore"
 
-      source: ['src/octokat.coffee']
+      source: ['src/*.coffee']
       grunt: 'Gruntfile.coffee'
 
 
@@ -40,7 +40,8 @@ module.exports = (grunt) ->
       files:
         src: [
           'dist/octokat.js'
-          'dist/octokat.js.map'
+          'tmp/helper-before.js'
+          'tmp/octokat-coffee.js'
         ]
         filter: 'isFile'
 
@@ -51,7 +52,27 @@ module.exports = (grunt) ->
         options:
           sourceMap: false # true
         files:
-          'dist/octokat.js': ['src/octokat.coffee']
+          'tmp/helper-before.js': ['build/helper-before.coffee']
+          'tmp/octokat-coffee.js': [
+            # The order of these is important because we use a much simpler AMD loader than RequireJS
+            'src/grammar.coffee'
+            'src/plus.coffee'
+            'src/helper-base64.coffee'
+            'src/helper-promise.coffee'
+            'src/chainer.coffee'
+            'src/replacer.coffee'
+            'src/request.coffee'
+            'src/octokat.coffee'
+          ]
+
+    concat:
+      dist:
+        src: [
+            'tmp/helper-before.js'
+            'tmp/octokat-coffee.js'
+        ]
+        dest: 'dist/octokat.js'
+
 
     # Release a new version and push upstream
     bump:
@@ -119,6 +140,10 @@ module.exports = (grunt) ->
   # Travis CI
   # -----
   grunt.registerTask 'test', [
+    'clean'
+    'coffeelint'
+    'coffee'
+    'concat'
     'mochaTest'
     'connect'
     'mocha_phantomjs'

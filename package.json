@@ -35,7 +35,8 @@
     "sepia": "~1.0.3",
     "sepia-js": "git://github.com/philschatz/sepia.js",
     "grunt-mocha-phantomjs": "~0.5.0",
-    "grunt-contrib-connect": "~0.7.1"
+    "grunt-contrib-connect": "~0.7.1",
+    "grunt-contrib-concat": "~0.4.0"
   },
   "repository": {
     "type": "git",

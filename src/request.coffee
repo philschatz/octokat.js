@@ -16,8 +16,12 @@ define 'octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-pa
 
       # Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
       # Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-      req = require
-      XMLHttpRequest = window?.XMLHttpRequest or req('xmlhttprequest').XMLHttpRequest
+      if window?
+        XMLHttpRequest = window.XMLHttpRequest
+      else
+        req = require
+        XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest
+
 
       xhr = new XMLHttpRequest()
       xhr.dataType = options.dataType

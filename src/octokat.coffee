@@ -1,5 +1,16 @@
 define = window?.define or (name, deps, cb) -> cb((require(dep.replace('cs!octokat-part/', './')) for dep in deps)...)
-define 'octokat', ['cs!octokat-part/plus', 'cs!octokat-part/grammar', 'cs!octokat-part/chainer', 'cs!octokat-part/replacer', 'cs!octokat-part/request'], (plus, {TREE_OPTIONS, OBJECT_MATCHER}, Chainer, Replacer, Request) ->
+define 'octokat', [
+  'cs!octokat-part/plus'
+  'cs!octokat-part/grammar'
+  'cs!octokat-part/chainer'
+  'cs!octokat-part/replacer'
+  'cs!octokat-part/request'
+], (
+  plus
+  {TREE_OPTIONS, OBJECT_MATCHER}
+  Chainer
+  Replacer
+  Request) ->
 
   # Combine all the classes into one client
 
