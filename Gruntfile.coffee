@@ -150,6 +150,13 @@ module.exports = (grunt) ->
     #'blanket_mocha' NOTE: Uncomment once the `suiteURL` problem noted above is fixed
   ]
 
+  grunt.registerTask 'dist', [
+    'clean'
+    'coffeelint'
+    'coffee'
+    'concat'
+  ]
+
   # Dist
   # -----
   grunt.registerTask 'release', [
