@@ -61,8 +61,9 @@ define 'octokat-part/chainer', ['cs!octokat-part/grammar', 'cs!octokat-part/plus
           return orig(args...)
 
     # Allow all the verb methods to accept a callback as the last arg
-    for verbName, verbFunc of verbs
-      fn[verbName] = toCallback(verbFunc)
+    if name # Skip adding these on the root
+      for verbName, verbFunc of verbs
+        fn[verbName] = toCallback(verbFunc)
 
 
     for name of contextTree or {}

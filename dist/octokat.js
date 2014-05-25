@@ -537,9 +537,11 @@
           }
         };
       };
-      for (verbName in verbs) {
-        verbFunc = verbs[verbName];
-        fn[verbName] = toCallback(verbFunc);
+      if (name) {
+        for (verbName in verbs) {
+          verbFunc = verbs[verbName];
+          fn[verbName] = toCallback(verbFunc);
+        }
       }
       _fn = function(name) {
         return fn.__defineGetter__(plus.camelize(name), function() {
