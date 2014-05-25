@@ -70,14 +70,9 @@ define 'octokat-part/helper-promise', [], () ->
       allPromises = (promises) => @Promise.all(promises)
 
     else
-      # Otherwise, throw an error
-      err = (msg) ->
-        console?.error?(msg)
-        throw new Error(msg)
-      err('A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise')
+      # Otherwise, show a warning (library can still be used with just callbacks)
+      console?.warn?('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise')
 
-
-    return {newPromise, allPromises}
 
   else
     # Running in NodeJS
@@ -88,4 +83,22 @@ define 'octokat-part/helper-promise', [], () ->
     newPromise  = (fn) -> return new Promise(fn)
     allPromises = (promises) -> return Promise.all(promises)
 
-    module.exports = {newPromise, allPromises}
+
+
+  toPromise = (orig) ->
+    return (args...) ->
+      last = args[args.length - 1]
+      if typeof last is 'function'
+        args.pop()
+        return orig(last, args...)
+      else if newPromise
+        return newPromise (resolve, reject) ->
+          cb = (err, val) ->
+            return reject(err) if err
+            return resolve(val)
+          orig(cb, args...)
+      else
+        throw new Error('You must specify a callback or have a promise library loaded')
+
+  module?.exports = {newPromise, allPromises, toPromise}
+  return {newPromise, allPromises, toPromise}

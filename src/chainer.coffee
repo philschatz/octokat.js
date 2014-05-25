@@ -1,5 +1,9 @@
 define = window?.define or (name, deps, cb) -> cb((require(dep.replace('cs!octokat-part/', './')) for dep in deps)...)
-define 'octokat-part/chainer', ['cs!octokat-part/grammar', 'cs!octokat-part/plus'], ({URL_VALIDATOR}, plus) ->
+define 'octokat-part/chainer', [
+  'cs!octokat-part/grammar'
+  'cs!octokat-part/plus'
+  'cs!octokat-part/helper-promise'
+], ({URL_VALIDATOR}, plus, {toPromise}) ->
 
   # Daisy-Chainer
   # ===============================
@@ -41,29 +45,20 @@ define 'octokat-part/chainer', ['cs!octokat-part/grammar', 'cs!octokat-part/plus
 
 
     verbs =
-      fetch        : (config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}")
-      read         : (config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, raw:true)
-      readBinary   : (config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, raw:true, isBase64:true)
-      remove       : (config) ->   URL_TESTER(_path); request('DELETE', _path, config, isBoolean:true)
-      create       : (config, isRaw) ->   URL_TESTER(_path); request('POST', _path, config, raw:isRaw)
-      update       : (config) ->   URL_TESTER(_path); request('PATCH', _path, config)
-      add          : (config) ->   URL_TESTER(_path); request('PUT', _path, config, isBoolean:true)
-      contains     : (args...) ->  URL_TESTER(_path); request('GET', "#{_path}/#{args.join('/')}", null, isBoolean:true)
+      fetch        : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {}, cb)
+      read         : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {raw:true}, cb)
+      readBinary   : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {raw:true, isBase64:true}, cb)
+      remove       : (cb, config) ->   URL_TESTER(_path); request('DELETE', _path, config, {isBoolean:true}, cb)
+      create       : (cb, config, isRaw) -> URL_TESTER(_path); request('POST', _path, config, {raw:isRaw}, cb)
+      update       : (cb, config) ->   URL_TESTER(_path); request('PATCH', _path, config, null, cb)
+      add          : (cb, config) ->   URL_TESTER(_path); request('PUT', _path, config, {isBoolean:true}, cb)
+      contains     : (cb, args...) ->  URL_TESTER(_path); request('GET', "#{_path}/#{args.join('/')}", null, {isBoolean:true}, cb)
 
-    toCallback = (orig) ->
-      return (args...) ->
-        last = args[args.length - 1]
-        if typeof last is 'function'
-          cb = args.pop()
-          promise = orig(args...)
-          return promise.then ((val) -> cb(null, val)), ((err) -> cb(err))
-        else
-          return orig(args...)
 
     # Allow all the verb methods to accept a callback as the last arg
     if name # Skip adding these on the root
       for verbName, verbFunc of verbs
-        fn[verbName] = toCallback(verbFunc)
+        fn[verbName] = toPromise(verbFunc)
 
 
     for name of contextTree or {}

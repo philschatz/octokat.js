@@ -1,5 +1,5 @@
 define = window?.define or (name, deps, cb) -> cb((require(dep.replace('cs!octokat-part/', './')) for dep in deps)...)
-define 'octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-part/helper-base64'], ({allPromises, newPromise}, base64encode) ->
+define 'octokat-part/request', ['cs!octokat-part/helper-base64'], (base64encode) ->
 
 
   # Request Function
@@ -11,38 +11,37 @@ define 'octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-pa
   userAgent = 'octokat.js' unless window?
 
   # Simple jQuery.ajax() shim that returns a promise for a xhr object
-  ajax = (options) ->
-    return newPromise (resolve, reject) ->
+  ajax = (options, cb) ->
 
-      # Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
-      # Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-      if window?
-        XMLHttpRequest = window.XMLHttpRequest
-      else
-        req = require
-        XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest
+    # Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
+    # Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
+    if window?
+      XMLHttpRequest = window.XMLHttpRequest
+    else
+      req = require
+      XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest
 
 
-      xhr = new XMLHttpRequest()
-      xhr.dataType = options.dataType
-      xhr.overrideMimeType?(options.mimeType)
-      xhr.open(options.type, options.url)
+    xhr = new XMLHttpRequest()
+    xhr.dataType = options.dataType
+    xhr.overrideMimeType?(options.mimeType)
+    xhr.open(options.type, options.url)
 
-      if options.data and options.type isnt 'GET'
-        xhr.setRequestHeader('Content-Type', options.contentType)
+    if options.data and options.type isnt 'GET'
+      xhr.setRequestHeader('Content-Type', options.contentType)
 
-      for name, value of options.headers
-        xhr.setRequestHeader(name, value)
+    for name, value of options.headers
+      xhr.setRequestHeader(name, value)
 
-      xhr.onreadystatechange = () ->
-        if 4 == xhr.readyState
-          options.statusCode?[xhr.status]?()
+    xhr.onreadystatechange = () ->
+      if 4 == xhr.readyState
+        options.statusCode?[xhr.status]?()
 
-          if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302
-            resolve(xhr)
-          else
-            reject(xhr)
-      xhr.send(options.data)
+        if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302
+          cb(null, xhr)
+        else
+          cb(xhr)
+    xhr.send(options.data)
 
 
   # Class for caching ETag responses
@@ -69,9 +68,9 @@ define 'octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-pa
     # HTTP Request Abstraction
     # =======
     #
-    return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}) ->
+    return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
 
-      # console.log method, path, data
+      # console.log method, path, data, options, typeof cb
 
       if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
         method = 'POST'
@@ -114,60 +113,57 @@ define 'octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-pa
         headers['Authorization'] = auth
 
 
-      promise = newPromise (resolve, reject) ->
+      ajaxConfig =
+        # Be sure to **not** blow the cache with a random number
+        # (GitHub will respond with 5xx or CORS errors)
+        url: path
+        type: method
+        contentType: 'application/json'
+        mimeType: mimeType
+        headers: headers
 
-        ajaxConfig =
-          # Be sure to **not** blow the cache with a random number
-          # (GitHub will respond with 5xx or CORS errors)
-          url: path
-          type: method
-          contentType: 'application/json'
-          mimeType: mimeType
-          headers: headers
+        processData: false # Don't convert to QueryString
+        data: !options.raw and data and JSON.stringify(data) or data
+        dataType: 'json' unless options.raw
 
-          processData: false # Don't convert to QueryString
-          data: !options.raw and data and JSON.stringify(data) or data
-          dataType: 'json' unless options.raw
+      # If the request is a boolean yes/no question GitHub will indicate
+      # via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+      if options.isBoolean
+        ajaxConfig.statusCode =
+          204: () => cb(null, true)
+          404: () => cb(null, false)
 
-        # If the request is a boolean yes/no question GitHub will indicate
-        # via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-        if options.isBoolean
-          ajaxConfig.statusCode =
-            204: () => resolve(true)
-            404: () => resolve(false)
+      ajax ajaxConfig, (err, val) ->
 
-        xhrPromise = ajax(ajaxConfig)
+        jqXHR = err or val
+        # Fire listeners when the request completes or fails
+        rateLimit = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Limit')
+        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Remaining')
 
-        always = (jqXHR) =>
-          # Fire listeners when the request completes or fails
-          rateLimit = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Limit')
-          rateLimitRemaining = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Remaining')
-
-          for listener in _listeners
-            listener(rateLimitRemaining, rateLimit, method, path, data, options)
+        for listener in _listeners
+          listener(rateLimitRemaining, rateLimit, method, path, data, options)
 
 
-        # Return the result and Base64 encode it if `options.isBase64` flag is set.
-        xhrPromise.then (jqXHR) ->
-          always(jqXHR)
+        unless err
+          # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
           # If the response was a 304 then return the cached version
           if jqXHR.status is 304
             if clientOptions.useETags and _cachedETags["#{method} #{path}"]
               eTagResponse = _cachedETags["#{method} #{path}"]
 
-              resolve(eTagResponse.data, eTagResponse.status, jqXHR)
+              cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
             else
-              resolve(jqXHR.responseText, status, jqXHR)
+              cb(null, jqXHR.responseText, status, jqXHR)
 
           # If it was a boolean question and the server responded with 204
           # return true.
           else if jqXHR.status is 204 and options.isBoolean
-            resolve(true, status, jqXHR)
+            # cb(null, true, status, jqXHR)
           # Respond with the redirect URL (for archive links)
           # TODO: implement a `followRedirects` flag
           else if jqXHR.status is 302
-            resolve(jqXHR.getResponseHeader('Location'))
+            cb(null, jqXHR.getResponseHeader('Location'))
           else
             if jqXHR.responseText and ajaxConfig.dataType is 'json'
               data = JSON.parse(jqXHR.responseText)
@@ -202,31 +198,24 @@ define 'octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-pa
               eTag = jqXHR.getResponseHeader('ETag')
               _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, jqXHR.status)
 
-            resolve(data, jqXHR.status, jqXHR)
+            cb(null, data, jqXHR.status, jqXHR)
 
-        # Parse the error if one occurs
-        onError = (jqXHR) ->
-          always(jqXHR)
+        else
+          # Parse the error if one occurs
 
           # If the request was for a Boolean then a 404 should be treated as a "false"
           if options.isBoolean and jqXHR.status is 404
-            resolve(false)
+            # cb(null, false) # Already handled
           else
             if jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
-              reject {error: jqXHR.responseText, status: jqXHR.status, _jqXHR: jqXHR}
+              cb(new Error {error: jqXHR.responseText, status: jqXHR.status, _jqXHR: jqXHR})
             else
               if jqXHR.responseText
                 json = JSON.parse(jqXHR.responseText)
               else
                 # In the case of 404 errors, `responseText` is an empty string
                 json = ''
-              reject {error: json, status: jqXHR.status, _jqXHR: jqXHR}
-
-        # Depending on the Promise implementation, the `catch` method may be `.catch` or `.fail`
-        xhrPromise.then(null, onError)
-
-      # Return the promise
-      return promise
+              cb(new Error {error: json, status: jqXHR.status, _jqXHR: jqXHR})
 
 
 

@@ -306,7 +306,7 @@
   };
 
   define('octokat-part/helper-promise', [], function() {
-    var Promise, allPromises, err, injector, newPromise, req, _ref,
+    var Promise, allPromises, injector, newPromise, req, toPromise, _ref,
       _this = this;
     if (typeof window !== "undefined" && window !== null) {
       if (this.Q) {
@@ -381,20 +381,12 @@
           return _this.Promise.all(promises);
         };
       } else {
-        err = function(msg) {
-          if (typeof console !== "undefined" && console !== null) {
-            if (typeof console.error === "function") {
-              console.error(msg);
-            }
+        if (typeof console !== "undefined" && console !== null) {
+          if (typeof console.warn === "function") {
+            console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
           }
-          throw new Error(msg);
-        };
-        err('A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
+        }
       }
-      return {
-        newPromise: newPromise,
-        allPromises: allPromises
-      };
     } else {
       req = require;
       Promise = this.Promise || req('es6-promise').Promise;
@@ -404,11 +396,43 @@
       allPromises = function(promises) {
         return Promise.all(promises);
       };
-      return module.exports = {
+    }
+    toPromise = function(orig) {
+      return function() {
+        var args, last;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        last = args[args.length - 1];
+        if (typeof last === 'function') {
+          args.pop();
+          return orig.apply(null, [last].concat(__slice.call(args)));
+        } else if (newPromise) {
+          return newPromise(function(resolve, reject) {
+            var cb;
+            cb = function(err, val) {
+              if (err) {
+                return reject(err);
+              }
+              return resolve(val);
+            };
+            return orig.apply(null, [cb].concat(__slice.call(args)));
+          });
+        } else {
+          throw new Error('You must specify a callback or have a promise library loaded');
+        }
+      };
+    };
+    if (typeof module !== "undefined" && module !== null) {
+      module.exports = {
         newPromise: newPromise,
-        allPromises: allPromises
+        allPromises: allPromises,
+        toPromise: toPromise
       };
     }
+    return {
+      newPromise: newPromise,
+      allPromises: allPromises,
+      toPromise: toPromise
+    };
   });
 
 }).call(this);
@@ -430,9 +454,10 @@
     })());
   };
 
-  define('octokat-part/chainer', ['cs!octokat-part/grammar', 'cs!octokat-part/plus'], function(_arg, plus) {
-    var Chainer, URL_TESTER, URL_VALIDATOR, toQueryString;
+  define('octokat-part/chainer', ['cs!octokat-part/grammar', 'cs!octokat-part/plus', 'cs!octokat-part/helper-promise'], function(_arg, plus, _arg1) {
+    var Chainer, URL_TESTER, URL_VALIDATOR, toPromise, toQueryString;
     URL_VALIDATOR = _arg.URL_VALIDATOR;
+    toPromise = _arg1.toPromise;
     toQueryString = function(options) {
       var key, params, value, _ref;
       if (!options || options === {}) {
@@ -454,7 +479,7 @@
       }
     };
     Chainer = function(request, _path, name, contextTree, fn) {
-      var toCallback, verbFunc, verbName, verbs, _fn;
+      var verbFunc, verbName, verbs, _fn;
       if (fn == null) {
         fn = function() {
           var args, separator;
@@ -471,76 +496,58 @@
         };
       }
       verbs = {
-        fetch: function(config) {
+        fetch: function(cb, config) {
           URL_TESTER(_path);
-          return request('GET', "" + _path + (toQueryString(config)));
+          return request('GET', "" + _path + (toQueryString(config)), null, {}, cb);
         },
-        read: function(config) {
+        read: function(cb, config) {
           URL_TESTER(_path);
           return request('GET', "" + _path + (toQueryString(config)), null, {
             raw: true
-          });
+          }, cb);
         },
-        readBinary: function(config) {
+        readBinary: function(cb, config) {
           URL_TESTER(_path);
           return request('GET', "" + _path + (toQueryString(config)), null, {
             raw: true,
             isBase64: true
-          });
+          }, cb);
         },
-        remove: function(config) {
+        remove: function(cb, config) {
           URL_TESTER(_path);
           return request('DELETE', _path, config, {
             isBoolean: true
-          });
+          }, cb);
         },
-        create: function(config, isRaw) {
+        create: function(cb, config, isRaw) {
           URL_TESTER(_path);
           return request('POST', _path, config, {
             raw: isRaw
-          });
+          }, cb);
         },
-        update: function(config) {
+        update: function(cb, config) {
           URL_TESTER(_path);
-          return request('PATCH', _path, config);
+          return request('PATCH', _path, config, null, cb);
         },
-        add: function(config) {
+        add: function(cb, config) {
           URL_TESTER(_path);
           return request('PUT', _path, config, {
             isBoolean: true
-          });
+          }, cb);
         },
         contains: function() {
-          var args;
-          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          var args, cb;
+          cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
           URL_TESTER(_path);
           return request('GET', "" + _path + "/" + (args.join('/')), null, {
             isBoolean: true
-          });
+          }, cb);
         }
-      };
-      toCallback = function(orig) {
-        return function() {
-          var args, cb, last, promise;
-          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          last = args[args.length - 1];
-          if (typeof last === 'function') {
-            cb = args.pop();
-            promise = orig.apply(null, args);
-            return promise.then((function(val) {
-              return cb(null, val);
-            }), (function(err) {
-              return cb(err);
-            }));
-          } else {
-            return orig.apply(null, args);
-          }
-        };
       };
       if (name) {
         for (verbName in verbs) {
           verbFunc = verbs[verbName];
-          fn[verbName] = toCallback(verbFunc);
+          fn[verbName] = toPromise(verbFunc);
         }
       }
       _fn = function(name) {
@@ -562,7 +569,8 @@
 }).call(this);
 
 (function() {
-  var define;
+  var define,
+    __slice = [].slice;
 
   define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
     var dep;
@@ -577,8 +585,9 @@
     })());
   };
 
-  define('octokat-part/replacer', ['cs!octokat-part/plus'], function(plus) {
-    var Replacer;
+  define('octokat-part/replacer', ['cs!octokat-part/plus', 'cs!octokat-part/helper-promise'], function(plus, _arg) {
+    var Replacer, toPromise;
+    toPromise = _arg.toPromise;
     Replacer = (function() {
       function Replacer(_request) {
         this._request = _request;
@@ -653,12 +662,13 @@
           _this = this;
         if (/_url$/.test(key)) {
           fn = function() {
-            var i, m, match, param;
+            var args, cb, i, m, match, param;
+            cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
             i = 0;
             while (m = /(\{[^\}]+\})/.exec(value)) {
               match = m[1];
-              if (i < arguments.length) {
-                param = arguments[i];
+              if (i < args.length) {
+                param = args[i];
                 if (match[1] === '/') {
                   param = "/" + param;
                 }
@@ -671,8 +681,9 @@
               value = value.replace(match, param);
               i++;
             }
-            return _this._request('GET', value, null);
+            return _this._request('GET', value, null, null, cb);
           };
+          fn = toPromise(fn);
           fn.url = value;
           newKey = key.substring(0, key.length - '_url'.length);
           return acc[plus.camelize(newKey)] = fn;
@@ -710,52 +721,49 @@
     })());
   };
 
-  define('octokat-part/request', ['cs!octokat-part/helper-promise', 'cs!octokat-part/helper-base64'], function(_arg, base64encode) {
-    var ETagResponse, Request, ajax, allPromises, newPromise, userAgent;
-    allPromises = _arg.allPromises, newPromise = _arg.newPromise;
+  define('octokat-part/request', ['cs!octokat-part/helper-base64'], function(base64encode) {
+    var ETagResponse, Request, ajax, userAgent;
     if (typeof window === "undefined" || window === null) {
       userAgent = 'octokat.js';
     }
-    ajax = function(options) {
-      return newPromise(function(resolve, reject) {
-        var XMLHttpRequest, name, req, value, xhr, _ref;
-        if (typeof window !== "undefined" && window !== null) {
-          XMLHttpRequest = window.XMLHttpRequest;
-        } else {
-          req = require;
-          XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest;
-        }
-        xhr = new XMLHttpRequest();
-        xhr.dataType = options.dataType;
-        if (typeof xhr.overrideMimeType === "function") {
-          xhr.overrideMimeType(options.mimeType);
-        }
-        xhr.open(options.type, options.url);
-        if (options.data && options.type !== 'GET') {
-          xhr.setRequestHeader('Content-Type', options.contentType);
-        }
-        _ref = options.headers;
-        for (name in _ref) {
-          value = _ref[name];
-          xhr.setRequestHeader(name, value);
-        }
-        xhr.onreadystatechange = function() {
-          var _name, _ref1;
-          if (4 === xhr.readyState) {
-            if ((_ref1 = options.statusCode) != null) {
-              if (typeof _ref1[_name = xhr.status] === "function") {
-                _ref1[_name]();
-              }
-            }
-            if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
-              return resolve(xhr);
-            } else {
-              return reject(xhr);
+    ajax = function(options, cb) {
+      var XMLHttpRequest, name, req, value, xhr, _ref;
+      if (typeof window !== "undefined" && window !== null) {
+        XMLHttpRequest = window.XMLHttpRequest;
+      } else {
+        req = require;
+        XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest;
+      }
+      xhr = new XMLHttpRequest();
+      xhr.dataType = options.dataType;
+      if (typeof xhr.overrideMimeType === "function") {
+        xhr.overrideMimeType(options.mimeType);
+      }
+      xhr.open(options.type, options.url);
+      if (options.data && options.type !== 'GET') {
+        xhr.setRequestHeader('Content-Type', options.contentType);
+      }
+      _ref = options.headers;
+      for (name in _ref) {
+        value = _ref[name];
+        xhr.setRequestHeader(name, value);
+      }
+      xhr.onreadystatechange = function() {
+        var _name, _ref1;
+        if (4 === xhr.readyState) {
+          if ((_ref1 = options.statusCode) != null) {
+            if (typeof _ref1[_name = xhr.status] === "function") {
+              _ref1[_name]();
             }
           }
-        };
-        return xhr.send(options.data);
-      });
+          if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
+            return cb(null, xhr);
+          } else {
+            return cb(xhr);
+          }
+        }
+      };
+      return xhr.send(options.data);
     };
     ETagResponse = (function() {
       function ETagResponse(eTag, data, status) {
@@ -783,8 +791,9 @@
       }
       _listeners = [];
       _cachedETags = {};
-      return function(method, path, data, options) {
-        var auth, headers, mimeType, promise;
+      return function(method, path, data, options, cb) {
+        var ajaxConfig, auth, headers, mimeType,
+          _this = this;
         if (options == null) {
           options = {
             raw: false,
@@ -824,62 +833,54 @@
           }
           headers['Authorization'] = auth;
         }
-        promise = newPromise(function(resolve, reject) {
-          var ajaxConfig, always, onError, xhrPromise,
-            _this = this;
-          ajaxConfig = {
-            url: path,
-            type: method,
-            contentType: 'application/json',
-            mimeType: mimeType,
-            headers: headers,
-            processData: false,
-            data: !options.raw && data && JSON.stringify(data) || data,
-            dataType: !options.raw ? 'json' : void 0
-          };
-          if (options.isBoolean) {
-            ajaxConfig.statusCode = {
-              204: function() {
-                return resolve(true);
-              },
-              404: function() {
-                return resolve(false);
-              }
-            };
-          }
-          xhrPromise = ajax(ajaxConfig);
-          always = function(jqXHR) {
-            var listener, rateLimit, rateLimitRemaining, _i, _len, _results;
-            rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
-            rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
-            _results = [];
-            for (_i = 0, _len = _listeners.length; _i < _len; _i++) {
-              listener = _listeners[_i];
-              _results.push(listener(rateLimitRemaining, rateLimit, method, path, data, options));
+        ajaxConfig = {
+          url: path,
+          type: method,
+          contentType: 'application/json',
+          mimeType: mimeType,
+          headers: headers,
+          processData: false,
+          data: !options.raw && data && JSON.stringify(data) || data,
+          dataType: !options.raw ? 'json' : void 0
+        };
+        if (options.isBoolean) {
+          ajaxConfig.statusCode = {
+            204: function() {
+              return cb(null, true);
+            },
+            404: function() {
+              return cb(null, false);
             }
-            return _results;
           };
-          xhrPromise.then(function(jqXHR) {
-            var converted, discard, eTag, eTagResponse, href, i, links, part, rel, _i, _j, _len, _ref, _ref1, _ref2;
-            always(jqXHR);
+        }
+        return ajax(ajaxConfig, function(err, val) {
+          var converted, discard, eTag, eTagResponse, href, i, jqXHR, json, links, listener, part, rateLimit, rateLimitRemaining, rel, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
+          jqXHR = err || val;
+          rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
+          rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
+          for (_i = 0, _len = _listeners.length; _i < _len; _i++) {
+            listener = _listeners[_i];
+            listener(rateLimitRemaining, rateLimit, method, path, data, options);
+          }
+          if (!err) {
             if (jqXHR.status === 304) {
               if (clientOptions.useETags && _cachedETags["" + method + " " + path]) {
                 eTagResponse = _cachedETags["" + method + " " + path];
-                return resolve(eTagResponse.data, eTagResponse.status, jqXHR);
+                return cb(null, eTagResponse.data, eTagResponse.status, jqXHR);
               } else {
-                return resolve(jqXHR.responseText, status, jqXHR);
+                return cb(null, jqXHR.responseText, status, jqXHR);
               }
             } else if (jqXHR.status === 204 && options.isBoolean) {
-              return resolve(true, status, jqXHR);
+
             } else if (jqXHR.status === 302) {
-              return resolve(jqXHR.getResponseHeader('Location'));
+              return cb(null, jqXHR.getResponseHeader('Location'));
             } else {
               if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
                 data = JSON.parse(jqXHR.responseText);
                 links = jqXHR.getResponseHeader('Link');
                 _ref = (links != null ? links.split(',') : void 0) || [];
-                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                  part = _ref[_i];
+                for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+                  part = _ref[_j];
                   _ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = _ref1[0], href = _ref1[1], rel = _ref1[2];
                   data["" + rel + "_page_url"] = href;
                 }
@@ -888,7 +889,7 @@
               }
               if (method === 'GET' && options.isBase64) {
                 converted = '';
-                for (i = _j = 0, _ref2 = data.length; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; i = 0 <= _ref2 ? ++_j : --_j) {
+                for (i = _k = 0, _ref2 = data.length; 0 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
                   converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
                 }
                 data = converted;
@@ -897,38 +898,33 @@
                 eTag = jqXHR.getResponseHeader('ETag');
                 _cachedETags["" + method + " " + path] = new ETagResponse(eTag, data, jqXHR.status);
               }
-              return resolve(data, jqXHR.status, jqXHR);
+              return cb(null, data, jqXHR.status, jqXHR);
             }
-          });
-          onError = function(jqXHR) {
-            var json;
-            always(jqXHR);
+          } else {
             if (options.isBoolean && jqXHR.status === 404) {
-              return resolve(false);
+
             } else {
               if (jqXHR.getResponseHeader('Content-Type') !== 'application/json; charset=utf-8') {
-                return reject({
+                return cb(new Error({
                   error: jqXHR.responseText,
                   status: jqXHR.status,
                   _jqXHR: jqXHR
-                });
+                }));
               } else {
                 if (jqXHR.responseText) {
                   json = JSON.parse(jqXHR.responseText);
                 } else {
                   json = '';
                 }
-                return reject({
+                return cb(new Error({
                   error: json,
                   status: jqXHR.status,
                   _jqXHR: jqXHR
-                });
+                }));
               }
             }
-          };
-          return xhrPromise.then(null, onError);
+          }
         });
-        return promise;
       };
     };
     if (typeof module !== "undefined" && module !== null) {
@@ -955,16 +951,17 @@
     })());
   };
 
-  define('octokat', ['cs!octokat-part/plus', 'cs!octokat-part/grammar', 'cs!octokat-part/chainer', 'cs!octokat-part/replacer', 'cs!octokat-part/request'], function(plus, _arg, Chainer, Replacer, Request) {
-    var OBJECT_MATCHER, Octokat, TREE_OPTIONS;
+  define('octokat', ['cs!octokat-part/plus', 'cs!octokat-part/grammar', 'cs!octokat-part/chainer', 'cs!octokat-part/replacer', 'cs!octokat-part/request', 'cs!octokat-part/helper-promise'], function(plus, _arg, Chainer, Replacer, Request, _arg1) {
+    var OBJECT_MATCHER, Octokat, TREE_OPTIONS, toPromise;
     TREE_OPTIONS = _arg.TREE_OPTIONS, OBJECT_MATCHER = _arg.OBJECT_MATCHER;
+    toPromise = _arg1.toPromise;
     Octokat = function(clientOptions) {
       var obj, path, request, _request;
       if (clientOptions == null) {
         clientOptions = {};
       }
       _request = Request(clientOptions);
-      request = function(method, path, data, options) {
+      request = function(method, path, data, options, cb) {
         var replacer;
         if (options == null) {
           options = {
@@ -977,10 +974,13 @@
         if (data) {
           data = replacer.uncamelize(data);
         }
-        return _request(method, path, data, options).then(function(val) {
+        return _request(method, path, data, options, function(err, val) {
           var context, k, key, obj, re, url, _i, _len, _ref;
+          if (err) {
+            return cb(err);
+          }
           if (options.raw) {
-            return val;
+            return cb(null, val);
           }
           obj = replacer.replace(val);
           url = obj.url || path;
@@ -996,7 +996,7 @@
               Chainer(request, url, k, context, obj);
             }
           }
-          return obj;
+          return cb(null, obj);
         });
       };
       path = '';
@@ -1004,18 +1004,18 @@
       Chainer(request, path, null, TREE_OPTIONS, obj);
       obj.me = obj.user;
       delete obj.user;
-      obj.status = function() {
-        return request('GET', 'https://status.github.com/api/status.json');
-      };
-      obj.status.api = function() {
-        return request('GET', 'https://status.github.com/api.json');
-      };
-      obj.status.lastMessage = function() {
-        return request('GET', 'https://status.github.com/api/last-message.json');
-      };
-      obj.status.messages = function() {
-        return request('GET', 'https://status.github.com/api/messages.json');
-      };
+      obj.status = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
+      });
+      obj.status.api = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api.json', null, null, cb);
+      });
+      obj.status.lastMessage = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api/last-message.json', null, null, cb);
+      });
+      obj.status.messages = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api/messages.json', null, null, cb);
+      });
       return obj;
     };
     if (typeof module !== "undefined" && module !== null) {

@@ -12,7 +12,7 @@ This package can also be used in `nodejs` **or** as an AMD module in the browser
 - Exposes everything available via the GitHub API (repos, teams, events, hooks, emojis, etc)
 - Supports `ETag` caching
 - Paged results
-- Promises as well as callbacks (to avoid those debates)
+- Node-style callbacks as well as optional Promises (to avoid those debates)
 - 100% of the GitHub API
   - Starring and Following repositories, users, and organizations
   - Editing Team and Organization Membership
@@ -101,6 +101,20 @@ This file can be included using the bower package manager:
 
 
 # Setup
+
+This is all you need to get up and running:
+
+    <script src="../dist/octokat.js"></script>
+    <script>
+      var octo = new Octokat();
+      octo.zen.read(function(err, message) {
+        if (err) { throw new Error(err); }
+        alert(message);
+      });
+    </script>
+
+
+## Promises (Optional)
 
 `octokat.js` has the following **optional** dependencies when used in a browser:
 

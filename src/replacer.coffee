@@ -1,5 +1,5 @@
 define = window?.define or (name, deps, cb) -> cb((require(dep.replace('cs!octokat-part/', './')) for dep in deps)...)
-define 'octokat-part/replacer', ['cs!octokat-part/plus'], (plus) ->
+define 'octokat-part/replacer', ['cs!octokat-part/plus', 'cs!octokat-part/helper-promise'], (plus, {toPromise}) ->
 
   # JSON Replacer
   # ===============================
@@ -48,7 +48,7 @@ define 'octokat-part/replacer', ['cs!octokat-part/plus'], (plus) ->
     # Convert things that end in `_url` to methods which return a Promise
     _replaceKeyValue: (acc, key, value) ->
       if /_url$/.test(key)
-        fn = () =>
+        fn = (cb, args...) =>
           # url can contain {name} or {/name} in the URL.
           # for every arg passed in, replace {...} with that arg
           # and remove the rest (they may or may not be optional)
@@ -56,9 +56,9 @@ define 'octokat-part/replacer', ['cs!octokat-part/plus'], (plus) ->
           while m = /(\{[^\}]+\})/.exec(value)
             # `match` is something like `{/foo}`
             match = m[1]
-            if i < arguments.length
+            if i < args.length
               # replace it
-              param = arguments[i]
+              param = args[i]
               param = "/#{param}" if match[1] is '/'
             else
               # Discard the remaining optional params in the URL
@@ -68,7 +68,8 @@ define 'octokat-part/replacer', ['cs!octokat-part/plus'], (plus) ->
             value = value.replace(match, param)
             i++
 
-          @_request('GET', value, null) # TODO: Heuristically set the isBoolean flag
+          @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
+        fn = toPromise(fn)
         fn.url = value
         newKey = key.substring(0, key.length-'_url'.length)
         acc[plus.camelize(newKey)] = fn

@@ -1,0 +1,19 @@
+<html>
+
+<body>
+<p>This is a simple demo page showing the minimal amount of code needed to run Octokat.</p>
+
+
+<script src="../dist/octokat.js"></script>
+<script>
+var octo = new Octokat();
+octo.zen.read(function(err, val) {
+  if (err) { throw new Error(err); }
+  alert(val);
+});
+</script>
+
+
+
+</body>
+</html>
