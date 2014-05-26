@@ -1,58 +1,169 @@
-(function() {
-  var MODULES;
-
-  MODULES = {};
-
-  if (this.define == null) {
-    this.define = function(moduleName, deps, callback) {
-      var args, depName, first, second, val;
-      args = (function() {
-        var _i, _len, _ref, _results;
-        _results = [];
-        for (_i = 0, _len = deps.length; _i < _len; _i++) {
-          depName = deps[_i];
-          _ref = depName.split('!'), first = _ref[0], second = _ref[1];
-          depName = second || first;
-          if (!MODULES[depName]) {
-            throw new Error('Files are not concatenated based on their dependencies');
-          }
-          _results.push(MODULES[depName]);
-        }
-        return _results;
-      })();
-      val = callback.apply(this, args);
-      MODULES[moduleName] = val;
-      return val;
-    };
-  }
-
-}).call(this);
+(function(globals) {
+var define, requireModule;
 
 (function() {
-  var define;
+  var registry = {}, seen = {};
 
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
-      }
-      return _results;
-    })());
+  define = function(name, deps, callback) {
+    registry[name] = { deps: deps, callback: callback };
   };
 
-  define('octokat-part/grammar', [], function() {
+  requireModule = function(name) {
+    if (seen[name]) { return seen[name]; }
+    seen[name] = {};
+
+    var mod = registry[name];
+    if (!mod) {
+      throw new Error("Module '" + name + "' not found.");
+    }
+
+    var deps = mod.deps,
+        callback = mod.callback,
+        reified = [],
+        exports;
+
+    for (var i=0, l=deps.length; i<l; i++) {
+      if (deps[i] === 'exports') {
+        reified.push(exports = {});
+      } else {
+        reified.push(requireModule(deps[i]));
+      }
+    }
+
+    var value = callback.apply(this, reified);
+    return seen[name] = exports || value;
+  };
+})();
+
+define("./chainer", 
+  ["./grammar","./plus","./helper-promise","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
+    "use strict";
+    var URL_VALIDATOR = __dependency1__.URL_VALIDATOR;
+    var plus = __dependency2__["default"];
+    var toPromise = __dependency3__.toPromise;
+    var Chainer, URL_TESTER, toQueryString,
+      __slice = [].slice;
+
+    toQueryString = function(options) {
+      var key, params, value, _ref;
+      if (!options || options === {}) {
+        return '';
+      }
+      params = [];
+      _ref = options || {};
+      for (key in _ref) {
+        value = _ref[key];
+        params.push("" + key + "=" + (encodeURIComponent(value)));
+      }
+      return "?" + (params.join('&'));
+    };
+
+    URL_TESTER = function(path) {
+      var err;
+      if (!URL_VALIDATOR.test(path)) {
+        err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+        return console.warn(err);
+      }
+    };
+
+    Chainer = function(request, _path, name, contextTree, fn) {
+      var verbFunc, verbName, verbs, _fn;
+      if (fn == null) {
+        fn = function() {
+          var args, separator;
+          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          if (!args.length) {
+            throw new Error('BUG! must be called with at least one argument');
+          }
+          if (name === 'compare') {
+            separator = '...';
+          } else {
+            separator = '/';
+          }
+          return Chainer(request, "" + _path + "/" + (args.join(separator)), name, contextTree);
+        };
+      }
+      verbs = {
+        fetch: function(cb, config) {
+          URL_TESTER(_path);
+          return request('GET', "" + _path + (toQueryString(config)), null, {}, cb);
+        },
+        read: function(cb, config) {
+          URL_TESTER(_path);
+          return request('GET', "" + _path + (toQueryString(config)), null, {
+            raw: true
+          }, cb);
+        },
+        readBinary: function(cb, config) {
+          URL_TESTER(_path);
+          return request('GET', "" + _path + (toQueryString(config)), null, {
+            raw: true,
+            isBase64: true
+          }, cb);
+        },
+        remove: function(cb, config) {
+          URL_TESTER(_path);
+          return request('DELETE', _path, config, {
+            isBoolean: true
+          }, cb);
+        },
+        create: function(cb, config, isRaw) {
+          URL_TESTER(_path);
+          return request('POST', _path, config, {
+            raw: isRaw
+          }, cb);
+        },
+        update: function(cb, config) {
+          URL_TESTER(_path);
+          return request('PATCH', _path, config, null, cb);
+        },
+        add: function(cb, config) {
+          URL_TESTER(_path);
+          return request('PUT', _path, config, {
+            isBoolean: true
+          }, cb);
+        },
+        contains: function() {
+          var args, cb;
+          cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+          URL_TESTER(_path);
+          return request('GET', "" + _path + "/" + (args.join('/')), null, {
+            isBoolean: true
+          }, cb);
+        }
+      };
+      if (name) {
+        for (verbName in verbs) {
+          verbFunc = verbs[verbName];
+          fn[verbName] = toPromise(verbFunc);
+        }
+      }
+      _fn = function(name) {
+        return fn.__defineGetter__(plus.camelize(name), function() {
+          return Chainer(request, "" + _path + "/" + name, name, contextTree[name]);
+        });
+      };
+      for (name in contextTree || {}) {
+        _fn(name);
+      }
+      return fn;
+    };
+
+    __exports__["default"] = Chainer;
+  });
+define("./grammar", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
     var OBJECT_MATCHER, TREE_OPTIONS, URL_VALIDATOR;
+
     URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|meta|rate_limit|feeds|events|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred(\/[^\/]+){0,2})|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events)|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9]{40}\.{3}[a-f0-9]{40}|deployments|deployments\/[0-9]+\/statuses([0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|branches|contributors|subscribers|subscription|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|milestones|labels|releases|events|merges|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/comments|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card)))$/;
+
     TREE_OPTIONS = {
       'zen': false,
       'octocat': false,
-      'users': false,
       'issues': false,
-      'gists': false,
       'emojis': false,
       'meta': false,
       'rate_limit': false,
@@ -165,6 +276,7 @@
         }
       }
     };
+
     OBJECT_MATCHER = {
       'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
       'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
@@ -173,105 +285,21 @@
       'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
       'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
     };
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = {
-        URL_VALIDATOR: URL_VALIDATOR,
-        TREE_OPTIONS: TREE_OPTIONS,
-        OBJECT_MATCHER: OBJECT_MATCHER
-      };
-    }
-    return {
-      URL_VALIDATOR: URL_VALIDATOR,
-      TREE_OPTIONS: TREE_OPTIONS,
-      OBJECT_MATCHER: OBJECT_MATCHER
-    };
+
+    __exports__.URL_VALIDATOR = URL_VALIDATOR;
+    __exports__.TREE_OPTIONS = TREE_OPTIONS;
+    __exports__.OBJECT_MATCHER = OBJECT_MATCHER;
   });
-
-}).call(this);
-
-(function() {
-  var define;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
-      }
-      return _results;
-    })());
-  };
-
-  define('octokat-part/plus', [], function() {
-    var plus;
-    plus = {
-      camelize: function(string) {
-        if (string) {
-          return string.replace(/[_-]+(\w)/g, function(m) {
-            return m[1].toUpperCase();
-          });
-        } else {
-          return '';
-        }
-      },
-      uncamelize: function(string) {
-        if (!string) {
-          return '';
-        }
-        return string.replace(/([A-Z])+/g, function(match, letter) {
-          if (letter == null) {
-            letter = '';
-          }
-          return "_" + (letter.toLowerCase());
-        });
-      },
-      dasherize: function(string) {
-        if (!string) {
-          return '';
-        }
-        string = string[0].toLowerCase() + string.slice(1);
-        return string.replace(/([A-Z])|(_)/g, function(m, letter) {
-          if (letter) {
-            return '-' + letter.toLowerCase();
-          } else {
-            return '-';
-          }
-        });
-      }
-    };
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = plus;
-    }
-    return plus;
-  });
-
-}).call(this);
-
-(function() {
-  var define;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
-      }
-      return _results;
-    })());
-  };
-
-  define('octokat-part/helper-base64', [], function() {
+define("./helper-base64", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
     var base64encode;
-    if (this.Buffer) {
+
+    if (typeof Buffer !== "undefined" && Buffer !== null) {
       base64encode = function(str) {
         var buffer;
-        buffer = new this.Buffer(str, 'binary');
+        buffer = new Buffer(str, 'binary');
         return buffer.toString('base64');
       };
     } else {
@@ -280,34 +308,17 @@
       }
       base64encode = this.btoa;
     }
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = base64encode;
-    }
-    return base64encode;
+
+    __exports__["default"] = base64encode;
   });
-
-}).call(this);
-
-(function() {
-  var define,
-    __slice = [].slice;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
-      }
-      return _results;
-    })());
-  };
-
-  define('octokat-part/helper-promise', [], function() {
+define("./helper-promise", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
     var Promise, allPromises, injector, newPromise, req, toPromise, _ref,
-      _this = this;
+      _this = this,
+      __slice = [].slice;
+
     if (typeof window !== "undefined" && window !== null) {
       if (this.Q) {
         newPromise = function(fn) {
@@ -397,6 +408,7 @@
         return Promise.all(promises);
       };
     }
+
     toPromise = function(orig) {
       return function() {
         var args, last;
@@ -421,173 +433,143 @@
         }
       };
     };
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = {
-        newPromise: newPromise,
-        allPromises: allPromises,
-        toPromise: toPromise
-      };
-    }
-    return {
-      newPromise: newPromise,
-      allPromises: allPromises,
-      toPromise: toPromise
-    };
+
+    __exports__.newPromise = newPromise;
+    __exports__.allPromises = allPromises;
+    __exports__.toPromise = toPromise;
   });
+define("./octokat", 
+  ["./plus","./grammar","./chainer","./replacer","./request","./helper-promise","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
+    "use strict";
+    var plus = __dependency1__["default"];
+    var TREE_OPTIONS = __dependency2__.TREE_OPTIONS;
+    var OBJECT_MATCHER = __dependency2__.OBJECT_MATCHER;
+    var Chainer = __dependency3__["default"];
+    var Replacer = __dependency4__["default"];
+    var Request = __dependency5__["default"];
+    var toPromise = __dependency6__.toPromise;
+    var Octokat;
 
-}).call(this);
-
-(function() {
-  var define,
-    __slice = [].slice;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
+    Octokat = function(clientOptions) {
+      var obj, path, request, _request;
+      if (clientOptions == null) {
+        clientOptions = {};
       }
-      return _results;
-    })());
-  };
-
-  define('octokat-part/chainer', ['cs!octokat-part/grammar', 'cs!octokat-part/plus', 'cs!octokat-part/helper-promise'], function(_arg, plus, _arg1) {
-    var Chainer, URL_TESTER, URL_VALIDATOR, toPromise, toQueryString;
-    URL_VALIDATOR = _arg.URL_VALIDATOR;
-    toPromise = _arg1.toPromise;
-    toQueryString = function(options) {
-      var key, params, value, _ref;
-      if (!options || options === {}) {
-        return '';
-      }
-      params = [];
-      _ref = options || {};
-      for (key in _ref) {
-        value = _ref[key];
-        params.push("" + key + "=" + (encodeURIComponent(value)));
-      }
-      return "?" + (params.join('&'));
-    };
-    URL_TESTER = function(path) {
-      var err;
-      if (!URL_VALIDATOR.test(path)) {
-        err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
-        return console.warn(err);
-      }
-    };
-    Chainer = function(request, _path, name, contextTree, fn) {
-      var verbFunc, verbName, verbs, _fn;
-      if (fn == null) {
-        fn = function() {
-          var args, separator;
-          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          if (!args.length) {
-            throw new Error('BUG! must be called with at least one argument');
-          }
-          if (name === 'compare') {
-            separator = '...';
-          } else {
-            separator = '/';
-          }
-          return Chainer(request, "" + _path + "/" + (args.join(separator)), name, contextTree);
-        };
-      }
-      verbs = {
-        fetch: function(cb, config) {
-          URL_TESTER(_path);
-          return request('GET', "" + _path + (toQueryString(config)), null, {}, cb);
-        },
-        read: function(cb, config) {
-          URL_TESTER(_path);
-          return request('GET', "" + _path + (toQueryString(config)), null, {
-            raw: true
-          }, cb);
-        },
-        readBinary: function(cb, config) {
-          URL_TESTER(_path);
-          return request('GET', "" + _path + (toQueryString(config)), null, {
-            raw: true,
-            isBase64: true
-          }, cb);
-        },
-        remove: function(cb, config) {
-          URL_TESTER(_path);
-          return request('DELETE', _path, config, {
-            isBoolean: true
-          }, cb);
-        },
-        create: function(cb, config, isRaw) {
-          URL_TESTER(_path);
-          return request('POST', _path, config, {
-            raw: isRaw
-          }, cb);
-        },
-        update: function(cb, config) {
-          URL_TESTER(_path);
-          return request('PATCH', _path, config, null, cb);
-        },
-        add: function(cb, config) {
-          URL_TESTER(_path);
-          return request('PUT', _path, config, {
-            isBoolean: true
-          }, cb);
-        },
-        contains: function() {
-          var args, cb;
-          cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-          URL_TESTER(_path);
-          return request('GET', "" + _path + "/" + (args.join('/')), null, {
-            isBoolean: true
-          }, cb);
+      _request = Request(clientOptions);
+      request = function(method, path, data, options, cb) {
+        var replacer;
+        if (options == null) {
+          options = {
+            raw: false,
+            isBase64: false,
+            isBoolean: false
+          };
         }
-      };
-      if (name) {
-        for (verbName in verbs) {
-          verbFunc = verbs[verbName];
-          fn[verbName] = toPromise(verbFunc);
+        replacer = new Replacer(request);
+        if (data) {
+          data = replacer.uncamelize(data);
         }
-      }
-      _fn = function(name) {
-        return fn.__defineGetter__(plus.camelize(name), function() {
-          return Chainer(request, "" + _path + "/" + name, name, contextTree[name]);
+        return _request(method, path, data, options, function(err, val) {
+          var context, k, key, obj, re, url, _i, _len, _ref;
+          if (err) {
+            return cb(err);
+          }
+          if (options.raw) {
+            return cb(null, val);
+          }
+          obj = replacer.replace(val);
+          url = obj.url || path;
+          for (key in OBJECT_MATCHER) {
+            re = OBJECT_MATCHER[key];
+            if (re.test(url)) {
+              context = TREE_OPTIONS;
+              _ref = key.split('.');
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                k = _ref[_i];
+                context = context[k];
+              }
+              Chainer(request, url, k, context, obj);
+            }
+          }
+          return cb(null, obj);
         });
       };
-      for (name in contextTree || {}) {
-        _fn(name);
-      }
-      return fn;
+      path = '';
+      obj = {};
+      Chainer(request, path, null, TREE_OPTIONS, obj);
+      obj.me = obj.user;
+      delete obj.user;
+      obj.status = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
+      });
+      obj.status.api = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api.json', null, null, cb);
+      });
+      obj.status.lastMessage = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api/last-message.json', null, null, cb);
+      });
+      obj.status.messages = toPromise(function(cb) {
+        return request('GET', 'https://status.github.com/api/messages.json', null, null, cb);
+      });
+      return obj;
     };
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = Chainer;
-    }
-    return Chainer;
+
+    __exports__["default"] = Octokat;
   });
+define("./plus", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    var plus;
 
-}).call(this);
-
-(function() {
-  var define,
-    __slice = [].slice;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
+    plus = {
+      camelize: function(string) {
+        if (string) {
+          return string.replace(/[_-]+(\w)/g, function(m) {
+            return m[1].toUpperCase();
+          });
+        } else {
+          return '';
+        }
+      },
+      uncamelize: function(string) {
+        if (!string) {
+          return '';
+        }
+        return string.replace(/([A-Z])+/g, function(match, letter) {
+          if (letter == null) {
+            letter = '';
+          }
+          return "_" + (letter.toLowerCase());
+        });
+      },
+      dasherize: function(string) {
+        if (!string) {
+          return '';
+        }
+        string = string[0].toLowerCase() + string.slice(1);
+        return string.replace(/([A-Z])|(_)/g, function(m, letter) {
+          if (letter) {
+            return '-' + letter.toLowerCase();
+          } else {
+            return '-';
+          }
+        });
       }
-      return _results;
-    })());
-  };
+    };
 
-  define('octokat-part/replacer', ['cs!octokat-part/plus', 'cs!octokat-part/helper-promise'], function(plus, _arg) {
-    var Replacer, toPromise;
-    toPromise = _arg.toPromise;
+    __exports__["default"] = plus;
+  });
+define("./replacer", 
+  ["./plus","./helper-promise","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var plus = __dependency1__["default"];
+    var toPromise = __dependency2__.toPromise;
+    var Replacer,
+      __slice = [].slice;
+
     Replacer = (function() {
       function Replacer(_request) {
         this._request = _request;
@@ -697,35 +679,20 @@
       return Replacer;
 
     })();
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = Replacer;
-    }
-    return Replacer;
+
+    __exports__["default"] = Replacer;
   });
-
-}).call(this);
-
-(function() {
-  var define;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
-      }
-      return _results;
-    })());
-  };
-
-  define('octokat-part/request', ['cs!octokat-part/helper-base64'], function(base64encode) {
+define("./request", 
+  ["./helper-base64","exports"],
+  function(__dependency1__, __exports__) {
+    "use strict";
+    var base64encode = __dependency1__["default"];
     var ETagResponse, Request, ajax, userAgent;
+
     if (typeof window === "undefined" || window === null) {
       userAgent = 'octokat.js';
     }
+
     ajax = function(options, cb) {
       var XMLHttpRequest, name, req, value, xhr, _ref;
       if (typeof window !== "undefined" && window !== null) {
@@ -765,6 +732,7 @@
       };
       return xhr.send(options.data);
     };
+
     ETagResponse = (function() {
       function ETagResponse(eTag, data, status) {
         this.eTag = eTag;
@@ -775,6 +743,7 @@
       return ETagResponse;
 
     })();
+
     Request = function(clientOptions) {
       var _cachedETags, _listeners;
       if (clientOptions == null) {
@@ -927,104 +896,14 @@
         });
       };
     };
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = Request;
-    }
-    return Request;
+
+    __exports__["default"] = Request;
   });
+window.Octokat = requireModule("./octokat")["default"];
 
-}).call(this);
-
-(function() {
-  var define;
-
-  define = (typeof window !== "undefined" && window !== null ? window.define : void 0) || function(name, deps, cb) {
-    var dep;
-    return cb.apply(null, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = deps.length; _i < _len; _i++) {
-        dep = deps[_i];
-        _results.push(require(dep.replace('cs!octokat-part/', './')));
-      }
-      return _results;
-    })());
-  };
-
-  define('octokat', ['cs!octokat-part/plus', 'cs!octokat-part/grammar', 'cs!octokat-part/chainer', 'cs!octokat-part/replacer', 'cs!octokat-part/request', 'cs!octokat-part/helper-promise'], function(plus, _arg, Chainer, Replacer, Request, _arg1) {
-    var OBJECT_MATCHER, Octokat, TREE_OPTIONS, toPromise;
-    TREE_OPTIONS = _arg.TREE_OPTIONS, OBJECT_MATCHER = _arg.OBJECT_MATCHER;
-    toPromise = _arg1.toPromise;
-    Octokat = function(clientOptions) {
-      var obj, path, request, _request;
-      if (clientOptions == null) {
-        clientOptions = {};
-      }
-      _request = Request(clientOptions);
-      request = function(method, path, data, options, cb) {
-        var replacer;
-        if (options == null) {
-          options = {
-            raw: false,
-            isBase64: false,
-            isBoolean: false
-          };
-        }
-        replacer = new Replacer(request);
-        if (data) {
-          data = replacer.uncamelize(data);
-        }
-        return _request(method, path, data, options, function(err, val) {
-          var context, k, key, obj, re, url, _i, _len, _ref;
-          if (err) {
-            return cb(err);
-          }
-          if (options.raw) {
-            return cb(null, val);
-          }
-          obj = replacer.replace(val);
-          url = obj.url || path;
-          for (key in OBJECT_MATCHER) {
-            re = OBJECT_MATCHER[key];
-            if (re.test(url)) {
-              context = TREE_OPTIONS;
-              _ref = key.split('.');
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                k = _ref[_i];
-                context = context[k];
-              }
-              Chainer(request, url, k, context, obj);
-            }
-          }
-          return cb(null, obj);
-        });
-      };
-      path = '';
-      obj = {};
-      Chainer(request, path, null, TREE_OPTIONS, obj);
-      obj.me = obj.user;
-      delete obj.user;
-      obj.status = toPromise(function(cb) {
-        return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
-      });
-      obj.status.api = toPromise(function(cb) {
-        return request('GET', 'https://status.github.com/api.json', null, null, cb);
-      });
-      obj.status.lastMessage = toPromise(function(cb) {
-        return request('GET', 'https://status.github.com/api/last-message.json', null, null, cb);
-      });
-      obj.status.messages = toPromise(function(cb) {
-        return request('GET', 'https://status.github.com/api/messages.json', null, null, cb);
-      });
-      return obj;
-    };
-    if (typeof module !== "undefined" && module !== null) {
-      module.exports = Octokat;
-    }
-    if (typeof window !== "undefined" && window !== null) {
-      window.Octokat = Octokat;
-    }
-    return Octokat;
+if (typeof define === "function") {
+  define('octokat', function() {
+    return requireModule("./octokat")["default"];
   });
-
-}).call(this);
+}
+})(window);

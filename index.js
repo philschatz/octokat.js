@@ -1,2 +1,1 @@
-require('coffee-script');
-module.exports = require('./src/octokit');
+module.exports = require('./dist/commonjs/octokat')['default'];

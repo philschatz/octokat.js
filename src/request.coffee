@@ -1,223 +1,220 @@
-define = window?.define or (name, deps, cb) -> cb((require(dep.replace('cs!octokat-part/', './')) for dep in deps)...)
-define 'octokat-part/request', ['cs!octokat-part/helper-base64'], (base64encode) ->
+`import base64encode from './helper-base64'`
+
+# Request Function
+# ===============================
+#
+# Generates the actual HTTP requests to GitHub.
+# Handles ETag caching, authentication headers, boolean requests, and paged results
+
+userAgent = 'octokat.js' unless window?
+
+# Simple jQuery.ajax() shim that returns a promise for a xhr object
+ajax = (options, cb) ->
+
+  # Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
+  # Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
+  if window?
+    XMLHttpRequest = window.XMLHttpRequest
+  else
+    req = require
+    XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest
 
 
-  # Request Function
-  # ===============================
-  #
-  # Generates the actual HTTP requests to GitHub.
-  # Handles ETag caching, authentication headers, boolean requests, and paged results
+  xhr = new XMLHttpRequest()
+  xhr.dataType = options.dataType
+  xhr.overrideMimeType?(options.mimeType)
+  xhr.open(options.type, options.url)
 
-  userAgent = 'octokat.js' unless window?
+  if options.data and options.type isnt 'GET'
+    xhr.setRequestHeader('Content-Type', options.contentType)
 
-  # Simple jQuery.ajax() shim that returns a promise for a xhr object
-  ajax = (options, cb) ->
+  for name, value of options.headers
+    xhr.setRequestHeader(name, value)
 
-    # Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
-    # Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-    if window?
-      XMLHttpRequest = window.XMLHttpRequest
-    else
-      req = require
-      XMLHttpRequest = req('xmlhttprequest').XMLHttpRequest
+  xhr.onreadystatechange = () ->
+    if 4 == xhr.readyState
+      options.statusCode?[xhr.status]?()
 
-
-    xhr = new XMLHttpRequest()
-    xhr.dataType = options.dataType
-    xhr.overrideMimeType?(options.mimeType)
-    xhr.open(options.type, options.url)
-
-    if options.data and options.type isnt 'GET'
-      xhr.setRequestHeader('Content-Type', options.contentType)
-
-    for name, value of options.headers
-      xhr.setRequestHeader(name, value)
-
-    xhr.onreadystatechange = () ->
-      if 4 == xhr.readyState
-        options.statusCode?[xhr.status]?()
-
-        if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302
-          cb(null, xhr)
-        else
-          cb(xhr)
-    xhr.send(options.data)
-
-
-  # Class for caching ETag responses
-  class ETagResponse
-    constructor: (@eTag, @data, @status) ->
-
-
-  # # Construct the request function.
-  # It contains all the auth credentials passed in to the client constructor
-
-  Request = (clientOptions={}) ->
-
-    # Provide an option to override the default URL
-    clientOptions.rootURL ?= 'https://api.github.com'
-    clientOptions.useETags ?= true
-    clientOptions.usePostInsteadOfPatch ?= false
-
-    # These are updated whenever a request is made
-    _listeners = []
-
-    # Cached responses are stored in this object keyed by `path`
-    _cachedETags = {}
-
-    # HTTP Request Abstraction
-    # =======
-    #
-    return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
-
-      # console.log method, path, data, options, typeof cb
-
-      if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
-        method = 'POST'
-
-      # Only prefix the path when it does not begin with http.
-      # This is so pagination works (which provides absolute URLs).
-      path = "#{clientOptions.rootURL}#{path}" if not /^http/.test(path)
-
-      # Support binary data by overriding the response mimeType
-      mimeType = undefined
-      mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
-
-      headers = {
-        'Accept': 'application/vnd.github.v3+json'
-      }
-      headers['Accept'] = 'application/vnd.github.raw' if options.raw
-
-      # Set the `User-Agent` because it is required and NodeJS
-      # does not send one by default.
-      # See http://developer.github.com/v3/#user-agent-required
-      headers['User-Agent'] = userAgent if userAgent
-
-      # Send the ETag if re-requesting a URL
-      if "#{method} #{path}" of _cachedETags
-        headers['If-None-Match'] = _cachedETags["#{method} #{path}"].eTag
+      if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302
+        cb(null, xhr)
       else
-        # The browser will sneak in a 'If-Modified-Since' header if the GET has been requested before
-        # but for some reason the cached response does not seem to be available
-        # in the jqXHR object.
-        # So, the first time a URL is requested set this date to 0 so we always get a response the 1st time
-        # a URL is requested.
-        headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
+        cb(xhr)
+  xhr.send(options.data)
 
 
-      if (clientOptions.token) or (clientOptions.username and clientOptions.password)
-        if clientOptions.token
-          auth = "token #{clientOptions.token}"
-        else
-          auth = 'Basic ' + base64encode("#{clientOptions.username}:#{clientOptions.password}")
-        headers['Authorization'] = auth
+# Class for caching ETag responses
+class ETagResponse
+  constructor: (@eTag, @data, @status) ->
 
 
-      ajaxConfig =
-        # Be sure to **not** blow the cache with a random number
-        # (GitHub will respond with 5xx or CORS errors)
-        url: path
-        type: method
-        contentType: 'application/json'
-        mimeType: mimeType
-        headers: headers
+# # Construct the request function.
+# It contains all the auth credentials passed in to the client constructor
 
-        processData: false # Don't convert to QueryString
-        data: !options.raw and data and JSON.stringify(data) or data
-        dataType: 'json' unless options.raw
+Request = (clientOptions={}) ->
 
-      # If the request is a boolean yes/no question GitHub will indicate
-      # via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-      if options.isBoolean
-        ajaxConfig.statusCode =
-          204: () => cb(null, true)
-          404: () => cb(null, false)
+  # Provide an option to override the default URL
+  clientOptions.rootURL ?= 'https://api.github.com'
+  clientOptions.useETags ?= true
+  clientOptions.usePostInsteadOfPatch ?= false
 
-      ajax ajaxConfig, (err, val) ->
+  # These are updated whenever a request is made
+  _listeners = []
 
-        jqXHR = err or val
-        # Fire listeners when the request completes or fails
-        rateLimit = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Limit')
-        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Remaining')
+  # Cached responses are stored in this object keyed by `path`
+  _cachedETags = {}
 
-        for listener in _listeners
-          listener(rateLimitRemaining, rateLimit, method, path, data, options)
+  # HTTP Request Abstraction
+  # =======
+  #
+  return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
+
+    # console.log method, path, data, options, typeof cb
+
+    if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
+      method = 'POST'
+
+    # Only prefix the path when it does not begin with http.
+    # This is so pagination works (which provides absolute URLs).
+    path = "#{clientOptions.rootURL}#{path}" if not /^http/.test(path)
+
+    # Support binary data by overriding the response mimeType
+    mimeType = undefined
+    mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
+
+    headers = {
+      'Accept': 'application/vnd.github.v3+json'
+    }
+    headers['Accept'] = 'application/vnd.github.raw' if options.raw
+
+    # Set the `User-Agent` because it is required and NodeJS
+    # does not send one by default.
+    # See http://developer.github.com/v3/#user-agent-required
+    headers['User-Agent'] = userAgent if userAgent
+
+    # Send the ETag if re-requesting a URL
+    if "#{method} #{path}" of _cachedETags
+      headers['If-None-Match'] = _cachedETags["#{method} #{path}"].eTag
+    else
+      # The browser will sneak in a 'If-Modified-Since' header if the GET has been requested before
+      # but for some reason the cached response does not seem to be available
+      # in the jqXHR object.
+      # So, the first time a URL is requested set this date to 0 so we always get a response the 1st time
+      # a URL is requested.
+      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
 
 
-        unless err
-          # Return the result and Base64 encode it if `options.isBase64` flag is set.
+    if (clientOptions.token) or (clientOptions.username and clientOptions.password)
+      if clientOptions.token
+        auth = "token #{clientOptions.token}"
+      else
+        auth = 'Basic ' + base64encode("#{clientOptions.username}:#{clientOptions.password}")
+      headers['Authorization'] = auth
 
-          # If the response was a 304 then return the cached version
-          if jqXHR.status is 304
-            if clientOptions.useETags and _cachedETags["#{method} #{path}"]
-              eTagResponse = _cachedETags["#{method} #{path}"]
 
-              cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
-            else
-              cb(null, jqXHR.responseText, status, jqXHR)
+    ajaxConfig =
+      # Be sure to **not** blow the cache with a random number
+      # (GitHub will respond with 5xx or CORS errors)
+      url: path
+      type: method
+      contentType: 'application/json'
+      mimeType: mimeType
+      headers: headers
 
-          # If it was a boolean question and the server responded with 204
-          # return true.
-          else if jqXHR.status is 204 and options.isBoolean
-            # cb(null, true, status, jqXHR)
-          # Respond with the redirect URL (for archive links)
-          # TODO: implement a `followRedirects` flag
-          else if jqXHR.status is 302
-            cb(null, jqXHR.getResponseHeader('Location'))
+      processData: false # Don't convert to QueryString
+      data: !options.raw and data and JSON.stringify(data) or data
+      dataType: 'json' unless options.raw
+
+    # If the request is a boolean yes/no question GitHub will indicate
+    # via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+    if options.isBoolean
+      ajaxConfig.statusCode =
+        204: () => cb(null, true)
+        404: () => cb(null, false)
+
+    ajax ajaxConfig, (err, val) ->
+
+      jqXHR = err or val
+      # Fire listeners when the request completes or fails
+      rateLimit = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Limit')
+      rateLimitRemaining = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Remaining')
+
+      for listener in _listeners
+        listener(rateLimitRemaining, rateLimit, method, path, data, options)
+
+
+      unless err
+        # Return the result and Base64 encode it if `options.isBase64` flag is set.
+
+        # If the response was a 304 then return the cached version
+        if jqXHR.status is 304
+          if clientOptions.useETags and _cachedETags["#{method} #{path}"]
+            eTagResponse = _cachedETags["#{method} #{path}"]
+
+            cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
           else
-            if jqXHR.responseText and ajaxConfig.dataType is 'json'
-              data = JSON.parse(jqXHR.responseText)
+            cb(null, jqXHR.responseText, status, jqXHR)
 
-              # Only JSON responses have next/prev/first/last link headers
-              # Add them to data so the resolved value is iterable
-
-              # Parse the Link headers
-              # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-              links = jqXHR.getResponseHeader('Link')
-              for part in links?.split(',') or []
-                [discard, href, rel] = part.match(/<([^>]+)>;\ rel="([^"]+)"/)
-                # Add the pagination functions on the JSON since Promises resolve one value
-                # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-                data["#{rel}_page_url"] = href
-
-            else
-              data = jqXHR.responseText
-
-            # Convert the response to a Base64 encoded string
-            if method is 'GET' and options.isBase64
-              # Convert raw data to binary chopping off the higher-order bytes in each char.
-              # Useful for Base64 encoding.
-              converted = ''
-              for i in [0..data.length]
-                converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
-
-              data = converted
-
-            # Cache the response to reuse later
-            if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
-              eTag = jqXHR.getResponseHeader('ETag')
-              _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, jqXHR.status)
-
-            cb(null, data, jqXHR.status, jqXHR)
-
+        # If it was a boolean question and the server responded with 204
+        # return true.
+        else if jqXHR.status is 204 and options.isBoolean
+          # cb(null, true, status, jqXHR)
+        # Respond with the redirect URL (for archive links)
+        # TODO: implement a `followRedirects` flag
+        else if jqXHR.status is 302
+          cb(null, jqXHR.getResponseHeader('Location'))
         else
-          # Parse the error if one occurs
+          if jqXHR.responseText and ajaxConfig.dataType is 'json'
+            data = JSON.parse(jqXHR.responseText)
 
-          # If the request was for a Boolean then a 404 should be treated as a "false"
-          if options.isBoolean and jqXHR.status is 404
-            # cb(null, false) # Already handled
+            # Only JSON responses have next/prev/first/last link headers
+            # Add them to data so the resolved value is iterable
+
+            # Parse the Link headers
+            # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
+            links = jqXHR.getResponseHeader('Link')
+            for part in links?.split(',') or []
+              [discard, href, rel] = part.match(/<([^>]+)>;\ rel="([^"]+)"/)
+              # Add the pagination functions on the JSON since Promises resolve one value
+              # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
+              data["#{rel}_page_url"] = href
+
           else
-            if jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
-              cb(new Error {error: jqXHR.responseText, status: jqXHR.status, _jqXHR: jqXHR})
+            data = jqXHR.responseText
+
+          # Convert the response to a Base64 encoded string
+          if method is 'GET' and options.isBase64
+            # Convert raw data to binary chopping off the higher-order bytes in each char.
+            # Useful for Base64 encoding.
+            converted = ''
+            for i in [0..data.length]
+              converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
+
+            data = converted
+
+          # Cache the response to reuse later
+          if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
+            eTag = jqXHR.getResponseHeader('ETag')
+            _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, jqXHR.status)
+
+          cb(null, data, jqXHR.status, jqXHR)
+
+      else
+        # Parse the error if one occurs
+
+        # If the request was for a Boolean then a 404 should be treated as a "false"
+        if options.isBoolean and jqXHR.status is 404
+          # cb(null, false) # Already handled
+        else
+          if jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
+            cb(new Error {error: jqXHR.responseText, status: jqXHR.status, _jqXHR: jqXHR})
+          else
+            if jqXHR.responseText
+              json = JSON.parse(jqXHR.responseText)
             else
-              if jqXHR.responseText
-                json = JSON.parse(jqXHR.responseText)
-              else
-                # In the case of 404 errors, `responseText` is an empty string
-                json = ''
-              cb(new Error {error: json, status: jqXHR.status, _jqXHR: jqXHR})
+              # In the case of 404 errors, `responseText` is an empty string
+              json = ''
+            cb(new Error {error: json, status: jqXHR.status, _jqXHR: jqXHR})
 
 
 
-  module?.exports = Request
-  return Request
+`export default Request`

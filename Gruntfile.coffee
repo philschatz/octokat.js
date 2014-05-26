@@ -39,40 +39,61 @@ module.exports = (grunt) ->
     clean:
       files:
         src: [
-          'dist/octokat.js'
-          'tmp/helper-before.js'
-          'tmp/octokat-coffee.js'
+          'dist/'
+          'tmp/'
         ]
-        filter: 'isFile'
+        # filter: 'isFile'
 
 
     # Compile CoffeeScript to JavaScript
     coffee:
       compile:
         options:
+          bare: true
           sourceMap: false # true
-        files:
-          'tmp/helper-before.js': ['build/helper-before.coffee']
-          'tmp/octokat-coffee.js': [
-            # The order of these is important because we use a much simpler AMD loader than RequireJS
-            'src/grammar.coffee'
-            'src/plus.coffee'
-            'src/helper-base64.coffee'
-            'src/helper-promise.coffee'
-            'src/chainer.coffee'
-            'src/replacer.coffee'
-            'src/request.coffee'
-            'src/octokat.coffee'
-          ]
+        files: [
+          expand: true
+          cwd: 'src/'
+          src: ['**/*.coffee']
+          dest: 'tmp/coffee/'
+          ext: '.js'
+        ]
+
+    transpile:
+      amd:
+        type: 'amd'
+        moduleName: (srcWithoutExt, file) -> "./#{srcWithoutExt}"
+        files: [
+          expand: true
+          cwd: 'tmp/coffee/'
+          src: ['**/*.js']
+          dest: 'tmp/'
+          ext: '.amd.js'
+        ]
+
+      commonjs:
+        type: 'cjs'
+        files: [{
+          expand: true
+          cwd: 'tmp/coffee/'
+          src: ['*.js']
+          dest: 'dist/commonjs/'
+          ext: '.js'
+        }]
 
     concat:
-      dist:
-        src: [
-            'tmp/helper-before.js'
-            'tmp/octokat-coffee.js'
-        ]
-        dest: 'dist/octokat.js'
+      amd:
+        src: 'tmp/**/*.amd.js',
+        dest: 'tmp/octokat.all.js'
 
+
+    browser:
+      dist:
+        src: ['vendor/loader.js', 'tmp/octokat.all.js']
+        dest: 'dist/octokat.js'
+        options:
+          barename: './octokat'
+          namespace: 'Octokat'
 
     # Release a new version and push upstream
     bump:
@@ -111,8 +132,6 @@ module.exports = (grunt) ->
         log: true
         reporter: 'Dot'
 
-
-
     mocha_phantomjs:
       all:
         options:
@@ -137,53 +156,68 @@ module.exports = (grunt) ->
   # Tasks
   # =====
 
+  grunt.registerMultiTask 'browser', "Export a module to the window", () ->
+    opts = @options()
+    @files.forEach (f) ->
+      output = ["(function(globals) {"]
+
+      output.push.apply(output, f.src.map(grunt.file.read))
+
+      globalDeclare = '''
+        window.<%= namespace %> = requireModule("<%= barename %>")["default"];
+
+        if (typeof define === "function") {
+          define('octokat', function() {
+            return requireModule("<%= barename %>")["default"];
+          });
+        }
+        '''
+
+      output.push grunt.template.process globalDeclare,
+        data:
+          namespace: opts.namespace
+          barename: opts.barename
+
+      output.push('})(window);')
+
+      grunt.file.write(f.dest, grunt.template.process(output.join('\n')))
+
+
   # Travis CI
   # -----
-  grunt.registerTask 'test', [
-    'clean'
-    'coffeelint'
-    'coffee'
-    'concat'
-    'mochaTest'
-    'connect'
-    'mocha_phantomjs'
-    #'blanket_mocha' NOTE: Uncomment once the `suiteURL` problem noted above is fixed
-  ]
 
   grunt.registerTask 'dist', [
     'clean'
-    'coffeelint'
     'coffee'
-    'concat'
+    'transpile:amd'
+    'concat:amd'
+    'browser'
+
+    'transpile:commonjs' # NodeJS
+  ]
+
+  grunt.registerTask 'test', [
+    'dist'
+    'mochaTest'
+    'connect'
+    'mocha_phantomjs'
+    # 'blanket_mocha' # NOTE: Uncomment once the `suiteURL` problem noted above is fixed
   ]
 
   # Dist
   # -----
   grunt.registerTask 'release', [
-    'clean'
-    'coffeelint'
-    'coffee'
-    'mochaTest'
-    #'blanket_mocha'
+    'test'
     'bump'
   ]
 
   grunt.registerTask 'release-minor', [
-    'clean'
-    'coffeelint'
-    'coffee'
-    'mochaTest'
-    #'blanket_mocha'
+    'test'
     'bump:minor'
   ]
 
   # Default
   # -----
   grunt.registerTask 'default', [
-    'coffeelint'
-    'clean'
-    'coffee'
-    'mochaTest'
-    'connect'
-    'mocha_phantomjs'
+    'test'
   ]
