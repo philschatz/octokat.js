@@ -164,10 +164,10 @@ module.exports = (grunt) ->
       output.push.apply(output, f.src.map(grunt.file.read))
 
       globalDeclare = '''
-        window.<%= namespace %> = requireModule("<%= barename %>")["default"];
+        globals.<%= namespace %> = requireModule("<%= barename %>")["default"];
 
-        if (typeof define === "function") {
-          define('octokat', function() {
+        if (typeof globals.define === "function") {
+          globals.define('octokat', [], function() {
             return requireModule("<%= barename %>")["default"];
           });
         }

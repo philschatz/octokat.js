@@ -1,7 +1,7 @@
-define = window?.define or (cb) -> cb ((dep) -> require(dep.replace('../dist/octokat', '../index')))
+define = window?.define or (cb) -> cb ((dep) -> require(dep.replace('octokat', '../index')))
 define (require) ->
 
-  Octokat = @Octokat or require '../dist/octokat'
+  Octokat = require 'octokat'
 
   config =
     USERNAME: 'octokit-test'

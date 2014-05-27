@@ -899,10 +899,10 @@ define("./request",
 
     __exports__["default"] = Request;
   });
-window.Octokat = requireModule("./octokat")["default"];
+globals.Octokat = requireModule("./octokat")["default"];
 
-if (typeof define === "function") {
-  define('octokat', function() {
+if (typeof globals.define === "function") {
+  globals.define('octokat', [], function() {
     return requireModule("./octokat")["default"];
   });
 }
