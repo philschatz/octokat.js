@@ -16,7 +16,7 @@ require ['cs!./all'], () ->
   mocha.checkLeaks()
 
   # Needs to run once this file is loaded
-  window.sepia.start();
+  window.sepia.start()
 
   if window.mochaPhantomJS
     mochaPhantomJS.run()
