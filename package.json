@@ -25,6 +25,7 @@
     "grunt-bump": "~0.0.10",
     "grunt-contrib-coffee": "~0.7",
     "grunt-contrib-clean": "~0.5",
+    "grunt-contrib-watch": "~0.6.1",
     "grunt-mocha-test": "~0.8.0",
     "grunt-mocha-cov": "0.0.7",
     "grunt-blanket-mocha": "git://github.com/philschatz/grunt-blanket-mocha.git#fixes-for-octokit.js",

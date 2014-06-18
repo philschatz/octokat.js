@@ -143,6 +143,9 @@ module.exports = (grunt) ->
           port: 9876
           base: '.'
 
+    watch:
+      files: 'src/**/*.coffee'
+      tasks: ['dist']
 
 
   # Dependencies
