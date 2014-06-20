@@ -153,13 +153,13 @@ To use a Promise, do not specify a callback and the return value will be a Promi
 Example (get information on a repo):
 
     # Using callbacks
-    octo.repo('philschatz', 'octokit.js').fetch (err, repo) ->
+    octo.repo('philschatz', 'octokat.js').fetch (err, repo) ->
       console.error(err) if err
       # Do fancy stuff...
 
 
     # Using Promises
-    octo.repo('philschatz', 'octokit.js').fetch()
+    octo.repo('philschatz', 'octokat.js').fetch()
     .then (repo) ->
       # Do fancy stuff
     .then null, (err) -> console.error(err)
@@ -172,8 +172,8 @@ You construct the URL by chaining properties and methods together and an async c
 Example:
 
 
-    octo = new Octokit()
-    repo = octo.repos('philschatz', 'octokit.js')
+    octo = new Octokat()
+    repo = octo.repos('philschatz', 'octokat.js')
     # Check if the current user is a collaborator on a repo
     repo.collaborators.contains(USER)
     .then (isCollaborator) ->
@@ -185,8 +185,8 @@ Example:
 
 Or, update a specific comment:
 
-    octo = new Octokit(token: ...)
-    octo.repos('philschatz', 'octokit.js').issues(1).comments(123123).update(body: 'Hello')
+    octo = new Octokat(token: ...)
+    octo.repos('philschatz', 'octokat.js').issues(1).comments(123123).update(body: 'Hello')
     .then () ->
       # Done!
 
@@ -206,7 +206,7 @@ The basic structure of these methods is:
 GitHub provides URL patterns in its JSON responses. These are automatically converted into methods.
 For example:
 
-    octo.repo('philschatz', 'octokit.js').fetch()
+    octo.repo('philschatz', 'octokat.js').fetch()
     .then (repo) ->
       # GitHub returns a JSON which contains something like compare_url: 'https://..../compare/{head}...{base}
       # This is converted to a method that accepts 2 arguments
@@ -219,7 +219,7 @@ For example:
 If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firstPage()` and `lastPage()` are added to the returned JSON. For example:
 
 
-    octo.repos('philschatz', 'octokit.js').commits.fetch()
+    octo.repos('philschatz', 'octokat.js').commits.fetch()
     .then (someCommits) ->
       someCommits.nextPage()
       .then (moreCommits) ->
