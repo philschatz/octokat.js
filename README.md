@@ -229,6 +229,9 @@ If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firs
 
 ## Development
 
-The unit tests are named to illustrate examples of using the API. See [travis tests](https://travis-ci.org/philschatz/octokit.js) or run `npm test` to see them.
+- Run `npm install`
+- Run `grunt dist` to generate the files in the `./dist` directory
+
+The unit tests are named to illustrate examples of using the API. See [travis tests](https://travis-ci.org/philschatz/octokat.js) or run `npm test` to see them.
 
 [linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded results from GitHub and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in the browser. If you are adding tests be sure to include the updated fixtures in the Pull Request.
