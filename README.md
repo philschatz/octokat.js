@@ -84,7 +84,7 @@ var octo = Octokat.new();
 
 var fn = function *() {
   var zen  = yield octo.zen.read();
-  var info = yield octo.repo('philschatz', 'octokat.js').fetch();
+  var info = yield octo.repos('philschatz', 'octokat.js').fetch();
 
   console.log(zen);
   console.log(info);
@@ -153,13 +153,13 @@ To use a Promise, do not specify a callback and the return value will be a Promi
 Example (get information on a repo):
 
     # Using callbacks
-    octo.repo('philschatz', 'octokat.js').fetch (err, repo) ->
+    octo.repos('philschatz', 'octokat.js').fetch (err, repo) ->
       console.error(err) if err
       # Do fancy stuff...
 
 
     # Using Promises
-    octo.repo('philschatz', 'octokat.js').fetch()
+    octo.repos('philschatz', 'octokat.js').fetch()
     .then (repo) ->
       # Do fancy stuff
     .then null, (err) -> console.error(err)
@@ -206,7 +206,7 @@ The basic structure of these methods is:
 GitHub provides URL patterns in its JSON responses. These are automatically converted into methods.
 For example:
 
-    octo.repo('philschatz', 'octokat.js').fetch()
+    octo.repos('philschatz', 'octokat.js').fetch()
     .then (repo) ->
       # GitHub returns a JSON which contains something like compare_url: 'https://..../compare/{head}...{base}
       # This is converted to a method that accepts 2 arguments
