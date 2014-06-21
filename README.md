@@ -1,7 +1,8 @@
-# octokat.js [![Build Status](https://travis-ci.org/philschatz/octokat.js.png)](https://travis-ci.org/philschatz/octokat.js)
+# Octokat.js [![Build Status](https://travis-ci.org/philschatz/octokat.js.png)](https://travis-ci.org/philschatz/octokat.js)
 
-octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
-It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor), an EPUB3 Texbook editor for GitHub.
+Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
+It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor),
+an EPUB3 Textbook editor for GitHub.
 
 This package can also be used in `nodejs` **or** as an AMD module in the browser.
 
@@ -9,7 +10,7 @@ This package can also be used in `nodejs` **or** as an AMD module in the browser
 
 - Works in `nodejs`, an AMD module in the browser, and as a [bower](https://github.com/bower/bower) library
 - Handles text _and_ binary files
-- Exposes everything available via the GitHub API (repos, teams, events, hooks, emojis, etc)
+- Exposes everything available via the GitHub API (repos, teams, events, hooks, emojis, etc.)
 - Supports `ETag` caching
 - Paged results
 - Node-style callbacks as well as optional Promises (to avoid those debates)
@@ -19,17 +20,19 @@ This package can also be used in `nodejs` **or** as an AMD module in the browser
   - User/Org/Repo events and notifications
   - Listeners for rate limit changes
   - Public Keys
-  - Hooks (commit, comment, etc)
+  - Hooks (commit, comment, etc.)
   - Uses Angular, jQuery, or native promises if available
   - Markdown generation
 
-For the full list of supported methods see the [travis tests](https://travis-ci.org/philschatz/octokat.js), the [./test](./test/) directory, or [./src/grammar.coffee](./src/grammar.coffee).
+For the full list of supported methods see the [Travis tests](https://travis-ci.org/philschatz/octokat.js),
+the [./test](./test/) directory, or [./src/grammar.coffee](./src/grammar.coffee).
 
 # Usage
 
-All asynchronous methods accept a NodeJS-style callback **and** return a [Common-JS Promise](http://wiki.commonjs.org/wiki/Promises/A).
+All asynchronous methods accept a Node.js-style callback
+**and** return a [Common-JS Promise](http://wiki.commonjs.org/wiki/Promises/A).
 
-## In a browser without requirejs
+## In a browser without RequireJS
 
 Create an Octokat instance.
 
@@ -48,7 +51,7 @@ var octo = new Octokat({
 });
 ```
 
-## In a browser using requirejs
+## In a browser using RequireJS
 
 ```js
 define(['octokat'], function(Octokat) {
@@ -59,7 +62,7 @@ define(['octokat'], function(Octokat) {
 });
 ```
 
-## In NodeJS
+## In Node.js
 
 Install instructions:
 
@@ -73,9 +76,9 @@ var octo = Octokat.new({
 });
 ```
 
-## Using Generators in NodeJS 0.11 (or EcmaScript 6 browsers)
+## Using Generators in Node.js 0.11 (or EcmaScript 6 browsers)
 
-This requires NodeJS 0.11 with the `--harmony-generators` flag:
+This requires Node.js 0.11 with the `--harmony-generators` flag:
 
 ```js
 var co = require('co');
@@ -99,7 +102,6 @@ This file can be included using the bower package manager:
 
     bower install octokat --save
 
-
 # Setup
 
 This is all you need to get up and running:
@@ -113,39 +115,39 @@ This is all you need to get up and running:
       });
     </script>
 
-
 ## Promises (Optional)
 
 `octokat.js` has the following **optional** dependencies when used in a browser:
 
-- A Promise API (supports jQuery, AngularJS, or a Promise Polyfill)
+- A Promise API (supports jQuery, AngularJS, or a Promise polyfill)
 
-If you are already using [jQuery](https://api.jquery.com/jQuery.Deferred/) or [AngularJS](https://docs.angularjs.org/api/ng/service/$q) in your project just be sure to include them before octokat and it will
-use their Promise API.
+If you are already using [jQuery](https://api.jquery.com/jQuery.Deferred/)
+or [AngularJS](https://docs.angularjs.org/api/ng/service/$q) in your project just be sure to include them before Octokat
+and it will use their Promise API.
 
 Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](https://github.com/jakearchibald/es6-promise):
 
     <script src="./node_modules/es6-promise/dist/promise-0.1.2.js"></script>
     <script src="./octokat.js">
 
-
 # Testing
 
-`npm test` will run the mocha tests for NodeJS and the browser. Additionally, they can be run in the browser by starting a webserver and going to [./test/index.html](http://philschatz.com/octokat.js/test).
-
+`npm test` will run the mocha tests for Node.js and the browser.
+Additionally, they can be run in the browser by starting a web server
+and going to [./test/index.html](http://philschatz.com/octokat.js/test).
 
 # About the Library
 
 ## Overview
 
-This library closely mirrors the https://developer.github.com/v3 documentation.
+This library closely mirrors the <https://developer.github.com/v3> documentation.
 
-For example, `GET /repos/:owner/:repo` becomes `octo.repos(owner, repo).fetch()` and `POST /repos/:owner/:repo/issues/:number/comments` becomes `octo.repos(owner, repo).issues(number).comments.create(params)`.
-
+For example, `GET /repos/:owner/:repo` becomes `octo.repos(owner, repo).fetch()`
+and `POST /repos/:owner/:repo/issues/:number/comments` becomes `octo.repos(owner, repo).issues(number).comments.create(params)`.
 
 ## Promises and Callbacks
 
-This library supports NodeJS-style callbacks as well as Promises.
+This library supports Node.js-style callbacks as well as Promises.
 
 To use a callback, just specify it as the last argument to a method.
 To use a Promise, do not specify a callback and the return value will be a Promise.
@@ -157,20 +159,18 @@ Example (get information on a repo):
       console.error(err) if err
       # Do fancy stuff...
 
-
     # Using Promises
     octo.repos('philschatz', 'octokat.js').fetch()
     .then (repo) ->
       # Do fancy stuff
     .then null, (err) -> console.error(err)
 
-
 ## Chaining
 
-You construct the URL by chaining properties and methods together and an async call is made once a verb method is called (see below).
+You construct the URL by chaining properties and methods together
+and an async call is made once a verb method is called (see below).
 
 Example:
-
 
     octo = new Octokat()
     repo = octo.repos('philschatz', 'octokat.js')
@@ -190,7 +190,6 @@ Or, update a specific comment:
     .then () ->
       # Done!
 
-
 The basic structure of these methods is:
 
 - `.foos.fetch({optionalStuff:...})` yields a list of items (possibly paginated)
@@ -199,7 +198,6 @@ The basic structure of these methods is:
 - `.foos.create(...)` creates a new `foo`
 - `.foos(id).add()` adds an existing User/Repo to the list
 - `.foos(id).remove()` removes a member from a list or deletes the object and yields a boolean indicating success
-
 
 ## JSON with methods (Hypermedia)
 
@@ -213,11 +211,10 @@ For example:
       repo.compare(sha1, sha2).fetch()
       .then (comparison) -> # Done!
 
-
 ## Paged Results
 
-If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firstPage()` and `lastPage()` are added to the returned JSON. For example:
-
+If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firstPage()`
+and `lastPage()` are added to the returned JSON. For example:
 
     octo.repos('philschatz', 'octokat.js').commits.fetch()
     .then (someCommits) ->
@@ -225,13 +222,14 @@ If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firs
       .then (moreCommits) ->
         # Done!
 
-
-
 ## Development
 
 - Run `npm install`
 - Run `grunt dist` to generate the files in the `./dist` directory
 
-The unit tests are named to illustrate examples of using the API. See [travis tests](https://travis-ci.org/philschatz/octokat.js) or run `npm test` to see them.
+The unit tests are named to illustrate examples of using the API.
+See [Travis tests](https://travis-ci.org/philschatz/octokat.js) or run `npm test` to see them.
 
-[linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded results from GitHub and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in the browser. If you are adding tests be sure to include the updated fixtures in the Pull Request.
+[linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded results from GitHub
+and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in the browser.
+If you are adding tests be sure to include the updated fixtures in the Pull Request.
