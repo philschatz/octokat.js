@@ -60,8 +60,10 @@ Chainer = (request, _path, name, contextTree, fn) ->
 
   for name of contextTree or {}
     do (name) ->
-      fn.__defineGetter__ plus.camelize(name), () ->
-        return Chainer(request, "#{_path}/#{name}", name, contextTree[name])
+      Object.defineProperty fn, plus.camelize(name),
+        configurable: true
+        enumerable: true
+        get: () -> return Chainer(request, "#{_path}/#{name}", name, contextTree[name])
 
 
   return fn
