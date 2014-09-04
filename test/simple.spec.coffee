@@ -161,6 +161,32 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
           .then (moreResults) ->
             done()
 
+      it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", (done) ->
+        trapFail STATE[GH].gists.public.fetch()
+        .then (results) ->
+          results.nextPage()
+          .then (moreResults) ->
+            moreResults.prevPage()
+            .then () ->
+              done()
+
+      it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", (done) ->
+        trapFail STATE[GH].gists.public.fetch()
+        .then (results) ->
+          results.nextPage()
+          .then (moreResults) ->
+            moreResults.firstPage()
+            .then () ->
+              done()
+
+      it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", (done) ->
+        trapFail STATE[GH].gists.public.fetch()
+        .then (results) ->
+          results.lastPage()
+          .then (moreResults) ->
+            done()
+
+
     describe "#{REPO} = #{GH}.repos(OWNER, NAME)", () ->
 
       before () ->
