@@ -1,5 +1,5 @@
-`import plus from './plus'`
-`import {toPromise} from './helper-promise'`
+plus = require './plus'
+{toPromise} = require './helper-promise'
 
 # JSON Replacer
 # ===============================
@@ -81,4 +81,4 @@ class Replacer
       acc[plus.camelize(key)] = @replace(value)
 
 
-`export default Replacer`
+module.exports = Replacer

@@ -1,4 +1,4 @@
-`import base64encode from './helper-base64'`
+base64encode = require './helper-base64'
 
 # Request Function
 # ===============================
@@ -217,4 +217,4 @@ Request = (clientOptions={}) ->
 
 
 
-`export default Request`
+module.exports = Request

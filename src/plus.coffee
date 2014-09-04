@@ -20,4 +20,4 @@ plus =
       else
         '-'
 
-`export default plus`
+module.exports = plus

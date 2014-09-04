@@ -19,15 +19,16 @@
 <script src="../node_modules/sepia-js/crypto-md5.min.js"></script>
 <script src="../node_modules/sepia-js/sepia.js"></script>
 
-<script src="../bower_components/requirejs/require.js"></script>
 <script src="../dist/octokat.js"></script>
+<script src="../bower_components/requirejs/require.js"></script>
 <script>
 require.config({
   // baseUrl: './src',
   paths: {
     'chai'            : '../node_modules/chai/chai',
     'cs'              : '../bower_components/require-cs/cs',
-    'coffee-script'   : '../bower_components/coffee-script/extras/coffee-script'
+    'coffee-script'   : '../bower_components/coffee-script/extras/coffee-script',
+    'octokat'         : '../dist/octokat'
   }
 
 });

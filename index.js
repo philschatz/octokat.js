@@ -1,1 +1,1 @@
-module.exports = require('./dist/commonjs/octokat')['default'];
+module.exports = require('./src/octokat');
