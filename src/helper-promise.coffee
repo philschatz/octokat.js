@@ -19,15 +19,15 @@ if window?
   # - angularjs Promise
   # - jQuery Promise
   # - native Promise or a polyfill
-  if @Q
+  if window.Q
     newPromise = (fn) =>
-      deferred = @Q.defer()
+      deferred = window.Q.defer()
       resolve = (val) -> deferred.resolve(val)
       reject  = (err) -> deferred.reject(err)
       fn(resolve, reject)
       return deferred.promise
-    allPromises = (promises) -> @Q.all(promises)
-  else if @angular
+    allPromises = (promises) -> window.Q.all(promises)
+  else if window.angular
     newPromise = null
     allPromises = null
 
@@ -41,9 +41,9 @@ if window?
         fn(resolve, reject)
         return deferred.promise
       allPromises = (promises) -> $q.all(promises)
-  else if @jQuery?.Deferred
+  else if window.jQuery?.Deferred
     newPromise = (fn) =>
-      promise = @jQuery.Deferred()
+      promise = window.jQuery.Deferred()
       resolve = (val) -> promise.resolve(val)
       reject  = (val) -> promise.reject(val)
       fn(resolve, reject)
@@ -54,9 +54,9 @@ if window?
       # - Each resolved value is an argument (instead of an array of values)
       #
       # So, convert the array of promises to args and then the resolved args to an array
-      return @jQuery.when(promises...).then((promises...) -> return promises)
-  else if @Promise
-    newPromise = (fn) => return new @Promise (resolve, reject) ->
+      return window.jQuery.when(promises...).then((promises...) -> return promises)
+  else if window.Promise
+    newPromise = (fn) => return new window.Promise (resolve, reject) ->
       # Some browsers (like node-webkit 0.8.6) contain an older implementation
       # of Promises that provide 1 argument (a `PromiseResolver`).
       if resolve.fulfill
@@ -64,7 +64,7 @@ if window?
       else
         fn(arguments...)
 
-    allPromises = (promises) => @Promise.all(promises)
+    allPromises = (promises) => window.Promise.all(promises)
 
   else
     # Otherwise, show a warning (library can still be used with just callbacks)
@@ -97,4 +97,4 @@ toPromise = (orig) ->
     else
       throw new Error('You must specify a callback or have a promise library loaded')
 
-export {newPromise, allPromises, toPromise}
+module.exports = {newPromise, allPromises, toPromise}
