@@ -1,9 +1,9 @@
-`import plus from './plus'`
-`import {TREE_OPTIONS, OBJECT_MATCHER} from './grammar'`
-`import Chainer from './chainer'`
-`import Replacer from './replacer'`
-`import Request from './request'`
-`import {toPromise} from './helper-promise'`
+plus = require './plus'
+{TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
+Chainer = require './chainer'
+Replacer = require './replacer'
+Request = require './request'
+{toPromise} = require './helper-promise'
 
 # Combine all the classes into one client
 
@@ -48,4 +48,4 @@ Octokat = (clientOptions={}) ->
   return obj
 
 
-`export default Octokat`
+module.exports = Octokat

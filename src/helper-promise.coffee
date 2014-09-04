@@ -97,4 +97,4 @@ toPromise = (orig) ->
     else
       throw new Error('You must specify a callback or have a promise library loaded')
 
-`export {newPromise, allPromises, toPromise}`
+export {newPromise, allPromises, toPromise}

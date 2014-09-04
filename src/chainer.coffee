@@ -1,6 +1,6 @@
-`import {URL_VALIDATOR} from './grammar'`
-`import plus from './plus'`
-`import {toPromise} from './helper-promise'`
+{URL_VALIDATOR} = require './grammar'
+plus = require './plus'
+{toPromise} = require './helper-promise'
 
 # Daisy-Chainer
 # ===============================
@@ -70,4 +70,4 @@ Chainer = (request, _path, name, contextTree, fn) ->
   return fn
 
 
-`export default Chainer`
+module.exports = Chainer

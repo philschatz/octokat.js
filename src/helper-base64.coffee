@@ -12,4 +12,4 @@ else
   throw new Error('Native btoa function is missing') unless @btoa
   base64encode = @btoa
 
-`export default base64encode`
+module.exports = base64encode
