@@ -139,13 +139,19 @@ define("./chainer",
           fn[verbName] = toPromise(verbFunc);
         }
       }
-      _fn = function(name) {
-        return fn.__defineGetter__(plus.camelize(name), function() {
-          return Chainer(request, "" + _path + "/" + name, name, contextTree[name]);
-        });
-      };
-      for (name in contextTree || {}) {
-        _fn(name);
+      if (typeof fn === 'function' || typeof fn === 'object') {
+        _fn = function(name) {
+          return Object.defineProperty(fn, plus.camelize(name), {
+            configurable: true,
+            enumerable: true,
+            get: function() {
+              return Chainer(request, "" + _path + "/" + name, name, contextTree[name]);
+            }
+          });
+        };
+        for (name in contextTree || {}) {
+          _fn(name);
+        }
       }
       return fn;
     };

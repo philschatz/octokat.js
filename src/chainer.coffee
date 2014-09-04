@@ -58,12 +58,13 @@ Chainer = (request, _path, name, contextTree, fn) ->
       fn[verbName] = toPromise(verbFunc)
 
 
-  for name of contextTree or {}
-    do (name) ->
-      Object.defineProperty fn, plus.camelize(name),
-        configurable: true
-        enumerable: true
-        get: () -> return Chainer(request, "#{_path}/#{name}", name, contextTree[name])
+  if typeof fn is 'function' or typeof fn is 'object'
+    for name of contextTree or {}
+      do (name) ->
+        Object.defineProperty fn, plus.camelize(name),
+          configurable: true
+          enumerable: true
+          get: () -> return Chainer(request, "#{_path}/#{name}", name, contextTree[name])
 
 
   return fn
