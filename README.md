@@ -41,6 +41,12 @@ var octo = new Octokat({
   username: "USER_NAME",
   password: "PASSWORD"
 });
+
+var cb = function (err, val) { console.log(val); };
+
+octo.zen.read(cb);
+octo.repos('philschatz', 'octokat.js').fetch(cb); // Fetch repo info
+octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
 ```
 
 Or if you prefer OAuth:
@@ -70,10 +76,16 @@ Install instructions:
 
 ```js
 var Octokat = require('octokat');
-var octo = Octokat.new({
+var octo = new Octokat({
   username: "YOU_USER",
   password: "YOUR_PASSWORD"
 });
+
+var cb = function (err, val) { console.log(val); };
+
+octo.zen.read(cb);
+octo.repos('philschatz', 'octokat.js').fetch(cb);    // Fetch repo info
+octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
 ```
 
 ## Using Generators in Node.js 0.11 (or EcmaScript 6 browsers)
@@ -83,7 +95,7 @@ This requires Node.js 0.11 with the `--harmony-generators` flag:
 ```js
 var co = require('co');
 var Octokat = require('octokat');
-var octo = Octokat.new();
+var octo = new Octokat();
 
 var fn = function *() {
   var zen  = yield octo.zen.read();
