@@ -33,6 +33,7 @@ URL_VALIDATOR = /// ^
       | emails    (/[^/]+)?
       | issues
       | starred   (/[^/]+){0,2}
+      | teams
     )
 
     | orgs/  [^/]+
@@ -41,6 +42,15 @@ URL_VALIDATOR = /// ^
         | issues
         | members
         | events
+        | teams
+      )
+
+    | teams/ [^/]+
+    | teams/ [^/]+ / (
+          members (/[^/]+)?
+        | memberships / [^/]+
+        | repos
+        | repos / ([^/]+) / ([^/]+)
       )
 
     | users/ [^/]+
@@ -101,7 +111,10 @@ URL_VALIDATOR = /// ^
         | pages / builds / latest
         | commits
         | commits / [a-f0-9]{40}
-        | commits / [a-f0-9]{40} / comments
+        | commits / [a-f0-9]{40} / (
+              comments
+            | status
+          )?
         | contents (/[^/]+)* # The path is allowed in the URL
         | collaborators (/[^/]+)?
         | (issues|pulls)
@@ -132,6 +145,44 @@ URL_VALIDATOR = /// ^
             | punch_card
           )
       )
+
+
+
+    # Enterprise routes from https://developer.github.com/v3/enterprise/
+    | enterprise/ (
+          settings/license
+        | stats/ (
+                issues
+              | hooks
+              | milestones
+              | orgs
+              | comments
+              | pages
+              | users
+              | gists
+              | pulls
+              | repos
+              | all
+          )
+      )
+    | staff/indexing_jobs
+    # Special Enterprise route for user admin
+    | user/ [^/]+ / (
+        site_admin # PUT/DELETE
+        suspended # PUT/DELETE
+    )
+    # These routes MUST NOT be prefixed with /api/v3
+    | setup/api/ (
+          start # POST
+        | upgrade # POST
+        | configcheck # GET
+        | configure # POST
+        | settings ( # GET/PUT
+              authorized-keys # GET/POST/DELETE
+          )?
+        | maintenance # GET/POST
+      )
+
   )
   $
 ///
@@ -156,11 +207,20 @@ TREE_OPTIONS =
     'emails'    : false
     'issues'    : false
     'starred'   : false
+    'teams'     : false
+    # Enterprise-only:
+    'site_admin': false
+    'suspended' : false
   'orgs':
     'repos'     : false
     'issues'    : false
     'members'   : false
     'events'    : false
+    'teams'     : false
+  'teams':
+    'members'   : false
+    'memberships':false
+    'repos'     : false
   'users':
     'repos'     : false
     'orgs'      : false
@@ -216,6 +276,7 @@ TREE_OPTIONS =
         'latest'    : false
     'commits':
       'comments'    : false
+      'status'      : false
     'contents'      : false
     'collaborators' : false
     'issues':
@@ -233,6 +294,35 @@ TREE_OPTIONS =
       'code_frequency'  : false
       'participation'   : false
       'punch_card'      : false
+    # Enterprise routes
+    'enterprise':
+      'settings':
+        'license'       : false
+      'stats':
+        'issues'        : false
+        'hooks'         : false
+        'milestones'    : false
+        'orgs'          : false
+        'comments'      : false
+        'pages'         : false
+        'users'         : false
+        'gists'         : false
+        'pulls'         : false
+        'repos'         : false
+        'all'           : false
+    'staff':
+      'indexing_jobs'   : false
+    # Enterprise Maintenance routes
+    'setup':
+      'api':
+        'start'         : false # POST
+        'upgrade'       : false # POST
+        'configcheck'   : false # GET
+        'configure'     : false # POST
+        'settings':             # GET/PUT
+          'authorized-keys': false # GET/POST/DELETE
+        'maintenance'   : false # GET/POST
+
 
 
 OBJECT_MATCHER =

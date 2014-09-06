@@ -56,6 +56,7 @@ Request = (clientOptions={}) ->
   clientOptions.rootURL ?= 'https://api.github.com'
   clientOptions.useETags ?= true
   clientOptions.usePostInsteadOfPatch ?= false
+  clientOptions.acceptHeader = 'application/vnd.github.v3+json'
 
   # These are updated whenever a request is made
   _listeners = []
@@ -82,7 +83,7 @@ Request = (clientOptions={}) ->
     mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
 
     headers = {
-      'Accept': 'application/vnd.github.v3+json'
+      'Accept': clientOptions.acceptHeader
     }
     headers['Accept'] = 'application/vnd.github.raw' if options.raw
 

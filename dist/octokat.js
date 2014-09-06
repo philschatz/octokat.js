@@ -126,7 +126,7 @@ module.exports = Chainer;
 },{"./grammar":2,"./helper-promise":4,"./plus":6}],2:[function(require,module,exports){
 var OBJECT_MATCHER, TREE_OPTIONS, URL_VALIDATOR;
 
-URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|meta|rate_limit|feeds|events|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred(\/[^\/]+){0,2})|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events)|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9]{40}\.{3}[a-f0-9]{40}|deployments|deployments\/[0-9]+\/statuses([0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|branches|contributors|subscribers|subscription|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|milestones|labels|releases|events|merges|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/comments|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card)))$/;
+URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|meta|rate_limit|feeds|events|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred(\/[^\/]+){0,2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos\/([^\/]+)\/([^\/]+))|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9]{40}\.{3}[a-f0-9]{40}|deployments|deployments\/[0-9]+\/statuses([0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|branches|contributors|subscribers|subscription|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|milestones|labels|releases|events|merges|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status)?|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|user\/[^\/]+\/(site_adminsuspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
 
 TREE_OPTIONS = {
   'zen': false,
@@ -147,13 +147,22 @@ TREE_OPTIONS = {
     'following': false,
     'emails': false,
     'issues': false,
-    'starred': false
+    'starred': false,
+    'teams': false,
+    'site_admin': false,
+    'suspended': false
   },
   'orgs': {
     'repos': false,
     'issues': false,
     'members': false,
-    'events': false
+    'events': false,
+    'teams': false
+  },
+  'teams': {
+    'members': false,
+    'memberships': false,
+    'repos': false
   },
   'users': {
     'repos': false,
@@ -219,7 +228,8 @@ TREE_OPTIONS = {
       }
     },
     'commits': {
-      'comments': false
+      'comments': false,
+      'status': false
     },
     'contents': false,
     'collaborators': false,
@@ -241,6 +251,39 @@ TREE_OPTIONS = {
       'code_frequency': false,
       'participation': false,
       'punch_card': false
+    },
+    'enterprise': {
+      'settings': {
+        'license': false
+      },
+      'stats': {
+        'issues': false,
+        'hooks': false,
+        'milestones': false,
+        'orgs': false,
+        'comments': false,
+        'pages': false,
+        'users': false,
+        'gists': false,
+        'pulls': false,
+        'repos': false,
+        'all': false
+      }
+    },
+    'staff': {
+      'indexing_jobs': false
+    },
+    'setup': {
+      'api': {
+        'start': false,
+        'upgrade': false,
+        'configcheck': false,
+        'configure': false,
+        'settings': {
+          'authorized-keys': false
+        },
+        'maintenance': false
+      }
     }
   }
 };
@@ -743,6 +786,7 @@ Request = function(clientOptions) {
   if (clientOptions.usePostInsteadOfPatch == null) {
     clientOptions.usePostInsteadOfPatch = false;
   }
+  clientOptions.acceptHeader = 'application/vnd.github.v3+json';
   _listeners = [];
   _cachedETags = {};
   return function(method, path, data, options, cb) {
@@ -765,7 +809,7 @@ Request = function(clientOptions) {
       mimeType = 'text/plain; charset=x-user-defined';
     }
     headers = {
-      'Accept': 'application/vnd.github.v3+json'
+      'Accept': clientOptions.acceptHeader
     };
     if (options.raw) {
       headers['Accept'] = 'application/vnd.github.raw';

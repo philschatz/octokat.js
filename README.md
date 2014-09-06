@@ -23,6 +23,8 @@ This package can also be used in `nodejs` **or** as an AMD module in the browser
   - Hooks (commit, comment, etc.)
   - Uses Angular, jQuery, or native promises if available
   - Markdown generation
+  - Preview APIs (Deployments, Teams, etc)
+  - Enterprise APIs
 
 For the full list of supported methods see the [Travis tests](https://travis-ci.org/philschatz/octokat.js),
 the [./test](./test/) directory, or [./src/grammar.coffee](./src/grammar.coffee).
@@ -141,6 +143,31 @@ Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](h
 
     <script src="./node_modules/es6-promise/dist/promise-0.1.2.js"></script>
     <script src="./octokat.js">
+
+# Preview new APIs
+
+To use the APIs available for preview just add a `acceptHeader` when instantiating Octokat.
+
+For example:
+
+```js
+var octo = new Octokat({
+  token: 'API_TOKEN'
+  acceptHeader: 'application/vnd.github.cannonball-preview+json'
+});
+```
+
+# Enterprise APIs
+
+To use the Enterprise APIs add the root URL when instantiating Octokat:
+
+```js
+var octo = new Octokat({
+  token: 'API_TOKEN'
+  rootUrl: 'https://example.com/api/v3/'
+});
+```
+
 
 # Testing
 
