@@ -106,6 +106,7 @@ URL_VALIDATOR = /// ^
         | releases
         | events
         | merges
+        | statuses / [a-f0-9]{40}
         | pages
         | pages / builds
         | pages / builds / latest
@@ -114,6 +115,7 @@ URL_VALIDATOR = /// ^
         | commits / [a-f0-9]{40} / (
               comments
             | status
+            | statuses
           )?
         | contents (/[^/]+)* # The path is allowed in the URL
         | collaborators (/[^/]+)?
@@ -266,6 +268,7 @@ TREE_OPTIONS =
     'releases'      : false
     'events'        : false
     'merges'        : false
+    'statuses'      : false
     'pulls':
       'merge'       : false
       'comments'    : false
@@ -277,6 +280,7 @@ TREE_OPTIONS =
     'commits':
       'comments'    : false
       'status'      : false
+      'statuses'    : false
     'contents'      : false
     'collaborators' : false
     'issues':
