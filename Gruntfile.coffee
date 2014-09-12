@@ -33,45 +33,26 @@ module.exports = (grunt) ->
 
     # Dist
     # ----
+    browserify:
+      options:
+        browserifyOptions:
+          extensions: ['.js', '.coffee']
+          standalone: 'Octokat'
+          debug: false # Source Maps
+        transform: ['coffeeify']
+      octokat:
+        files:
+          'dist/octokat.js': ['src/octokat.coffee']
 
 
     # Clean
     clean:
       files:
         src: [
-          'dist/octokat.js'
-          'tmp/helper-before.js'
-          'tmp/octokat-coffee.js'
+          'dist/'
+          'tmp/'
         ]
-        filter: 'isFile'
-
-
-    # Compile CoffeeScript to JavaScript
-    coffee:
-      compile:
-        options:
-          sourceMap: false # true
-        files:
-          'tmp/helper-before.js': ['build/helper-before.coffee']
-          'tmp/octokat-coffee.js': [
-            # The order of these is important because we use a much simpler AMD loader than RequireJS
-            'src/grammar.coffee'
-            'src/plus.coffee'
-            'src/helper-base64.coffee'
-            'src/helper-promise.coffee'
-            'src/chainer.coffee'
-            'src/replacer.coffee'
-            'src/request.coffee'
-            'src/octokat.coffee'
-          ]
-
-    concat:
-      dist:
-        src: [
-            'tmp/helper-before.js'
-            'tmp/octokat-coffee.js'
-        ]
-        dest: 'dist/octokat.js'
+        # filter: 'isFile'
 
 
     # Release a new version and push upstream
@@ -111,8 +92,6 @@ module.exports = (grunt) ->
         log: true
         reporter: 'Dot'
 
-
-
     mocha_phantomjs:
       all:
         options:
@@ -124,6 +103,9 @@ module.exports = (grunt) ->
           port: 9876
           base: '.'
 
+    watch:
+      files: 'src/**/*.coffee'
+      tasks: ['dist']
 
 
   # Dependencies
@@ -137,53 +119,34 @@ module.exports = (grunt) ->
   # Tasks
   # =====
 
-  # Travis CI
-  # -----
-  grunt.registerTask 'test', [
-    'clean'
-    'coffeelint'
-    'coffee'
-    'concat'
-    'mochaTest'
-    'connect'
-    'mocha_phantomjs'
-    #'blanket_mocha' NOTE: Uncomment once the `suiteURL` problem noted above is fixed
-  ]
-
   grunt.registerTask 'dist', [
     'clean'
     'coffeelint'
-    'coffee'
-    'concat'
+    'browserify'
+  ]
+
+  grunt.registerTask 'test', [
+    'dist'
+    'mochaTest'
+    'connect'
+    'mocha_phantomjs'
+    # 'blanket_mocha' # NOTE: Uncomment once the `suiteURL` problem noted above is fixed
   ]
 
   # Dist
   # -----
   grunt.registerTask 'release', [
-    'clean'
-    'coffeelint'
-    'coffee'
-    'mochaTest'
-    #'blanket_mocha'
+    'test'
     'bump'
   ]
 
   grunt.registerTask 'release-minor', [
-    'clean'
-    'coffeelint'
-    'coffee'
-    'mochaTest'
-    #'blanket_mocha'
+    'test'
     'bump:minor'
   ]
 
   # Default
   # -----
   grunt.registerTask 'default', [
-    'coffeelint'
-    'clean'
-    'coffee'
-    'mochaTest'
-    'connect'
-    'mocha_phantomjs'
+    'test'
   ]

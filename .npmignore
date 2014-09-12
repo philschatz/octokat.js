@@ -1,0 +1,4 @@
+dist/
+test/
+bower.json
+Gruntfile.coffee
