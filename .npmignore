@@ -1,3 +1,4 @@
-*
-!/index.js
-!/dist/commonjs/*
+dist/
+test/
+bower.json
+Gruntfile.coffee
