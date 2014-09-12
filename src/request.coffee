@@ -206,15 +206,16 @@ Request = (clientOptions={}) ->
         if options.isBoolean and jqXHR.status is 404
           # cb(null, false) # Already handled
         else
-          if jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
-            cb(new Error {error: jqXHR.responseText, status: jqXHR.status, _jqXHR: jqXHR})
-          else
+          err = new Error(jqXHR.responseText)
+          err.status = jqXHR.status
+          unless jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
             if jqXHR.responseText
               json = JSON.parse(jqXHR.responseText)
             else
               # In the case of 404 errors, `responseText` is an empty string
               json = ''
-            cb(new Error {error: json, status: jqXHR.status, _jqXHR: jqXHR})
+            err.json = json
+          cb(err)
 
 
 
