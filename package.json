@@ -15,6 +15,7 @@
     }
   },
   "dependencies": {
+    "coffee-script": "^1.8.0",
     "es6-promise": "0.1.2",
     "xmlhttprequest": "~1.6.0"
   },
