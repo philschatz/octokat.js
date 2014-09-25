@@ -126,7 +126,7 @@ module.exports = Chainer;
 },{"./grammar":2,"./helper-promise":4,"./plus":6}],2:[function(require,module,exports){
 var OBJECT_MATCHER, TREE_OPTIONS, URL_VALIDATOR;
 
-URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|meta|rate_limit|feeds|events|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred(\/[^\/]+){0,2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos\/([^\/]+)\/([^\/]+))|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9]{40}\.{3}[a-f0-9]{40}|deployments|deployments\/[0-9]+\/statuses([0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|branches|contributors|subscribers|subscription|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|milestones|labels|releases|events|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|user\/[^\/]+\/(site_adminsuspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
+URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|meta|rate_limit|feeds|events|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos\/([^\/]+)\/([^\/]+))|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9]{40}\.{3}[a-f0-9]{40}|deployments|deployments\/[0-9]+\/statuses([0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|branches|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|labels|releases|events|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|user\/[^\/]+\/(site_adminsuspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
 
 TREE_OPTIONS = {
   'zen': false,
@@ -171,6 +171,7 @@ TREE_OPTIONS = {
     'followers': false,
     'following': false,
     'keys': false,
+    'starred': false,
     'received_events': {
       'public': false
     },
@@ -209,8 +210,10 @@ TREE_OPTIONS = {
     'contributors': false,
     'subscribers': false,
     'subscription': false,
+    'stargazers': false,
     'comments': false,
     'downloads': false,
+    'forks': false,
     'milestones': false,
     'labels': false,
     'releases': false,
@@ -907,24 +910,17 @@ Request = function(clientOptions) {
         if (options.isBoolean && jqXHR.status === 404) {
 
         } else {
-          if (jqXHR.getResponseHeader('Content-Type') !== 'application/json; charset=utf-8') {
-            return cb(new Error({
-              error: jqXHR.responseText,
-              status: jqXHR.status,
-              _jqXHR: jqXHR
-            }));
-          } else {
+          err = new Error(jqXHR.responseText);
+          err.status = jqXHR.status;
+          if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
             if (jqXHR.responseText) {
               json = JSON.parse(jqXHR.responseText);
             } else {
               json = '';
             }
-            return cb(new Error({
-              error: json,
-              status: jqXHR.status,
-              _jqXHR: jqXHR
-            }));
+            err.json = json;
           }
+          return cb(err);
         }
       }
     });

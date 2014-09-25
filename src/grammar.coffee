@@ -32,7 +32,8 @@ URL_VALIDATOR = /// ^
       | following (/[^/]+)?
       | emails    (/[^/]+)?
       | issues
-      | starred   (/[^/]+){0,2}
+      | starred
+      | starred   (/[^/]+){2}
       | teams
     )
 
@@ -61,6 +62,7 @@ URL_VALIDATOR = /// ^
         | followers
         | following (/[^/]+){0,2}
         | keys
+        | starred
         | received_events (/public)?
         | events          (/public)?
         | events/orgs/ [^/]+
@@ -99,6 +101,7 @@ URL_VALIDATOR = /// ^
         | contributors
         | subscribers
         | subscription
+        | stargazers
         | comments (/[0-9]+)?
         | downloads (/[0-9]+)?
         | forks
@@ -231,6 +234,7 @@ TREE_OPTIONS =
     'followers' : false
     'following' : false
     'keys'      : false
+    'starred'   : false
     'received_events':
       'public'  : false
     'events':
@@ -262,6 +266,7 @@ TREE_OPTIONS =
     'contributors'  : false
     'subscribers'   : false
     'subscription'  : false
+    'stargazers'    : false
     'comments'      : false
     'downloads'     : false
     'forks'         : false

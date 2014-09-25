@@ -121,6 +121,9 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
       itIs obj, ' yields False', args, (val) ->
         expect(val).to.be.false
 
+    itIsBoolean = (obj, args...) ->
+      itIs obj, '', args, (val) -> expect(val is true or val is false).to.be.true
+
     before () ->
       STATE[GH] = client
 
@@ -196,7 +199,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
 
       # Accessors for methods generated from URL patterns
       itIsArray(REPO, 'collaborators.fetch')
-      # itIsOk(REPO, 'readme.fetch')
+      itIsOk(REPO, 'readme.read')
       itIsArray(REPO, 'hooks.fetch')
       itIsArray(REPO, 'assignees.fetch')
       itIsArray(REPO, 'branches.fetch')
@@ -207,7 +210,8 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
       itIsArray(REPO, 'downloads.fetch')
       itIsArray(REPO, 'milestones.fetch')
       itIsArray(REPO, 'labels.fetch')
-      # itIsArray(REPO, 'stargazers.fetch')
+      itIsArray(REPO, 'stargazers.fetch')
+      itIsArray(REPO, 'forks.fetch')
 
       describe "#{REPO}.issues...", () ->
         itIsArray(REPO, 'issues.fetch')
@@ -302,6 +306,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
       itIsArray(USER, 'keys.fetch')
       itIsArray(USER, 'events.fetch')
       itIsArray(USER, 'receivedEvents.fetch')
+      itIsArray(USER, 'starred.fetch')
 
 
     describe "#{ORG} = #{GH}.orgs(ORG_NAME)", () ->
@@ -334,7 +339,8 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
 
       itIsArray(ME, 'issues.fetch')
 
-      # itIsArray(ME, 'starred.all') Not enough permission
+      itIsArray(ME, 'starred.fetch')
+      itIsBoolean(ME, 'starred.contains', 'philschatz/octokat.js')
 
 
       describe 'Multistep operations', () ->
