@@ -101,6 +101,7 @@ URL_VALIDATOR = /// ^
         | subscription
         | comments (/[0-9]+)?
         | downloads (/[0-9]+)?
+        | forks
         | milestones
         | labels
         | releases
@@ -263,6 +264,7 @@ TREE_OPTIONS =
     'subscription'  : false
     'comments'      : false
     'downloads'     : false
+    'forks'         : false
     'milestones'    : false
     'labels'        : false
     'releases'      : false
