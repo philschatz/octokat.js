@@ -2,3 +2,6 @@ dist/
 test/
 bower.json
 Gruntfile.coffee
+
+/bower_components
+/fixtures
