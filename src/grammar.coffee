@@ -89,7 +89,7 @@ URL_VALIDATOR = /// ^
           readme
         | tarball (/[^/]+)?
         | zipball (/[^/]+)?
-        | compare / [a-f0-9]{40} \.{3} [a-f0-9]{40}
+        | compare / [a-f0-9:]{40} \.{3} [a-f0-9:]{40}
         | deployments
         | deployments / [0-9]+ / statuses ([0-9]+)?
         | hooks
