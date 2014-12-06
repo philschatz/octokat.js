@@ -4,7 +4,23 @@ Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https:/
 It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor),
 an EPUB3 Textbook editor for GitHub.
 
-This package can also be used in `nodejs` **or** as an AMD module in the browser.
+This package can also be used in `nodejs` **or** in the browser as an AMD module or using browserify.
+
+# Overview
+
+- [Key Features](#key-features)
+- [Usage](#usage)
+- [Setup](#setup)
+  - [Promises (Optional)](#promises-optional)
+- [Preview new APIs](#preview-new-apis)
+- [Enterprise APIs](#enterprise-apis)
+- [Advanced](#advanced-uses)
+  - [Promises or Callbacks](#promises-or-callbacks)
+  - [Chaining](#chaining)
+  - [Hypermedia](#hypermedia)
+  - [Paged Results](#paged-results)
+  - [Development](#development)
+
 
 # Key Features
 
@@ -28,6 +44,7 @@ This package can also be used in `nodejs` **or** as an AMD module in the browser
 
 For the full list of supported methods see the [Travis tests](https://travis-ci.org/philschatz/octokat.js),
 the [./test](./test/) directory, or [./src/grammar.coffee](./src/grammar.coffee).
+
 
 # Usage
 
@@ -175,7 +192,7 @@ var octo = new Octokat({
 Additionally, they can be run in the browser by starting a web server
 and going to [./test/index.html](http://philschatz.com/octokat.js/test).
 
-# About the Library
+# Advanced Uses
 
 ## Overview
 
@@ -184,7 +201,7 @@ This library closely mirrors the <https://developer.github.com/v3> documentation
 For example, `GET /repos/:owner/:repo` becomes `octo.repos(owner, repo).fetch()`
 and `POST /repos/:owner/:repo/issues/:number/comments` becomes `octo.repos(owner, repo).issues(number).comments.create(params)`.
 
-## Promises and Callbacks
+## Promises or Callbacks
 
 This library supports Node.js-style callbacks as well as Promises.
 
@@ -193,16 +210,18 @@ To use a Promise, do not specify a callback and the return value will be a Promi
 
 Example (get information on a repo):
 
-    # Using callbacks
-    octo.repos('philschatz', 'octokat.js').fetch (err, repo) ->
-      console.error(err) if err
-      # Do fancy stuff...
+```coffee
+# Using callbacks
+octo.repos('philschatz', 'octokat.js').fetch (err, repo) ->
+  console.error(err) if err
+  # Do fancy stuff...
 
-    # Using Promises
-    octo.repos('philschatz', 'octokat.js').fetch()
-    .then (repo) ->
-      # Do fancy stuff
-    .then null, (err) -> console.error(err)
+# Using Promises
+octo.repos('philschatz', 'octokat.js').fetch()
+.then (repo) ->
+  # Do fancy stuff
+.then null, (err) -> console.error(err)
+```
 
 ## Chaining
 
@@ -211,24 +230,27 @@ and an async call is made once a verb method is called (see below).
 
 Example:
 
-    octo = new Octokat()
-    repo = octo.repos('philschatz', 'octokat.js')
-    # Check if the current user is a collaborator on a repo
-    repo.collaborators.contains(USER)
-    .then (isCollaborator) ->
-      # If not, then star the Repo
-      unless isCollaborator
-        repo.star.add()
-        .then () ->
-          # Done!
+```coffee
+octo = new Octokat()
+repo = octo.repos('philschatz', 'octokat.js')
+# Check if the current user is a collaborator on a repo
+repo.collaborators.contains(USER)
+.then (isCollaborator) ->
+  # If not, then star the Repo
+  unless isCollaborator
+    repo.star.add()
+    .then () ->
+      # Done!
+```
 
 Or, update a specific comment:
 
-    octo = new Octokat(token: ...)
-    octo.repos('philschatz', 'octokat.js').issues(1).comments(123123).update(body: 'Hello')
-    .then () ->
-      # Done!
-
+```coffee
+octo = new Octokat(token: ...)
+octo.repos('philschatz', 'octokat.js').issues(1).comments(123123).update(body: 'Hello')
+.then () ->
+  # Done!
+```
 The basic structure of these methods is:
 
 - `.foos.fetch({optionalStuff:...})` yields a list of items (possibly paginated)
@@ -238,28 +260,32 @@ The basic structure of these methods is:
 - `.foos(id).add()` adds an existing User/Repo to the list
 - `.foos(id).remove()` removes a member from a list or deletes the object and yields a boolean indicating success
 
-## JSON with methods (Hypermedia)
+## Hypermedia
 
 GitHub provides URL patterns in its JSON responses. These are automatically converted into methods.
 For example:
 
-    octo.repos('philschatz', 'octokat.js').fetch()
-    .then (repo) ->
-      # GitHub returns a JSON which contains something like compare_url: 'https://..../compare/{head}...{base}
-      # This is converted to a method that accepts 2 arguments
-      repo.compare(sha1, sha2).fetch()
-      .then (comparison) -> # Done!
+```coffee
+octo.repos('philschatz', 'octokat.js').fetch()
+.then (repo) ->
+  # GitHub returns a JSON which contains something like compare_url: 'https://..../compare/{head}...{base}
+  # This is converted to a method that accepts 2 arguments
+  repo.compare(sha1, sha2).fetch()
+  .then (comparison) -> # Done!
+```
 
 ## Paged Results
 
 If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firstPage()`
-and `lastPage()` are added to the returned JSON. For example:
+and `lastPage()` are added to the returned Object. For example:
 
-    octo.repos('philschatz', 'octokat.js').commits.fetch()
-    .then (someCommits) ->
-      someCommits.nextPage()
-      .then (moreCommits) ->
-        # Done!
+```coffee
+octo.repos('philschatz', 'octokat.js').commits.fetch()
+.then (someCommits) ->
+  someCommits.nextPage()
+  .then (moreCommits) ->
+    # Done!
+```
 
 ## Development
 
@@ -269,6 +295,6 @@ and `lastPage()` are added to the returned JSON. For example:
 The unit tests are named to illustrate examples of using the API.
 See [Travis tests](https://travis-ci.org/philschatz/octokat.js) or run `npm test` to see them.
 
-[linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded results from GitHub
+[linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded HTTP fixtures from GitHub
 and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in the browser.
 If you are adding tests be sure to include the updated fixtures in the Pull Request.
