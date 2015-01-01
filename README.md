@@ -10,15 +10,18 @@ This package can also be used in `nodejs` **or** in the browser as an AMD module
 
 - [Key Features](#key-features)
 - [Usage](#usage)
+- [Examples](#examples)
+  - [Using Callbacks or Promises](#using-callbacks-or-promises)
+  - [Read/Write/Remove a File](#read-write-remove-a-file)
 - [Setup](#setup)
   - [Promises (Optional)](#promises-optional)
-- [Preview new APIs](#preview-new-apis)
-- [Enterprise APIs](#enterprise-apis)
 - [Advanced](#advanced-uses)
   - [Promises or Callbacks](#promises-or-callbacks)
   - [Chaining](#chaining)
   - [Hypermedia](#hypermedia)
   - [Paged Results](#paged-results)
+  - [Preview new APIs](#preview-new-apis)
+  - [Enterprise APIs](#enterprise-apis)
   - [Development](#development)
 
 
@@ -105,26 +108,7 @@ var cb = function (err, val) { console.log(val); };
 octo.zen.read(cb);
 octo.repos('philschatz', 'octokat.js').fetch(cb);    // Fetch repo info
 octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
-```
-
-## Using Generators in Node.js 0.11 (or EcmaScript 6 browsers)
-
-This requires Node.js 0.11 with the `--harmony-generators` flag:
-
-```js
-var co = require('co');
-var Octokat = require('octokat');
-var octo = new Octokat();
-
-var fn = function *() {
-  var zen  = yield octo.zen.read();
-  var info = yield octo.repos('philschatz', 'octokat.js').fetch();
-
-  console.log(zen);
-  console.log(info);
-};
-
-co(fn)();
+octo.me.starred('philschatz', 'octokat.js').remove(cb); // Un-Star a repo
 ```
 
 ## Using bower
@@ -133,18 +117,115 @@ This file can be included using the bower package manager:
 
     bower install octokat --save
 
+
+# Examples
+
+Here are some examples for using the library.
+
+## Using Callbacks or Promises
+
+```js
+var octo = new Octokat();
+
+// Starring a repository using callbacks
+var cb = function (err, val) { console.log(val); };
+octo.me.starred('philschatz', 'octokat.js').add(cb);
+
+// Starring a repository using Promises
+octo.me.starred('philschatz', 'octokat.js').add()
+.then(function(val) {
+  console.log('Starred!');
+});
+```
+
+
+## Read/Write/Remove a File
+
+To read the contents of a file:
+
+```js
+var octo = new Octokat();
+var repo = octo.repos('philschatz', 'octokat.js');
+repo.contents('README.md').read() // Use `.read` to get the raw file.
+.then(function(contents) {        // `.fetch` is used for getting JSON
+  console.log(contents);
+});
+```
+
+To read the contents of a binary file:
+
+```js
+var octo = new Octokat();
+var repo = octo.repos('philschatz', 'octokat.js');
+repo.contents('README.md').readBinary() // Decodes the Base64-encoded content
+.then(function(contents) {
+  console.log(contents);
+});
+```
+
+To read the contents of a file and JSON metadata:
+
+```js
+var octo = new Octokat();
+var repo = octo.repos('philschatz', 'octokat.js');
+repo.contents('README.md').fetch()
+.then(function(info) {
+  console.log(info.sha, info.content);
+});
+```
+
+To update a file you need the **blob SHA** of the previous commit:
+
+```js
+var octo = new Octokat({token: 'API_TOKEN'});
+var repo = octo.repos('philschatz', 'octokat.js');
+var config = {
+  message: 'Updating file',
+  content: base64encode('New file contents'),
+  sha: '123456789abcdef', // the blob SHA
+  // branch: 'gh-pages'
+};
+
+repo.contents('README.md').add(config)
+.then(function(info) {
+  console.log('File Updated. new sha is ', info.commit.sha);
+});
+```
+
+Creating a new file is the same as updating a file but the `sha` field in the config is omitted.
+
+To remove a file:
+
+```js
+var octo = new Octokat({token: 'API_TOKEN'});
+var repo = octo.repos('philschatz', 'octokat.js');
+var config = {
+  message: 'Removing file',
+  sha: '123456789abcdef',
+  // branch: 'gh-pages'
+};
+
+repo.contents('README.md').remove(config)
+.then(function() {
+  console.log('File Updated');
+});
+```
+
+
 # Setup
 
 This is all you need to get up and running:
 
-    <script src="../dist/octokat.js"></script>
-    <script>
-      var octo = new Octokat();
-      octo.zen.read(function(err, message) {
-        if (err) { throw new Error(err); }
-        alert(message);
-      });
-    </script>
+```html
+<script src="../dist/octokat.js"></script>
+<script>
+  var octo = new Octokat();
+  octo.zen.read(function(err, message) {
+    if (err) { throw new Error(err); }
+    alert(message);
+  });
+</script>
+```
 
 ## Promises (Optional)
 
@@ -158,31 +239,9 @@ and it will use their Promise API.
 
 Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](https://github.com/jakearchibald/es6-promise):
 
-    <script src="./node_modules/es6-promise/dist/promise-0.1.2.js"></script>
-    <script src="./octokat.js">
-
-# Preview new APIs
-
-To use the APIs available for preview just add a `acceptHeader` when instantiating Octokat.
-
-For example:
-
-```js
-var octo = new Octokat({
-  token: 'API_TOKEN'
-  acceptHeader: 'application/vnd.github.cannonball-preview+json'
-});
-```
-
-# Enterprise APIs
-
-To use the Enterprise APIs add the root URL when instantiating Octokat:
-
-```js
-var octo = new Octokat({
-  token: 'API_TOKEN'
-  rootUrl: 'https://example.com/api/v3/'
-});
+```html
+<script src="./node_modules/es6-promise/dist/promise-0.1.2.js"></script>
+<script src="./octokat.js"></script>
 ```
 
 
@@ -284,7 +343,51 @@ octo.repos('philschatz', 'octokat.js').commits.fetch()
 .then (someCommits) ->
   someCommits.nextPage()
   .then (moreCommits) ->
-    # Done!
+    console.log('2nd page of results', moreCommits)
+```
+
+## Preview new APIs
+
+To use the APIs available for preview just add a `acceptHeader` when instantiating Octokat.
+
+For example:
+
+```js
+var octo = new Octokat({
+  token: 'API_TOKEN',
+  acceptHeader: 'application/vnd.github.cannonball-preview+json'
+});
+```
+
+## Enterprise APIs
+
+To use the Enterprise APIs add the root URL when instantiating Octokat:
+
+```js
+var octo = new Octokat({
+  token: 'API_TOKEN',
+  rootUrl: 'https://example.com/api/v3/'
+});
+```
+
+## Using Generators in Node.js 0.11 (or EcmaScript 6 browsers)
+
+This requires Node.js 0.11 with the `--harmony-generators` flag:
+
+```js
+var co = require('co');
+var Octokat = require('octokat');
+var octo = new Octokat();
+
+var fn = function *() {
+  var zen  = yield octo.zen.read();
+  var info = yield octo.repos('philschatz', 'octokat.js').fetch();
+
+  console.log(zen);
+  console.log(info);
+};
+
+co(fn)();
 ```
 
 ## Development
