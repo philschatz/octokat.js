@@ -97,6 +97,8 @@ URL_VALIDATOR = /// ^
         | hooks /[^/]+ /tests
         | assignees
         | languages
+        | teams
+        | tags
         | branches
         | contributors
         | subscribers
@@ -262,6 +264,8 @@ TREE_OPTIONS =
       'tests'       : false
     'assignees'     : false
     'languages'     : false
+    'teams'         : false
+    'tags'          : false
     'branches'      : false
     'contributors'  : false
     'subscribers'   : false
