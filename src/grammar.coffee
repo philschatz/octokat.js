@@ -99,7 +99,7 @@ URL_VALIDATOR = /// ^
         | languages
         | teams
         | tags
-        | branches
+        | branches (/[^/]+){0,2}
         | contributors
         | subscribers
         | subscription
