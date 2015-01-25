@@ -18,10 +18,14 @@ URL_VALIDATOR = /// ^
     | issues
     | gists
     | emojis
+    | markdown
     | meta
     | rate_limit
     | feeds
     | events
+    | notifications
+    | notifications / threads (/[^/]+)
+    | notifications / threads (/[^/]+) / subscription
     | gitignore/templates (/[^/]+)?
 
     | user
@@ -30,7 +34,7 @@ URL_VALIDATOR = /// ^
       | orgs
       | followers
       | following (/[^/]+)?
-      | emails    (/[^/]+)?
+      | emails    (/[^/]+)? # TODO: Are these additional args valid?
       | issues
       | starred
       | starred   (/[^/]+){2}
@@ -51,7 +55,7 @@ URL_VALIDATOR = /// ^
           members (/[^/]+)?
         | memberships / [^/]+
         | repos
-        | repos / ([^/]+) / ([^/]+)
+        | repos (/[^/]+){2}
       )
 
     | users/ [^/]+
@@ -111,6 +115,7 @@ URL_VALIDATOR = /// ^
         | labels
         | releases
         | events
+        | notifications
         | merges
         | statuses / [a-f0-9]{40}
         | pages
@@ -176,8 +181,8 @@ URL_VALIDATOR = /// ^
     | staff/indexing_jobs
     # Special Enterprise route for user admin
     | user/ [^/]+ / (
-        site_admin # PUT/DELETE
-        suspended # PUT/DELETE
+          site_admin # PUT/DELETE
+        | suspended # PUT/DELETE
     )
     # These routes MUST NOT be prefixed with /api/v3
     | setup/api/ (
@@ -201,10 +206,14 @@ TREE_OPTIONS =
   'octocat'     : false
   'issues'      : false
   'emojis'      : false
+  'markdown'    : false
   'meta'        : false
   'rate_limit'  : false
   'feeds'       : false
   'events'      : false
+  'notifications':
+    'threads':
+      'subscription': false
   'gitignore':
     'templates' : false
   'user':
@@ -278,6 +287,7 @@ TREE_OPTIONS =
     'labels'        : false
     'releases'      : false
     'events'        : false
+    'notifications' : false
     'merges'        : false
     'statuses'      : false
     'pulls':
