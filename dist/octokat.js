@@ -126,7 +126,7 @@ module.exports = Chainer;
 },{"./grammar":2,"./helper-promise":4,"./plus":6}],2:[function(require,module,exports){
 var OBJECT_MATCHER, TREE_OPTIONS, URL_VALIDATOR;
 
-URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9:]{40}\.{3}[a-f0-9:]{40}|deployments|deployments\/[0-9]+\/statuses([0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|labels|releases|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|user\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
+URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9:]{40}\.{3}[a-f0-9:]{40}|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|labels|releases|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
 
 TREE_OPTIONS = {
   'zen': false,
@@ -154,9 +154,7 @@ TREE_OPTIONS = {
     'emails': false,
     'issues': false,
     'starred': false,
-    'teams': false,
-    'site_admin': false,
-    'suspended': false
+    'teams': false
   },
   'orgs': {
     'repos': false,
@@ -184,7 +182,9 @@ TREE_OPTIONS = {
     'events': {
       'public': false,
       'orgs': false
-    }
+    },
+    'site_admin': false,
+    'suspended': false
   },
   'search': {
     'repositories': false,
@@ -233,7 +233,8 @@ TREE_OPTIONS = {
       'merge': false,
       'comments': false,
       'commits': false,
-      'files': false
+      'files': false,
+      'events': false
     },
     'pages': {
       'builds': {
@@ -265,39 +266,39 @@ TREE_OPTIONS = {
       'code_frequency': false,
       'participation': false,
       'punch_card': false
+    }
+  },
+  'enterprise': {
+    'settings': {
+      'license': false
     },
-    'enterprise': {
+    'stats': {
+      'issues': false,
+      'hooks': false,
+      'milestones': false,
+      'orgs': false,
+      'comments': false,
+      'pages': false,
+      'users': false,
+      'gists': false,
+      'pulls': false,
+      'repos': false,
+      'all': false
+    }
+  },
+  'staff': {
+    'indexing_jobs': false
+  },
+  'setup': {
+    'api': {
+      'start': false,
+      'upgrade': false,
+      'configcheck': false,
+      'configure': false,
       'settings': {
-        'license': false
+        'authorized-keys': false
       },
-      'stats': {
-        'issues': false,
-        'hooks': false,
-        'milestones': false,
-        'orgs': false,
-        'comments': false,
-        'pages': false,
-        'users': false,
-        'gists': false,
-        'pulls': false,
-        'repos': false,
-        'all': false
-      }
-    },
-    'staff': {
-      'indexing_jobs': false
-    },
-    'setup': {
-      'api': {
-        'start': false,
-        'upgrade': false,
-        'configcheck': false,
-        'configure': false,
-        'settings': {
-          'authorized-keys': false
-        },
-        'maintenance': false
-      }
+      'maintenance': false
     }
   }
 };
@@ -540,7 +541,6 @@ Octokat = function(clientOptions) {
   obj = {};
   Chainer(request, path, null, TREE_OPTIONS, obj);
   obj.me = obj.user;
-  delete obj.user;
   obj.status = toPromise(function(cb) {
     return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
   });
@@ -766,8 +766,10 @@ ajax = function(options, cb) {
         }
       }
       if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
+        console.log(xhr.status, ' ', options.type, options.url);
         return cb(null, xhr);
       } else {
+        console.log(xhr.status, 'X', options.type, options.url);
         return cb(xhr);
       }
     }

@@ -94,8 +94,8 @@ URL_VALIDATOR = /// ^
         | tarball (/[^/]+)?
         | zipball (/[^/]+)?
         | compare / [a-f0-9:]{40} \.{3} [a-f0-9:]{40}
-        | deployments
-        | deployments / [0-9]+ / statuses ([0-9]+)?
+        | deployments (/[0-9]+)?
+        | deployments / [0-9]+ / statuses (/[0-9]+)?
         | hooks
         | hooks /[^/]+
         | hooks /[^/]+ /tests
@@ -180,7 +180,7 @@ URL_VALIDATOR = /// ^
       )
     | staff/indexing_jobs
     # Special Enterprise route for user admin
-    | user/ [^/]+ / (
+    | users/ [^/]+ / (
           site_admin # PUT/DELETE
         | suspended # PUT/DELETE
     )
@@ -225,9 +225,6 @@ TREE_OPTIONS =
     'issues'    : false
     'starred'   : false
     'teams'     : false
-    # Enterprise-only:
-    'site_admin': false
-    'suspended' : false
   'orgs':
     'repos'     : false
     'issues'    : false
@@ -251,6 +248,10 @@ TREE_OPTIONS =
     'events':
       'public'  : false
       'orgs'    : false
+    # Enterprise-only:
+    'site_admin': false
+    'suspended' : false
+
   'search':
     'repositories' : false
     'issues'    : false
@@ -295,6 +296,7 @@ TREE_OPTIONS =
       'comments'    : false
       'commits'     : false
       'files'       : false
+      'events'      : false
     'pages':
       'builds':
         'latest'    : false
@@ -319,34 +321,34 @@ TREE_OPTIONS =
       'code_frequency'  : false
       'participation'   : false
       'punch_card'      : false
-    # Enterprise routes
-    'enterprise':
-      'settings':
-        'license'       : false
-      'stats':
-        'issues'        : false
-        'hooks'         : false
-        'milestones'    : false
-        'orgs'          : false
-        'comments'      : false
-        'pages'         : false
-        'users'         : false
-        'gists'         : false
-        'pulls'         : false
-        'repos'         : false
-        'all'           : false
-    'staff':
-      'indexing_jobs'   : false
-    # Enterprise Maintenance routes
-    'setup':
-      'api':
-        'start'         : false # POST
-        'upgrade'       : false # POST
-        'configcheck'   : false # GET
-        'configure'     : false # POST
-        'settings':             # GET/PUT
-          'authorized-keys': false # GET/POST/DELETE
-        'maintenance'   : false # GET/POST
+  # Enterprise routes
+  'enterprise':
+    'settings':
+      'license'       : false
+    'stats':
+      'issues'        : false
+      'hooks'         : false
+      'milestones'    : false
+      'orgs'          : false
+      'comments'      : false
+      'pages'         : false
+      'users'         : false
+      'gists'         : false
+      'pulls'         : false
+      'repos'         : false
+      'all'           : false
+  'staff':
+    'indexing_jobs'   : false
+  # Enterprise Maintenance routes
+  'setup':
+    'api':
+      'start'         : false # POST
+      'upgrade'       : false # POST
+      'configcheck'   : false # GET
+      'configure'     : false # POST
+      'settings':             # GET/PUT
+        'authorized-keys': false # GET/POST/DELETE
+      'maintenance'   : false # GET/POST
 
 
 

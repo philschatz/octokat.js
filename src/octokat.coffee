@@ -37,7 +37,6 @@ Octokat = (clientOptions={}) ->
 
   # Special case for `me`
   obj.me = obj.user
-  delete obj.user
 
   # Add the GitHub Status API https://status.github.com/api
   obj.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)
