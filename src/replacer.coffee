@@ -1,5 +1,5 @@
-plus = require './plus'
-{toPromise} = require './helper-promise'
+plus = require './plus.coffee'
+{toPromise} = require './helper-promise.coffee'
 
 # JSON Replacer
 # ===============================
