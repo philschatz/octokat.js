@@ -1,6 +1,6 @@
-{URL_VALIDATOR} = require './grammar'
-plus = require './plus'
-{toPromise} = require './helper-promise'
+{URL_VALIDATOR} = require './grammar.coffee'
+plus = require './plus.coffee'
+{toPromise} = require './helper-promise.coffee'
 
 # Daisy-Chainer
 # ===============================

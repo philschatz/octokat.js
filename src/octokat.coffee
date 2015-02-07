@@ -1,9 +1,9 @@
-plus = require './plus'
-{TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
-Chainer = require './chainer'
-Replacer = require './replacer'
-Request = require './request'
-{toPromise} = require './helper-promise'
+plus = require './plus.coffee'
+{TREE_OPTIONS, OBJECT_MATCHER} = require './grammar.coffee'
+Chainer = require './chainer.coffee'
+Replacer = require './replacer.coffee'
+Request = require './request.coffee'
+{toPromise} = require './helper-promise.coffee'
 
 # Combine all the classes into one client
 

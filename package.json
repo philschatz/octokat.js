@@ -3,6 +3,7 @@
   "version": "0.4.2",
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
+  "browser": "index.js",
   "scripts": {
     "prepublish": "bower install",
     "test": "VCR_MODE=cache grunt test --verbose",
