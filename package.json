@@ -3,8 +3,10 @@
   "version": "0.4.2",
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
+  "browser": "js/octokat.js",
   "scripts": {
     "prepublish": "bower install",
+    "postinstall": "mkdir -p js && coffee -o js -c src/*.coffee",
     "test": "VCR_MODE=cache grunt test --verbose",
     "dist": "grunt dist --verbose",
     "update": "bower update",
