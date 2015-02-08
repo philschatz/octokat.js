@@ -56,7 +56,7 @@ Request = (clientOptions={}) ->
   clientOptions.rootURL ?= 'https://api.github.com'
   clientOptions.useETags ?= true
   clientOptions.usePostInsteadOfPatch ?= false
-  clientOptions.acceptHeader = 'application/vnd.github.v3+json'
+  clientOptions.acceptHeader ?= 'application/vnd.github.v3+json'
 
   # These are updated whenever a request is made
   _listeners = []
