@@ -766,10 +766,8 @@ ajax = function(options, cb) {
         }
       }
       if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
-        console.log(xhr.status, ' ', options.type, options.url);
         return cb(null, xhr);
       } else {
-        console.log(xhr.status, 'X', options.type, options.url);
         return cb(xhr);
       }
     }
