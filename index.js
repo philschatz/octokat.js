@@ -1,2 +1,1 @@
-require('coffee-script/register');
-module.exports = require('./src/octokat');
+module.exports = require('./dist/node/octokat');
