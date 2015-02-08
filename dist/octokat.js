@@ -800,7 +800,9 @@ Request = function(clientOptions) {
   if (clientOptions.usePostInsteadOfPatch == null) {
     clientOptions.usePostInsteadOfPatch = false;
   }
-  clientOptions.acceptHeader = 'application/vnd.github.v3+json';
+  if (clientOptions.acceptHeader == null) {
+    clientOptions.acceptHeader = 'application/vnd.github.v3+json';
+  }
   _listeners = [];
   _cachedETags = {};
   return function(method, path, data, options, cb) {

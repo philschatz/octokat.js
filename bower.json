@@ -1,6 +1,6 @@
 {
   "name": "octokat",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "octokat.js",
   "dependencies": {
