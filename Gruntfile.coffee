@@ -108,6 +108,20 @@ module.exports = (grunt) ->
       tasks: ['dist']
 
 
+    # Build the JS files for npm so the library can be used with browserify
+    coffee:
+      compile:
+        files:
+          'dist/node/chainer.js'        : 'src/chainer.coffee'
+          'dist/node/grammar.js'        : 'src/grammar.coffee'
+          'dist/node/helper-base64.js'  : 'src/helper-base64.coffee'
+          'dist/node/helper-promise.js' : 'src/helper-promise.coffee'
+          'dist/node/octokat.js'        : 'src/octokat.coffee'
+          'dist/node/plus.js'           : 'src/plus.coffee'
+          'dist/node/replacer.js'       : 'src/replacer.coffee'
+          'dist/node/request.js'        : 'src/request.coffee'
+
+
   # Dependencies
   # ============
   for name of pkg.dependencies when name.substring(0, 6) is 'grunt-'
@@ -122,7 +136,8 @@ module.exports = (grunt) ->
   grunt.registerTask 'dist', [
     'clean'
     'coffeelint'
-    'browserify'
+    'browserify' # Build single file for browsers
+    'coffee' # Build JS files for npm
   ]
 
   grunt.registerTask 'test', [

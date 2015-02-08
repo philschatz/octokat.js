@@ -1,5 +1,5 @@
 /bower_components
-/dist/commonjs
-/fixtures
+/dist/node
+/fixtures*
 /node_modules
 /tmp
