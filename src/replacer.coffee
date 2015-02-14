@@ -1,5 +1,7 @@
 plus = require './plus'
 {toPromise} = require './helper-promise'
+{TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
+Chainer = require './chainer'
 
 # JSON Replacer
 # ===============================
@@ -36,6 +38,17 @@ class Replacer
     acc = {}
     for key, value of orig
       @_replaceKeyValue(acc, key, value)
+
+    # If the URL matches one of the "Object" types (repo, user, comment)
+    # then provide all of the same methods as `octo.repo(...)` would have on it
+    url = acc.url
+    for key, re of OBJECT_MATCHER
+      if re.test(url)
+        context = TREE_OPTIONS
+        for k in key.split('.')
+          context = context[k]
+        Chainer(@_request, url, k, context, acc)
+
     acc
 
   _replaceArray: (orig) ->
