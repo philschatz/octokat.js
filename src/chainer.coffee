@@ -63,7 +63,7 @@ Chainer = (request, _path, name, contextTree, fn) ->
       do (name) ->
         # Delete the key if it already exists
         delete fn[plus.camelize(name)]
-        
+
         Object.defineProperty fn, plus.camelize(name),
           configurable: true
           enumerable: true

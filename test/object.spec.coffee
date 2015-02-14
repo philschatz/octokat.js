@@ -9,10 +9,16 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
         repos[0].forks.fetch()
         .then -> done()
 
-    # it 'has the same methods on octo.gists(ID).fetch().then(gist) as octo.gists.public.fetch().then(gists[0])', (done) ->
-    #   client.gists.public.fetch()
-    #   .then (gists) ->
-    #     expect(gists).to.not.be.empty
-    #     gists[0].star.contains()
-    #     .then ->
-    #       done()
+    it 'has the same methods on octo.gists(ID).fetch().then(gist) as octo.gists.public.fetch().then(gists[0])', (done) ->
+      client.gists.public.fetch()
+      .then (gists) ->
+        expect(gists).to.not.be.empty
+        expect(gists[0].star.contains).to.be.a.function
+        done()
+
+    it 'has the same methods on octo.users(ID).fetch().then(user) as octo.users.fetch().then(users[0])', (done) ->
+      client.users.fetch()
+      .then (users) ->
+        expect(users).to.not.be.empty
+        expect(users[0].gists.fetch).to.be.a.function
+        done()
