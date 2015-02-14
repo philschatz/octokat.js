@@ -104,6 +104,7 @@ Chainer = function(request, _path, name, contextTree, fn) {
   }
   if (typeof fn === 'function' || typeof fn === 'object') {
     _fn = function(name) {
+      delete fn[plus.camelize(name)];
       return Object.defineProperty(fn, plus.camelize(name), {
         configurable: true,
         enumerable: true,
@@ -604,12 +605,16 @@ module.exports = plus;
 
 
 },{}],7:[function(require,module,exports){
-var Replacer, plus, toPromise,
+var Chainer, OBJECT_MATCHER, Replacer, TREE_OPTIONS, plus, toPromise, _ref,
   __slice = [].slice;
 
 plus = require('./plus');
 
 toPromise = require('./helper-promise').toPromise;
+
+_ref = require('./grammar'), TREE_OPTIONS = _ref.TREE_OPTIONS, OBJECT_MATCHER = _ref.OBJECT_MATCHER;
+
+Chainer = require('./chainer');
 
 Replacer = (function() {
   function Replacer(_request) {
@@ -651,11 +656,24 @@ Replacer = (function() {
   };
 
   Replacer.prototype._replaceObject = function(orig) {
-    var acc, key, value;
+    var acc, context, k, key, re, url, value, _i, _len, _ref1;
     acc = {};
     for (key in orig) {
       value = orig[key];
       this._replaceKeyValue(acc, key, value);
+    }
+    url = acc.url;
+    for (key in OBJECT_MATCHER) {
+      re = OBJECT_MATCHER[key];
+      if (re.test(url)) {
+        context = TREE_OPTIONS;
+        _ref1 = key.split('.');
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          k = _ref1[_i];
+          context = context[k];
+        }
+        Chainer(this._request, url, k, context, acc);
+      }
     }
     return acc;
   };
@@ -726,7 +744,7 @@ module.exports = Replacer;
 
 
 
-},{"./helper-promise":4,"./plus":6}],8:[function(require,module,exports){
+},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":6}],8:[function(require,module,exports){
 var ETagResponse, Request, ajax, base64encode, userAgent;
 
 base64encode = require('./helper-base64');

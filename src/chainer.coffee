@@ -61,6 +61,9 @@ Chainer = (request, _path, name, contextTree, fn) ->
   if typeof fn is 'function' or typeof fn is 'object'
     for name of contextTree or {}
       do (name) ->
+        # Delete the key if it already exists
+        delete fn[plus.camelize(name)]
+
         Object.defineProperty fn, plus.camelize(name),
           configurable: true
           enumerable: true
