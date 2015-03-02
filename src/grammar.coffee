@@ -128,6 +128,7 @@ URL_VALIDATOR = /// ^
             | status
             | statuses
           )?
+        | contents /         # Allow an empty path
         | contents (/[^/]+)* # The path is allowed in the URL
         | collaborators (/[^/]+)?
         | (issues|pulls)
