@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "es6-promise": "0.1.2",
-    "xmlhttprequest": "~1.6.0"
+    "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
     "browserify": "^5.11.0",
