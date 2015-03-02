@@ -366,7 +366,7 @@ To use the Enterprise APIs add the root URL when instantiating Octokat:
 ```js
 var octo = new Octokat({
   token: 'API_TOKEN',
-  rootUrl: 'https://example.com/api/v3/'
+  rootURL: 'https://example.com/api/v3'
 });
 ```
 
