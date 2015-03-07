@@ -85,7 +85,7 @@ class Replacer
           # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
           # Pull off the last 2 args to .upload()
           [contentType, data]     = args[-2..]
-          @_request('POST', value, data, {contentType}, cb)
+          @_request('POST', value, data, {contentType, raw:true}, cb)
         else
           @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
 

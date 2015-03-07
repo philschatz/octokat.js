@@ -729,7 +729,8 @@ Replacer = (function() {
           if (/upload_url$/.test(key)) {
             _ref1 = args.slice(-2), contentType = _ref1[0], data = _ref1[1];
             return _this._request('POST', value, data, {
-              contentType: contentType
+              contentType: contentType,
+              raw: true
             }, cb);
           } else {
             return _this._request('GET', value, null, null, cb);
