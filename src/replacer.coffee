@@ -81,7 +81,14 @@ class Replacer
           value = value.replace(match, param)
           i++
 
-        @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
+        if /upload_url$/.test(key)
+          # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
+          # Pull off the last 2 args to .upload()
+          [contentType, data]     = args[-2..]
+          @_request('POST', value, data, {contentType}, cb)
+        else
+          @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
+
       fn = toPromise(fn)
       fn.url = value
       newKey = key.substring(0, key.length-'_url'.length)

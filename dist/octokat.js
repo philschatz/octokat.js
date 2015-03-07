@@ -707,7 +707,7 @@ Replacer = (function() {
     if (/_url$/.test(key)) {
       fn = (function(_this) {
         return function() {
-          var args, cb, i, m, match, param;
+          var args, cb, contentType, data, i, m, match, param, _ref1;
           cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
           i = 0;
           while (m = /(\{[^\}]+\})/.exec(value)) {
@@ -726,7 +726,14 @@ Replacer = (function() {
             value = value.replace(match, param);
             i++;
           }
-          return _this._request('GET', value, null, null, cb);
+          if (/upload_url$/.test(key)) {
+            _ref1 = args.slice(-2), contentType = _ref1[0], data = _ref1[1];
+            return _this._request('POST', value, data, {
+              contentType: contentType
+            }, cb);
+          } else {
+            return _this._request('GET', value, null, null, cb);
+          }
         };
       })(this);
       fn = toPromise(fn);
@@ -833,8 +840,24 @@ Request = function(clientOptions) {
       options = {
         raw: false,
         isBase64: false,
-        isBoolean: false
+        isBoolean: false,
+        contentType: 'application/json'
       };
+    }
+    if (options == null) {
+      options = {};
+    }
+    if (options.raw == null) {
+      options.raw = false;
+    }
+    if (options.isBase64 == null) {
+      options.isBase64 = false;
+    }
+    if (options.isBoolean == null) {
+      options.isBoolean = false;
+    }
+    if (options.contentType == null) {
+      options.contentType = 'application/json';
     }
     if (method === 'PATCH' && clientOptions.usePostInsteadOfPatch) {
       method = 'POST';
@@ -871,7 +894,7 @@ Request = function(clientOptions) {
     ajaxConfig = {
       url: path,
       type: method,
-      contentType: 'application/json',
+      contentType: options.contentType,
       mimeType: mimeType,
       headers: headers,
       processData: false,

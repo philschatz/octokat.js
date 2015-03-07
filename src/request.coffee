@@ -67,7 +67,13 @@ Request = (clientOptions={}) ->
   # HTTP Request Abstraction
   # =======
   #
-  return (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
+  return (method, path, data, options={raw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
+
+    options             ?= {}
+    options.raw         ?= false
+    options.isBase64    ?= false
+    options.isBoolean   ?= false
+    options.contentType ?= 'application/json'
 
     # console.log method, path, data, options, typeof cb
 
@@ -117,7 +123,7 @@ Request = (clientOptions={}) ->
       # (GitHub will respond with 5xx or CORS errors)
       url: path
       type: method
-      contentType: 'application/json'
+      contentType: options.contentType
       mimeType: mimeType
       headers: headers
 
