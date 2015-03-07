@@ -114,6 +114,11 @@ URL_VALIDATOR = /// ^
         | milestones
         | labels
         | releases
+        | releases / (/[0-9]+)
+        | releases / (/[0-9]+) / assets
+        | releases / latest
+        | releases / tags / ([^/]+)
+        | releases / assets / (/[0-9]+)
         | events
         | notifications
         | merges
@@ -287,7 +292,10 @@ TREE_OPTIONS =
     'forks'         : false
     'milestones'    : false
     'labels'        : false
-    'releases'      : false
+    'releases':
+      'assets'      : false
+      'latest'      : false
+      'tags'        : false
     'events'        : false
     'notifications' : false
     'merges'        : false
