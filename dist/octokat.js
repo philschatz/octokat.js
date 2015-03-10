@@ -506,7 +506,7 @@ Octokat = function(clientOptions) {
   }
   _request = Request(clientOptions);
   request = function(method, path, data, options, cb) {
-    var replacer;
+    var replacer, _ref1;
     if (options == null) {
       options = {
         raw: false,
@@ -515,11 +515,11 @@ Octokat = function(clientOptions) {
       };
     }
     replacer = new Replacer(request);
-    if (data && !(typeof global !== "undefined" && global !== null ? global['Buffer'].isBuffer(data) : void 0)) {
+    if (data && !(typeof global !== "undefined" && global !== null ? (_ref1 = global['Buffer']) != null ? _ref1.isBuffer(data) : void 0 : void 0)) {
       data = replacer.uncamelize(data);
     }
     return _request(method, path, data, options, function(err, val) {
-      var context, k, key, obj, re, url, _i, _len, _ref1;
+      var context, k, key, obj, re, url, _i, _len, _ref2;
       if (err) {
         return cb(err);
       }
@@ -532,9 +532,9 @@ Octokat = function(clientOptions) {
         re = OBJECT_MATCHER[key];
         if (re.test(url)) {
           context = TREE_OPTIONS;
-          _ref1 = key.split('.');
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            k = _ref1[_i];
+          _ref2 = key.split('.');
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            k = _ref2[_i];
             context = context[k];
           }
           Chainer(request, url, k, context, obj);
