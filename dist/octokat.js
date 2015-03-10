@@ -484,6 +484,7 @@ module.exports = {
 
 
 },{}],5:[function(require,module,exports){
+(function (global){
 var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, plus, toPromise, _ref;
 
 plus = require('./plus');
@@ -514,7 +515,7 @@ Octokat = function(clientOptions) {
       };
     }
     replacer = new Replacer(request);
-    if (data) {
+    if (data && !(typeof global !== "undefined" && global !== null ? global['Buffer'].isBuffer(data) : void 0)) {
       data = replacer.uncamelize(data);
     }
     return _request(method, path, data, options, function(err, val) {
@@ -565,6 +566,7 @@ module.exports = Octokat;
 
 
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":6,"./replacer":7,"./request":8}],6:[function(require,module,exports){
 var plus;
 
@@ -714,8 +716,12 @@ Replacer = (function() {
             match = m[1];
             if (i < args.length) {
               param = args[i];
-              if (match[1] === '/') {
-                param = "/" + param;
+              switch (match[1]) {
+                case '/':
+                  param = "/" + param;
+                  break;
+                case '?':
+                  param = "?" + match.slice(2, -1) + "=" + param;
               }
             } else {
               param = '';

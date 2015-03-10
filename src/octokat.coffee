@@ -15,7 +15,11 @@ Octokat = (clientOptions={}) ->
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
     replacer = new Replacer(request)
 
-    data = replacer.uncamelize(data) if data
+    # Use a slightly convoluted syntax so browserify does not include the
+    # NodeJS Buffer in the browser version.
+    # data is a Buffer when uploading a release asset file
+    if data and not global?['Buffer'].isBuffer(data)
+      data = replacer.uncamelize(data)
 
     return _request method, path, data, options, (err, val) ->
       return cb(err) if err

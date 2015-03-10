@@ -72,7 +72,15 @@ class Replacer
           if i < args.length
             # replace it
             param = args[i]
-            param = "/#{param}" if match[1] is '/'
+            switch match[1]
+              when '/'
+                param = "/#{param}"
+              when '?'
+                # Strip off the "{?" and the trailing "}"
+                # For example, the URL is `/assets{?name}`
+                #   which turns into `/assets?name=foo.zip`
+                # Used to upload releases via the repo releases API.
+                param = "?#{match[2..-2]}=#{param}"
           else
             # Discard the remaining optional params in the URL
             param = ''
