@@ -72,7 +72,15 @@ class Replacer
           if i < args.length
             # replace it
             param = args[i]
-            param = "/#{param}" if match[1] is '/'
+            switch match[1]
+              when '/'
+                param = "/#{param}"
+              when '?'
+                # Strip off the "{?" and the trailing "}"
+                # For example, the URL is `/assets{?name}`
+                #   which turns into `/assets?name=foo.zip`
+                # Used to upload releases via the repo releases API.
+                param = "?#{match[2..-2]}=#{param}"
           else
             # Discard the remaining optional params in the URL
             param = ''
@@ -81,7 +89,14 @@ class Replacer
           value = value.replace(match, param)
           i++
 
-        @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
+        if /upload_url$/.test(key)
+          # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
+          # Pull off the last 2 args to .upload()
+          [contentType, data]     = args[-2..]
+          @_request('POST', value, data, {contentType, raw:true}, cb)
+        else
+          @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
+
       fn = toPromise(fn)
       fn.url = value
       newKey = key.substring(0, key.length-'_url'.length)

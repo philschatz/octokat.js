@@ -127,7 +127,7 @@ module.exports = Chainer;
 },{"./grammar":2,"./helper-promise":4,"./plus":6}],2:[function(require,module,exports){
 var OBJECT_MATCHER, TREE_OPTIONS, URL_VALIDATOR;
 
-URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9:]{40}\.{3}[a-f0-9:]{40}|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|labels|releases|releases\/(\/[0-9]+)|releases\/(\/[0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/(\/[0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
+URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/[a-f0-9:]{40}\.{3}[a-f0-9:]{40}|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|labels|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(|events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/heads(\/[^\/]+)?|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
 
 TREE_OPTIONS = {
   'zen': false,
@@ -484,6 +484,7 @@ module.exports = {
 
 
 },{}],5:[function(require,module,exports){
+(function (global){
 var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, plus, toPromise, _ref;
 
 plus = require('./plus');
@@ -505,7 +506,7 @@ Octokat = function(clientOptions) {
   }
   _request = Request(clientOptions);
   request = function(method, path, data, options, cb) {
-    var replacer;
+    var replacer, _ref1;
     if (options == null) {
       options = {
         raw: false,
@@ -514,11 +515,11 @@ Octokat = function(clientOptions) {
       };
     }
     replacer = new Replacer(request);
-    if (data) {
+    if (data && !(typeof global !== "undefined" && global !== null ? (_ref1 = global['Buffer']) != null ? _ref1.isBuffer(data) : void 0 : void 0)) {
       data = replacer.uncamelize(data);
     }
     return _request(method, path, data, options, function(err, val) {
-      var context, k, key, obj, re, url, _i, _len, _ref1;
+      var context, k, key, obj, re, url, _i, _len, _ref2;
       if (err) {
         return cb(err);
       }
@@ -531,9 +532,9 @@ Octokat = function(clientOptions) {
         re = OBJECT_MATCHER[key];
         if (re.test(url)) {
           context = TREE_OPTIONS;
-          _ref1 = key.split('.');
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            k = _ref1[_i];
+          _ref2 = key.split('.');
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            k = _ref2[_i];
             context = context[k];
           }
           Chainer(request, url, k, context, obj);
@@ -565,6 +566,7 @@ module.exports = Octokat;
 
 
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":6,"./replacer":7,"./request":8}],6:[function(require,module,exports){
 var plus;
 
@@ -707,15 +709,19 @@ Replacer = (function() {
     if (/_url$/.test(key)) {
       fn = (function(_this) {
         return function() {
-          var args, cb, i, m, match, param;
+          var args, cb, contentType, data, i, m, match, param, _ref1;
           cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
           i = 0;
           while (m = /(\{[^\}]+\})/.exec(value)) {
             match = m[1];
             if (i < args.length) {
               param = args[i];
-              if (match[1] === '/') {
-                param = "/" + param;
+              switch (match[1]) {
+                case '/':
+                  param = "/" + param;
+                  break;
+                case '?':
+                  param = "?" + match.slice(2, -1) + "=" + param;
               }
             } else {
               param = '';
@@ -726,7 +732,15 @@ Replacer = (function() {
             value = value.replace(match, param);
             i++;
           }
-          return _this._request('GET', value, null, null, cb);
+          if (/upload_url$/.test(key)) {
+            _ref1 = args.slice(-2), contentType = _ref1[0], data = _ref1[1];
+            return _this._request('POST', value, data, {
+              contentType: contentType,
+              raw: true
+            }, cb);
+          } else {
+            return _this._request('GET', value, null, null, cb);
+          }
         };
       })(this);
       fn = toPromise(fn);
@@ -833,8 +847,24 @@ Request = function(clientOptions) {
       options = {
         raw: false,
         isBase64: false,
-        isBoolean: false
+        isBoolean: false,
+        contentType: 'application/json'
       };
+    }
+    if (options == null) {
+      options = {};
+    }
+    if (options.raw == null) {
+      options.raw = false;
+    }
+    if (options.isBase64 == null) {
+      options.isBase64 = false;
+    }
+    if (options.isBoolean == null) {
+      options.isBoolean = false;
+    }
+    if (options.contentType == null) {
+      options.contentType = 'application/json';
     }
     if (method === 'PATCH' && clientOptions.usePostInsteadOfPatch) {
       method = 'POST';
@@ -871,7 +901,7 @@ Request = function(clientOptions) {
     ajaxConfig = {
       url: path,
       type: method,
-      contentType: 'application/json',
+      contentType: options.contentType,
       mimeType: mimeType,
       headers: headers,
       processData: false,

@@ -22,6 +22,7 @@ This package can also be used in `nodejs` **or** in the browser as an AMD module
   - [Paged Results](#paged-results)
   - [Preview new APIs](#preview-new-apis)
   - [Enterprise APIs](#enterprise-apis)
+  - [Uploading Releases](#uploading-releases)
   - [Development](#development)
 
 
@@ -389,6 +390,27 @@ var fn = function *() {
 
 co(fn)();
 ```
+
+## Uploading Releases
+
+Uploading release assets requires a slightly different syntax because it
+involves setting a custom contentType and providing a possibly binary payload.
+
+To upload (tested using nodejs) you can do the following:
+
+```js
+contents = fs.readFileSync('./build.js');
+
+repo.releases(123456).fetch()
+  .then(function(release) {
+
+    release.upload('build.js', 'application/javascript', contents)
+      .then(function(resp) {
+        // Success!
+      });
+  });
+```
+
 
 ## Development
 

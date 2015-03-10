@@ -114,11 +114,11 @@ URL_VALIDATOR = /// ^
         | milestones
         | labels
         | releases
-        | releases / (/[0-9]+)
-        | releases / (/[0-9]+) / assets
+        | releases / ([0-9]+)
+        | releases / ([0-9]+) / assets
         | releases / latest
         | releases / tags / ([^/]+)
-        | releases / assets / (/[0-9]+)
+        | releases / assets / ([0-9]+)
         | events
         | notifications
         | merges
