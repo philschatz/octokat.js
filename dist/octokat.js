@@ -709,10 +709,11 @@ Replacer = (function() {
     if (/_url$/.test(key)) {
       fn = (function(_this) {
         return function() {
-          var args, cb, contentType, data, i, m, match, param, _ref1;
+          var args, cb, contentType, data, i, m, match, param, url, _ref1;
           cb = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+          url = value;
           i = 0;
-          while (m = /(\{[^\}]+\})/.exec(value)) {
+          while (m = /(\{[^\}]+\})/.exec(url)) {
             match = m[1];
             if (i < args.length) {
               param = args[i];
@@ -729,17 +730,17 @@ Replacer = (function() {
                 throw new Error("BUG: Missing required parameter " + match);
               }
             }
-            value = value.replace(match, param);
+            url = url.replace(match, param);
             i++;
           }
           if (/upload_url$/.test(key)) {
             _ref1 = args.slice(-2), contentType = _ref1[0], data = _ref1[1];
-            return _this._request('POST', value, data, {
+            return _this._request('POST', url, data, {
               contentType: contentType,
               raw: true
             }, cb);
           } else {
-            return _this._request('GET', value, null, null, cb);
+            return _this._request('GET', url, null, null, cb);
           }
         };
       })(this);
