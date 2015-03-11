@@ -65,8 +65,9 @@ class Replacer
         # url can contain {name} or {/name} in the URL.
         # for every arg passed in, replace {...} with that arg
         # and remove the rest (they may or may not be optional)
+        url = value
         i = 0
-        while m = /(\{[^\}]+\})/.exec(value)
+        while m = /(\{[^\}]+\})/.exec(url)
           # `match` is something like `{/foo}`
           match = m[1]
           if i < args.length
@@ -86,16 +87,16 @@ class Replacer
             param = ''
             if match[1] isnt '/'
               throw new Error("BUG: Missing required parameter #{match}")
-          value = value.replace(match, param)
+          url = url.replace(match, param)
           i++
 
         if /upload_url$/.test(key)
           # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
           # Pull off the last 2 args to .upload()
           [contentType, data]     = args[-2..]
-          @_request('POST', value, data, {contentType, raw:true}, cb)
+          @_request('POST', url, data, {contentType, raw:true}, cb)
         else
-          @_request('GET', value, null, null, cb) # TODO: Heuristically set the isBoolean flag
+          @_request('GET', url, null, null, cb) # TODO: Heuristically set the isBoolean flag
 
       fn = toPromise(fn)
       fn.url = value
