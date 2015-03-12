@@ -349,7 +349,9 @@ octo.repos('philschatz', 'octokat.js').commits.fetch()
 
 ## Preview new APIs
 
-To use the APIs available for preview just add a `acceptHeader` when instantiating Octokat.
+Octokat will send the Preview Accept header by default for several Preview APIs.
+
+If you want to change this behavior you can force an `acceptHeader` when instantiating Octokat.
 
 For example:
 
