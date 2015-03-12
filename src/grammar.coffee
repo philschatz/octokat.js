@@ -165,6 +165,20 @@ URL_VALIDATOR = /// ^
           )
       )
 
+    # These (licenses, authorizations, applications) are matched again below
+    # to add the custom accept header needed to use these routes.
+    | licenses
+    | licenses / ([^/]+)
+
+    | authorizations
+    | authorizations/ (
+        (\d+)
+      | clients/ ([^/]{20})
+      | clients/ ([^/]{20}) / ([^/]+) # fingerprint
+    )
+
+    | applications/ ([^/]{20}) /tokens
+    | applications/ ([^/]{20}) /tokens/ ([^/]+)
 
 
     # Enterprise routes from https://developer.github.com/v3/enterprise/
@@ -330,6 +344,11 @@ TREE_OPTIONS =
       'code_frequency'  : false
       'participation'   : false
       'punch_card'      : false
+  'licenses'        : false
+  'authorizations':
+    'clients'         : false
+  'applications':
+    'tokens'          : false
   # Enterprise routes
   'enterprise':
     'settings':
@@ -393,4 +412,39 @@ OBJECT_MATCHER =
     $
   ///
 
-module.exports = {URL_VALIDATOR, TREE_OPTIONS, OBJECT_MATCHER}
+
+PREVIEW_HEADERS =
+  'application/vnd.github.drax-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
+    (
+        /licenses
+      | /licenses/ ([^/]+)
+      | /repos/ ([^/]+) / ([^/]+)
+    )
+    $
+  ///
+
+  # https://developer.github.com/changes/2014-12-09-new-attributes-for-stars-api/
+  'application/vnd.github.v3.star+json': /// ^ (https?://[^/]+)? (/api/v3)?
+    /users/ ([^/]+) /starred
+    $
+  ///
+
+  # https://developer.github.com/v3/oauth_authorizations/
+  'application/vnd.github.mirage-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
+    (
+        /authorizations
+      | /authorizations/clients/ ([^/]{20})
+      | /authorizations/clients/ ([^/]{20}) / ([^/]+) # fingerprint
+      | /authorizations/ ([\d]+)
+      | /applications/ ([^/]{20}) /tokens
+      | /applications/ ([^/]{20}) /tokens/ ([^/]+)
+    )
+    $
+  ///
+
+DEFAULT_HEADER = (url) ->
+  for key, val of PREVIEW_HEADERS
+    return key if val.test(url)
+  return 'application/vnd.github.v3+json'
+
+module.exports = {URL_VALIDATOR, TREE_OPTIONS, OBJECT_MATCHER, DEFAULT_HEADER}

@@ -1,4 +1,5 @@
 base64encode = require './helper-base64'
+{DEFAULT_HEADER} = require './grammar'
 
 # Request Function
 # ===============================
@@ -56,7 +57,6 @@ Request = (clientOptions={}) ->
   clientOptions.rootURL ?= 'https://api.github.com'
   clientOptions.useETags ?= true
   clientOptions.usePostInsteadOfPatch ?= false
-  clientOptions.acceptHeader ?= 'application/vnd.github.v3+json'
 
   # These are updated whenever a request is made
   _listeners = []
@@ -89,7 +89,8 @@ Request = (clientOptions={}) ->
     mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
 
     headers = {
-      'Accept': clientOptions.acceptHeader
+      # Use the preview API header if one of the routes match the preview APIs
+      'Accept': clientOptions.acceptHeader or DEFAULT_HEADER(path)
     }
     headers['Accept'] = 'application/vnd.github.raw' if options.raw
 
