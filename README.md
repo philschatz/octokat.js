@@ -13,7 +13,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
 - [Examples](#examples)
   - [Chaining](#chaining)
   - [Promises or Callbacks](#promises-or-callbacks)
-  - [Read/Write/Remove a File](#read-write-remove-a-file)
+  - [Read/Write/Remove a File](#readwriteremove-a-file)
 - [Usage](#usage)
   - [In a Browser](#in-a-browser)
   - [In Node.js](#in-nodejs)
@@ -268,6 +268,7 @@ var octo = new Octokat({
   password: "YOUR_PASSWORD"
 });
 
+// You can omit `cb` and use Promises instead
 var cb = function (err, val) { console.log(val); };
 
 octo.zen.read(cb);
