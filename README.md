@@ -4,24 +4,27 @@ Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https:/
 It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor),
 an EPUB3 Textbook editor for GitHub.
 
-This package can also be used in `nodejs` **or** in the browser as an AMD module or using browserify.
+This package can be used in `nodejs` **or** in the browser as an AMD module or using browserify.
 
-# Overview
+# Table of Contents
 
 - [Key Features](#key-features)
-- [Usage](#usage)
+- [Overview](#overview)
 - [Examples](#examples)
-  - [Using Callbacks or Promises](#using-callbacks-or-promises)
-  - [Read/Write/Remove a File](#read-write-remove-a-file)
-- [Setup](#setup)
-  - [Promises (Optional)](#promises-optional)
-- [Advanced](#advanced-uses)
-  - [Promises or Callbacks](#promises-or-callbacks)
   - [Chaining](#chaining)
+  - [Promises or Callbacks](#promises-or-callbacks)
+  - [Read/Write/Remove a File](#readwriteremove-a-file)
+- [Usage](#usage)
+  - [In a Browser](#in-a-browser)
+  - [In Node.js](#in-nodejs)
+  - [Setup](#setup)
+    - [Promises (Optional)](#promises-optional)
+- [Advanced](#advanced-uses)
   - [Hypermedia](#hypermedia)
   - [Paged Results](#paged-results)
   - [Preview new APIs](#preview-new-apis)
   - [Enterprise APIs](#enterprise-apis)
+  - [Using EcmaScript 6 Generators](#using-ecmascript-6-generators)
   - [Uploading Releases](#uploading-releases)
   - [Development](#development)
 
@@ -43,100 +46,97 @@ This package can also be used in `nodejs` **or** in the browser as an AMD module
   - Hooks (commit, comment, etc.)
   - Uses Angular, jQuery, or native promises if available
   - Markdown generation
-  - Preview APIs (Deployments, Teams, etc)
+  - Preview APIs (Deployments, Teams, Licenses, etc)
   - Enterprise APIs
 
-For the full list of supported methods see the [Travis tests](https://travis-ci.org/philschatz/octokat.js),
-the [./test](./test/) directory, or [./src/grammar.coffee](./src/grammar.coffee).
+For the full list of supported methods see [./src/grammar.coffee](./src/grammar.coffee), [./examples.md](./examples.md), [Travis tests](https://travis-ci.org/philschatz/octokat.js),
+or the [./test](./test/) directory.
 
+# Overview
 
-# Usage
+This library closely mirrors the <https://developer.github.com/v3> documentation.
 
-All asynchronous methods accept a Node.js-style callback
-**and** return a [Common-JS Promise](http://wiki.commonjs.org/wiki/Promises/A).
-
-## In a browser without RequireJS
-
-Create an Octokat instance.
+For example:
 
 ```js
-var octo = new Octokat({
-  username: "USER_NAME",
-  password: "PASSWORD"
-});
+// `GET /repos/:owner/:repo` in the docs becomes:
+octo.repos(owner, repo).fetch()
 
-var cb = function (err, val) { console.log(val); };
-
-octo.zen.read(cb);
-octo.repos('philschatz', 'octokat.js').fetch(cb); // Fetch repo info
-octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
+// `POST /repos/:owner/:repo/issues/:number/comments` becomes:
+octo.repos(owner, repo).issues(number).comments.create(params)
 ```
 
-Or if you prefer OAuth:
+The last method should be a *verb method*.
+The verb method makes the async call and should either have a callback as the last argument
+or it returns a Promise (see [Promises or Callbacks](#promises-or-callbacks)).
 
-```js
-var octo = new Octokat({
-  token: "OAUTH_TOKEN"
-});
-```
+The basic structure of the *verb method* is:
 
-## In a browser using RequireJS
-
-```js
-define(['octokat'], function(Octokat) {
-  var octo = new Octokat({
-    username: "YOU_USER",
-    password: "YOUR_PASSWORD"
-  });
-});
-```
-
-## In Node.js
-
-Install instructions:
-
-    npm install octokat --save
-
-```js
-var Octokat = require('octokat');
-var octo = new Octokat({
-  username: "YOU_USER",
-  password: "YOUR_PASSWORD"
-});
-
-var cb = function (err, val) { console.log(val); };
-
-octo.zen.read(cb);
-octo.repos('philschatz', 'octokat.js').fetch(cb);    // Fetch repo info
-octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
-octo.me.starred('philschatz', 'octokat.js').remove(cb); // Un-Star a repo
-```
-
-## Using bower
-
-This file can be included using the bower package manager:
-
-    bower install octokat --save
+- `.foos.fetch({optionalStuff:...})` yields a list of items (possibly paginated)
+- `.foos(id).fetch(...)` yields a single item (issue, repo, user)
+- `.foos.create(...)` creates a new `foo`
+- `.foos(id).update(...)` updates an existing `foo`
+- `.foos(id).add()` adds an existing User/Repo (`id`) to the list
+- `.foos(id).remove()` removes a member from a list or deletes the object and yields a boolean indicating success
+- `.foos.contains(id)` tests membership in a list (yields true/false)
+- `.foos(id).read()` is similar to `.fetch()` but yields the text contents without the wrapper JSON
+- `.foos(id).readBinary()` is similar to `.read()` but yields binary data
 
 
 # Examples
 
-Here are some examples for using the library.
+Below are some examples for using the library.
+For a semi-autogenerated list of more examples see [./examples.md](./examples.md).
 
-## Using Callbacks or Promises
 
-```js
-var octo = new Octokat();
+## Chaining
 
-// Starring a repository using callbacks
-var cb = function (err, val) { console.log(val); };
-octo.me.starred('philschatz', 'octokat.js').add(cb);
+You construct the URL by chaining properties and methods together
+and an async call is made once a verb method is called (see below).
 
-// Starring a repository using Promises
-octo.me.starred('philschatz', 'octokat.js').add()
-.then(function(val) {
-  console.log('Starred!');
-});
+```coffee
+octo = new Octokat()
+repo = octo.repos('philschatz', 'octokat.js')
+# Check if the current user is a collaborator on a repo
+repo.collaborators.contains(USER)
+.then (isCollaborator) ->
+  # If not, then star the Repo
+  unless isCollaborator
+    repo.star.add()
+    .then () ->
+      # Done!
+```
+
+Or, update a specific comment:
+
+```coffee
+octo = new Octokat(token: ...)
+octo.repos('philschatz', 'octokat.js').issues(1).comments(123123).update(body: 'Hello')
+.then () ->
+  # Done!
+```
+
+
+## Promises or Callbacks
+
+This library supports Node.js-style callbacks as well as Promises.
+
+To use a callback, just specify it as the last argument to a method.
+To use a Promise, do not specify a callback and the return value will be a Promise.
+
+Example (get information on a repo):
+
+```coffee
+# Using callbacks
+octo.repos('philschatz', 'octokat.js').fetch (err, repo) ->
+  console.error(err) if err
+  # Do fancy stuff...
+
+# Using Promises
+octo.repos('philschatz', 'octokat.js').fetch()
+.then (repo) ->
+  # Do fancy stuff
+.then null, (err) -> console.error(err)
 ```
 
 
@@ -212,8 +212,80 @@ repo.contents('README.md').remove(config)
 });
 ```
 
+# Usage
 
-# Setup
+All asynchronous methods accept a Node.js-style callback
+**and** return a [Common-JS Promise](http://wiki.commonjs.org/wiki/Promises/A).
+
+## In a Browser
+
+Create an Octokat instance.
+
+```js
+var octo = new Octokat({
+  username: "USER_NAME",
+  password: "PASSWORD"
+});
+
+var cb = function (err, val) { console.log(val); };
+
+octo.zen.read(cb);
+octo.repos('philschatz', 'octokat.js').fetch(cb); // Fetch repo info
+octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
+```
+
+Or if you prefer OAuth:
+
+```js
+var octo = new Octokat({
+  token: "OAUTH_TOKEN"
+});
+```
+
+## In a browser using RequireJS
+
+```js
+define(['octokat'], function(Octokat) {
+  var octo = new Octokat({
+    username: "YOU_USER",
+    password: "YOUR_PASSWORD"
+  });
+});
+```
+
+## In Node.js
+
+Install instructions:
+
+```sh
+npm install octokat --save
+```
+
+```js
+var Octokat = require('octokat');
+var octo = new Octokat({
+  username: "YOU_USER",
+  password: "YOUR_PASSWORD"
+});
+
+// You can omit `cb` and use Promises instead
+var cb = function (err, val) { console.log(val); };
+
+octo.zen.read(cb);
+octo.repos('philschatz', 'octokat.js').fetch(cb);    // Fetch repo info
+octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
+octo.me.starred('philschatz', 'octokat.js').remove(cb); // Un-Star a repo
+```
+
+## Using bower
+
+This file can be included using the bower package manager:
+
+```sh
+bower install octokat --save
+```
+
+## Setup
 
 This is all you need to get up and running:
 
@@ -246,79 +318,8 @@ Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](h
 ```
 
 
-# Testing
-
-`npm test` will run the mocha tests for Node.js and the browser.
-Additionally, they can be run in the browser by starting a web server
-and going to [./test/index.html](http://philschatz.com/octokat.js/test).
-
 # Advanced Uses
 
-## Overview
-
-This library closely mirrors the <https://developer.github.com/v3> documentation.
-
-For example, `GET /repos/:owner/:repo` becomes `octo.repos(owner, repo).fetch()`
-and `POST /repos/:owner/:repo/issues/:number/comments` becomes `octo.repos(owner, repo).issues(number).comments.create(params)`.
-
-## Promises or Callbacks
-
-This library supports Node.js-style callbacks as well as Promises.
-
-To use a callback, just specify it as the last argument to a method.
-To use a Promise, do not specify a callback and the return value will be a Promise.
-
-Example (get information on a repo):
-
-```coffee
-# Using callbacks
-octo.repos('philschatz', 'octokat.js').fetch (err, repo) ->
-  console.error(err) if err
-  # Do fancy stuff...
-
-# Using Promises
-octo.repos('philschatz', 'octokat.js').fetch()
-.then (repo) ->
-  # Do fancy stuff
-.then null, (err) -> console.error(err)
-```
-
-## Chaining
-
-You construct the URL by chaining properties and methods together
-and an async call is made once a verb method is called (see below).
-
-Example:
-
-```coffee
-octo = new Octokat()
-repo = octo.repos('philschatz', 'octokat.js')
-# Check if the current user is a collaborator on a repo
-repo.collaborators.contains(USER)
-.then (isCollaborator) ->
-  # If not, then star the Repo
-  unless isCollaborator
-    repo.star.add()
-    .then () ->
-      # Done!
-```
-
-Or, update a specific comment:
-
-```coffee
-octo = new Octokat(token: ...)
-octo.repos('philschatz', 'octokat.js').issues(1).comments(123123).update(body: 'Hello')
-.then () ->
-  # Done!
-```
-The basic structure of these methods is:
-
-- `.foos.fetch({optionalStuff:...})` yields a list of items (possibly paginated)
-- `.foos(id).fetch(...)` yields a single item (issue, repo, user)
-- `.foos.contains(id)` tests membership in a list (yields true/false)
-- `.foos.create(...)` creates a new `foo`
-- `.foos(id).add()` adds an existing User/Repo to the list
-- `.foos(id).remove()` removes a member from a list or deletes the object and yields a boolean indicating success
 
 ## Hypermedia
 
@@ -373,24 +374,19 @@ var octo = new Octokat({
 });
 ```
 
-## Using Generators in Node.js 0.11 (or EcmaScript 6 browsers)
+## Using EcmaScript 6 Generators
 
 This requires Node.js 0.11 with the `--harmony-generators` flag:
 
 ```js
-var co = require('co');
 var Octokat = require('octokat');
 var octo = new Octokat();
 
-var fn = function *() {
-  var zen  = yield octo.zen.read();
-  var info = yield octo.repos('philschatz', 'octokat.js').fetch();
+var zen  = yield octo.zen.read();
+var info = yield octo.repos('philschatz', 'octokat.js').fetch();
 
-  console.log(zen);
-  console.log(info);
-};
-
-co(fn)();
+console.log(zen);
+console.log(info);
 ```
 
 ## Uploading Releases
@@ -417,6 +413,7 @@ repo.releases(123456).fetch()
 ## Development
 
 - Run `npm install`
+- Run `npm test` to run Mocha tests for Node.js and the browser
 - Run `grunt dist` to generate the files in the `./dist` directory
 
 The unit tests are named to illustrate examples of using the API.
