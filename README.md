@@ -1,4 +1,4 @@
-# Octokat.js [![Build Status](https://travis-ci.org/philschatz/octokat.js.png)](https://travis-ci.org/philschatz/octokat.js)
+# Octokat.js [![Build Status](https://travis-ci.org/philschatz/octokat.js.svg)](https://travis-ci.org/philschatz/octokat.js)
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
 It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor),
