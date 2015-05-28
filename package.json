@@ -50,5 +50,13 @@
     "promise",
     "ender"
   ],
-  "author": "Philip Schatz"
+  "author": "Philip Schatz",
+  "bugs": {
+    "url": "https://github.com/philschatz/octokat.js/issues"
+  },
+  "homepage": "https://github.com/philschatz/octokat.js",
+  "directories": {
+    "test": "test"
+  },
+  "license": "MIT"
 }
