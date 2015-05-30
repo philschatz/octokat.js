@@ -1,4 +1,6 @@
 # Octokat.js [![Build Status](https://travis-ci.org/philschatz/octokat.js.svg)](https://travis-ci.org/philschatz/octokat.js)
+[![Dependency Status](https://david-dm.org/philschatz/octokat.js/status.svg)](https://david-dm.org/philschatz/octokat.js)
+[![devDependency Status](https://david-dm.org/philschatz/octokat.js/dev-status.svg)](https://david-dm.org/philschatz/octokat.js#info=devDependencies)
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
 It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor),
@@ -313,7 +315,7 @@ and it will use their Promise API.
 Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](https://github.com/jakearchibald/es6-promise):
 
 ```html
-<script src="./node_modules/es6-promise/dist/promise-0.1.2.js"></script>
+<script src="./node_modules/es6-promise/dist/es6-promise.js"></script>
 <script src="./octokat.js"></script>
 ```
 
