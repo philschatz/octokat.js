@@ -59,10 +59,18 @@ Request = (clientOptions={}) ->
   clientOptions.usePostInsteadOfPatch ?= false
 
   # These are updated whenever a request is made
-  _listeners = []
+  emitter = clientOptions.emitter or
+    emit: ->
 
   # Cached responses are stored in this object keyed by `path`
   _cachedETags = {}
+
+  cacheHandler = clientOptions.cacheHandler or {
+    get: (method, path) ->
+      _cachedETags["#{method} #{path}"]
+    add: (method, path, eTag, data, status) ->
+      _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, status)
+  }
 
   # HTTP Request Abstraction
   # =======
@@ -100,8 +108,8 @@ Request = (clientOptions={}) ->
     headers['User-Agent'] = userAgent if userAgent
 
     # Send the ETag if re-requesting a URL
-    if "#{method} #{path}" of _cachedETags
-      headers['If-None-Match'] = _cachedETags["#{method} #{path}"].eTag
+    if cacheHandler.get(method, path)
+      headers['If-None-Match'] = cacheHandler.get(method, path).eTag
     else
       # The browser will sneak in a 'If-Modified-Since' header if the GET has been requested before
       # but for some reason the cached response does not seem to be available
@@ -146,17 +154,15 @@ Request = (clientOptions={}) ->
       rateLimit = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Limit')
       rateLimitRemaining = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Remaining')
 
-      for listener in _listeners
-        listener(rateLimitRemaining, rateLimit, method, path, data, options)
-
+      emitter.emit('request', rateLimitRemaining, rateLimit, method, path, data, options)
 
       unless err
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
         # If the response was a 304 then return the cached version
         if jqXHR.status is 304
-          if clientOptions.useETags and _cachedETags["#{method} #{path}"]
-            eTagResponse = _cachedETags["#{method} #{path}"]
+          if clientOptions.useETags and cacheHandler.get(method, path)
+            eTagResponse = cacheHandler.get(method, path)
 
             cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
           else
@@ -202,7 +208,7 @@ Request = (clientOptions={}) ->
           # Cache the response to reuse later
           if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
             eTag = jqXHR.getResponseHeader('ETag')
-            _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, jqXHR.status)
+            cacheHandler.add(method, path, eTag, data, jqXHR.status)
 
           cb(null, data, jqXHR.status, jqXHR)
 
