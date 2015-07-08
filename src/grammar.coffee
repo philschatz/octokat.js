@@ -215,6 +215,13 @@ URL_VALIDATOR = /// ^
           )?
         | maintenance # GET/POST
       )
+    | ([^/]+/){2} (
+          pull/ (
+            [0-9]+ (
+              \.diff
+            )
+          )
+        )
 
   )
   $
