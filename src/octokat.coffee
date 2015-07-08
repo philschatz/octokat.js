@@ -12,9 +12,8 @@ Octokat = (clientOptions={}, obj={}) ->
   # For each request, convert the JSON into Objects
   _request = Request(clientOptions)
 
+  replacer = new Replacer(request)
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
-    replacer = new Replacer(request)
-
     # Use a slightly convoluted syntax so browserify does not include the
     # NodeJS Buffer in the browser version.
     # data is a Buffer when uploading a release asset file
@@ -35,7 +34,8 @@ Octokat = (clientOptions={}, obj={}) ->
           Chainer(request, url, k, context, obj)
       return cb(null, obj)
 
-  path = ''
+  path = obj.url ? ''
+  obj = replacer.replace(obj) if obj
   Chainer(request, path, null, TREE_OPTIONS, obj)
 
   # Special case for `me`
