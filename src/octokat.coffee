@@ -7,7 +7,7 @@ Request = require './request'
 
 # Combine all the classes into one client
 
-Octokat = (clientOptions={}) ->
+Octokat = (clientOptions={}, obj={}) ->
 
   # For each request, convert the JSON into Objects
   _request = Request(clientOptions)
@@ -36,7 +36,6 @@ Octokat = (clientOptions={}) ->
       return cb(null, obj)
 
   path = ''
-  obj = {}
   Chainer(request, path, null, TREE_OPTIONS, obj)
 
   # Special case for `me`
