@@ -194,7 +194,7 @@ Request = (clientOptions={}) ->
             # Convert raw data to binary chopping off the higher-order bytes in each char.
             # Useful for Base64 encoding.
             converted = ''
-            for i in [0..data.length]
+            for i in [0...data.length]
               converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
 
             data = converted
