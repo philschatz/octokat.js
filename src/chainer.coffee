@@ -43,6 +43,7 @@ Chainer = (request, _path, name, contextTree, fn) ->
 
   verbs =
     fetch        : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {}, cb)
+    fetchAll     : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {all: true}, cb)
     read         : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {raw:true}, cb)
     readBinary   : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {raw:true, isBase64:true}, cb)
     remove       : (cb, config) ->   URL_TESTER(_path); request('DELETE', _path, config, {isBoolean:true}, cb)
