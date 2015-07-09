@@ -35,7 +35,7 @@ Octokat = (clientOptions={}) ->
           Chainer(request, url, k, context, obj)
 
       if options.all and obj.nextPage
-        obj.nextPage().then (more) ->
+        obj.nextPage.fetchAll().then (more) ->
           cb(null, obj.concat(more))
       else
         cb(null, obj)
