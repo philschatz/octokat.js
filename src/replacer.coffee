@@ -60,7 +60,7 @@ class Replacer
 
   # Convert things that end in `_url` to methods which return a Promise
   _replaceKeyValue: (acc, key, value) ->
-    if /_url$/.test(key)
+    if /_url$/.test(key) and key != 'html_url'
       fn = (cb, args...) =>
         # url can contain {name} or {/name} in the URL.
         # for every arg passed in, replace {...} with that arg
