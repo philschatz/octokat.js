@@ -7,7 +7,7 @@ Request = require './request'
 
 # Combine all the classes into one client
 
-Octokat = (clientOptions={}) ->
+Octokat = (clientOptions={}, obj={}) ->
 
   # For each request, convert the JSON into Objects
   _request = Request(clientOptions)
@@ -35,9 +35,18 @@ Octokat = (clientOptions={}) ->
           Chainer(request, url, k, context, obj)
       return cb(null, obj)
 
-  path = ''
-  obj = {}
-  Chainer(request, path, null, TREE_OPTIONS, obj)
+  if obj.url
+    replacer = new Replacer(request)
+    obj = replacer.replace(obj)
+    Chainer(request, obj.url, true, {}, obj)
+    for key, re of OBJECT_MATCHER
+      if re.test(obj.url)
+        context = TREE_OPTIONS
+        for k in key.split('.')
+          context = context[k]
+        Chainer(request, obj.url, k, context, obj)
+  else
+    Chainer(request, '', null, TREE_OPTIONS, obj)
 
   # Special case for `me`
   obj.me = obj.user
