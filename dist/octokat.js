@@ -730,6 +730,9 @@ Replacer = (function() {
         return function() {
           var args, cb, contentType, data, i, m, match, param, ref1, url;
           cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+          if (!(/\{/.test(value) || /_page_url$/.test(key))) {
+            console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method');
+          }
           url = value;
           i = 0;
           while (m = /(\{[^\}]+\})/.exec(url)) {
@@ -766,7 +769,10 @@ Replacer = (function() {
       fn = toPromise(fn);
       fn.url = value;
       newKey = key.substring(0, key.length - '_url'.length);
-      return acc[plus.camelize(newKey)] = fn;
+      acc[plus.camelize(newKey)] = fn;
+      if (!/\{/.test(value)) {
+        return acc[plus.camelize(key)] = value;
+      }
     } else if (/_at$/.test(key)) {
       return acc[plus.camelize(key)] = new Date(value);
     } else {
@@ -976,7 +982,7 @@ Request = function(clientOptions) {
           }
           if (method === 'GET' && options.isBase64) {
             converted = '';
-            for (i = l = 0, ref2 = data.length; 0 <= ref2 ? l <= ref2 : l >= ref2; i = 0 <= ref2 ? ++l : --l) {
+            for (i = l = 0, ref2 = data.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
               converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
             }
             data = converted;
