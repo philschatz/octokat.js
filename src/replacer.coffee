@@ -62,7 +62,7 @@ class Replacer
   # Convert things that end in `_url` to methods which return a Promise
   _replaceKeyValue: (acc, key, value) ->
     if /_url$/.test(key)
-      fn = (cb, args...) =>
+      fn = (args...) =>
         # url can contain {name} or {/name} in the URL.
         # for every arg passed in, replace {...} with that arg
         # and remove the rest (they may or may not be optional)
@@ -91,15 +91,12 @@ class Replacer
           url = url.replace(match, param)
           i++
 
-        if /upload_url$/.test(key)
-          # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
-          # Pull off the last 2 args to .upload()
-          [contentType, data]     = args[-2..]
-          @_request('POST', url, data, {contentType, raw:true}, cb)
-        else
-          @_request('GET', url, null, null, cb) # TODO: Heuristically set the isBoolean flag
+        key = key.replace(/_url$/, '')
+        context = TREE_OPTIONS
+        for k in key.split('.')
+          context = context[k]
+        Chainer(@_request, url, k, context, acc)
 
-      fn = toPromise(fn)
       fn.url = value
       newKey = key.substring(0, key.length-'_url'.length)
       acc[plus.camelize(newKey)] = fn
