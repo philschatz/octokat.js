@@ -12,7 +12,7 @@ Octokat = (clientOptions={}) ->
   # For each request, convert the JSON into Objects
   _request = Request(clientOptions)
 
-  request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
+  request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false, all:false}, cb) ->
     replacer = new Replacer(request)
 
     # Use a slightly convoluted syntax so browserify does not include the
@@ -33,7 +33,13 @@ Octokat = (clientOptions={}) ->
           for k in key.split('.')
             context = context[k]
           Chainer(request, url, k, context, obj)
-      return cb(null, obj)
+
+      if options.all and obj.nextPage
+        val = obj
+        obj.nextPage.fetchAll().then (more) ->
+          cb(null, [].concat(val, more))
+      else
+        cb(null, obj)
 
   path = ''
   obj = {}
