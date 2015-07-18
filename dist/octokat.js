@@ -768,7 +768,7 @@ Replacer = (function() {
       newKey = key.substring(0, key.length - '_url'.length);
       return acc[plus.camelize(newKey)] = fn;
     } else if (/_at$/.test(key)) {
-      return acc[plus.camelize(key)] = new Date(value);
+      return acc[plus.camelize(key)] = value ? new Date(value) : null;
     } else {
       return acc[plus.camelize(key)] = this.replace(value);
     }
@@ -976,7 +976,7 @@ Request = function(clientOptions) {
           }
           if (method === 'GET' && options.isBase64) {
             converted = '';
-            for (i = l = 0, ref2 = data.length; 0 <= ref2 ? l <= ref2 : l >= ref2; i = 0 <= ref2 ? ++l : --l) {
+            for (i = l = 0, ref2 = data.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
               converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
             }
             data = converted;
