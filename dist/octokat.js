@@ -506,7 +506,7 @@ module.exports = {
 
 },{}],5:[function(require,module,exports){
 (function (global){
-var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, plus, ref, toPromise;
+var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, plus, reChainChildren, ref, toPromise;
 
 plus = require('./plus');
 
@@ -519,6 +519,23 @@ Replacer = require('./replacer');
 Request = require('./request');
 
 toPromise = require('./helper-promise').toPromise;
+
+reChainChildren = function(request, url, obj) {
+  var context, i, k, key, len, re, ref1;
+  for (key in OBJECT_MATCHER) {
+    re = OBJECT_MATCHER[key];
+    if (re.test(obj.url)) {
+      context = TREE_OPTIONS;
+      ref1 = key.split('.');
+      for (i = 0, len = ref1.length; i < len; i++) {
+        k = ref1[i];
+        context = context[k];
+      }
+      Chainer(request, url, k, context, obj);
+    }
+  }
+  return obj;
+};
 
 Octokat = function(clientOptions) {
   var _request, obj, path, request;
@@ -540,7 +557,7 @@ Octokat = function(clientOptions) {
       data = replacer.uncamelize(data);
     }
     return _request(method, path, data, options, function(err, val) {
-      var context, i, k, key, len, obj, re, ref2, url;
+      var obj, url;
       if (err) {
         return cb(err);
       }
@@ -549,18 +566,7 @@ Octokat = function(clientOptions) {
       }
       obj = replacer.replace(val);
       url = obj.url || path;
-      for (key in OBJECT_MATCHER) {
-        re = OBJECT_MATCHER[key];
-        if (re.test(url)) {
-          context = TREE_OPTIONS;
-          ref2 = key.split('.');
-          for (i = 0, len = ref2.length; i < len; i++) {
-            k = ref2[i];
-            context = context[k];
-          }
-          Chainer(request, url, k, context, obj);
-        }
-      }
+      reChainChildren(request, url, obj);
       return cb(null, obj);
     });
   };
@@ -568,6 +574,18 @@ Octokat = function(clientOptions) {
   obj = {};
   Chainer(request, path, null, TREE_OPTIONS, obj);
   obj.me = obj.user;
+  obj.parse = function(jsonObj) {
+    var replacer;
+    if (jsonObj.url) {
+      replacer = new Replacer(request);
+      jsonObj = replacer.replace(jsonObj);
+      Chainer(request, jsonObj.url, true, {}, jsonObj);
+      reChainChildren(request, jsonObj.url, jsonObj);
+    } else {
+      Chainer(request, '', null, TREE_OPTIONS, jsonObj);
+    }
+    return jsonObj;
+  };
   obj.status = toPromise(function(cb) {
     return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
   });
@@ -976,7 +994,7 @@ Request = function(clientOptions) {
           }
           if (method === 'GET' && options.isBase64) {
             converted = '';
-            for (i = l = 0, ref2 = data.length; 0 <= ref2 ? l <= ref2 : l >= ref2; i = 0 <= ref2 ? ++l : --l) {
+            for (i = l = 0, ref2 = data.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
               converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
             }
             data = converted;

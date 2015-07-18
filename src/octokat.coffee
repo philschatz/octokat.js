@@ -7,6 +7,15 @@ Request = require './request'
 
 # Combine all the classes into one client
 
+reChainChildren = (request, url, obj) ->
+  for key, re of OBJECT_MATCHER
+    if re.test(obj.url)
+      context = TREE_OPTIONS
+      for k in key.split('.')
+        context = context[k]
+      Chainer(request, url, k, context, obj)
+  obj
+
 Octokat = (clientOptions={}) ->
 
   # For each request, convert the JSON into Objects
@@ -27,12 +36,7 @@ Octokat = (clientOptions={}) ->
 
       obj = replacer.replace(val)
       url = obj.url or path
-      for key, re of OBJECT_MATCHER
-        if re.test(url)
-          context = TREE_OPTIONS
-          for k in key.split('.')
-            context = context[k]
-          Chainer(request, url, k, context, obj)
+      reChainChildren(request, url, obj)
       return cb(null, obj)
 
   path = ''
@@ -41,6 +45,16 @@ Octokat = (clientOptions={}) ->
 
   # Special case for `me`
   obj.me = obj.user
+
+  obj.parse = (jsonObj) ->
+    if jsonObj.url
+      replacer = new Replacer(request)
+      jsonObj = replacer.replace(jsonObj)
+      Chainer(request, jsonObj.url, true, {}, jsonObj)
+      reChainChildren(request, jsonObj.url, jsonObj)
+    else
+      Chainer(request, '', null, TREE_OPTIONS, jsonObj)
+    jsonObj
 
   # Add the GitHub Status API https://status.github.com/api
   obj.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)
