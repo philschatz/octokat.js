@@ -42,6 +42,7 @@ class Replacer
     # If the URL matches one of the "Object" types (repo, user, comment)
     # then provide all of the same methods as `octo.repo(...)` would have on it
     url = acc.url
+    Chainer(@_request, url, true, null, acc) if url
     for key, re of OBJECT_MATCHER
       if re.test(url)
         context = TREE_OPTIONS
@@ -104,7 +105,8 @@ class Replacer
       acc[plus.camelize(newKey)] = fn
 
     else if /_at$/.test(key)
-      acc[plus.camelize(key)] = new Date(value)
+      # Ignore null dates so we do not get `Wed Dec 31 1969`
+      acc[plus.camelize(key)] = if value then new Date(value) else null
 
     else
       acc[plus.camelize(key)] = @replace(value)
