@@ -105,7 +105,8 @@ class Replacer
       acc[plus.camelize(newKey)] = fn
 
     else if /_at$/.test(key)
-      acc[plus.camelize(key)] = new Date(value)
+      # Ignore null dates so we do not get `Wed Dec 31 1969`
+      acc[plus.camelize(key)] = if value then new Date(value) else null
 
     else
       acc[plus.camelize(key)] = @replace(value)

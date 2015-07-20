@@ -692,6 +692,9 @@ Replacer = (function() {
       this._replaceKeyValue(acc, key, value);
     }
     url = acc.url;
+    if (url) {
+      Chainer(this._request, url, true, null, acc);
+    }
     for (key in OBJECT_MATCHER) {
       re = OBJECT_MATCHER[key];
       if (re.test(url)) {
@@ -772,7 +775,7 @@ Replacer = (function() {
       newKey = key.substring(0, key.length - '_url'.length);
       return acc[plus.camelize(newKey)] = fn;
     } else if (/_at$/.test(key)) {
-      return acc[plus.camelize(key)] = new Date(value);
+      return acc[plus.camelize(key)] = value ? new Date(value) : null;
     } else {
       return acc[plus.camelize(key)] = this.replace(value);
     }
@@ -987,7 +990,7 @@ Request = function(clientOptions) {
           }
           if (method === 'GET' && options.isBase64) {
             converted = '';
-            for (i = k = 0, ref2 = data.length; 0 <= ref2 ? k <= ref2 : k >= ref2; i = 0 <= ref2 ? ++k : --k) {
+            for (i = k = 0, ref2 = data.length; 0 <= ref2 ? k < ref2 : k > ref2; i = 0 <= ref2 ? ++k : --k) {
               converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
             }
             data = converted;
