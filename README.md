@@ -28,6 +28,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
   - [Enterprise APIs](#enterprise-apis)
   - [Using EcmaScript 6 Generators](#using-ecmascript-6-generators)
   - [Uploading Releases](#uploading-releases)
+  - [Parsing JSON](#parsing-json)
   - [Development](#development)
 
 
@@ -411,6 +412,10 @@ repo.releases(123456).fetch()
   });
 ```
 
+## Parsing JSON
+
+If you are using webhooks, the JSON returned by GitHub can be parsed using
+`octo.parse(json)` to return a rich object with all the methods Octokat provides.
 
 ## Development
 

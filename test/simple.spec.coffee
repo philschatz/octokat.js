@@ -127,6 +127,24 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
     before () ->
       STATE[GH] = client
 
+    describe 'Synchronous methods', () ->
+      it 'supports octo.parse(json)', () ->
+        json =
+          url: 'https://api.github.com/repos/philschatz/octokat.js'
+          foo_url: 'http://philschatz.com'
+          field: 'Hello there!'
+          bar:
+            baz_url: 'http://philschatz.com'
+        ret = client.parse(json)
+        expect(ret.field).to.equal(json.field)
+        expect(ret.url).to.equal(json.url)
+        expect(ret.foo.url).to.equal(json.foo_url)
+        # Make sure the parse recurses
+        expect(ret.bar.baz.url).to.equal(json.bar.baz_url)
+        # Make sure the obj was detected to be a repo
+        expect(ret.fetch).to.not.be.null
+        expect(ret.issues).to.not.be.null
+
     describe 'Miscellaneous APIs', () ->
       itIsOk(GH, 'zen.read')
       itIsOk(GH, 'octocat.read')
