@@ -63,6 +63,11 @@ class Replacer
   _replaceKeyValue: (acc, key, value) ->
     if /_url$/.test(key)
       fn = (cb, args...) =>
+        # Deprecate calling this function when the URL does not contain
+        # any template args.
+        unless /\{/.test(value) or /_page_url$/.test(key)
+          console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method')
+
         # url can contain {name} or {/name} in the URL.
         # for every arg passed in, replace {...} with that arg
         # and remove the rest (they may or may not be optional)
@@ -103,6 +108,10 @@ class Replacer
       fn.url = value
       newKey = key.substring(0, key.length-'_url'.length)
       acc[plus.camelize(newKey)] = fn
+      # add a camelCase URL field for retrieving non-templated URLs
+      # like `avatarUrl` and `htmlUrl`
+      unless /\{/.test(value)
+        acc[plus.camelize(key)] = value
 
     else if /_at$/.test(key)
       # Ignore null dates so we do not get `Wed Dec 31 1969`
