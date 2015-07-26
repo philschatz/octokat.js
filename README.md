@@ -3,8 +3,8 @@
 [![devDependency Status](https://david-dm.org/philschatz/octokat.js/dev-status.svg)](https://david-dm.org/philschatz/octokat.js#info=devDependencies)
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
-It is being developed in the context of [github-bookeditor](https://github.com/oerpub/github-bookeditor),
-an EPUB3 Textbook editor for GitHub.
+It is being developed in the context of an [EPUB3 Textbook editor for GitHub](https://github.com/oerpub/github-bookeditor)
+ and a [simple serverless kanban board](https://github.com/philschatz/gh-board) ([demo](http://philschatz.com/gh-board)).
 
 This package can be used in `nodejs` **or** in the browser as an AMD module or using browserify.
 
