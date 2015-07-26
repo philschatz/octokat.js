@@ -145,6 +145,10 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
         expect(ret.fetch).to.not.be.null
         expect(ret.issues).to.not.be.null
 
+      it 'supports .getPath as a verb', () ->
+        expect(client.repos(REPO_USER, REPO_NAME).getPath()).to.be.a('string')
+        expect(client.repos(REPO_USER, REPO_NAME).getPath()).to.equal("/repos/#{REPO_USER}/#{REPO_NAME}")
+
     describe 'Miscellaneous APIs', () ->
       itIsOk(GH, 'zen.read')
       itIsOk(GH, 'octocat.read')

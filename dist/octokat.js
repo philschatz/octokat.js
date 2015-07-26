@@ -101,6 +101,9 @@ Chainer = function(request, _path, name, contextTree, fn) {
       verbFunc = verbs[verbName];
       fn[verbName] = toPromise(verbFunc);
     }
+    fn.getPath = function() {
+      return _path;
+    };
   }
   if (typeof fn === 'function' || typeof fn === 'object') {
     fn1 = function(name) {
