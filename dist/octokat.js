@@ -669,7 +669,7 @@ Replacer = (function() {
   }
 
   Replacer.prototype.uncamelize = function(obj) {
-    var i, key, o, value;
+    var i, j, key, len, o, ref1, value;
     if (Array.isArray(obj)) {
       return (function() {
         var j, len, results;
@@ -682,7 +682,9 @@ Replacer = (function() {
       }).call(this);
     } else if (obj === Object(obj)) {
       o = {};
-      for (key in obj) {
+      ref1 = Object.keys(obj);
+      for (j = 0, len = ref1.length; j < len; j++) {
+        key = ref1[j];
         value = obj[key];
         o[plus.uncamelize(key)] = this.uncamelize(value);
       }
@@ -703,9 +705,11 @@ Replacer = (function() {
   };
 
   Replacer.prototype._replaceObject = function(orig) {
-    var acc, context, j, k, key, len, re, ref1, url, value;
+    var acc, context, j, k, key, l, len, len1, len2, n, re, ref1, ref2, ref3, url, value;
     acc = {};
-    for (key in orig) {
+    ref1 = Object.keys(orig);
+    for (j = 0, len = ref1.length; j < len; j++) {
+      key = ref1[j];
       value = orig[key];
       this._replaceKeyValue(acc, key, value);
     }
@@ -713,13 +717,15 @@ Replacer = (function() {
     if (url) {
       Chainer(this._request, url, true, null, acc);
     }
-    for (key in OBJECT_MATCHER) {
+    ref2 = Object.keys(OBJECT_MATCHER);
+    for (l = 0, len1 = ref2.length; l < len1; l++) {
+      key = ref2[l];
       re = OBJECT_MATCHER[key];
       if (re.test(url)) {
         context = TREE_OPTIONS;
-        ref1 = key.split('.');
-        for (j = 0, len = ref1.length; j < len; j++) {
-          k = ref1[j];
+        ref3 = key.split('.');
+        for (n = 0, len2 = ref3.length; n < len2; n++) {
+          k = ref3[n];
           context = context[k];
         }
         Chainer(this._request, url, k, context, acc);
@@ -729,7 +735,7 @@ Replacer = (function() {
   };
 
   Replacer.prototype._replaceArray = function(orig) {
-    var arr, item, key, value;
+    var arr, item, j, key, len, ref1, value;
     arr = (function() {
       var j, len, results;
       results = [];
@@ -739,7 +745,9 @@ Replacer = (function() {
       }
       return results;
     }).call(this);
-    for (key in orig) {
+    ref1 = Object.keys(orig);
+    for (j = 0, len = ref1.length; j < len; j++) {
+      key = ref1[j];
       value = orig[key];
       if (typeof key === 'string') {
         this._replaceKeyValue(arr, key, value);
