@@ -155,7 +155,8 @@ URL_VALIDATOR = /// ^
         | git/ (
               refs
             | refs / (
-                heads (/[^/]+)?
+                .+
+                | heads (/[^/]+)?
                 | tags (/[^/]+)?
               )
             | trees (/[^/]+)? # Can be a sha or a branch name

@@ -272,12 +272,16 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
 
         it '.git.refs.tags.fetch()', () ->
           STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags.fetch().then (tags) ->
-            expect(tags).to.be.an.array
+            expect(tags).to.be.a('array')
             expect(tags.length).to.equal(17)
 
         it '.git.refs.tags("v0.1.1").fetch()', () ->
           STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags('v0.1.1').fetch().then (tag) ->
-            expect(tag).to.be.an.array
+            expect(tag).to.be.a('object')
+
+        it '.git.refs("any/path").fetch() like pull/2/head refs on github', () ->
+          STATE[GH].repos('philschatz', 'octokat.js').git.refs('pull/2/head').fetch().then (pullRef) ->
+            expect(pullRef).to.be.a('object')
 
         it '.git.blobs.create("Hello")   and .blobs(sha).read()', (done) ->
           STATE[REPO].git.blobs.create({content:'Hello', encoding:'utf-8'})
