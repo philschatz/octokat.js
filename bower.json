@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "blanket": "#development",
-    "mocha": "~1.16.2",
+    "mocha": "~2.2.5",
     "requirejs": "~2.1.9",
     "require-cs": "~0.4.4",
     "coffee-script": ">=1.3"
