@@ -60,7 +60,7 @@ class Replacer
     # Convert the nextPage methods for paged results
     for key in Object.keys(orig)
       value = orig[key]
-      @_replaceKeyValue(arr, key, value) if typeof key is 'string'
+      @_replaceKeyValue(arr, key, value)
     arr
 
   # Convert things that end in `_url` to methods which return a Promise

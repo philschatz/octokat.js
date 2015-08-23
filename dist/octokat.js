@@ -749,9 +749,7 @@ Replacer = (function() {
     for (j = 0, len = ref1.length; j < len; j++) {
       key = ref1[j];
       value = orig[key];
-      if (typeof key === 'string') {
-        this._replaceKeyValue(arr, key, value);
-      }
+      this._replaceKeyValue(arr, key, value);
     }
     return arr;
   };
