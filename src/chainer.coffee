@@ -57,6 +57,8 @@ Chainer = (request, _path, name, contextTree, fn) ->
     for verbName, verbFunc of verbs
       fn[verbName] = toPromise(verbFunc)
 
+    # Provide a method for getting the URL path of a constructed request
+    fn.getPath = -> _path
 
   if typeof fn is 'function' or typeof fn is 'object'
     for name of contextTree or {}

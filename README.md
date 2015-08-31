@@ -84,6 +84,7 @@ The basic structure of the *verb method* is:
 - `.foos.contains(id)` tests membership in a list (yields true/false)
 - `.foos(id).read()` is similar to `.fetch()` but yields the text contents without the wrapper JSON
 - `.foos(id).readBinary()` is similar to `.read()` but yields binary data
+- `.foos.getPath()` is *synchronous* and returns the constructed path
 
 
 # Examples
