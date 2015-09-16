@@ -154,7 +154,11 @@ URL_VALIDATOR = /// ^
             )
         | git/ (
               refs
-            | refs / heads (/[^/]+)?
+            | refs / (
+                .+
+                | heads (/[^/]+)?
+                | tags (/[^/]+)?
+              )
             | trees (/[^/]+)? # Can be a sha or a branch name
             | blobs (/[a-f0-9]{40}$)?
             | commits (/[a-f0-9]{40}$)?
@@ -341,6 +345,7 @@ TREE_OPTIONS =
     'git':
       'refs':
         'heads'     : false
+        'tags'      : false
       'trees'       : false
       'blobs'       : false
       'commits'     : false
