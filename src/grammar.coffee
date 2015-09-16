@@ -93,7 +93,7 @@ URL_VALIDATOR = /// ^
           readme
         | tarball (/[^/]+)?
         | zipball (/[^/]+)?
-        | compare / [a-f0-9:]{40} \.{3} [a-f0-9:]{40}
+        | compare / ([^\.{3}]+) \.{3} ([^\.{3}]+)    # Can compare a tag, part of a commit sha, branch (with `/`)
         | deployments (/[0-9]+)?
         | deployments / [0-9]+ / statuses (/[0-9]+)?
         | hooks
