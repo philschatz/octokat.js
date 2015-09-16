@@ -16,6 +16,7 @@ define (require) ->
     LONG_TIMEOUT: 10 * 1000 # 10 seconds
     SHORT_TIMEOUT: 5 * 1000 # 5 seconds
 
+  config.Octokat = Octokat
   config.client = new Octokat {token:config.TOKEN}
   config.test_repo = "#{config.REPO_USER}/#{config.REPO_NAME}"
   config.test_github_login = config.USERNAME

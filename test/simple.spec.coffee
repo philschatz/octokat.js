@@ -1,5 +1,5 @@
 define = window?.define or (deps, cb) -> cb((require(dep.replace('cs!./', './')) for dep in deps)...)
-define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT}) ->
+define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT}) ->
 
   # NodeJS does not have a btoa
   btoa = @btoa or (str) ->
@@ -453,3 +453,15 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
         #     comment.issue()
         #     .then (v) ->
         #       done()
+
+  describe 'Allows disabling hypermedia conversion', () ->
+    it.only 'returns a simple JSON object when fetching a repository', (done) ->
+      client = new Octokat({token: TOKEN, disableHypermedia: true})
+      client.repos(REPO_USER, REPO_NAME).fetch()
+      .then (repo) ->
+        expect(repo.full_name).to.not.be.null
+        expect(repo.html_url).to.not.be.null
+        expect(repo.created_at).to.be.a('string')
+        # Serializing the object as JSON should work
+        JSON.stringify(repo)
+        done()

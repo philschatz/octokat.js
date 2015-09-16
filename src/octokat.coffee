@@ -18,8 +18,24 @@ reChainChildren = (request, url, obj) ->
 
 Octokat = (clientOptions={}) ->
 
+  {disableHypermedia} = clientOptions
+  # set defaults
+  disableHypermedia ?= false
+
   # For each request, convert the JSON into Objects
   _request = Request(clientOptions)
+
+  parse = (obj, path, request) ->
+    url = obj.url or path
+    if url
+      replacer = new Replacer(request)
+      obj = replacer.replace(obj)
+      Chainer(request, url, true, {}, obj)
+      reChainChildren(request, url, obj)
+    else
+      Chainer(request, '', null, TREE_OPTIONS, obj)
+    obj
+
 
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
     replacer = new Replacer(request)
@@ -34,27 +50,20 @@ Octokat = (clientOptions={}) ->
       return cb(err) if err
       return cb(null, val) if options.raw
 
-      obj = replacer.replace(val)
-      url = obj.url or path
-      reChainChildren(request, url, obj)
-      return cb(null, obj)
+      unless disableHypermedia
+        obj = parse(val, path, request)
+        return cb(null, obj)
+      else
+        return cb(null, val)
 
-  path = ''
   obj = {}
-  Chainer(request, path, null, TREE_OPTIONS, obj)
+  Chainer(request, '', null, TREE_OPTIONS, obj)
 
   # Special case for `me`
   obj.me = obj.user
 
   obj.parse = (jsonObj) ->
-    if jsonObj.url
-      replacer = new Replacer(request)
-      jsonObj = replacer.replace(jsonObj)
-      Chainer(request, jsonObj.url, true, {}, jsonObj)
-      reChainChildren(request, jsonObj.url, jsonObj)
-    else
-      Chainer(request, '', null, TREE_OPTIONS, jsonObj)
-    jsonObj
+    parse(jsonObj, '', request)
 
   # Add the GitHub Status API https://status.github.com/api
   obj.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)

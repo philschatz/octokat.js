@@ -327,6 +327,8 @@ Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](h
 ## Hypermedia
 
 GitHub provides URL patterns in its JSON responses. These are automatically converted into methods.
+You can disable this by setting `disableHypermedia: true` in the options when creating a `new Octokat(...)`.
+
 For example:
 
 ```coffee
