@@ -20,7 +20,8 @@ class Replacer
       return (@uncamelize(i) for i in obj)
     else if obj == Object(obj)
       o = {}
-      for key, value of obj
+      for key in Object.keys(obj)
+        value = obj[key]
         o[plus.uncamelize(key)] = @uncamelize(value)
       return o
     else
@@ -36,14 +37,16 @@ class Replacer
 
   _replaceObject: (orig) ->
     acc = {}
-    for key, value of orig
+    for key in Object.keys(orig)
+      value = orig[key]
       @_replaceKeyValue(acc, key, value)
 
     # If the URL matches one of the "Object" types (repo, user, comment)
     # then provide all of the same methods as `octo.repo(...)` would have on it
     url = acc.url
     Chainer(@_request, url, true, null, acc) if url
-    for key, re of OBJECT_MATCHER
+    for key in Object.keys(OBJECT_MATCHER)
+      re = OBJECT_MATCHER[key]
       if re.test(url)
         context = TREE_OPTIONS
         for k in key.split('.')
@@ -55,8 +58,9 @@ class Replacer
   _replaceArray: (orig) ->
     arr = (@replace(item) for item in orig)
     # Convert the nextPage methods for paged results
-    for key, value of orig
-      @_replaceKeyValue(arr, key, value) if typeof key is 'string'
+    for key in Object.keys(orig)
+      value = orig[key]
+      @_replaceKeyValue(arr, key, value)
     arr
 
   # Convert things that end in `_url` to methods which return a Promise
