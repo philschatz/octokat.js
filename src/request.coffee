@@ -163,6 +163,9 @@ Request = (clientOptions={}) ->
             remaining: rateLimitRemaining
             limit: rateLimit
             reset: rateLimitReset # Reset time is in seconds, not milliseconds
+
+        if jqXHR.getResponseHeader('X-OAuth-Scopes')
+          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
         emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status)
 
       unless err
