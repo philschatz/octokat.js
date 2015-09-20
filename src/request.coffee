@@ -180,15 +180,12 @@ Request = (clientOptions={}) ->
           else
             cb(null, jqXHR.responseText, status, jqXHR)
 
-        # If it was a boolean question and the server responded with 204
-        # return true.
-        else if jqXHR.status is 204 and options.isBoolean
-          # cb(null, true, status, jqXHR)
         # Respond with the redirect URL (for archive links)
         # TODO: implement a `followRedirects` flag
         else if jqXHR.status is 302
           cb(null, jqXHR.getResponseHeader('Location'))
-        else
+        # If it was a boolean question and the server responded with 204 ignore.
+        else unless jqXHR.status is 204 and options.isBoolean
           if jqXHR.responseText and ajaxConfig.dataType is 'json'
             data = JSON.parse(jqXHR.responseText)
 

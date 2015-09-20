@@ -1009,11 +1009,9 @@ Request = function(clientOptions) {
           } else {
             return cb(null, jqXHR.responseText, status, jqXHR);
           }
-        } else if (jqXHR.status === 204 && options.isBoolean) {
-
         } else if (jqXHR.status === 302) {
           return cb(null, jqXHR.getResponseHeader('Location'));
-        } else {
+        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
           if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
             data = JSON.parse(jqXHR.responseText);
             links = jqXHR.getResponseHeader('Link');
