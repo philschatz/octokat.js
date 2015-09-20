@@ -58,9 +58,8 @@ Request = (clientOptions={}) ->
   clientOptions.useETags ?= true
   clientOptions.usePostInsteadOfPatch ?= false
 
-  # These are updated whenever a request is made
-  emitter = clientOptions.emitter or
-    emit: ->
+  # These are updated whenever a request is made (optional)
+  emitter = clientOptions.emitter
 
   # Cached responses are stored in this object keyed by `path`
   _cachedETags = {}
@@ -147,14 +146,27 @@ Request = (clientOptions={}) ->
         204: () => cb(null, true)
         404: () => cb(null, false)
 
+    emitter?.emit('start', method, path, data, options)
+
     ajax ajaxConfig, (err, val) ->
 
       jqXHR = err or val
       # Fire listeners when the request completes or fails
-      rateLimit = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Limit')
-      rateLimitRemaining = parseFloat(jqXHR.getResponseHeader 'X-RateLimit-Remaining')
 
-      emitter.emit('request', rateLimitRemaining, rateLimit, method, path, data, options)
+      if emitter
+        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
+        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
+        rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
+
+        emitterRate =
+          rate:   # to match the JSON format of `GET /rate_limit`
+            remaining: rateLimitRemaining
+            limit: rateLimit
+            reset: rateLimitReset # Reset time is in seconds, not milliseconds
+
+        if jqXHR.getResponseHeader('X-OAuth-Scopes')
+          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
+        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status)
 
       unless err
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
@@ -168,15 +180,12 @@ Request = (clientOptions={}) ->
           else
             cb(null, jqXHR.responseText, status, jqXHR)
 
-        # If it was a boolean question and the server responded with 204
-        # return true.
-        else if jqXHR.status is 204 and options.isBoolean
-          # cb(null, true, status, jqXHR)
         # Respond with the redirect URL (for archive links)
         # TODO: implement a `followRedirects` flag
         else if jqXHR.status is 302
           cb(null, jqXHR.getResponseHeader('Location'))
-        else
+        # If it was a boolean question and the server responded with 204 ignore.
+        else unless jqXHR.status is 204 and options.isBoolean
           if jqXHR.responseText and ajaxConfig.dataType is 'json'
             data = JSON.parse(jqXHR.responseText)
 

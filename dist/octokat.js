@@ -894,9 +894,7 @@ Request = function(clientOptions) {
   if (clientOptions.usePostInsteadOfPatch == null) {
     clientOptions.usePostInsteadOfPatch = false;
   }
-  emitter = clientOptions.emitter || {
-    emit: function() {}
-  };
+  emitter = clientOptions.emitter;
   _cachedETags = {};
   cacheHandler = clientOptions.cacheHandler || {
     get: function(method, path) {
@@ -987,12 +985,28 @@ Request = function(clientOptions) {
         })(this)
       };
     }
+    if (emitter != null) {
+      emitter.emit('start', method, path, data, options);
+    }
     return ajax(ajaxConfig, function(err, val) {
-      var converted, discard, eTag, eTagResponse, href, i, j, jqXHR, json, k, len, links, part, rateLimit, rateLimitRemaining, ref, ref1, ref2, rel;
+      var converted, discard, eTag, eTagResponse, emitterRate, href, i, j, jqXHR, json, k, len, links, part, rateLimit, rateLimitRemaining, rateLimitReset, ref, ref1, ref2, rel;
       jqXHR = err || val;
-      rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
-      rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
-      emitter.emit('request', rateLimitRemaining, rateLimit, method, path, data, options);
+      if (emitter) {
+        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
+        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
+        rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
+        emitterRate = {
+          rate: {
+            remaining: rateLimitRemaining,
+            limit: rateLimit,
+            reset: rateLimitReset
+          }
+        };
+        if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
+          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
+        }
+        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status);
+      }
       if (!err) {
         if (jqXHR.status === 304) {
           if (clientOptions.useETags && cacheHandler.get(method, path)) {
@@ -1001,11 +1015,9 @@ Request = function(clientOptions) {
           } else {
             return cb(null, jqXHR.responseText, status, jqXHR);
           }
-        } else if (jqXHR.status === 204 && options.isBoolean) {
-
         } else if (jqXHR.status === 302) {
           return cb(null, jqXHR.getResponseHeader('Location'));
-        } else {
+        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
           if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
             data = JSON.parse(jqXHR.responseText);
             links = jqXHR.getResponseHeader('Link');
