@@ -455,7 +455,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         #       done()
 
   describe 'Allows disabling hypermedia conversion', () ->
-    it.only 'returns a simple JSON object when fetching a repository', (done) ->
+    it 'returns a simple JSON object when fetching a repository', (done) ->
       client = new Octokat({token: TOKEN, disableHypermedia: true})
       client.repos(REPO_USER, REPO_NAME).fetch()
       .then (repo) ->
