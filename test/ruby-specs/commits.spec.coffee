@@ -10,7 +10,7 @@ define (require) ->
     it "returns all commits", (done) ->
       client.repos("sferik/rails_admin").commits.fetch()
       .then (commits) ->
-        expect(commits[0].author).to.be.ok
+        expect(commits.items[0].author).to.be.ok
         done()
 
     # it "handles branch or sha argument", (done) ->
@@ -70,4 +70,3 @@ define (require) ->
         expect(comparison.baseCommit.sha).to.equal('0e0d7ae299514da692eb1cab741562c253d44188')
         expect(comparison.mergeBaseCommit.sha).to.equal('b7b37f75a80b8e84061cd45b246232ad958158f5')
         done()
-

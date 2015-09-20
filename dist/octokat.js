@@ -1031,11 +1031,16 @@ Request = function(clientOptions) {
           if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
             data = JSON.parse(jqXHR.responseText);
             links = jqXHR.getResponseHeader('Link');
-            ref = (links != null ? links.split(',') : void 0) || [];
-            for (j = 0, len = ref.length; j < len; j++) {
-              part = ref[j];
-              ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
-              data[rel + "_page_url"] = href;
+            if (links) {
+              data = {
+                items: data
+              };
+              ref = (links != null ? links.split(',') : void 0) || [];
+              for (j = 0, len = ref.length; j < len; j++) {
+                part = ref[j];
+                ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
+                data[rel + "_page_url"] = href;
+              }
             }
           } else {
             data = jqXHR.responseText;

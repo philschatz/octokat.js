@@ -343,14 +343,17 @@ octo.repos('philschatz', 'octokat.js').fetch()
 ## Paged Results
 
 If a `.fetch()` returns paged results then `nextPage()`, `previousPage()`, `firstPage()`
-and `lastPage()` are added to the returned Object. For example:
+and `lastPage()` are added to the returned Object and the page of results is in `.items:`. For example:
 
 ```coffee
 octo.repos('philschatz', 'octokat.js').commits.fetch()
-.then (someCommits) ->
-  someCommits.nextPage()
-  .then (moreCommits) ->
-    console.log('2nd page of results', moreCommits)
+.then (results) ->
+  console.log(results)
+  # The structure of `results` is:
+  # {items: [...], nextPage: fn, lastPage: fn}
+  results.nextPage()
+  .then (moreResults) ->
+    console.log('2nd page of results', moreResults.items)
 ```
 
 ## Preview new APIs
