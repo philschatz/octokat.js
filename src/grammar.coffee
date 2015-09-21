@@ -15,6 +15,7 @@ URL_VALIDATOR = /// ^
       zen
     | octocat
     | users
+    | organisations
     | issues
     | gists
     | emojis
@@ -231,6 +232,7 @@ URL_VALIDATOR = /// ^
 TREE_OPTIONS =
   'zen'         : false
   'octocat'     : false
+  'organisations': false
   'issues'      : false
   'emojis'      : false
   'markdown'    : false
