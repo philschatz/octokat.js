@@ -4,6 +4,7 @@ node_js:
   - "0.10"
   - "0.12"
   - "iojs"
+  - "4"
 # Drop multiple versions because there were interleavings on Travis
 #  - "0.8"
 
