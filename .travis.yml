@@ -3,9 +3,7 @@ language: node_js
 node_js:
   - "0.10"
   - "0.12"
-  - "iojs"
-# Drop multiple versions because there were interleavings on Travis
-#  - "0.8"
+  - "4"
 
 before_install:
   - npm install -g bower
