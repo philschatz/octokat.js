@@ -15,7 +15,7 @@ define (require) ->
     it "returns a list of comments for a specific commit", (done) ->
       client.repos("sferik/rails_admin").commits("629e9fd9d4df25528e84d31afdc8ebeb0f56fbb3").comments.fetch()
       .then (commit_comments) ->
-        expect(commit_comments[0].user.login).to.equal("bbenezech")
+        expect(commit_comments.items[0].user.login).to.equal("bbenezech")
         done()
 
     it "returns a single commit comment", (done) ->
@@ -28,7 +28,7 @@ define (require) ->
       before (done) ->
         client.repos(test_repo).commits.fetch()
         .then (commits) =>
-          @commit = commits[0]
+          @commit = commits.items[0]
           client.repos(test_repo).commits(@commit.sha).comments.create({body:":metal:\n:sparkles:\n:cake:"})
           .then (@commit_comment) =>
             done()

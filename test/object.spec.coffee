@@ -5,8 +5,8 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
     it 'has the same methods on octo.repos(REPO_ID).fetch().then(repo) as octo.me.repos.fetch().then(repos[0])', (done) ->
       client.me.repos.fetch()
       .then (repos) ->
-        expect(repos).to.not.be.empty
-        repos[0].forks.fetch()
+        expect(repos.items).to.not.be.empty
+        repos.items[0].forks.fetch()
         .then -> done()
 
     it 'has the same methods on octo.gists(ID).fetch().then(gist) as octo.gists.public.fetch().then(gists[0])', (done) ->

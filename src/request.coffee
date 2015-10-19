@@ -195,7 +195,7 @@ Request = (clientOptions={}) ->
             # Parse the Link headers
             # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
             links = jqXHR.getResponseHeader('Link')
-            if links # For paged results return an object instead of an array so we can add the first/next/etc links
+            if Array.isArray(data) # For paged results return an object instead of an array so we can add the first/next/etc links
               data = {items: data}
               for part in links?.split(',') or []
                 [discard, href, rel] = part.match(/<([^>]+)>;\ rel="([^"]+)"/)

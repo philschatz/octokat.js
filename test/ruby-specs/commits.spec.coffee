@@ -41,7 +41,8 @@ define (require) ->
     it "creates a commit", (done) ->
       client.repos(test_repo).commits.fetch()
       .then (commits) ->
-        last_commit = commits[commits.length-1]
+        {items} = commits
+        last_commit = items[items.length-1]
 
         client.repos(test_repo).git.commits.create({message: "My commit message", tree:last_commit.commit.tree.sha, parents:[last_commit.sha]})
         .then () -> done()
@@ -52,7 +53,8 @@ define (require) ->
         repo = client.repos(test_repo)
         repo.commits.fetch()
         .then (commits) ->
-          last_commit = commits[commits.length-1]
+          {items} = commits
+          last_commit = items[items.length-1]
           repo.git.refs.create({ref:"refs/heads/branch-to-merge", sha:last_commit.sha})
           .then (v) ->
             head = 'master'
