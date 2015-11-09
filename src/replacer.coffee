@@ -88,10 +88,13 @@ class Replacer
                 param = "/#{param}"
               when '?'
                 # Strip off the "{?" and the trailing "}"
-                # For example, the URL is `/assets{?name}`
+                # For example, the URL is `/assets{?name,label}`
                 #   which turns into `/assets?name=foo.zip`
                 # Used to upload releases via the repo releases API.
-                param = "?#{match[2..-2]}=#{param}"
+                # TODO: When match contains `,` or
+                # `args.length is 1` and args[0] is object match the args to those in the template
+                optionalNames = match[2..-2].split(',')
+                param = "?#{optionalNames[0]}=#{param}"
           else
             # Discard the remaining optional params in the URL
             param = ''

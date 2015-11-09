@@ -770,7 +770,7 @@ Replacer = (function() {
     if (/_url$/.test(key)) {
       fn = (function(_this) {
         return function() {
-          var args, cb, contentType, data, i, m, match, param, ref1, url;
+          var args, cb, contentType, data, i, m, match, optionalNames, param, ref1, url;
           cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
           if (!(/\{/.test(value) || /_page_url$/.test(key))) {
             console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method');
@@ -786,7 +786,8 @@ Replacer = (function() {
                   param = "/" + param;
                   break;
                 case '?':
-                  param = "?" + match.slice(2, -1) + "=" + param;
+                  optionalNames = match.slice(2, -1).split(',');
+                  param = "?" + optionalNames[0] + "=" + param;
               }
             } else {
               param = '';
