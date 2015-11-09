@@ -1,5 +1,6 @@
 plus = require './plus'
 {toPromise} = require './helper-promise'
+toQueryString = require './helper-querystring'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
 Chainer = require './chainer'
 
@@ -94,7 +95,13 @@ class Replacer
                 # TODO: When match contains `,` or
                 # `args.length is 1` and args[0] is object match the args to those in the template
                 optionalNames = match[2..-2].split(',')
-                param = "?#{optionalNames[0]}=#{param}"
+                # If param is a string then just use the 1st optionalName
+                if typeof param is 'string'
+                  param = "?#{optionalNames[0]}=#{param}"
+                else
+                  # TODO: validate the optionalNames
+                  param = toQueryString(param)
+
           else
             # Discard the remaining optional params in the URL
             param = ''

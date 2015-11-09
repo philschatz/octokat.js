@@ -8,19 +8,7 @@ plus = require('./plus');
 
 toPromise = require('./helper-promise').toPromise;
 
-toQueryString = function(options) {
-  var key, params, ref, value;
-  if (!options || options === {}) {
-    return '';
-  }
-  params = [];
-  ref = options || {};
-  for (key in ref) {
-    value = ref[key];
-    params.push(key + "=" + (encodeURIComponent(value)));
-  }
-  return "?" + (params.join('&'));
-};
+toQueryString = require('./helper-querystring');
 
 URL_TESTER = function(path) {
   var err;
@@ -123,7 +111,7 @@ Chainer = function(request, _path, name, contextTree, fn) {
 module.exports = Chainer;
 
 
-},{"./grammar":2,"./helper-promise":4,"./plus":6}],2:[function(require,module,exports){
+},{"./grammar":2,"./helper-promise":4,"./helper-querystring":5,"./plus":7}],2:[function(require,module,exports){
 var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
 
 URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
@@ -511,6 +499,26 @@ module.exports = {
 
 
 },{}],5:[function(require,module,exports){
+var toQueryString;
+
+toQueryString = function(options) {
+  var key, params, ref, value;
+  if (!options || options === {}) {
+    return '';
+  }
+  params = [];
+  ref = options || {};
+  for (key in ref) {
+    value = ref[key];
+    params.push(key + "=" + (encodeURIComponent(value)));
+  }
+  return "?" + (params.join('&'));
+};
+
+module.exports = toQueryString;
+
+
+},{}],6:[function(require,module,exports){
 (function (global){
 var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, plus, reChainChildren, ref, toPromise;
 
@@ -620,7 +628,7 @@ module.exports = Octokat;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":6,"./replacer":7,"./request":8}],6:[function(require,module,exports){
+},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":7,"./replacer":8,"./request":9}],7:[function(require,module,exports){
 var plus;
 
 plus = {
@@ -662,13 +670,15 @@ plus = {
 module.exports = plus;
 
 
-},{}],7:[function(require,module,exports){
-var Chainer, OBJECT_MATCHER, Replacer, TREE_OPTIONS, plus, ref, toPromise,
+},{}],8:[function(require,module,exports){
+var Chainer, OBJECT_MATCHER, Replacer, TREE_OPTIONS, plus, ref, toPromise, toQueryString,
   slice = [].slice;
 
 plus = require('./plus');
 
 toPromise = require('./helper-promise').toPromise;
+
+toQueryString = require('./helper-querystring');
 
 ref = require('./grammar'), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
 
@@ -787,7 +797,11 @@ Replacer = (function() {
                   break;
                 case '?':
                   optionalNames = match.slice(2, -1).split(',');
-                  param = "?" + optionalNames[0] + "=" + param;
+                  if (typeof param === 'string') {
+                    param = "?" + optionalNames[0] + "=" + param;
+                  } else {
+                    param = toQueryString(param);
+                  }
               }
             } else {
               param = '';
@@ -830,7 +844,7 @@ Replacer = (function() {
 module.exports = Replacer;
 
 
-},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":6}],8:[function(require,module,exports){
+},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./helper-querystring":5,"./plus":7}],9:[function(require,module,exports){
 var DEFAULT_HEADER, ETagResponse, Request, ajax, base64encode, userAgent;
 
 base64encode = require('./helper-base64');
@@ -1079,5 +1093,5 @@ Request = function(clientOptions) {
 module.exports = Request;
 
 
-},{"./grammar":2,"./helper-base64":3}]},{},[5])(5)
+},{"./grammar":2,"./helper-base64":3}]},{},[6])(6)
 });
