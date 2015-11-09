@@ -780,7 +780,7 @@ Replacer = (function() {
     if (/_url$/.test(key)) {
       fn = (function(_this) {
         return function() {
-          var args, cb, contentType, data, i, m, match, optionalNames, param, ref1, url;
+          var args, cb, contentType, data, i, j, len, m, match, optionalNames, param, paramName, ref1, ref2, url;
           cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
           if (!(/\{/.test(value) || /_page_url$/.test(key))) {
             console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method');
@@ -797,10 +797,20 @@ Replacer = (function() {
                   break;
                 case '?':
                   optionalNames = match.slice(2, -1).split(',');
-                  if (typeof param === 'string') {
-                    param = "?" + optionalNames[0] + "=" + param;
-                  } else {
+                  if (typeof param === 'object') {
+                    if (Object.keys(param).length === 0) {
+                      console.warn('Must pass in a dictionary with at least one key when there are multiple optional params');
+                    }
+                    ref1 = Object.keys(param);
+                    for (j = 0, len = ref1.length; j < len; j++) {
+                      paramName = ref1[j];
+                      if (optionalNames.indexOf(paramName) < 0) {
+                        console.warn("Invalid parameter '" + paramName + "' passed in as argument");
+                      }
+                    }
                     param = toQueryString(param);
+                  } else {
+                    param = "?" + optionalNames[0] + "=" + param;
                   }
               }
             } else {
@@ -813,7 +823,7 @@ Replacer = (function() {
             i++;
           }
           if (/upload_url$/.test(key)) {
-            ref1 = args.slice(-2), contentType = ref1[0], data = ref1[1];
+            ref2 = args.slice(-2), contentType = ref2[0], data = ref2[1];
             return _this._request('POST', url, data, {
               contentType: contentType,
               raw: true

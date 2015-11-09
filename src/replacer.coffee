@@ -96,11 +96,16 @@ class Replacer
                 # `args.length is 1` and args[0] is object match the args to those in the template
                 optionalNames = match[2..-2].split(',')
                 # If param is a string then just use the 1st optionalName
-                if typeof param is 'string'
-                  param = "?#{optionalNames[0]}=#{param}"
-                else
+                if typeof param is 'object'
                   # TODO: validate the optionalNames
+                  if Object.keys(param).length is 0
+                    console.warn('Must pass in a dictionary with at least one key when there are multiple optional params')
+                  for paramName in Object.keys(param)
+                    if optionalNames.indexOf(paramName) < 0
+                      console.warn("Invalid parameter '#{paramName}' passed in as argument")
                   param = toQueryString(param)
+                else
+                  param = "?#{optionalNames[0]}=#{param}"
 
           else
             # Discard the remaining optional params in the URL
