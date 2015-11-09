@@ -116,6 +116,7 @@ module.exports = (grunt) ->
           'dist/node/grammar.js'        : 'src/grammar.coffee'
           'dist/node/helper-base64.js'  : 'src/helper-base64.coffee'
           'dist/node/helper-promise.js' : 'src/helper-promise.coffee'
+          'dist/node/helper-querystring.js' : 'src/helper-querystring.coffee'
           'dist/node/octokat.js'        : 'src/octokat.coffee'
           'dist/node/plus.js'           : 'src/plus.coffee'
           'dist/node/replacer.js'       : 'src/replacer.coffee'
