@@ -25,12 +25,13 @@ Octokat = (clientOptions={}) ->
   # For each request, convert the JSON into Objects
   _request = Request(clientOptions)
 
-  parse = (obj, path, request) ->
+  parse = (obj, path, request, isChainRoot=false) ->
     url = obj.url or path
     if url
       replacer = new Replacer(request)
       obj = replacer.replace(obj)
-      Chainer(request, url, true, {}, obj)
+      if isChainRoot
+        Chainer(request, url, true, {}, obj)
       reChainChildren(request, url, obj)
     else
       Chainer(request, '', null, TREE_OPTIONS, obj)
@@ -51,7 +52,7 @@ Octokat = (clientOptions={}) ->
       return cb(null, val) if options.raw
 
       unless disableHypermedia
-        obj = parse(val, path, request)
+        obj = parse(val, path, request, false) # false == isChainRoot
         return cb(null, obj)
       else
         return cb(null, val)

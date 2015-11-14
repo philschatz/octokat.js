@@ -561,13 +561,18 @@ Octokat = function(clientOptions) {
     disableHypermedia = false;
   }
   _request = Request(clientOptions);
-  parse = function(obj, path, request) {
+  parse = function(obj, path, request, isChainRoot) {
     var replacer, url;
+    if (isChainRoot == null) {
+      isChainRoot = false;
+    }
     url = obj.url || path;
     if (url) {
       replacer = new Replacer(request);
       obj = replacer.replace(obj);
-      Chainer(request, url, true, {}, obj);
+      if (isChainRoot) {
+        Chainer(request, url, true, {}, obj);
+      }
       reChainChildren(request, url, obj);
     } else {
       Chainer(request, '', null, TREE_OPTIONS, obj);
@@ -596,7 +601,7 @@ Octokat = function(clientOptions) {
         return cb(null, val);
       }
       if (!disableHypermedia) {
-        obj = parse(val, path, request);
+        obj = parse(val, path, request, false);
         return cb(null, obj);
       } else {
         return cb(null, val);
@@ -1057,11 +1062,16 @@ Request = function(clientOptions) {
           if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
             data = JSON.parse(jqXHR.responseText);
             links = jqXHR.getResponseHeader('Link');
-            ref = (links != null ? links.split(',') : void 0) || [];
-            for (j = 0, len = ref.length; j < len; j++) {
-              part = ref[j];
-              ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
-              data[rel + "_page_url"] = href;
+            if (Array.isArray(data)) {
+              data = {
+                items: data
+              };
+              ref = (links != null ? links.split(',') : void 0) || [];
+              for (j = 0, len = ref.length; j < len; j++) {
+                part = ref[j];
+                ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
+                data[rel + "_page_url"] = href;
+              }
             }
           } else {
             data = jqXHR.responseText;

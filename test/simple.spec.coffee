@@ -272,8 +272,8 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
 
         it '.git.refs.tags.fetch()', () ->
           STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags.fetch().then (tags) ->
-            expect(tags).to.be.a('array')
-            expect(tags.length).to.equal(17)
+            expect(tags.items).to.be.a('array')
+            expect(tags.items.length).to.equal(17)
 
         it '.git.refs.tags("v0.1.1").fetch()', () ->
           STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags('v0.1.1').fetch().then (tag) ->
