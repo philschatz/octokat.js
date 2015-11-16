@@ -128,6 +128,18 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
       STATE[GH] = client
 
     describe 'Synchronous methods', () ->
+      it "supports octo.fromUrl('https://api.github.com/repos/#{REPO_USER}/#{REPO_NAME}')", (done) ->
+        client.fromUrl("https://api.github.com/repos/#{REPO_USER}/#{REPO_NAME}")
+        .fetch().then (val) ->
+          expect(val).to.not.be.null
+          done()
+
+      it "supports octo.fromUrl('/repos/#{REPO_USER}/#{REPO_NAME}')", (done) ->
+        client.fromUrl("/repos/#{REPO_USER}/#{REPO_NAME}")
+        .fetch().then (val) ->
+          expect(val).to.not.be.null
+          done()
+
       it 'supports octo.parse(json)', () ->
         json =
           url: 'https://api.github.com/repos/philschatz/octokat.js'

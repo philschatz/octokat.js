@@ -1,6 +1,7 @@
 plus = require './plus'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
 Chainer = require './chainer'
+injectVerbMethods = require './verb-methods'
 Replacer = require './replacer'
 Request = require './request'
 {toPromise} = require './helper-promise'
@@ -16,25 +17,24 @@ reChainChildren = (request, url, obj) ->
       Chainer(request, url, k, context, obj)
   obj
 
+
+parse = (obj, path, request) ->
+  url = obj.url or path
+  if url
+    replacer = new Replacer(request)
+    obj = replacer.replace(obj)
+    Chainer(request, url, true, {}, obj)
+    reChainChildren(request, url, obj)
+  else
+    Chainer(request, '', null, TREE_OPTIONS, obj)
+  obj
+
+
 Octokat = (clientOptions={}) ->
 
   {disableHypermedia} = clientOptions
   # set defaults
   disableHypermedia ?= false
-
-  # For each request, convert the JSON into Objects
-  _request = Request(clientOptions)
-
-  parse = (obj, path, request) ->
-    url = obj.url or path
-    if url
-      replacer = new Replacer(request)
-      obj = replacer.replace(obj)
-      Chainer(request, url, true, {}, obj)
-      reChainChildren(request, url, obj)
-    else
-      Chainer(request, '', null, TREE_OPTIONS, obj)
-    obj
 
 
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
@@ -45,6 +45,9 @@ Octokat = (clientOptions={}) ->
     # data is a Buffer when uploading a release asset file
     if data and not global?['Buffer']?.isBuffer(data)
       data = replacer.uncamelize(data)
+
+    # For each request, convert the JSON into Objects
+    _request = Request(clientOptions)
 
     return _request method, path, data, options, (err, val) ->
       return cb(err) if err
@@ -64,6 +67,11 @@ Octokat = (clientOptions={}) ->
 
   obj.parse = (jsonObj) ->
     parse(jsonObj, '', request)
+
+  obj.fromUrl = (path) ->
+    ret = {}
+    injectVerbMethods(request, path, ret)
+    ret
 
   # Add the GitHub Status API https://status.github.com/api
   obj.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)
