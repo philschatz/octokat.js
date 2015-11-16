@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "VCR_MODE=cache grunt test --verbose",
-    "dist": "grunt dist --verbose",
+    "dist": "webpack -v --progress",
     "update": "bower update",
     "bump": "grunt release",
     "blanket": {
@@ -19,9 +19,10 @@
     "xmlhttprequest": "~1.8.0"
   },
   "devDependencies": {
-    "browserify": "^12.0.1",
-    "chai": "~3.4.1",
-    "coffee-script": "^1.10.0",
+    "browserify": "^10.2.3",
+    "chai": "~2.3.0",
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.9.3",
     "coffeeify": "^1.1.0",
     "grunt": "~0.4.5",
     "grunt-browserify": "^4.0.1",
@@ -37,7 +38,8 @@
     "octokat-fixtures": "git://github.com/philschatz/octokat-fixtures",
     "sepia": "~2.0.1",
     "sepia-js": "git://github.com/philschatz/sepia.js",
-    "watchify": "^3.2.1"
+    "watchify": "^3.2.1",
+    "webpack": "^1.12.6"
   },
   "repository": {
     "type": "git",
