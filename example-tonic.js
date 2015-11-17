@@ -13,3 +13,6 @@ openIssues = await repoInfo.issues.fetch({state: 'open'})
 
 // Output all the issues
 openIssues.map(function(issue) { return issue.title; })
+
+
+// For more examples see https://github.com/philschatz/octokat.js/blob/master/examples.md
