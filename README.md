@@ -2,7 +2,7 @@
 [![Dependency Status](https://david-dm.org/philschatz/octokat.js/status.svg)](https://david-dm.org/philschatz/octokat.js)
 [![devDependency Status](https://david-dm.org/philschatz/octokat.js/dev-status.svg)](https://david-dm.org/philschatz/octokat.js#info=devDependencies)
 
-[Try it out in your browser!](https://tonicdev.com/npm/octokat) (REPL)
+<a href="https://tonicdev.com/npm/octokat" target="_window">Try it out in your browser!</a> (REPL)
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
 It is being developed in the context of an [EPUB3 Textbook editor for GitHub](https://github.com/oerpub/github-bookeditor)
