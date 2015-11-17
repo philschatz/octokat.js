@@ -121,6 +121,7 @@ module.exports = (grunt) ->
           'dist/node/plus.js'           : 'src/plus.coffee'
           'dist/node/replacer.js'       : 'src/replacer.coffee'
           'dist/node/request.js'        : 'src/request.coffee'
+          'dist/node/verb-methods.js'   : 'src/verb-methods.coffee'
 
 
   # Dependencies

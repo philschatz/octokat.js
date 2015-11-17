@@ -29,6 +29,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
   - [Using EcmaScript 6 Generators](#using-ecmascript-6-generators)
   - [Uploading Releases](#uploading-releases)
   - [Parsing JSON](#parsing-json)
+  - [Using URLs Directly](#using-urls-directly)
   - [Development](#development)
 
 
@@ -418,6 +419,20 @@ repo.releases(123456).fetch()
 
 If you are using webhooks, the JSON returned by GitHub can be parsed using
 `octo.parse(json)` to return a rich object with all the methods Octokat provides.
+
+## Using URLs Directly
+
+Instead of using Octokat to construct URLs, you can construct them yourself and
+still use Octokat for sending authentication information, caching, pagination,
+and parsing Hypermedia.
+
+```js
+// Specify the entire URL
+octo.fromUrl("https://api.github.com/repos/philschatz/octokat.js/issues/1").fetch(cb);
+
+// Or, just the path
+octo.fromUrl("/repos/philschatz/octokat.js/issues").fetch({state: 'open'}, cb);
+```
 
 ## Development
 

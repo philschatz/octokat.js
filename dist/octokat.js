@@ -1,25 +1,13 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Octokat = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Chainer, URL_TESTER, URL_VALIDATOR, plus, toPromise, toQueryString,
+var Chainer, injectVerbMethods, plus,
   slice = [].slice;
-
-URL_VALIDATOR = require('./grammar').URL_VALIDATOR;
 
 plus = require('./plus');
 
-toPromise = require('./helper-promise').toPromise;
+injectVerbMethods = require('./verb-methods');
 
-toQueryString = require('./helper-querystring');
-
-URL_TESTER = function(path) {
-  var err;
-  if (!URL_VALIDATOR.test(path)) {
-    err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
-    return console.warn(err);
-  }
-};
-
-Chainer = function(request, _path, name, contextTree, fn) {
-  var fn1, verbFunc, verbName, verbs;
+Chainer = function(request, path, name, contextTree, fn) {
+  var fn1;
   if (fn == null) {
     fn = function() {
       var args, separator;
@@ -32,64 +20,10 @@ Chainer = function(request, _path, name, contextTree, fn) {
       } else {
         separator = '/';
       }
-      return Chainer(request, _path + "/" + (args.join(separator)), name, contextTree);
+      return Chainer(request, path + "/" + (args.join(separator)), name, contextTree);
     };
   }
-  verbs = {
-    fetch: function(cb, config) {
-      URL_TESTER(_path);
-      return request('GET', "" + _path + (toQueryString(config)), null, {}, cb);
-    },
-    read: function(cb, config) {
-      URL_TESTER(_path);
-      return request('GET', "" + _path + (toQueryString(config)), null, {
-        raw: true
-      }, cb);
-    },
-    readBinary: function(cb, config) {
-      URL_TESTER(_path);
-      return request('GET', "" + _path + (toQueryString(config)), null, {
-        raw: true,
-        isBase64: true
-      }, cb);
-    },
-    remove: function(cb, config) {
-      URL_TESTER(_path);
-      return request('DELETE', _path, config, {
-        isBoolean: true
-      }, cb);
-    },
-    create: function(cb, config, isRaw) {
-      URL_TESTER(_path);
-      return request('POST', _path, config, {
-        raw: isRaw
-      }, cb);
-    },
-    update: function(cb, config) {
-      URL_TESTER(_path);
-      return request('PATCH', _path, config, null, cb);
-    },
-    add: function(cb, config) {
-      URL_TESTER(_path);
-      return request('PUT', _path, config, {
-        isBoolean: true
-      }, cb);
-    },
-    contains: function() {
-      var args, cb;
-      cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-      URL_TESTER(_path);
-      return request('GET', _path + "/" + (args.join('/')), null, {
-        isBoolean: true
-      }, cb);
-    }
-  };
-  if (name) {
-    for (verbName in verbs) {
-      verbFunc = verbs[verbName];
-      fn[verbName] = toPromise(verbFunc);
-    }
-  }
+  injectVerbMethods(request, path, fn);
   if (typeof fn === 'function' || typeof fn === 'object') {
     fn1 = function(name) {
       delete fn[plus.camelize(name)];
@@ -97,7 +31,7 @@ Chainer = function(request, _path, name, contextTree, fn) {
         configurable: true,
         enumerable: true,
         get: function() {
-          return Chainer(request, _path + "/" + name, name, contextTree[name]);
+          return Chainer(request, path + "/" + name, name, contextTree[name]);
         }
       });
     };
@@ -111,7 +45,7 @@ Chainer = function(request, _path, name, contextTree, fn) {
 module.exports = Chainer;
 
 
-},{"./grammar":2,"./helper-promise":4,"./helper-querystring":5,"./plus":7}],2:[function(require,module,exports){
+},{"./plus":7,"./verb-methods":10}],2:[function(require,module,exports){
 var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
 
 URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
@@ -520,13 +454,15 @@ module.exports = toQueryString;
 
 },{}],6:[function(require,module,exports){
 (function (global){
-var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, plus, reChainChildren, ref, toPromise;
+var Chainer, OBJECT_MATCHER, Octokat, Replacer, Request, TREE_OPTIONS, injectVerbMethods, parse, plus, reChainChildren, ref, toPromise;
 
 plus = require('./plus');
 
 ref = require('./grammar'), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
 
 Chainer = require('./chainer');
+
+injectVerbMethods = require('./verb-methods');
 
 Replacer = require('./replacer');
 
@@ -551,8 +487,22 @@ reChainChildren = function(request, url, obj) {
   return obj;
 };
 
+parse = function(obj, path, request) {
+  var replacer, url;
+  url = obj.url || path;
+  if (url) {
+    replacer = new Replacer(request);
+    obj = replacer.replace(obj);
+    Chainer(request, url, true, {}, obj);
+    reChainChildren(request, url, obj);
+  } else {
+    Chainer(request, '', null, TREE_OPTIONS, obj);
+  }
+  return obj;
+};
+
 Octokat = function(clientOptions) {
-  var _request, disableHypermedia, obj, parse, request;
+  var disableHypermedia, obj, request;
   if (clientOptions == null) {
     clientOptions = {};
   }
@@ -560,22 +510,8 @@ Octokat = function(clientOptions) {
   if (disableHypermedia == null) {
     disableHypermedia = false;
   }
-  _request = Request(clientOptions);
-  parse = function(obj, path, request) {
-    var replacer, url;
-    url = obj.url || path;
-    if (url) {
-      replacer = new Replacer(request);
-      obj = replacer.replace(obj);
-      Chainer(request, url, true, {}, obj);
-      reChainChildren(request, url, obj);
-    } else {
-      Chainer(request, '', null, TREE_OPTIONS, obj);
-    }
-    return obj;
-  };
   request = function(method, path, data, options, cb) {
-    var ref1, replacer;
+    var _request, ref1, replacer;
     if (options == null) {
       options = {
         raw: false,
@@ -587,6 +523,7 @@ Octokat = function(clientOptions) {
     if (data && !(typeof global !== "undefined" && global !== null ? (ref1 = global['Buffer']) != null ? ref1.isBuffer(data) : void 0 : void 0)) {
       data = replacer.uncamelize(data);
     }
+    _request = Request(clientOptions);
     return _request(method, path, data, options, function(err, val) {
       var obj;
       if (err) {
@@ -609,6 +546,12 @@ Octokat = function(clientOptions) {
   obj.parse = function(jsonObj) {
     return parse(jsonObj, '', request);
   };
+  obj.fromUrl = function(path) {
+    var ret;
+    ret = {};
+    injectVerbMethods(request, path, ret);
+    return ret;
+  };
   obj.status = toPromise(function(cb) {
     return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
   });
@@ -628,7 +571,7 @@ module.exports = Octokat;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":7,"./replacer":8,"./request":9}],7:[function(require,module,exports){
+},{"./chainer":1,"./grammar":2,"./helper-promise":4,"./plus":7,"./replacer":8,"./request":9,"./verb-methods":10}],7:[function(require,module,exports){
 var plus;
 
 plus = {
@@ -1103,5 +1046,84 @@ Request = function(clientOptions) {
 module.exports = Request;
 
 
-},{"./grammar":2,"./helper-base64":3}]},{},[6])(6)
+},{"./grammar":2,"./helper-base64":3}],10:[function(require,module,exports){
+var URL_TESTER, URL_VALIDATOR, injectVerbMethods, toPromise, toQueryString,
+  slice = [].slice;
+
+URL_VALIDATOR = require('./grammar').URL_VALIDATOR;
+
+toPromise = require('./helper-promise').toPromise;
+
+toQueryString = require('./helper-querystring');
+
+URL_TESTER = function(path) {
+  var err;
+  if (!URL_VALIDATOR.test(path)) {
+    err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+    return console.warn(err);
+  }
+};
+
+injectVerbMethods = function(request, path, obj) {
+  var results, verbFunc, verbName, verbs;
+  verbs = {
+    fetch: function(cb, config) {
+      return request('GET', "" + path + (toQueryString(config)), null, {}, cb);
+    },
+    read: function(cb, config) {
+      return request('GET', "" + path + (toQueryString(config)), null, {
+        raw: true
+      }, cb);
+    },
+    readBinary: function(cb, config) {
+      return request('GET', "" + path + (toQueryString(config)), null, {
+        raw: true,
+        isBase64: true
+      }, cb);
+    },
+    remove: function(cb, config) {
+      return request('DELETE', path, config, {
+        isBoolean: true
+      }, cb);
+    },
+    create: function(cb, config, isRaw) {
+      return request('POST', path, config, {
+        raw: isRaw
+      }, cb);
+    },
+    update: function(cb, config) {
+      return request('PATCH', path, config, null, cb);
+    },
+    add: function(cb, config) {
+      return request('PUT', path, config, {
+        isBoolean: true
+      }, cb);
+    },
+    contains: function() {
+      var args, cb;
+      cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+      return request('GET', path + "/" + (args.join('/')), null, {
+        isBoolean: true
+      }, cb);
+    }
+  };
+  results = [];
+  for (verbName in verbs) {
+    verbFunc = verbs[verbName];
+    results.push((function(verbName, verbFunc) {
+      return obj[verbName] = function() {
+        var args;
+        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+        URL_TESTER(path);
+        return toPromise(verbFunc).apply(null, args);
+      };
+    })(verbName, verbFunc));
+  }
+  return results;
+};
+
+module.exports = injectVerbMethods;
+
+
+},{"./grammar":2,"./helper-promise":4,"./helper-querystring":5}]},{},[6])(6)
 });

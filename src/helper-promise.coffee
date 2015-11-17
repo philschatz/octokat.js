@@ -85,7 +85,7 @@ else
 toPromise = (orig) ->
   return (args...) ->
     last = args[args.length - 1]
-    if typeof last is 'function'
+    if typeof last is 'function' # The last arg is a callback function
       args.pop()
       return orig(last, args...)
     else if newPromise

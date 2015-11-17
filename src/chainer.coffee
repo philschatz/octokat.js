@@ -1,7 +1,5 @@
-{URL_VALIDATOR} = require './grammar'
 plus = require './plus'
-{toPromise} = require './helper-promise'
-toQueryString = require './helper-querystring'
+injectVerbMethods = require './verb-methods'
 
 # Daisy-Chainer
 # ===============================
@@ -9,15 +7,7 @@ toQueryString = require './helper-querystring'
 # Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
 # Constructs a URL for the verb methods (like `.fetch` and `.create`).
 
-
-# Test if the path is constructed correctly
-URL_TESTER = (path) ->
-  unless URL_VALIDATOR.test(path)
-    err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=#{path}"
-    console.warn(err)
-
-
-Chainer = (request, _path, name, contextTree, fn) ->
+Chainer = (request, path, name, contextTree, fn) ->
   fn ?= (args...) ->
     throw new Error('BUG! must be called with at least one argument') unless args.length
     # Special-case compare because its args turn into '...' instead of the usual '/'
@@ -25,25 +15,9 @@ Chainer = (request, _path, name, contextTree, fn) ->
       separator = '...'
     else
       separator = '/'
-    return Chainer(request, "#{_path}/#{args.join(separator)}", name, contextTree)
+    return Chainer(request, "#{path}/#{args.join(separator)}", name, contextTree)
 
-
-  verbs =
-    fetch        : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {}, cb)
-    read         : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {raw:true}, cb)
-    readBinary   : (cb, config) ->   URL_TESTER(_path); request('GET', "#{_path}#{toQueryString(config)}", null, {raw:true, isBase64:true}, cb)
-    remove       : (cb, config) ->   URL_TESTER(_path); request('DELETE', _path, config, {isBoolean:true}, cb)
-    create       : (cb, config, isRaw) -> URL_TESTER(_path); request('POST', _path, config, {raw:isRaw}, cb)
-    update       : (cb, config) ->   URL_TESTER(_path); request('PATCH', _path, config, null, cb)
-    add          : (cb, config) ->   URL_TESTER(_path); request('PUT', _path, config, {isBoolean:true}, cb)
-    contains     : (cb, args...) ->  URL_TESTER(_path); request('GET', "#{_path}/#{args.join('/')}", null, {isBoolean:true}, cb)
-
-
-  # Allow all the verb methods to accept a callback as the last arg
-  if name # Skip adding these on the root
-    for verbName, verbFunc of verbs
-      fn[verbName] = toPromise(verbFunc)
-
+  injectVerbMethods(request, path, fn)
 
   if typeof fn is 'function' or typeof fn is 'object'
     for name of contextTree or {}
@@ -54,7 +28,7 @@ Chainer = (request, _path, name, contextTree, fn) ->
         Object.defineProperty fn, plus.camelize(name),
           configurable: true
           enumerable: true
-          get: () -> return Chainer(request, "#{_path}/#{name}", name, contextTree[name])
+          get: () -> return Chainer(request, "#{path}/#{name}", name, contextTree[name])
 
 
   return fn
