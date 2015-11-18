@@ -57,5 +57,6 @@
   "directories": {
     "test": "test"
   },
+  "tonicExampleFilename": "examples/tonic-example.js",
   "license": "MIT"
 }
