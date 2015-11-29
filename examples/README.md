@@ -2,6 +2,10 @@
 
 This list is by no means exhaustive but only meant to illustrate some of the commands possible:
 
+## Promises vs Callbacks
+
+The examples below return a `Promise`. If you prefer callbacks, you can pass a callback as the last argument to the last function call (ie `.fetch(cb)`, `.read(cb)`, `.add(cb)`, `.create({...}, cb)`) instead.
+
 # Repos
 
 ```coffee
