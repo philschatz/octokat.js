@@ -1,5 +1,8 @@
+_ = require 'lodash'
 base64encode = require './helper-base64'
 {DEFAULT_HEADER} = require './grammar'
+
+MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
 
 # Request Function
 # ===============================
@@ -75,48 +78,66 @@ Request = (clientOptions={}) ->
   # HTTP Request Abstraction
   # =======
   #
-  return (method, path, data, options={raw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
+  return (method, path, data, options={isRaw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
 
     options             ?= {}
-    options.raw         ?= false
+    options.isRaw         ?= false
     options.isBase64    ?= false
     options.isBoolean   ?= false
     options.contentType ?= 'application/json'
 
     # console.log method, path, data, options, typeof cb
 
-    if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
-      method = 'POST'
+    # if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
+    #   method = 'POST'
 
     # Only prefix the path when it does not begin with http.
     # This is so pagination works (which provides absolute URLs).
     path = "#{clientOptions.rootURL}#{path}" if not /^http/.test(path)
 
+    headers =
+      'Accept': clientOptions.acceptHeader
+      # Set the `User-Agent` because it is required and NodeJS
+      # does not send one by default.
+      # See http://developer.github.com/v3/#user-agent-required
+      'User-Agent': userAgent or undefined
+
+    acc = {method, path, clientOptions, headers}
+    for plugin in MIDDLEWARE_REQUEST_PLUGINS
+      {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
+      acc.method = method if method
+      acc.mimeType = mimeType if mimeType
+      if headers
+        # acc.headers ?= {}
+        _.extend(acc.headers, headers)
+
+    {method, headers, mimeType} = acc
+
     # Support binary data by overriding the response mimeType
     mimeType = undefined
     mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
 
-    headers = {
-      # Use the preview API header if one of the routes match the preview APIs
-      'Accept': clientOptions.acceptHeader or DEFAULT_HEADER(path)
-    }
-    headers['Accept'] = 'application/vnd.github.raw' if options.raw
+    # headers = {
+    #   # Use the preview API header if one of the routes match the preview APIs
+    #   'Accept': clientOptions.acceptHeader or DEFAULT_HEADER(path)
+    # }
+    headers['Accept'] = 'application/vnd.github.raw' if options.isRaw
 
-    # Set the `User-Agent` because it is required and NodeJS
-    # does not send one by default.
-    # See http://developer.github.com/v3/#user-agent-required
-    headers['User-Agent'] = userAgent if userAgent
+    # # Set the `User-Agent` because it is required and NodeJS
+    # # does not send one by default.
+    # # See http://developer.github.com/v3/#user-agent-required
+    # headers['User-Agent'] = userAgent if userAgent
 
     # Send the ETag if re-requesting a URL
     if cacheHandler.get(method, path)
       headers['If-None-Match'] = cacheHandler.get(method, path).eTag
 
-    if (clientOptions.token) or (clientOptions.username and clientOptions.password)
-      if clientOptions.token
-        auth = "token #{clientOptions.token}"
-      else
-        auth = 'Basic ' + base64encode("#{clientOptions.username}:#{clientOptions.password}")
-      headers['Authorization'] = auth
+    # if (clientOptions.token) or (clientOptions.username and clientOptions.password)
+    #   if clientOptions.token
+    #     auth = "token #{clientOptions.token}"
+    #   else
+    #     auth = 'Basic ' + base64encode("#{clientOptions.username}:#{clientOptions.password}")
+    #   headers['Authorization'] = auth
 
 
     ajaxConfig =
@@ -129,8 +150,8 @@ Request = (clientOptions={}) ->
       headers: headers
 
       processData: false # Don't convert to QueryString
-      data: !options.raw and data and JSON.stringify(data) or data
-      dataType: 'json' unless options.raw
+      data: !options.isRaw and data and JSON.stringify(data) or data
+      dataType: 'json' unless options.isRaw
 
     # If the request is a boolean yes/no question GitHub will indicate
     # via the HTTP Status of 204 (No Content) or 404 instead of a 200.

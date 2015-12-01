@@ -3,6 +3,8 @@ plus = require './plus'
 Chainer = require './chainer'
 injectVerbMethods = require './verb-methods'
 Replacer = require './replacer'
+{CAMEL_CASE} = require './plugin-middleware-response'
+
 Request = require './request'
 {toPromise} = require './helper-promise'
 
@@ -23,6 +25,8 @@ parse = (obj, path, request) ->
   if url
     replacer = new Replacer(request)
     obj = replacer.replace(obj)
+    {data: obj} = CAMEL_CASE.responseMiddleware({data: obj})
+
     Chainer(request, url, true, {}, obj)
     reChainChildren(request, url, obj)
   else

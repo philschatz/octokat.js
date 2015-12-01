@@ -461,6 +461,6 @@ PREVIEW_HEADERS =
 DEFAULT_HEADER = (url) ->
   for key, val of PREVIEW_HEADERS
     return key if val.test(url)
-  return 'application/vnd.github.v3+json'
+  # return 'application/vnd.github.v3+json'
 
 module.exports = {URL_VALIDATOR, TREE_OPTIONS, OBJECT_MATCHER, DEFAULT_HEADER}

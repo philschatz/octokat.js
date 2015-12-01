@@ -126,18 +126,18 @@ class Replacer
       fn = toPromise(fn)
       fn.url = value
       newKey = key.substring(0, key.length-'_url'.length)
-      acc[plus.camelize(newKey)] = fn
+      acc[newKey] = fn
       # add a camelCase URL field for retrieving non-templated URLs
       # like `avatarUrl` and `htmlUrl`
       unless /\{/.test(value)
-        acc[plus.camelize(key)] = value
+        acc[key] = value
 
     else if /_at$/.test(key)
       # Ignore null dates so we do not get `Wed Dec 31 1969`
-      acc[plus.camelize(key)] = if value then new Date(value) else null
+      acc[key] = if value then new Date(value) else null
 
     else
-      acc[plus.camelize(key)] = @replace(value)
+      acc[key] = @replace(value)
 
 
 module.exports = Replacer
