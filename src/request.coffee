@@ -3,6 +3,7 @@ base64encode = require './helper-base64'
 {DEFAULT_HEADER} = require './grammar'
 
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
+MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
 
 # Request Function
 # ===============================
@@ -203,17 +204,23 @@ Request = (clientOptions={}) ->
           if jqXHR.responseText and ajaxConfig.dataType is 'json'
             data = JSON.parse(jqXHR.responseText)
 
-            # Only JSON responses have next/prev/first/last link headers
-            # Add them to data so the resolved value is iterable
+            # # Only JSON responses have next/prev/first/last link headers
+            # # Add them to data so the resolved value is iterable
+            #
+            # # Parse the Link headers
+            # # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
+            # links = jqXHR.getResponseHeader('Link')
+            # for part in links?.split(',') or []
+            #   [discard, href, rel] = part.match(/<([^>]+)>;\ rel="([^"]+)"/)
+            #   # Add the pagination functions on the JSON since Promises resolve one value
+            #   # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
+            #   data["#{rel}_page_url"] = href
 
-            # Parse the Link headers
-            # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-            links = jqXHR.getResponseHeader('Link')
-            for part in links?.split(',') or []
-              [discard, href, rel] = part.match(/<([^>]+)>;\ rel="([^"]+)"/)
-              # Add the pagination functions on the JSON since Promises resolve one value
-              # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-              data["#{rel}_page_url"] = href
+            acc = {jqXHR, data}
+            for key, value of MIDDLEWARE_RESPONSE_PLUGINS
+              acc2 = value.responseMiddleware(acc)
+              _.extend(acc, acc2)
+            {data} = acc
 
           else
             data = jqXHR.responseText

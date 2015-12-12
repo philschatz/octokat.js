@@ -25,6 +25,7 @@ parse = (obj, path, request) ->
   if url
     replacer = new Replacer(request)
     obj = replacer.replace(obj)
+    # TODO: Refactor: make this loop through all installed responseMiddleware plugins
     {data: obj} = CAMEL_CASE.responseMiddleware({data: obj})
 
     Chainer(request, url, true, {}, obj)
