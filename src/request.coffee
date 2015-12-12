@@ -4,6 +4,8 @@ base64encode = require './helper-base64'
 
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
 MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
+MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
+MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
 
 # Request Function
 # ===============================
@@ -47,9 +49,9 @@ ajax = (options, cb) ->
   xhr.send(options.data)
 
 
-# Class for caching ETag responses
-class ETagResponse
-  constructor: (@eTag, @data, @status) ->
+# # Class for caching ETag responses
+# class ETagResponse
+#   constructor: (@eTag, @data, @status) ->
 
 
 # Cached responses are stored in this object keyed by `path`
@@ -74,7 +76,15 @@ Request = (clientOptions={}) ->
   # These are updated whenever a request is made (optional)
   emitter = clientOptions.emitter
 
-  cacheHandler = clientOptions.cacheHandler or DEFAULT_CACHE_HANDLER
+  # # Cached responses are stored in this object keyed by `path`
+  # _cachedETags = {}
+  #
+  # cacheHandler = clientOptions.cacheHandler or {
+  #   get: (method, path) ->
+  #     _cachedETags["#{method} #{path}"]
+  #   add: (method, path, eTag, data, status) ->
+  #     _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, status)
+  # }
 
   # HTTP Request Abstraction
   # =======
@@ -104,7 +114,7 @@ Request = (clientOptions={}) ->
       'User-Agent': userAgent or undefined
 
     acc = {method, path, clientOptions, headers}
-    for plugin in MIDDLEWARE_REQUEST_PLUGINS
+    for plugin in MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_CACHE_HANDLER])
       {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
       acc.method = method if method
       acc.mimeType = mimeType if mimeType
@@ -186,18 +196,18 @@ Request = (clientOptions={}) ->
       unless err
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
-        # If the response was a 304 then return the cached version
-        if jqXHR.status is 304
-          if clientOptions.useETags and cacheHandler.get(method, path)
-            eTagResponse = cacheHandler.get(method, path)
-
-            cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
-          else
-            cb(null, jqXHR.responseText, jqXHR.status, jqXHR)
+        # # If the response was a 304 then return the cached version
+        # if jqXHR.status is 304
+        #   if clientOptions.useETags and cacheHandler.get(method, path)
+        #     eTagResponse = cacheHandler.get(method, path)
+        #
+        #     cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
+        #   else
+        #     cb(null, jqXHR.responseText, jqXHR.status, jqXHR)
 
         # Respond with the redirect URL (for archive links)
         # TODO: implement a `followRedirects` flag
-        else if jqXHR.status is 302
+        if jqXHR.status is 302
           cb(null, jqXHR.getResponseHeader('Location'))
         # If it was a boolean question and the server responded with 204 ignore.
         else unless jqXHR.status is 204 and options.isBoolean
@@ -216,7 +226,7 @@ Request = (clientOptions={}) ->
             #   # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
             #   data["#{rel}_page_url"] = href
 
-            acc = {jqXHR, data}
+            acc = {clientOptions, jqXHR, data, status:jqXHR.status, request:acc} # Include the request data for plugins like cahceHandler
             for key, value of MIDDLEWARE_RESPONSE_PLUGINS
               acc2 = value.responseMiddleware(acc)
               _.extend(acc, acc2)
@@ -235,10 +245,10 @@ Request = (clientOptions={}) ->
 
             data = converted
 
-          # Cache the response to reuse later
-          if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
-            eTag = jqXHR.getResponseHeader('ETag')
-            cacheHandler.add(method, path, eTag, data, jqXHR.status)
+          # # Cache the response to reuse later
+          # if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
+          #   eTag = jqXHR.getResponseHeader('ETag')
+          #   cacheHandler.add(method, path, eTag, data, jqXHR.status)
 
           cb(null, data, jqXHR.status, jqXHR)
 

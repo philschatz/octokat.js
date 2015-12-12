@@ -1121,7 +1121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, ETagResponse, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, Request, _, _cachedETags, ajax, base64encode, userAgent;
+	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, Request, _, _cachedETags, ajax, base64encode, userAgent;
 
 	_ = __webpack_require__(13);
 
@@ -1133,6 +1133,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(11);
 
+	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(17);
+
+	MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER;
+
 	if (typeof window === "undefined" || window === null) {
 	  userAgent = 'octokat.js';
 	}
@@ -1143,7 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(17).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(18).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1177,17 +1181,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return xhr.send(options.data);
 	};
 
-	ETagResponse = (function() {
-	  function ETagResponse(eTag1, data1, status1) {
-	    this.eTag = eTag1;
-	    this.data = data1;
-	    this.status = status1;
-	  }
-
-	  return ETagResponse;
-
-	})();
-
 	_cachedETags = {};
 
 	DEFAULT_CACHE_HANDLER = {
@@ -1200,7 +1193,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	Request = function(clientOptions) {
-	  var cacheHandler, emitter;
+	  var emitter;
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
@@ -1214,9 +1207,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    clientOptions.usePostInsteadOfPatch = false;
 	  }
 	  emitter = clientOptions.emitter;
-	  cacheHandler = clientOptions.cacheHandler || DEFAULT_CACHE_HANDLER;
 	  return function(method, path, data, options, cb) {
-	    var acc, ajaxConfig, headers, j, len, mimeType, plugin, ref;
+	    var acc, ajaxConfig, headers, j, len, mimeType, plugin, ref, ref1;
 	    if (options == null) {
 	      options = {
 	        isRaw: false,
@@ -1253,9 +1245,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      clientOptions: clientOptions,
 	      headers: headers
 	    };
-	    for (j = 0, len = MIDDLEWARE_REQUEST_PLUGINS.length; j < len; j++) {
-	      plugin = MIDDLEWARE_REQUEST_PLUGINS[j];
-	      ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
+	    ref = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_CACHE_HANDLER]);
+	    for (j = 0, len = ref.length; j < len; j++) {
+	      plugin = ref[j];
+	      ref1 = plugin.requestMiddleware(acc) || {}, method = ref1.method, headers = ref1.headers, mimeType = ref1.mimeType;
 	      if (method) {
 	        acc.method = method;
 	      }
@@ -1305,7 +1298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      emitter.emit('start', method, path, data, options);
 	    }
 	    return ajax(ajaxConfig, function(err, val) {
-	      var acc2, converted, eTag, eTagResponse, emitterRate, i, jqXHR, json, k, key, rateLimit, rateLimitRemaining, rateLimitReset, ref1, value;
+	      var acc2, converted, emitterRate, i, jqXHR, json, k, key, rateLimit, rateLimitRemaining, rateLimitReset, ref2, value;
 	      jqXHR = err || val;
 	      if (emitter) {
 	        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
@@ -1324,21 +1317,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status);
 	      }
 	      if (!err) {
-	        if (jqXHR.status === 304) {
-	          if (clientOptions.useETags && cacheHandler.get(method, path)) {
-	            eTagResponse = cacheHandler.get(method, path);
-	            return cb(null, eTagResponse.data, eTagResponse.status, jqXHR);
-	          } else {
-	            return cb(null, jqXHR.responseText, jqXHR.status, jqXHR);
-	          }
-	        } else if (jqXHR.status === 302) {
+	        if (jqXHR.status === 302) {
 	          return cb(null, jqXHR.getResponseHeader('Location'));
 	        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
 	          if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
 	            data = JSON.parse(jqXHR.responseText);
 	            acc = {
+	              clientOptions: clientOptions,
 	              jqXHR: jqXHR,
-	              data: data
+	              data: data,
+	              status: jqXHR.status,
+	              request: acc
 	            };
 	            for (key in MIDDLEWARE_RESPONSE_PLUGINS) {
 	              value = MIDDLEWARE_RESPONSE_PLUGINS[key];
@@ -1351,14 +1340,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	          if (method === 'GET' && options.isBase64) {
 	            converted = '';
-	            for (i = k = 0, ref1 = data.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+	            for (i = k = 0, ref2 = data.length; 0 <= ref2 ? k < ref2 : k > ref2; i = 0 <= ref2 ? ++k : --k) {
 	              converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
 	            }
 	            data = converted;
-	          }
-	          if (method === 'GET' && jqXHR.getResponseHeader('ETag') && clientOptions.useETags) {
-	            eTag = jqXHR.getResponseHeader('ETag');
-	            cacheHandler.add(method, path, eTag, data, jqXHR.status);
 	          }
 	          return cb(null, data, jqXHR.status, jqXHR);
 	        }
@@ -13861,6 +13846,67 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 17 */
+/***/ function(module, exports) {
+
+	var CacheMiddleware;
+
+	module.exports = new (CacheMiddleware = (function() {
+	  function CacheMiddleware() {
+	    this._cachedETags = {};
+	  }
+
+	  CacheMiddleware.prototype.get = function(method, path) {
+	    return this._cachedETags[method + " " + path];
+	  };
+
+	  CacheMiddleware.prototype.add = function(method, path, eTag, data, status) {
+	    return this._cachedETags[method + " " + path] = {
+	      eTag: eTag,
+	      data: data,
+	      status: status
+	    };
+	  };
+
+	  CacheMiddleware.prototype.requestMiddleware = function(arg) {
+	    var cacheHandler, clientOptions, headers, method, path;
+	    clientOptions = arg.clientOptions, method = arg.method, path = arg.path;
+	    headers = {};
+	    cacheHandler = clientOptions.cacheHandler || this;
+	    if (cacheHandler.get(method, path)) {
+	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
+	    } else {
+	      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
+	    }
+	    return {
+	      headers: headers
+	    };
+	  };
+
+	  CacheMiddleware.prototype.responseMiddleware = function(arg) {
+	    var cacheHandler, clientOptions, data, eTag, jqXHR, method, path, ref, ref1, status;
+	    clientOptions = arg.clientOptions, (ref = arg.request, method = ref.method, path = ref.path), status = arg.status, jqXHR = arg.jqXHR, data = arg.data;
+	    cacheHandler = clientOptions.cacheHandler || this;
+	    if (status === 304) {
+	      ref1 = cacheHandler.get(method, path), data = ref1.data, status = ref1.status;
+	    } else {
+	      if (method === 'GET' && jqXHR.getResponseHeader('ETag')) {
+	        eTag = jqXHR.getResponseHeader('ETag');
+	        cacheHandler.add(method, path, eTag, data, jqXHR.status);
+	      }
+	    }
+	    return {
+	      data: data,
+	      status: status
+	    };
+	  };
+
+	  return CacheMiddleware;
+
+	})());
+
+
+/***/ },
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
