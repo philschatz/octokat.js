@@ -5,7 +5,14 @@ base64encode = require './helper-base64'
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
 MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
 MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
-MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
+# MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
+
+ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
+  MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS,
+  MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA,
+  MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE,
+  MIDDLEWARE_CACHE_HANDLER
+])
 
 # Request Function
 # ===============================
@@ -114,13 +121,14 @@ Request = (clientOptions={}) ->
       'User-Agent': userAgent or undefined
 
     acc = {method, path, clientOptions, headers}
-    for plugin in MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_CACHE_HANDLER])
-      {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
-      acc.method = method if method
-      acc.mimeType = mimeType if mimeType
-      if headers
-        # acc.headers ?= {}
-        _.extend(acc.headers, headers)
+    for plugin in ALL_PLUGINS
+      if plugin.requestMiddleware
+        {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
+        acc.method = method if method
+        acc.mimeType = mimeType if mimeType
+        if headers
+          # acc.headers ?= {}
+          _.extend(acc.headers, headers)
 
     {method, headers, mimeType} = acc
 
@@ -234,9 +242,10 @@ Request = (clientOptions={}) ->
               request:acc # Include the request data for plugins like cahceHandler
               requestFn # for Hypermedia
             }
-            for key, value of MIDDLEWARE_RESPONSE_PLUGINS
-              acc2 = value.responseMiddleware(acc)
-              _.extend(acc, acc2)
+            for plugin in ALL_PLUGINS
+              if plugin.responseMiddleware
+                acc2 = plugin.responseMiddleware(acc)
+                _.extend(acc, acc2)
             {data} = acc
 
           else

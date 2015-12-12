@@ -83,13 +83,15 @@ PAGED_RESULTS = new class PagedResults
 
 
 HYPERMEDIA = new class HyperMedia
-  replace: (requestFn, o) ->
-    if Array.isArray(o)
-      return @_replaceArray(requestFn, o)
-    else if o == Object(o)
-      return @_replaceObject(requestFn, o)
+  replace: (requestFn, data) ->
+    if Array.isArray(data)
+      return @_replaceArray(requestFn, data)
+    else if typeof data is 'function'
+      return data
+    else if data == Object(data)
+      return @_replaceObject(requestFn, data)
     else
-      return o
+      return data
 
   _replaceObject: (requestFn, orig) ->
     acc = {}
