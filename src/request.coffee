@@ -89,7 +89,7 @@ Request = (clientOptions={}) ->
   # HTTP Request Abstraction
   # =======
   #
-  return (method, path, data, options={isRaw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
+  requestFn = (method, path, data, options={isRaw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
 
     options             ?= {}
     options.isRaw         ?= false
@@ -226,7 +226,14 @@ Request = (clientOptions={}) ->
             #   # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
             #   data["#{rel}_page_url"] = href
 
-            acc = {clientOptions, jqXHR, data, status:jqXHR.status, request:acc} # Include the request data for plugins like cahceHandler
+            acc = {
+              clientOptions
+              data
+              jqXHR # for cacheHandler
+              status:jqXHR.status # cacheHandler changes this
+              request:acc # Include the request data for plugins like cahceHandler
+              requestFn # for Hypermedia
+            }
             for key, value of MIDDLEWARE_RESPONSE_PLUGINS
               acc2 = value.responseMiddleware(acc)
               _.extend(acc, acc2)
@@ -273,6 +280,6 @@ Request = (clientOptions={}) ->
             err.json = json
           cb(err)
 
-
+  return requestFn
 
 module.exports = Request

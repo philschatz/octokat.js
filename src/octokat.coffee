@@ -2,8 +2,8 @@ plus = require './plus'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
 Chainer = require './chainer'
 injectVerbMethods = require './verb-methods'
-Replacer = require './replacer'
-{CAMEL_CASE} = require './plugin-middleware-response'
+# Replacer = require './replacer'
+{CAMEL_CASE, HYPERMEDIA} = require './plugin-middleware-response'
 
 Request = require './request'
 {toPromise} = require './helper-promise'
@@ -20,19 +20,31 @@ reChainChildren = (request, url, obj) ->
   obj
 
 
-parse = (obj, path, request) ->
+parse = (obj, path, requestFn) ->
   url = obj.url or path
   if url
-    replacer = new Replacer(request)
-    obj = replacer.replace(obj)
+    {data: obj} = HYPERMEDIA.responseMiddleware({requestFn, data:obj})
     # TODO: Refactor: make this loop through all installed responseMiddleware plugins
     {data: obj} = CAMEL_CASE.responseMiddleware({data: obj})
 
-    Chainer(request, url, true, {}, obj)
-    reChainChildren(request, url, obj)
+    Chainer(requestFn, url, true, {}, obj)
+    reChainChildren(requestFn, url, obj)
   else
-    Chainer(request, '', null, TREE_OPTIONS, obj)
+    Chainer(requestFn, '', null, TREE_OPTIONS, obj)
   obj
+
+
+uncamelizeObj = (obj) ->
+  if Array.isArray(obj)
+    return (uncamelizeObj(i) for i in obj)
+  else if obj == Object(obj)
+    o = {}
+    for key in Object.keys(obj)
+      value = obj[key]
+      o[plus.uncamelize(key)] = uncamelizeObj(value)
+    return o
+  else
+    return obj
 
 
 Octokat = (clientOptions={}) ->
@@ -43,13 +55,13 @@ Octokat = (clientOptions={}) ->
 
 
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
-    replacer = new Replacer(request)
+    # replacer = new Replacer(request)
 
     # Use a slightly convoluted syntax so browserify does not include the
     # NodeJS Buffer in the browser version.
     # data is a Buffer when uploading a release asset file
     if data and not global?['Buffer']?.isBuffer(data)
-      data = replacer.uncamelize(data)
+      data = uncamelizeObj(data)
 
     # For each request, convert the JSON into Objects
     _request = Request(clientOptions)
