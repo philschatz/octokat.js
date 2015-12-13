@@ -201,4 +201,26 @@ HYPERMEDIA = new class HyperMedia
     {data}
 
 
-module.exports = {CAMEL_CASE, PAGED_RESULTS, HYPERMEDIA}
+READ_BINARY = new class ReadBinary
+  requestMiddleware: ({options}) ->
+    {isBase64} = options
+    if isBase64
+      return {
+        headers: {Accept: 'application/vnd.github.raw'}
+        mimeType: 'text/plain; charset=x-user-defined'
+      }
+
+  responseMiddleware: ({options, data}) ->
+    {isBase64} = options
+    # Convert the response to a Base64 encoded string
+    if isBase64
+      # Convert raw data to binary chopping off the higher-order bytes in each char.
+      # Useful for Base64 encoding.
+      converted = ''
+      for i in [0...data.length]
+        converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
+
+      {data:converted}
+
+
+module.exports = {CAMEL_CASE, PAGED_RESULTS, HYPERMEDIA, READ_BINARY}

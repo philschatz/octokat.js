@@ -848,7 +848,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, TREE_OPTIONS, plus, ref, toPromise, toQueryString,
+	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, plus, ref, toPromise, toQueryString,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -1100,10 +1100,47 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	})());
 
+	READ_BINARY = new (ReadBinary = (function() {
+	  function ReadBinary() {}
+
+	  ReadBinary.prototype.requestMiddleware = function(arg) {
+	    var isBase64, options;
+	    options = arg.options;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      return {
+	        headers: {
+	          Accept: 'application/vnd.github.raw'
+	        },
+	        mimeType: 'text/plain; charset=x-user-defined'
+	      };
+	    }
+	  };
+
+	  ReadBinary.prototype.responseMiddleware = function(arg) {
+	    var converted, data, i, isBase64, j, options, ref1;
+	    options = arg.options, data = arg.data;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      converted = '';
+	      for (i = j = 0, ref1 = data.length; 0 <= ref1 ? j < ref1 : j > ref1; i = 0 <= ref1 ? ++j : --j) {
+	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+	      }
+	      return {
+	        data: converted
+	      };
+	    }
+	  };
+
+	  return ReadBinary;
+
+	})());
+
 	module.exports = {
 	  CAMEL_CASE: CAMEL_CASE,
 	  PAGED_RESULTS: PAGED_RESULTS,
-	  HYPERMEDIA: HYPERMEDIA
+	  HYPERMEDIA: HYPERMEDIA,
+	  READ_BINARY: READ_BINARY
 	};
 
 
@@ -1125,7 +1162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(16);
 
-	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE, MIDDLEWARE_CACHE_HANDLER]);
+	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE, MIDDLEWARE_CACHE_HANDLER]);
 
 	if (typeof window === "undefined" || window === null) {
 	  userAgent = 'octokat.js';
@@ -1198,7 +1235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  emitter = clientOptions.emitter;
 	  requestFn = function(method, path, data, options, cb) {
-	    var acc, ajaxConfig, headers, j, len, mimeType, plugin, ref;
+	    var acc, ajaxConfig, headers, i, len, mimeType, plugin, ref;
 	    if (options == null) {
 	      options = {
 	        isRaw: false,
@@ -1233,10 +1270,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      method: method,
 	      path: path,
 	      clientOptions: clientOptions,
-	      headers: headers
+	      headers: headers,
+	      options: options
 	    };
-	    for (j = 0, len = ALL_PLUGINS.length; j < len; j++) {
-	      plugin = ALL_PLUGINS[j];
+	    for (i = 0, len = ALL_PLUGINS.length; i < len; i++) {
+	      plugin = ALL_PLUGINS[i];
 	      if (plugin.requestMiddleware) {
 	        ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
 	        if (method) {
@@ -1251,10 +1289,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
-	    mimeType = void 0;
-	    if (options.isBase64) {
-	      mimeType = 'text/plain; charset=x-user-defined';
-	    }
 	    if (options.isRaw) {
 	      headers['Accept'] = 'application/vnd.github.raw';
 	    }
@@ -1289,7 +1323,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      emitter.emit('start', method, path, data, options);
 	    }
 	    return ajax(ajaxConfig, function(err, val) {
-	      var acc2, converted, emitterRate, i, jqXHR, json, k, l, len1, rateLimit, rateLimitRemaining, rateLimitReset, ref1;
+	      var acc2, emitterRate, j, jqXHR, json, len1, rateLimit, rateLimitRemaining, rateLimitReset;
 	      jqXHR = err || val;
 	      if (emitter) {
 	        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
@@ -1313,32 +1347,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
 	          if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
 	            data = JSON.parse(jqXHR.responseText);
-	            acc = {
-	              clientOptions: clientOptions,
-	              data: data,
-	              jqXHR: jqXHR,
-	              status: jqXHR.status,
-	              request: acc,
-	              requestFn: requestFn
-	            };
-	            for (k = 0, len1 = ALL_PLUGINS.length; k < len1; k++) {
-	              plugin = ALL_PLUGINS[k];
-	              if (plugin.responseMiddleware) {
-	                acc2 = plugin.responseMiddleware(acc);
-	                _.extend(acc, acc2);
-	              }
-	            }
-	            data = acc.data;
 	          } else {
 	            data = jqXHR.responseText;
 	          }
-	          if (method === 'GET' && options.isBase64) {
-	            converted = '';
-	            for (i = l = 0, ref1 = data.length; 0 <= ref1 ? l < ref1 : l > ref1; i = 0 <= ref1 ? ++l : --l) {
-	              converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+	          acc = {
+	            clientOptions: clientOptions,
+	            data: data,
+	            options: options,
+	            jqXHR: jqXHR,
+	            status: jqXHR.status,
+	            request: acc,
+	            requestFn: requestFn
+	          };
+	          for (j = 0, len1 = ALL_PLUGINS.length; j < len1; j++) {
+	            plugin = ALL_PLUGINS[j];
+	            if (plugin.responseMiddleware) {
+	              acc2 = plugin.responseMiddleware(acc);
+	              _.extend(acc, acc2);
 	            }
-	            data = converted;
 	          }
+	          data = acc.data;
 	          return cb(null, data, jqXHR.status, jqXHR);
 	        }
 	      } else {

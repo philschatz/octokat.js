@@ -8,9 +8,10 @@ MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
 # MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
 
 ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
-  MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS,
-  MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA,
-  MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE,
+  MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
+  MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS
+  MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA
+  MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE
   MIDDLEWARE_CACHE_HANDLER
 ])
 
@@ -99,7 +100,7 @@ Request = (clientOptions={}) ->
   requestFn = (method, path, data, options={isRaw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
 
     options             ?= {}
-    options.isRaw         ?= false
+    options.isRaw       ?= false
     options.isBase64    ?= false
     options.isBoolean   ?= false
     options.contentType ?= 'application/json'
@@ -120,7 +121,7 @@ Request = (clientOptions={}) ->
       # See http://developer.github.com/v3/#user-agent-required
       'User-Agent': userAgent or undefined
 
-    acc = {method, path, clientOptions, headers}
+    acc = {method, path, clientOptions, headers, options}
     for plugin in ALL_PLUGINS
       if plugin.requestMiddleware
         {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
@@ -132,9 +133,9 @@ Request = (clientOptions={}) ->
 
     {method, headers, mimeType} = acc
 
-    # Support binary data by overriding the response mimeType
-    mimeType = undefined
-    mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
+    # # Support binary data by overriding the response mimeType
+    # mimeType = undefined
+    # mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
 
     # headers = {
     #   # Use the preview API header if one of the routes match the preview APIs
@@ -234,32 +235,34 @@ Request = (clientOptions={}) ->
             #   # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
             #   data["#{rel}_page_url"] = href
 
-            acc = {
-              clientOptions
-              data
-              jqXHR # for cacheHandler
-              status:jqXHR.status # cacheHandler changes this
-              request:acc # Include the request data for plugins like cahceHandler
-              requestFn # for Hypermedia
-            }
-            for plugin in ALL_PLUGINS
-              if plugin.responseMiddleware
-                acc2 = plugin.responseMiddleware(acc)
-                _.extend(acc, acc2)
-            {data} = acc
-
           else
             data = jqXHR.responseText
 
-          # Convert the response to a Base64 encoded string
-          if method is 'GET' and options.isBase64
-            # Convert raw data to binary chopping off the higher-order bytes in each char.
-            # Useful for Base64 encoding.
-            converted = ''
-            for i in [0...data.length]
-              converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
 
-            data = converted
+          acc = {
+            clientOptions
+            data
+            options
+            jqXHR # for cacheHandler
+            status:jqXHR.status # cacheHandler changes this
+            request:acc # Include the request data for plugins like cahceHandler
+            requestFn # for Hypermedia
+          }
+          for plugin in ALL_PLUGINS
+            if plugin.responseMiddleware
+              acc2 = plugin.responseMiddleware(acc)
+              _.extend(acc, acc2)
+          {data} = acc
+
+          # # Convert the response to a Base64 encoded string
+          # if method is 'GET' and options.isBase64
+          #   # Convert raw data to binary chopping off the higher-order bytes in each char.
+          #   # Useful for Base64 encoding.
+          #   converted = ''
+          #   for i in [0...data.length]
+          #     converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
+          #
+          #   data = converted
 
           # # Cache the response to reuse later
           # if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
