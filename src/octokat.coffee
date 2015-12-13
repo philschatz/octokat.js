@@ -8,6 +8,21 @@ injectVerbMethods = require './verb-methods'
 Request = require './request'
 {toPromise} = require './helper-promise'
 
+
+MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
+MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
+MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
+# MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
+
+ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
+  MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
+  MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS
+  MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA
+  MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE
+  MIDDLEWARE_CACHE_HANDLER
+])
+
+
 # Combine all the classes into one client
 
 reChainChildren = (request, url, obj) ->
@@ -64,7 +79,7 @@ Octokat = (clientOptions={}) ->
       data = uncamelizeObj(data)
 
     # For each request, convert the JSON into Objects
-    _request = Request(clientOptions)
+    _request = Request(clientOptions, ALL_PLUGINS)
 
     return _request method, path, data, options, (err, val) ->
       return cb(err) if err

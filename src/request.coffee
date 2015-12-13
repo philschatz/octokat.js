@@ -2,18 +2,6 @@ _ = require 'lodash'
 base64encode = require './helper-base64'
 {DEFAULT_HEADER} = require './grammar'
 
-MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
-MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
-MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
-# MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
-
-ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
-  MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
-  MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS
-  MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA
-  MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE
-  MIDDLEWARE_CACHE_HANDLER
-])
 
 # Request Function
 # ===============================
@@ -74,7 +62,7 @@ DEFAULT_CACHE_HANDLER =
 # # Construct the request function.
 # It contains all the auth credentials passed in to the client constructor
 
-Request = (clientOptions={}) ->
+Request = (clientOptions={}, ALL_PLUGINS) ->
 
   # Provide an option to override the default URL
   clientOptions.rootURL ?= 'https://api.github.com'
