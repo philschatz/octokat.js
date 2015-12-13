@@ -15,6 +15,7 @@ injectVerbMethods = (request, path, obj) ->
   # Allow all the verb methods to accept a callback as the last arg
   for verbName, verbFunc of SIMPLE_VERBS_PLUGIN.verbs
     do (verbName, verbFunc) ->
+      obj.url = path # Mostly for testing
       obj[verbName] = (args...) ->
         URL_TESTER(path)
         makeRequest =  (cb, originalArgs...) ->

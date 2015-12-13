@@ -62,7 +62,7 @@ DEFAULT_CACHE_HANDLER =
 # # Construct the request function.
 # It contains all the auth credentials passed in to the client constructor
 
-Request = (clientOptions={}, ALL_PLUGINS) ->
+Request = (instance, clientOptions={}, ALL_PLUGINS) ->
 
   # Provide an option to override the default URL
   clientOptions.rootURL ?= 'https://api.github.com'
@@ -235,6 +235,7 @@ Request = (clientOptions={}, ALL_PLUGINS) ->
             status:jqXHR.status # cacheHandler changes this
             request:acc # Include the request data for plugins like cahceHandler
             requestFn # for Hypermedia
+            instance # for Hypermedia to be able to call `.fromUrl`
           }
           for plugin in ALL_PLUGINS
             if plugin.responseMiddleware

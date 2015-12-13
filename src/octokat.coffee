@@ -7,6 +7,7 @@ injectVerbMethods = require './verb-methods'
 
 Request = require './request'
 {toPromise} = require './helper-promise'
+applyHypermedia = require './helper-hypermedia'
 
 
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
@@ -68,6 +69,9 @@ Octokat = (clientOptions={}) ->
   # set defaults
   disableHypermedia ?= false
 
+  # the octokat instance
+  instance = {}
+
 
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
     # replacer = new Replacer(request)
@@ -79,7 +83,7 @@ Octokat = (clientOptions={}) ->
       data = uncamelizeObj(data)
 
     # For each request, convert the JSON into Objects
-    _request = Request(clientOptions, ALL_PLUGINS)
+    _request = Request(instance, clientOptions, ALL_PLUGINS)
 
     return _request method, path, data, options, (err, val) ->
       return cb(err) if err
@@ -91,27 +95,29 @@ Octokat = (clientOptions={}) ->
       else
         return cb(null, val)
 
-  obj = {}
-  Chainer(request, '', null, TREE_OPTIONS, obj)
+  Chainer(request, '', null, TREE_OPTIONS, instance)
 
   # Special case for `me`
-  obj.me = obj.user
+  instance.me = instance.user
 
-  obj.parse = (jsonObj) ->
+  instance.parse = (jsonObj) ->
     parse(jsonObj, '', request)
 
-  obj.fromUrl = (path) ->
-    ret = {}
+  instance.fromUrl = (path, args...) ->
+    path = applyHypermedia(path, args...)
+    ret = (args...) ->
+      console.log('Octokat Deprecation: call .fetch() explicitly')
+      ret.fetch(args...)
     injectVerbMethods(request, path, ret)
     ret
 
   # Add the GitHub Status API https://status.github.com/api
-  obj.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)
-  obj.status.api = toPromise (cb) -> request('GET', 'https://status.github.com/api.json', null, null, cb)
-  obj.status.lastMessage = toPromise (cb) -> request('GET', 'https://status.github.com/api/last-message.json', null, null, cb)
-  obj.status.messages = toPromise (cb) -> request('GET', 'https://status.github.com/api/messages.json', null, null, cb)
+  instance.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)
+  instance.status.api = toPromise (cb) -> request('GET', 'https://status.github.com/api.json', null, null, cb)
+  instance.status.lastMessage = toPromise (cb) -> request('GET', 'https://status.github.com/api/last-message.json', null, null, cb)
+  instance.status.messages = toPromise (cb) -> request('GET', 'https://status.github.com/api/messages.json', null, null, cb)
 
-  return obj
+  return instance
 
 
 module.exports = Octokat

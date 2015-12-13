@@ -61,7 +61,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, injectVerbMethods, parse, plus, reChainChildren, ref, ref1, toPromise, uncamelizeObj;
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, injectVerbMethods, parse, plus, reChainChildren, ref, ref1, toPromise, uncamelizeObj,
+	  slice = [].slice;
 
 	plus = __webpack_require__(2);
 
@@ -73,15 +74,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	ref1 = __webpack_require__(10), CAMEL_CASE = ref1.CAMEL_CASE, HYPERMEDIA = ref1.HYPERMEDIA;
 
-	Request = __webpack_require__(11);
+	Request = __webpack_require__(12);
 
 	toPromise = __webpack_require__(6).toPromise;
 
-	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(16);
+	applyHypermedia = __webpack_require__(11);
+
+	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(17);
 
 	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(10);
 
-	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(17);
+	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(18);
 
 	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE, MIDDLEWARE_CACHE_HANDLER]);
 
@@ -148,7 +151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	Octokat = function(clientOptions) {
-	  var disableHypermedia, obj, request;
+	  var disableHypermedia, instance, request;
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
@@ -156,6 +159,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (disableHypermedia == null) {
 	    disableHypermedia = false;
 	  }
+	  instance = {};
 	  request = function(method, path, data, options, cb) {
 	    var _request, ref2;
 	    if (options == null) {
@@ -168,7 +172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (data && !(typeof global !== "undefined" && global !== null ? (ref2 = global['Buffer']) != null ? ref2.isBuffer(data) : void 0 : void 0)) {
 	      data = uncamelizeObj(data);
 	    }
-	    _request = Request(clientOptions, ALL_PLUGINS);
+	    _request = Request(instance, clientOptions, ALL_PLUGINS);
 	    return _request(method, path, data, options, function(err, val) {
 	      var obj;
 	      if (err) {
@@ -185,31 +189,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-	  obj = {};
-	  Chainer(request, '', null, TREE_OPTIONS, obj);
-	  obj.me = obj.user;
-	  obj.parse = function(jsonObj) {
+	  Chainer(request, '', null, TREE_OPTIONS, instance);
+	  instance.me = instance.user;
+	  instance.parse = function(jsonObj) {
 	    return parse(jsonObj, '', request);
 	  };
-	  obj.fromUrl = function(path) {
-	    var ret;
-	    ret = {};
+	  instance.fromUrl = function() {
+	    var args, path, ret;
+	    path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	    path = applyHypermedia.apply(null, [path].concat(slice.call(args)));
+	    ret = function() {
+	      var args;
+	      args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	      console.log('Octokat Deprecation: call .fetch() explicitly');
+	      return ret.fetch.apply(ret, args);
+	    };
 	    injectVerbMethods(request, path, ret);
 	    return ret;
 	  };
-	  obj.status = toPromise(function(cb) {
+	  instance.status = toPromise(function(cb) {
 	    return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
 	  });
-	  obj.status.api = toPromise(function(cb) {
+	  instance.status.api = toPromise(function(cb) {
 	    return request('GET', 'https://status.github.com/api.json', null, null, cb);
 	  });
-	  obj.status.lastMessage = toPromise(function(cb) {
+	  instance.status.lastMessage = toPromise(function(cb) {
 	    return request('GET', 'https://status.github.com/api/last-message.json', null, null, cb);
 	  });
-	  obj.status.messages = toPromise(function(cb) {
+	  instance.status.messages = toPromise(function(cb) {
 	    return request('GET', 'https://status.github.com/api/messages.json', null, null, cb);
 	  });
-	  return obj;
+	  return instance;
 	};
 
 	module.exports = Octokat;
@@ -267,7 +277,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
 
-	URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|hooks\/[^\/]+\/pings|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[^\/]+|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[^\/]+|commits\/[^\/]+\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))$/;
+	URL_VALIDATOR = /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|hooks\/[^\/]+\/pings|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[^\/]+|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[^\/]+|commits\/[^\/]+\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
 
 	TREE_OPTIONS = {
 	  'zen': false,
@@ -575,6 +585,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  for (verbName in ref) {
 	    verbFunc = ref[verbName];
 	    results.push((function(verbName, verbFunc) {
+	      obj.url = path;
 	      return obj[verbName] = function() {
 	        var args, makeRequest;
 	        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
@@ -856,14 +867,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, plus, ref, toPromise, toQueryString,
+	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, plus, ref, toPromise,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
 
 	toPromise = __webpack_require__(6).toPromise;
 
-	toQueryString = __webpack_require__(8);
+	applyHypermedia = __webpack_require__(11);
 
 	ref = __webpack_require__(3), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
 
@@ -961,26 +972,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	HYPERMEDIA = new (HyperMedia = (function() {
 	  function HyperMedia() {}
 
-	  HyperMedia.prototype.replace = function(requestFn, data) {
+	  HyperMedia.prototype.replace = function(instance, requestFn, data) {
 	    if (Array.isArray(data)) {
-	      return this._replaceArray(requestFn, data);
+	      return this._replaceArray(instance, requestFn, data);
 	    } else if (typeof data === 'function') {
 	      return data;
 	    } else if (data === Object(data)) {
-	      return this._replaceObject(requestFn, data);
+	      return this._replaceObject(instance, requestFn, data);
 	    } else {
 	      return data;
 	    }
 	  };
 
-	  HyperMedia.prototype._replaceObject = function(requestFn, orig) {
-	    var acc, context, j, k, key, l, len, len1, len2, n, re, ref1, ref2, ref3, url, value;
+	  HyperMedia.prototype._replaceObject = function(instance, requestFn, orig) {
+	    var acc, context, j, k, key, l, len, len1, len2, m, re, ref1, ref2, ref3, url, value;
 	    acc = {};
 	    ref1 = Object.keys(orig);
 	    for (j = 0, len = ref1.length; j < len; j++) {
 	      key = ref1[j];
 	      value = orig[key];
-	      this._replaceKeyValue(requestFn, acc, key, value);
+	      this._replaceKeyValue(instance, requestFn, acc, key, value);
 	    }
 	    url = acc.url;
 	    if (url) {
@@ -993,8 +1004,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (re.test(url)) {
 	        context = TREE_OPTIONS;
 	        ref3 = key.split('.');
-	        for (n = 0, len2 = ref3.length; n < len2; n++) {
-	          k = ref3[n];
+	        for (m = 0, len2 = ref3.length; m < len2; m++) {
+	          k = ref3[m];
 	          context = context[k];
 	        }
 	        Chainer(requestFn, url, k, context, acc);
@@ -1003,14 +1014,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return acc;
 	  };
 
-	  HyperMedia.prototype._replaceArray = function(requestFn, orig) {
+	  HyperMedia.prototype._replaceArray = function(instance, requestFn, orig) {
 	    var arr, item, j, key, len, ref1, value;
 	    arr = (function() {
 	      var j, len, results;
 	      results = [];
 	      for (j = 0, len = orig.length; j < len; j++) {
 	        item = orig[j];
-	        results.push(this.replace(requestFn, item));
+	        results.push(this.replace(instance, requestFn, item));
 	      }
 	      return results;
 	    }).call(this);
@@ -1018,66 +1029,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (j = 0, len = ref1.length; j < len; j++) {
 	      key = ref1[j];
 	      value = orig[key];
-	      this._replaceKeyValue(requestFn, arr, key, value);
+	      this._replaceKeyValue(instance, requestFn, arr, key, value);
 	    }
 	    return arr;
 	  };
 
-	  HyperMedia.prototype._replaceKeyValue = function(requestFn, acc, key, value) {
+	  HyperMedia.prototype._replaceKeyValue = function(instance, requestFn, acc, key, value) {
 	    var fn, newKey;
 	    if (/_url$/.test(key)) {
 	      fn = (function(_this) {
 	        return function() {
-	          var args, cb, contentType, data, i, j, len, m, match, optionalNames, param, paramName, ref1, ref2, url;
+	          var args, cb, contentType, data, ref1, url;
 	          cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
 	          if (!(/\{/.test(value) || /_page_url$/.test(key))) {
 	            console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method');
 	          }
-	          url = value;
-	          i = 0;
-	          while (m = /(\{[^\}]+\})/.exec(url)) {
-	            match = m[1];
-	            if (i < args.length) {
-	              param = args[i];
-	              switch (match[1]) {
-	                case '/':
-	                  param = "/" + param;
-	                  break;
-	                case '?':
-	                  optionalNames = match.slice(2, -1).split(',');
-	                  if (typeof param === 'object') {
-	                    if (Object.keys(param).length === 0) {
-	                      console.warn('Must pass in a dictionary with at least one key when there are multiple optional params');
-	                    }
-	                    ref1 = Object.keys(param);
-	                    for (j = 0, len = ref1.length; j < len; j++) {
-	                      paramName = ref1[j];
-	                      if (optionalNames.indexOf(paramName) < 0) {
-	                        console.warn("Invalid parameter '" + paramName + "' passed in as argument");
-	                      }
-	                    }
-	                    param = toQueryString(param);
-	                  } else {
-	                    param = "?" + optionalNames[0] + "=" + param;
-	                  }
-	              }
-	            } else {
-	              param = '';
-	              if (match[1] !== '/') {
-	                throw new Error("BUG: Missing required parameter " + match);
-	              }
-	            }
-	            url = url.replace(match, param);
-	            i++;
-	          }
 	          if (/upload_url$/.test(key)) {
-	            ref2 = args.slice(-2), contentType = ref2[0], data = ref2[1];
+	            url = applyHypermedia.apply(null, [value].concat(slice.call(args)));
+	            ref1 = args.slice(-2), contentType = ref1[0], data = ref1[1];
 	            return requestFn('POST', url, data, {
 	              contentType: contentType,
 	              raw: true
 	            }, cb);
 	          } else {
-	            return requestFn('GET', url, null, null, cb);
+	            return instance.fromUrl.apply(instance, [value].concat(slice.call(args)))(cb);
 	          }
 	        };
 	      })(this);
@@ -1091,14 +1066,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (/_at$/.test(key)) {
 	      return acc[key] = value ? new Date(value) : null;
 	    } else {
-	      return acc[key] = this.replace(requestFn, value);
+	      return acc[key] = this.replace(instance, requestFn, value);
 	    }
 	  };
 
 	  HyperMedia.prototype.responseMiddleware = function(arg) {
-	    var data, requestFn;
-	    requestFn = arg.requestFn, data = arg.data;
-	    data = this.replace(requestFn, data);
+	    var data, instance, requestFn;
+	    instance = arg.instance, requestFn = arg.requestFn, data = arg.data;
+	    data = this.replace(instance, requestFn, data);
 	    return {
 	      data: data
 	    };
@@ -1156,11 +1131,63 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var toQueryString,
+	  slice = [].slice;
+
+	toQueryString = __webpack_require__(8);
+
+	module.exports = function() {
+	  var args, i, j, len, m, match, optionalNames, param, paramName, ref, url;
+	  url = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	  i = 0;
+	  while (m = /(\{[^\}]+\})/.exec(url)) {
+	    match = m[1];
+	    if (i < args.length) {
+	      param = args[i];
+	      switch (match[1]) {
+	        case '/':
+	          param = "/" + param;
+	          break;
+	        case '?':
+	          optionalNames = match.slice(2, -1).split(',');
+	          if (typeof param === 'object') {
+	            if (Object.keys(param).length === 0) {
+	              console.warn('Must pass in a dictionary with at least one key when there are multiple optional params');
+	            }
+	            ref = Object.keys(param);
+	            for (j = 0, len = ref.length; j < len; j++) {
+	              paramName = ref[j];
+	              if (optionalNames.indexOf(paramName) < 0) {
+	                console.warn("Invalid parameter '" + paramName + "' passed in as argument");
+	              }
+	            }
+	            param = toQueryString(param);
+	          } else {
+	            param = "?" + optionalNames[0] + "=" + param;
+	          }
+	      }
+	    } else {
+	      param = '';
+	      if (match[1] !== '/') {
+	        throw new Error("BUG: Missing required parameter " + match);
+	      }
+	    }
+	    url = url.replace(match, param);
+	    i++;
+	  }
+	  return url;
+	};
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, Request, _, _cachedETags, ajax, base64encode, userAgent;
 
-	_ = __webpack_require__(12);
+	_ = __webpack_require__(13);
 
-	base64encode = __webpack_require__(14);
+	base64encode = __webpack_require__(15);
 
 	DEFAULT_HEADER = __webpack_require__(3).DEFAULT_HEADER;
 
@@ -1174,7 +1201,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(15).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(16).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1219,7 +1246,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	Request = function(clientOptions, ALL_PLUGINS) {
+	Request = function(instance, clientOptions, ALL_PLUGINS) {
 	  var emitter, requestFn;
 	  if (clientOptions == null) {
 	    clientOptions = {};
@@ -1357,7 +1384,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            jqXHR: jqXHR,
 	            status: jqXHR.status,
 	            request: acc,
-	            requestFn: requestFn
+	            requestFn: requestFn,
+	            instance: instance
 	          };
 	          for (j = 0, len1 = ALL_PLUGINS.length; j < len1; j++) {
 	            plugin = ALL_PLUGINS[j];
@@ -1401,7 +1429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -13756,10 +13784,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module), (function() { return this; }())))
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -13775,7 +13803,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -13797,21 +13825,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AUTHORIZATION, DEFAULT_HEADER, PATH_TEST, PREVIEW_APIS, URL_VALIDATOR, USE_POST_INSTEAD_OF_PATCH, base64encode, ref;
 
 	ref = __webpack_require__(3), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
 
-	base64encode = __webpack_require__(14);
+	base64encode = __webpack_require__(15);
 
 	PATH_TEST = {
 	  requestMiddleware: function(arg) {
@@ -13875,7 +13903,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;

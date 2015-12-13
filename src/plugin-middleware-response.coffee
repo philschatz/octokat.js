@@ -1,6 +1,6 @@
 plus = require './plus'
 {toPromise} = require './helper-promise'
-toQueryString = require './helper-querystring'
+applyHypermedia = require './helper-hypermedia'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
 Chainer = require './chainer'
 
@@ -83,21 +83,21 @@ PAGED_RESULTS = new class PagedResults
 
 
 HYPERMEDIA = new class HyperMedia
-  replace: (requestFn, data) ->
+  replace: (instance, requestFn, data) ->
     if Array.isArray(data)
-      return @_replaceArray(requestFn, data)
+      return @_replaceArray(instance, requestFn, data)
     else if typeof data is 'function'
       return data
     else if data == Object(data)
-      return @_replaceObject(requestFn, data)
+      return @_replaceObject(instance, requestFn, data)
     else
       return data
 
-  _replaceObject: (requestFn, orig) ->
+  _replaceObject: (instance, requestFn, orig) ->
     acc = {}
     for key in Object.keys(orig)
       value = orig[key]
-      @_replaceKeyValue(requestFn, acc, key, value)
+      @_replaceKeyValue(instance, requestFn, acc, key, value)
 
     # If the URL matches one of the "Object" types (repo, user, comment)
     # then provide all of the same methods as `octo.repo(...)` would have on it
@@ -113,16 +113,16 @@ HYPERMEDIA = new class HyperMedia
 
     acc
 
-  _replaceArray: (requestFn, orig) ->
-    arr = (@replace(requestFn, item) for item in orig)
+  _replaceArray: (instance, requestFn, orig) ->
+    arr = (@replace(instance, requestFn, item) for item in orig)
     # Convert the nextPage methods for paged results
     for key in Object.keys(orig)
       value = orig[key]
-      @_replaceKeyValue(requestFn, arr, key, value)
+      @_replaceKeyValue(instance, requestFn, arr, key, value)
     arr
 
   # Convert things that end in `_url` to methods which return a Promise
-  _replaceKeyValue: (requestFn, acc, key, value) ->
+  _replaceKeyValue: (instance, requestFn, acc, key, value) ->
     if /_url$/.test(key)
       fn = (cb, args...) =>
         # Deprecate calling this function when the URL does not contain
@@ -130,55 +130,59 @@ HYPERMEDIA = new class HyperMedia
         unless /\{/.test(value) or /_page_url$/.test(key)
           console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method')
 
-        # url can contain {name} or {/name} in the URL.
-        # for every arg passed in, replace {...} with that arg
-        # and remove the rest (they may or may not be optional)
-        url = value
-        i = 0
-        while m = /(\{[^\}]+\})/.exec(url)
-          # `match` is something like `{/foo}`
-          match = m[1]
-          if i < args.length
-            # replace it
-            param = args[i]
-            switch match[1]
-              when '/'
-                param = "/#{param}"
-              when '?'
-                # Strip off the "{?" and the trailing "}"
-                # For example, the URL is `/assets{?name,label}`
-                #   which turns into `/assets?name=foo.zip`
-                # Used to upload releases via the repo releases API.
-                # TODO: When match contains `,` or
-                # `args.length is 1` and args[0] is object match the args to those in the template
-                optionalNames = match[2..-2].split(',')
-                # If param is a string then just use the 1st optionalName
-                if typeof param is 'object'
-                  # TODO: validate the optionalNames
-                  if Object.keys(param).length is 0
-                    console.warn('Must pass in a dictionary with at least one key when there are multiple optional params')
-                  for paramName in Object.keys(param)
-                    if optionalNames.indexOf(paramName) < 0
-                      console.warn("Invalid parameter '#{paramName}' passed in as argument")
-                  param = toQueryString(param)
-                else
-                  param = "?#{optionalNames[0]}=#{param}"
-
-          else
-            # Discard the remaining optional params in the URL
-            param = ''
-            if match[1] isnt '/'
-              throw new Error("BUG: Missing required parameter #{match}")
-          url = url.replace(match, param)
-          i++
+        # # url can contain {name} or {/name} in the URL.
+        # # for every arg passed in, replace {...} with that arg
+        # # and remove the rest (they may or may not be optional)
+        # url = value
+        # i = 0
+        # while m = /(\{[^\}]+\})/.exec(url)
+        #   # `match` is something like `{/foo}`
+        #   match = m[1]
+        #   if i < args.length
+        #     # replace it
+        #     param = args[i]
+        #     switch match[1]
+        #       when '/'
+        #         param = "/#{param}"
+        #       when '?'
+        #         # Strip off the "{?" and the trailing "}"
+        #         # For example, the URL is `/assets{?name,label}`
+        #         #   which turns into `/assets?name=foo.zip`
+        #         # Used to upload releases via the repo releases API.
+        #         # TODO: When match contains `,` or
+        #         # `args.length is 1` and args[0] is object match the args to those in the template
+        #         optionalNames = match[2..-2].split(',')
+        #         # If param is a string then just use the 1st optionalName
+        #         if typeof param is 'object'
+        #           # TODO: validate the optionalNames
+        #           if Object.keys(param).length is 0
+        #             console.warn('Must pass in a dictionary with at least one key when there are multiple optional params')
+        #           for paramName in Object.keys(param)
+        #             if optionalNames.indexOf(paramName) < 0
+        #               console.warn("Invalid parameter '#{paramName}' passed in as argument")
+        #           param = toQueryString(param)
+        #         else
+        #           param = "?#{optionalNames[0]}=#{param}"
+        #
+        #   else
+        #     # Discard the remaining optional params in the URL
+        #     param = ''
+        #     if match[1] isnt '/'
+        #       throw new Error("BUG: Missing required parameter #{match}")
+        #   url = url.replace(match, param)
+        #   i++
 
         if /upload_url$/.test(key)
           # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
           # Pull off the last 2 args to .upload()
+          url = applyHypermedia(value, args...)
           [contentType, data]     = args[-2..]
           requestFn('POST', url, data, {contentType, raw:true}, cb)
         else
-          requestFn('GET', url, null, null, cb) # TODO: Heuristically set the isBoolean flag
+          # TODO: Don't do the extra curry here. pull it out and make fn = instance.fromUrl
+          instance.fromUrl(value, args...)(cb)
+          # url = applyHypermedia(value, args...)
+          # requestFn('GET', url, null, null, cb) # TODO: Heuristically set the isBoolean flag
 
       fn = toPromise(fn)
       fn.url = value
@@ -194,10 +198,10 @@ HYPERMEDIA = new class HyperMedia
       acc[key] = if value then new Date(value) else null
 
     else
-      acc[key] = @replace(requestFn, value)
+      acc[key] = @replace(instance, requestFn, value)
 
-  responseMiddleware: ({requestFn, data}) ->
-    data = @replace(requestFn, data)
+  responseMiddleware: ({instance, requestFn, data}) ->
+    data = @replace(instance, requestFn, data)
     {data}
 
 
