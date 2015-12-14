@@ -442,9 +442,17 @@ octo.fromUrl("https://api.github.com/repos/philschatz/octokat.js/issues/1").fetc
 octo.fromUrl("/repos/philschatz/octokat.js/issues").fetch({state: 'open'}, cb);
 ```
 
-## Todo
-- Add Option for Two factor authentication
-- Add option to pass header as cahce control: no cache
+If the URL is a Hypermedia Template then you can fill in the fields by passing them in as an additional argument.
+
+```js
+params = {
+  owner: 'philschatz'
+  repo: 'octokat.js'
+  name: 'dist.js'
+}
+octo.fromUrl("https://uploads.github.com/repos/{owner}/{repo}/releases{/id}/assets{?name}", params)
+// returns https://uploads.github.com/repos/philschatz/octokat.js/releases/assets?name=dist.js
+```
 
 ## Development
 
@@ -460,6 +468,9 @@ and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in t
 If you are adding tests be sure to include the updated fixtures in the Pull Request.
 
 
+## Todo
+- Add Option for Two factor authentication
+- Add option to pass header as cahce control: no cache
 
 
 [kanban-image]: https://img.shields.io/github/issues/philschatz/octokat.js.svg?label=kanban%20board%20%28gh-board%29
