@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CACHE_HANDLER, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_REQUEST_PLUGINS, OBJECT_MATCHER, Octokat, PAGINATION, READ_BINARY, Request, SIMPLE_VERBS_PLUGIN, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -78,23 +78,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	toPromise = __webpack_require__(7).toPromise;
 
-	applyHypermedia = __webpack_require__(13);
+	applyHypermedia = __webpack_require__(12);
 
-	SIMPLE_VERBS_PLUGIN = __webpack_require__(14);
-
-	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(15);
-
-	CACHE_HANDLER = __webpack_require__(16);
-
-	READ_BINARY = __webpack_require__(17);
-
-	PAGINATION = __webpack_require__(18);
-
-	HYPERMEDIA = __webpack_require__(19);
-
-	CAMEL_CASE = __webpack_require__(20);
-
-	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([SIMPLE_VERBS_PLUGIN, READ_BINARY, PAGINATION, CACHE_HANDLER, HYPERMEDIA, CAMEL_CASE]);
+	ALL_PLUGINS = [__webpack_require__(13), __webpack_require__(14), __webpack_require__(16), __webpack_require__(17), __webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23)];
 
 	reChainChildren = function(plugins, request, url, obj) {
 	  var context, j, k, key, len, re, ref1;
@@ -860,13 +846,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, Request, _cachedETags, ajax, base64encode, plus, userAgent;
+	var require;var DEFAULT_CACHE_HANDLER, Request, _cachedETags, ajax, plus, userAgent;
 
 	plus = __webpack_require__(2);
-
-	base64encode = __webpack_require__(11);
-
-	DEFAULT_HEADER = __webpack_require__(4).DEFAULT_HEADER;
 
 	if (typeof window === "undefined" || window === null) {
 	  userAgent = 'octokat.js';
@@ -878,7 +860,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(12).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(11).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1100,33 +1082,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ function(module, exports) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
-
-	if (typeof window !== "undefined" && window !== null) {
-	  base64encode = window.btoa;
-	} else if (typeof global !== "undefined" && global !== null ? global['Buffer'] : void 0) {
-	  base64encode = function(str) {
-	    var buffer;
-	    buffer = new global['Buffer'](str, 'binary');
-	    return buffer.toString('base64');
-	  };
-	} else {
-	  throw new Error('Native btoa function or Buffer is missing');
-	}
-
-	module.exports = base64encode;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
@@ -1203,7 +1163,118 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var URL_VALIDATOR;
+
+	URL_VALIDATOR = __webpack_require__(4).URL_VALIDATOR;
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var err, path;
+	    path = arg.path;
+	    if (!URL_VALIDATOR.test(path)) {
+	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+	      return console.warn(err);
+	    }
+	  }
+	};
+
+
+/***/ },
 /* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var base64encode;
+
+	base64encode = __webpack_require__(15);
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var auth, password, ref, token, username;
+	    ref = arg.clientOptions, token = ref.token, username = ref.username, password = ref.password;
+	    if (token || (username && password)) {
+	      if (token) {
+	        auth = "token " + token;
+	      } else {
+	        auth = 'Basic ' + base64encode(username + ":" + password);
+	      }
+	      return {
+	        headers: {
+	          'Authorization': auth
+	        }
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
+
+	if (typeof window !== "undefined" && window !== null) {
+	  base64encode = window.btoa;
+	} else if (typeof global !== "undefined" && global !== null ? global['Buffer'] : void 0) {
+	  base64encode = function(str) {
+	    var buffer;
+	    buffer = new global['Buffer'](str, 'binary');
+	    return buffer.toString('base64');
+	  };
+	} else {
+	  throw new Error('Native btoa function or Buffer is missing');
+	}
+
+	module.exports = base64encode;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var DEFAULT_HEADER;
+
+	DEFAULT_HEADER = __webpack_require__(4).DEFAULT_HEADER;
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var acceptHeader, path;
+	    path = arg.path;
+	    acceptHeader = DEFAULT_HEADER(path);
+	    if (acceptHeader) {
+	      return {
+	        headers: {
+	          'Accept': acceptHeader
+	        }
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var method, ref, usePostInsteadOfPatch;
+	    (ref = arg.clientOptions, usePostInsteadOfPatch = ref.usePostInsteadOfPatch), method = arg.method;
+	    if (usePostInsteadOfPatch && method === 'PATCH') {
+	      return {
+	        method: 'POST'
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toQueryString,
@@ -1290,77 +1361,100 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var AUTHORIZATION, DEFAULT_HEADER, PATH_TEST, PREVIEW_APIS, URL_VALIDATOR, USE_POST_INSTEAD_OF_PATCH, base64encode, ref;
+	var ReadBinary, toQueryString;
 
-	ref = __webpack_require__(4), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
+	toQueryString = __webpack_require__(9);
 
-	base64encode = __webpack_require__(11);
+	module.exports = new (ReadBinary = (function() {
+	  function ReadBinary() {}
 
-	PATH_TEST = {
-	  requestMiddleware: function(arg) {
-	    var err, path;
-	    path = arg.path;
-	    if (!URL_VALIDATOR.test(path)) {
-	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
-	      return console.warn(err);
-	    }
-	  }
-	};
-
-	USE_POST_INSTEAD_OF_PATCH = {
-	  requestMiddleware: function(arg) {
-	    var method, ref1, usePostInsteadOfPatch;
-	    (ref1 = arg.clientOptions, usePostInsteadOfPatch = ref1.usePostInsteadOfPatch), method = arg.method;
-	    if (usePostInsteadOfPatch && method === 'PATCH') {
+	  ReadBinary.prototype.verbs = {
+	    readBinary: function(path, query) {
 	      return {
-	        method: 'POST'
-	      };
-	    }
-	  }
-	};
-
-	PREVIEW_APIS = {
-	  requestMiddleware: function(arg) {
-	    var acceptHeader, path;
-	    path = arg.path;
-	    acceptHeader = DEFAULT_HEADER(path);
-	    if (acceptHeader) {
-	      return {
-	        headers: {
-	          'Accept': acceptHeader
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true,
+	          isBase64: true
 	        }
 	      };
 	    }
-	  }
-	};
+	  };
 
-	AUTHORIZATION = {
-	  requestMiddleware: function(arg) {
-	    var auth, password, ref1, token, username;
-	    ref1 = arg.clientOptions, token = ref1.token, username = ref1.username, password = ref1.password;
-	    if (token || (username && password)) {
-	      if (token) {
-	        auth = "token " + token;
-	      } else {
-	        auth = 'Basic ' + base64encode(username + ":" + password);
+	  ReadBinary.prototype.requestMiddleware = function(arg) {
+	    var isBase64, options;
+	    options = arg.options;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      return {
+	        headers: {
+	          Accept: 'application/vnd.github.raw'
+	        },
+	        mimeType: 'text/plain; charset=x-user-defined'
+	      };
+	    }
+	  };
+
+	  ReadBinary.prototype.responseMiddleware = function(arg) {
+	    var converted, data, i, isBase64, j, options, ref;
+	    options = arg.options, data = arg.data;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      converted = '';
+	      for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
 	      }
 	      return {
-	        headers: {
-	          'Authorization': auth
-	        }
+	        data: converted
 	      };
 	    }
-	  }
-	};
+	  };
 
-	module.exports = [PATH_TEST, USE_POST_INSTEAD_OF_PATCH, PREVIEW_APIS, AUTHORIZATION];
+	  return ReadBinary;
+
+	})());
 
 
 /***/ },
-/* 16 */
+/* 20 */
+/***/ function(module, exports) {
+
+	var Pagination;
+
+	module.exports = new (Pagination = (function() {
+	  function Pagination() {}
+
+	  Pagination.prototype.responseMiddleware = function(arg) {
+	    var data, discard, href, i, jqXHR, len, links, part, ref, ref1, rel;
+	    jqXHR = arg.jqXHR, data = arg.data;
+	    if (!jqXHR) {
+	      return;
+	    }
+	    if (Array.isArray(data)) {
+	      data = data.slice(0);
+	      links = jqXHR.getResponseHeader('Link');
+	      ref = (links != null ? links.split(',') : void 0) || [];
+	      for (i = 0, len = ref.length; i < len; i++) {
+	        part = ref[i];
+	        ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
+	        data[rel + "_page_url"] = href;
+	      }
+	      return {
+	        data: data
+	      };
+	    }
+	  };
+
+	  return Pagination;
+
+	})());
+
+
+/***/ },
+/* 21 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;
@@ -1427,100 +1521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ReadBinary, toQueryString;
-
-	toQueryString = __webpack_require__(9);
-
-	module.exports = new (ReadBinary = (function() {
-	  function ReadBinary() {}
-
-	  ReadBinary.prototype.verbs = {
-	    readBinary: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true,
-	          isBase64: true
-	        }
-	      };
-	    }
-	  };
-
-	  ReadBinary.prototype.requestMiddleware = function(arg) {
-	    var isBase64, options;
-	    options = arg.options;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      return {
-	        headers: {
-	          Accept: 'application/vnd.github.raw'
-	        },
-	        mimeType: 'text/plain; charset=x-user-defined'
-	      };
-	    }
-	  };
-
-	  ReadBinary.prototype.responseMiddleware = function(arg) {
-	    var converted, data, i, isBase64, j, options, ref;
-	    options = arg.options, data = arg.data;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      converted = '';
-	      for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
-	      }
-	      return {
-	        data: converted
-	      };
-	    }
-	  };
-
-	  return ReadBinary;
-
-	})());
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	var Pagination;
-
-	module.exports = new (Pagination = (function() {
-	  function Pagination() {}
-
-	  Pagination.prototype.responseMiddleware = function(arg) {
-	    var data, discard, href, i, jqXHR, len, links, part, ref, ref1, rel;
-	    jqXHR = arg.jqXHR, data = arg.data;
-	    if (!jqXHR) {
-	      return;
-	    }
-	    if (Array.isArray(data)) {
-	      data = data.slice(0);
-	      links = jqXHR.getResponseHeader('Link');
-	      ref = (links != null ? links.split(',') : void 0) || [];
-	      for (i = 0, len = ref.length; i < len; i++) {
-	        part = ref[i];
-	        ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
-	        data[rel + "_page_url"] = href;
-	      }
-	      return {
-	        data: data
-	      };
-	    }
-	  };
-
-	  return Pagination;
-
-	})());
-
-
-/***/ },
-/* 19 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1624,7 +1625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;

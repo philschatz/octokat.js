@@ -9,23 +9,21 @@ Request = require './request'
 {toPromise} = require './helper-promise'
 applyHypermedia = require './helper-hypermedia'
 
-SIMPLE_VERBS_PLUGIN = require './plugins/simple-verbs'
-MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
-CACHE_HANDLER = require './plugins/cache-handler'
-READ_BINARY = require './plugins/read-binary'
-PAGINATION = require './plugins/pagination'
-HYPERMEDIA = require './plugins/hypermedia'
-CAMEL_CASE = require './plugins/camel-case'
+ALL_PLUGINS = [
+  require './plugins/path-check'
+  require './plugins/authorization'
+  require './plugins/preview-apis'
+  require './plugins/use-post-instead-of-patch'
 
-ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
-  SIMPLE_VERBS_PLUGIN
-  READ_BINARY
-  PAGINATION
-  CACHE_HANDLER  # Run cacheHandler after PagedResults so the link headers are remembered
-                 # but before hypermedia so the object is still serializable
-  HYPERMEDIA
-  CAMEL_CASE
-])
+  require './plugins/simple-verbs'
+  require './plugins/read-binary'
+  require './plugins/pagination'
+  # Run cacheHandler after PagedResults so the link headers are remembered
+  # but before hypermedia so the object is still serializable
+  require './plugins/cache-handler'
+  require './plugins/hypermedia'
+  require './plugins/camel-case'
+]
 
 
 # Combine all the classes into one client

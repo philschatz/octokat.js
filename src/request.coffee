@@ -1,6 +1,6 @@
 plus = require './plus'
-base64encode = require './helper-base64'
-{DEFAULT_HEADER} = require './grammar'
+# base64encode = require './helper-base64'
+# {DEFAULT_HEADER} = require './grammar'
 
 
 # Request Function
