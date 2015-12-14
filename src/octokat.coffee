@@ -1,4 +1,3 @@
-_ = require 'lodash'
 plus = require './plus'
 deprecate = require './deprecate'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
@@ -113,7 +112,7 @@ Octokat = (clientOptions={}) ->
 
     for plugin in plugins
       if plugin.responseMiddleware
-        _.extend(context, plugin.responseMiddleware(context))
+        plus.extend(context, plugin.responseMiddleware(context))
     {data} = context
 
     # TODO: Move the chainer to a plugin since many people will not need this

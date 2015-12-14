@@ -1,4 +1,4 @@
-_ = require 'lodash'
+plus = require './plus'
 base64encode = require './helper-base64'
 {DEFAULT_HEADER} = require './grammar'
 
@@ -115,9 +115,7 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
         {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
         acc.method = method if method
         acc.mimeType = mimeType if mimeType
-        if headers
-          # acc.headers ?= {}
-          _.extend(acc.headers, headers)
+        plus.extend(acc.headers, headers)
 
     {method, headers, mimeType} = acc
 

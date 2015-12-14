@@ -20,4 +20,10 @@ plus =
       else
         '-'
 
+  # Just _.extend(target, source)
+  extend: (target, source) ->
+    if source
+      for key in Object.keys(source)
+        target[key] = source[key]
+
 module.exports = plus
