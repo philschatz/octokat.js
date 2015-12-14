@@ -1,4 +1,5 @@
 plus = require './plus'
+deprecate = require './deprecate'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
 Chainer = require './chainer'
 injectVerbMethods = require './verb-methods'
@@ -36,10 +37,10 @@ reChainChildren = (request, url, obj) ->
   obj
 
 
-parse = (obj, path, requestFn) ->
+parse = (obj, path, requestFn, instance) ->
   url = obj.url or path
   if url
-    {data: obj} = HYPERMEDIA.responseMiddleware({requestFn, data:obj})
+    {data: obj} = HYPERMEDIA.responseMiddleware({instance, requestFn, data:obj})
     # TODO: Refactor: make this loop through all installed responseMiddleware plugins
     {data: obj} = CAMEL_CASE.responseMiddleware({data: obj})
 
@@ -90,7 +91,7 @@ Octokat = (clientOptions={}) ->
       return cb(null, val) if options.raw
 
       unless disableHypermedia
-        obj = parse(val, path, request)
+        obj = parse(val, path, request, instance)
         return cb(null, obj)
       else
         return cb(null, val)
@@ -101,15 +102,34 @@ Octokat = (clientOptions={}) ->
   instance.me = instance.user
 
   instance.parse = (jsonObj) ->
-    parse(jsonObj, '', request)
+    parse(jsonObj, '', request, instance)
+
+
+  # TODO remove this depractaion too
+  instance._fromUrlWithDefault = (path, defaultFn, args...) ->
+    path = applyHypermedia(path, args...)
+    injectVerbMethods(request, path, defaultFn)
+    defaultFn
 
   instance.fromUrl = (path, args...) ->
-    path = applyHypermedia(path, args...)
-    ret = (args...) ->
-      console.log('Octokat Deprecation: call .fetch() explicitly')
-      ret.fetch(args...)
-    injectVerbMethods(request, path, ret)
-    ret
+    defaultFn = (args...) ->
+      deprecate('call ....fetch() explicitly instead of ...()')
+      defaultFn.fetch(args...)
+
+    instance._fromUrlWithDefault(path, defaultFn, args...)
+
+  instance._fromUrlCurried = (path, defaultFn) ->
+    fn = (templateArgs...) ->
+      # This conditional logic is for the deprecated .nextPage() call
+      if defaultFn and templateArgs.length is 0
+        defaultFn.apply(fn)
+      else
+        instance.fromUrl(path, templateArgs...)
+
+    unless /\{/.test(path)
+      injectVerbMethods(request, path, fn)
+    fn
+
 
   # Add the GitHub Status API https://status.github.com/api
   instance.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)

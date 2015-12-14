@@ -189,33 +189,66 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
 
     describe 'Paged Results', () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.nextPage()
-          .then (moreResults) ->
+      describe 'Deprecated Notation', ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage()
+            .then (moreResults) ->
+              expect(moreResults).to.be.an('array')
+              expect(moreResults).to.have.length.at.least(1)
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.nextPage()
-          .then (moreResults) ->
-            moreResults.prevPage()
-            .then () ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage()
+            .then (moreResults) ->
+              moreResults.prevPage()
+              .then () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.nextPage()
-          .then (moreResults) ->
-            moreResults.firstPage()
-            .then () ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage()
+            .then (moreResults) ->
+              moreResults.firstPage()
+              .then () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.lastPage()
-          .then (moreResults) ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.lastPage()
+            .then (moreResults) ->
+
+      describe 'New Notation', ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.nextPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage.fetch()
+            .then (moreResults) ->
+              expect(moreResults).to.be.an('array')
+              expect(moreResults).to.have.length.at.least(1)
+
+        it "#{GH}.gists.public.fetch().then(results) -> results.prevPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage.fetch()
+            .then (moreResults) ->
+              moreResults.prevPage.fetch()
+              .then () ->
+
+        it "#{GH}.gists.public.fetch().then(results) -> results.firstPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage.fetch()
+            .then (moreResults) ->
+              moreResults.firstPage.fetch()
+              .then () ->
+
+        it "#{GH}.gists.public.fetch().then(results) -> results.lastPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.lastPage.fetch()
 
 
     describe "#{REPO} = #{GH}.repos(OWNER, NAME)", () ->
@@ -464,7 +497,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
   #       JSON.stringify(repo)
 
   describe 'Cache Handler', () ->
-    it ' is called when refetching a URL', (done) ->
+    it ' is called when refetching a URL', ->
       retreivedFromCache = false
       cacheHandler = new class CacheHandler
         constructor: ->
@@ -482,5 +515,3 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         .then (repo2) ->
           expect(JSON.stringify(repo1) is JSON.stringify(repo2)).to.be.true
           expect(retreivedFromCache).to.be.true
-          done()
->>>>>>> move paged results to plugin

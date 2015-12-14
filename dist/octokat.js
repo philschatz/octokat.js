@@ -61,30 +61,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, injectVerbMethods, parse, plus, reChainChildren, ref, ref1, toPromise, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, parse, plus, reChainChildren, ref, ref1, toPromise, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
 
-	ref = __webpack_require__(3), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
+	deprecate = __webpack_require__(3);
 
-	Chainer = __webpack_require__(4);
+	ref = __webpack_require__(4), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
 
-	injectVerbMethods = __webpack_require__(5);
+	Chainer = __webpack_require__(5);
 
-	ref1 = __webpack_require__(10), CAMEL_CASE = ref1.CAMEL_CASE, HYPERMEDIA = ref1.HYPERMEDIA;
+	injectVerbMethods = __webpack_require__(6);
 
-	Request = __webpack_require__(12);
+	ref1 = __webpack_require__(11), CAMEL_CASE = ref1.CAMEL_CASE, HYPERMEDIA = ref1.HYPERMEDIA;
 
-	toPromise = __webpack_require__(6).toPromise;
+	Request = __webpack_require__(13);
 
-	applyHypermedia = __webpack_require__(11);
+	toPromise = __webpack_require__(7).toPromise;
 
-	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(17);
+	applyHypermedia = __webpack_require__(12);
 
-	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(10);
+	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(18);
 
-	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(18);
+	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(11);
+
+	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(19);
 
 	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE, MIDDLEWARE_CACHE_HANDLER]);
 
@@ -105,11 +107,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return obj;
 	};
 
-	parse = function(obj, path, requestFn) {
+	parse = function(obj, path, requestFn, instance) {
 	  var url;
 	  url = obj.url || path;
 	  if (url) {
 	    obj = HYPERMEDIA.responseMiddleware({
+	      instance: instance,
 	      requestFn: requestFn,
 	      data: obj
 	    }).data;
@@ -182,7 +185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return cb(null, val);
 	      }
 	      if (!disableHypermedia) {
-	        obj = parse(val, path, request);
+	        obj = parse(val, path, request, instance);
 	        return cb(null, obj);
 	      } else {
 	        return cb(null, val);
@@ -192,20 +195,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Chainer(request, '', null, TREE_OPTIONS, instance);
 	  instance.me = instance.user;
 	  instance.parse = function(jsonObj) {
-	    return parse(jsonObj, '', request);
+	    return parse(jsonObj, '', request, instance);
+	  };
+	  instance._fromUrlWithDefault = function() {
+	    var args, defaultFn, path;
+	    path = arguments[0], defaultFn = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [];
+	    path = applyHypermedia.apply(null, [path].concat(slice.call(args)));
+	    injectVerbMethods(request, path, defaultFn);
+	    return defaultFn;
 	  };
 	  instance.fromUrl = function() {
-	    var args, path, ret;
+	    var args, defaultFn, path;
 	    path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	    path = applyHypermedia.apply(null, [path].concat(slice.call(args)));
-	    ret = function() {
+	    defaultFn = function() {
 	      var args;
 	      args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	      console.log('Octokat Deprecation: call .fetch() explicitly');
-	      return ret.fetch.apply(ret, args);
+	      deprecate('call ....fetch() explicitly instead of ...()');
+	      return defaultFn.fetch.apply(defaultFn, args);
 	    };
-	    injectVerbMethods(request, path, ret);
-	    return ret;
+	    return instance._fromUrlWithDefault.apply(instance, [path, defaultFn].concat(slice.call(args)));
+	  };
+	  instance._fromUrlCurried = function(path, defaultFn) {
+	    var fn;
+	    fn = function() {
+	      var templateArgs;
+	      templateArgs = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	      if (defaultFn && templateArgs.length === 0) {
+	        return defaultFn.apply(fn);
+	      } else {
+	        return instance.fromUrl.apply(instance, [path].concat(slice.call(templateArgs)));
+	      }
+	    };
+	    if (!/\{/.test(path)) {
+	      injectVerbMethods(request, path, fn);
+	    }
+	    return fn;
 	  };
 	  instance.status = toPromise(function(cb) {
 	    return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
@@ -273,6 +297,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	module.exports = function(message) {
+	  return typeof console !== "undefined" && console !== null ? typeof console.warn === "function" ? console.warn("Octokat Deprecation: " + message) : void 0 : void 0;
+	};
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports) {
 
 	var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
@@ -506,7 +539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Chainer, injectVerbMethods, plus,
@@ -514,7 +547,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	plus = __webpack_require__(2);
 
-	injectVerbMethods = __webpack_require__(5);
+	injectVerbMethods = __webpack_require__(6);
 
 	Chainer = function(request, path, name, contextTree, fn) {
 	  var fn1;
@@ -556,19 +589,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var SIMPLE_VERBS_PLUGIN, URL_TESTER, URL_VALIDATOR, injectVerbMethods, toPromise, toQueryString,
 	  slice = [].slice;
 
-	URL_VALIDATOR = __webpack_require__(3).URL_VALIDATOR;
+	URL_VALIDATOR = __webpack_require__(4).URL_VALIDATOR;
 
-	toPromise = __webpack_require__(6).toPromise;
+	toPromise = __webpack_require__(7).toPromise;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
-	SIMPLE_VERBS_PLUGIN = __webpack_require__(9);
+	SIMPLE_VERBS_PLUGIN = __webpack_require__(10);
 
 	URL_TESTER = function(path) {
 	  var err;
@@ -607,7 +640,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var Promise, allPromises, injector, newPromise, ref, req, toPromise,
@@ -704,7 +737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	} else {
 	  req = require;
-	  Promise = this.Promise || __webpack_require__(7).Promise;
+	  Promise = this.Promise || __webpack_require__(8).Promise;
 	  newPromise = function(fn) {
 	    return new Promise(fn);
 	  };
@@ -746,14 +779,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = window.Promise;
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -776,13 +809,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
 	module.exports = {
 	  verbs: {
@@ -821,15 +854,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      };
 	    },
-	    create: function(path, data, isRaw) {
-	      return {
-	        method: 'POST',
-	        path: path,
-	        data: data,
-	        options: {
-	          isRaw: isRaw
-	        }
-	      };
+	    create: function(path, data, contentType) {
+	      if (contentType) {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data,
+	          options: {
+	            isRaw: true,
+	            contentType: contentType
+	          }
+	        };
+	      } else {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data
+	        };
+	      }
 	    },
 	    update: function(path, data) {
 	      return {
@@ -864,21 +906,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, plus, ref, toPromise,
+	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
 
-	toPromise = __webpack_require__(6).toPromise;
+	deprecate = __webpack_require__(3);
 
-	applyHypermedia = __webpack_require__(11);
+	toPromise = __webpack_require__(7).toPromise;
 
-	ref = __webpack_require__(3), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
+	applyHypermedia = __webpack_require__(12);
 
-	Chainer = __webpack_require__(4);
+	ref = __webpack_require__(4), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
+
+	Chainer = __webpack_require__(5);
 
 	CAMEL_CASE = new (CamelCase = (function() {
 	  function CamelCase() {}
@@ -1035,29 +1079,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  HyperMedia.prototype._replaceKeyValue = function(instance, requestFn, acc, key, value) {
-	    var fn, newKey;
+	    var defaultFn, fn, newKey;
 	    if (/_url$/.test(key)) {
-	      fn = (function(_this) {
-	        return function() {
-	          var args, cb, contentType, data, ref1, url;
-	          cb = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	          if (!(/\{/.test(value) || /_page_url$/.test(key))) {
-	            console.warn('Deprecation warning: Use the .fooUrl field instead of calling the method');
-	          }
-	          if (/upload_url$/.test(key)) {
-	            url = applyHypermedia.apply(null, [value].concat(slice.call(args)));
-	            ref1 = args.slice(-2), contentType = ref1[0], data = ref1[1];
-	            return requestFn('POST', url, data, {
-	              contentType: contentType,
-	              raw: true
-	            }, cb);
-	          } else {
-	            return instance.fromUrl.apply(instance, [value].concat(slice.call(args)))(cb);
-	          }
+	      if (/^upload_url$/.test(key)) {
+	        defaultFn = function() {
+	          var args;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');
+	          return defaultFn.create.apply(defaultFn, args);
 	        };
-	      })(this);
-	      fn = toPromise(fn);
-	      fn.url = value;
+	        fn = function() {
+	          var args;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          return instance._fromUrlWithDefault.apply(instance, [value, defaultFn].concat(slice.call(args)))();
+	        };
+	      } else {
+	        defaultFn = function() {
+	          deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
+	          return this.fetch();
+	        };
+	        fn = instance._fromUrlCurried(value, defaultFn);
+	      }
 	      newKey = key.substring(0, key.length - '_url'.length);
 	      acc[newKey] = fn;
 	      if (!/\{/.test(value)) {
@@ -1128,13 +1170,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
 	module.exports = function() {
 	  var args, i, j, len, m, match, optionalNames, param, paramName, ref, url;
@@ -1180,16 +1222,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, Request, _, _cachedETags, ajax, base64encode, userAgent;
 
-	_ = __webpack_require__(13);
+	_ = __webpack_require__(14);
 
-	base64encode = __webpack_require__(15);
+	base64encode = __webpack_require__(16);
 
-	DEFAULT_HEADER = __webpack_require__(3).DEFAULT_HEADER;
+	DEFAULT_HEADER = __webpack_require__(4).DEFAULT_HEADER;
 
 	if (typeof window === "undefined" || window === null) {
 	  userAgent = 'octokat.js';
@@ -1201,7 +1243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(16).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(17).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1429,7 +1471,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -13784,10 +13826,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}.call(this));
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)(module), (function() { return this; }())))
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -13803,7 +13845,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -13825,21 +13867,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AUTHORIZATION, DEFAULT_HEADER, PATH_TEST, PREVIEW_APIS, URL_VALIDATOR, USE_POST_INSTEAD_OF_PATCH, base64encode, ref;
 
-	ref = __webpack_require__(3), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
+	ref = __webpack_require__(4), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
 
-	base64encode = __webpack_require__(15);
+	base64encode = __webpack_require__(16);
 
 	PATH_TEST = {
 	  requestMiddleware: function(arg) {
@@ -13903,7 +13945,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;
