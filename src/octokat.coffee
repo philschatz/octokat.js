@@ -5,7 +5,6 @@ deprecate = require './deprecate'
 Chainer = require './chainer'
 injectVerbMethods = require './verb-methods'
 # Replacer = require './replacer'
-{CAMEL_CASE, HYPERMEDIA} = require './plugin-middleware-response'
 
 Request = require './request'
 {toPromise} = require './helper-promise'
@@ -15,7 +14,6 @@ applyHypermedia = require './helper-hypermedia'
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
 MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
 MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
-# MIDDLEWARE_RESPONSE_PLUGINS['CACHE_HANDLER'] = MIDDLEWARE_CACHE_HANDLER
 
 ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
   MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
@@ -39,33 +37,6 @@ reChainChildren = (request, url, obj) ->
   obj
 
 
-parse = (data, path, requestFn, instance, clientOptions) ->
-  url = data.url or path
-  if url
-    # Mostly copied from request.coffee
-    acc = {
-      clientOptions
-      data
-      options: {}
-      # jqXHR # for cacheHandler
-      # status:jqXHR.status # cacheHandler changes this
-      # request:acc # Include the request data for plugins like cacheHandler
-      requestFn # for Hypermedia to generate verb methods
-      instance # for Hypermedia to be able to call `.fromUrl`
-    }
-    for plugin in ALL_PLUGINS
-      if plugin.responseMiddleware
-        acc2 = plugin.responseMiddleware(acc)
-        _.extend(acc, acc2)
-    {data} = acc
-
-    Chainer(requestFn, url, true, {}, data)
-    reChainChildren(requestFn, url, data)
-  else
-    Chainer(requestFn, '', null, TREE_OPTIONS, data)
-  data
-
-
 uncamelizeObj = (obj) ->
   if Array.isArray(obj)
     return (uncamelizeObj(i) for i in obj)
@@ -80,6 +51,8 @@ uncamelizeObj = (obj) ->
 
 
 Octokat = (clientOptions={}) ->
+
+  plugins = clientOptions.plugins or ALL_PLUGINS
 
   {disableHypermedia} = clientOptions
   # set defaults
@@ -99,14 +72,20 @@ Octokat = (clientOptions={}) ->
       data = uncamelizeObj(data)
 
     # For each request, convert the JSON into Objects
-    _request = Request(instance, clientOptions, ALL_PLUGINS)
+    _request = Request(instance, clientOptions, plugins)
 
     return _request method, path, data, options, (err, val) ->
       return cb(err) if err
       return cb(null, val) if options.raw
 
       unless disableHypermedia
-        obj = parse(val, path, request, instance, clientOptions)
+        context = {
+          data: val
+          requestFn: _request
+          instance
+          clientOptions
+        }
+        obj = instance._parseWithContext(path, context)
         return cb(null, obj)
       else
         return cb(null, val)
@@ -116,8 +95,34 @@ Octokat = (clientOptions={}) ->
   # Special case for `me`
   instance.me = instance.user
 
-  instance.parse = (jsonObj) ->
-    parse(jsonObj, '', request, instance, clientOptions)
+  instance.parse = (data) ->
+    context = {
+      requestFn: request
+      data
+      instance
+      clientOptions
+    }
+    instance._parseWithContext('', context)
+
+  instance._parseWithContext = (path, context) ->
+    {data, requestFn} = context
+    url = data.url or path
+
+    # TODO: Remove this check since it modifies the object
+    context.options ?= {} # some plugins require this object to be set
+
+    for plugin in plugins
+      if plugin.responseMiddleware
+        _.extend(context, plugin.responseMiddleware(context))
+    {data} = context
+
+    # TODO: Move the chainer to a plugin since many people will not need this
+    if url
+      Chainer(requestFn, url, true, {}, data)
+      reChainChildren(requestFn, url, data)
+    else
+      Chainer(requestFn, '', null, TREE_OPTIONS, data)
+    data
 
 
   # TODO remove this depractaion too

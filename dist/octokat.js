@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, _, applyHypermedia, deprecate, injectVerbMethods, parse, plus, reChainChildren, ref, ref1, toPromise, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, _, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
 	  slice = [].slice;
 
 	_ = __webpack_require__(2);
@@ -76,31 +76,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	injectVerbMethods = __webpack_require__(7);
 
-	ref1 = __webpack_require__(12), CAMEL_CASE = ref1.CAMEL_CASE, HYPERMEDIA = ref1.HYPERMEDIA;
-
-	Request = __webpack_require__(14);
+	Request = __webpack_require__(12);
 
 	toPromise = __webpack_require__(8).toPromise;
 
-	applyHypermedia = __webpack_require__(13);
+	applyHypermedia = __webpack_require__(15);
 
-	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(17);
+	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(16);
 
-	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(12);
+	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(17);
 
 	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(18);
 
-	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE, MIDDLEWARE_CACHE_HANDLER]);
+	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE]);
 
 	reChainChildren = function(request, url, obj) {
-	  var context, j, k, key, len, re, ref2;
+	  var context, j, k, key, len, re, ref1;
 	  for (key in OBJECT_MATCHER) {
 	    re = OBJECT_MATCHER[key];
 	    if (re.test(obj.url)) {
 	      context = TREE_OPTIONS;
-	      ref2 = key.split('.');
-	      for (j = 0, len = ref2.length; j < len; j++) {
-	        k = ref2[j];
+	      ref1 = key.split('.');
+	      for (j = 0, len = ref1.length; j < len; j++) {
+	        k = ref1[j];
 	        context = context[k];
 	      }
 	      Chainer(request, url, k, context, obj);
@@ -109,35 +107,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return obj;
 	};
 
-	parse = function(data, path, requestFn, instance, clientOptions) {
-	  var acc, acc2, j, len, plugin, url;
-	  url = data.url || path;
-	  if (url) {
-	    acc = {
-	      clientOptions: clientOptions,
-	      data: data,
-	      options: {},
-	      requestFn: requestFn,
-	      instance: instance
-	    };
-	    for (j = 0, len = ALL_PLUGINS.length; j < len; j++) {
-	      plugin = ALL_PLUGINS[j];
-	      if (plugin.responseMiddleware) {
-	        acc2 = plugin.responseMiddleware(acc);
-	        _.extend(acc, acc2);
-	      }
-	    }
-	    data = acc.data;
-	    Chainer(requestFn, url, true, {}, data);
-	    reChainChildren(requestFn, url, data);
-	  } else {
-	    Chainer(requestFn, '', null, TREE_OPTIONS, data);
-	  }
-	  return data;
-	};
-
 	uncamelizeObj = function(obj) {
-	  var i, j, key, len, o, ref2, value;
+	  var i, j, key, len, o, ref1, value;
 	  if (Array.isArray(obj)) {
 	    return (function() {
 	      var j, len, results;
@@ -150,9 +121,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })();
 	  } else if (obj === Object(obj)) {
 	    o = {};
-	    ref2 = Object.keys(obj);
-	    for (j = 0, len = ref2.length; j < len; j++) {
-	      key = ref2[j];
+	    ref1 = Object.keys(obj);
+	    for (j = 0, len = ref1.length; j < len; j++) {
+	      key = ref1[j];
 	      value = obj[key];
 	      o[plus.uncamelize(key)] = uncamelizeObj(value);
 	    }
@@ -163,17 +134,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	Octokat = function(clientOptions) {
-	  var disableHypermedia, instance, request;
+	  var disableHypermedia, instance, plugins, request;
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
+	  plugins = clientOptions.plugins || ALL_PLUGINS;
 	  disableHypermedia = clientOptions.disableHypermedia;
 	  if (disableHypermedia == null) {
 	    disableHypermedia = false;
 	  }
 	  instance = {};
 	  request = function(method, path, data, options, cb) {
-	    var _request, ref2;
+	    var _request, ref1;
 	    if (options == null) {
 	      options = {
 	        raw: false,
@@ -181,12 +153,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        isBoolean: false
 	      };
 	    }
-	    if (data && !(typeof global !== "undefined" && global !== null ? (ref2 = global['Buffer']) != null ? ref2.isBuffer(data) : void 0 : void 0)) {
+	    if (data && !(typeof global !== "undefined" && global !== null ? (ref1 = global['Buffer']) != null ? ref1.isBuffer(data) : void 0 : void 0)) {
 	      data = uncamelizeObj(data);
 	    }
-	    _request = Request(instance, clientOptions, ALL_PLUGINS);
+	    _request = Request(instance, clientOptions, plugins);
 	    return _request(method, path, data, options, function(err, val) {
-	      var obj;
+	      var context, obj;
 	      if (err) {
 	        return cb(err);
 	      }
@@ -194,7 +166,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return cb(null, val);
 	      }
 	      if (!disableHypermedia) {
-	        obj = parse(val, path, request, instance, clientOptions);
+	        context = {
+	          data: val,
+	          requestFn: _request,
+	          instance: instance,
+	          clientOptions: clientOptions
+	        };
+	        obj = instance._parseWithContext(path, context);
 	        return cb(null, obj);
 	      } else {
 	        return cb(null, val);
@@ -203,8 +181,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	  Chainer(request, '', null, TREE_OPTIONS, instance);
 	  instance.me = instance.user;
-	  instance.parse = function(jsonObj) {
-	    return parse(jsonObj, '', request, instance, clientOptions);
+	  instance.parse = function(data) {
+	    var context;
+	    context = {
+	      requestFn: request,
+	      data: data,
+	      instance: instance,
+	      clientOptions: clientOptions
+	    };
+	    return instance._parseWithContext('', context);
+	  };
+	  instance._parseWithContext = function(path, context) {
+	    var data, j, len, plugin, requestFn, url;
+	    data = context.data, requestFn = context.requestFn;
+	    url = data.url || path;
+	    if (context.options == null) {
+	      context.options = {};
+	    }
+	    for (j = 0, len = plugins.length; j < len; j++) {
+	      plugin = plugins[j];
+	      if (plugin.responseMiddleware) {
+	        _.extend(context, plugin.responseMiddleware(context));
+	      }
+	    }
+	    data = context.data;
+	    if (url) {
+	      Chainer(requestFn, url, true, {}, data);
+	      reChainChildren(requestFn, url, data);
+	    } else {
+	      Chainer(requestFn, '', null, TREE_OPTIONS, data);
+	    }
+	    return data;
 	  };
 	  instance._fromUrlWithDefault = function() {
 	    var args, defaultFn, path;
@@ -5196,6 +5203,424 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, Request, _, _cachedETags, ajax, base64encode, userAgent;
+
+	_ = __webpack_require__(2);
+
+	base64encode = __webpack_require__(13);
+
+	DEFAULT_HEADER = __webpack_require__(5).DEFAULT_HEADER;
+
+	if (typeof window === "undefined" || window === null) {
+	  userAgent = 'octokat.js';
+	}
+
+	ajax = function(options, cb) {
+	  var XMLHttpRequest, name, ref, req, value, xhr;
+	  if (typeof window !== "undefined" && window !== null) {
+	    XMLHttpRequest = window.XMLHttpRequest;
+	  } else {
+	    req = require;
+	    XMLHttpRequest = __webpack_require__(14).XMLHttpRequest;
+	  }
+	  xhr = new XMLHttpRequest();
+	  xhr.dataType = options.dataType;
+	  if (typeof xhr.overrideMimeType === "function") {
+	    xhr.overrideMimeType(options.mimeType);
+	  }
+	  xhr.open(options.type, options.url);
+	  if (options.data && options.type !== 'GET') {
+	    xhr.setRequestHeader('Content-Type', options.contentType);
+	  }
+	  ref = options.headers;
+	  for (name in ref) {
+	    value = ref[name];
+	    xhr.setRequestHeader(name, value);
+	  }
+	  xhr.onreadystatechange = function() {
+	    var name1, ref1;
+	    if (4 === xhr.readyState) {
+	      if ((ref1 = options.statusCode) != null) {
+	        if (typeof ref1[name1 = xhr.status] === "function") {
+	          ref1[name1]();
+	        }
+	      }
+	      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
+	        return cb(null, xhr);
+	      } else {
+	        return cb(xhr);
+	      }
+	    }
+	  };
+	  return xhr.send(options.data);
+	};
+
+	_cachedETags = {};
+
+	DEFAULT_CACHE_HANDLER = {
+	  get: function(method, path) {
+	    return _cachedETags[method + " " + path];
+	  },
+	  add: function(method, path, eTag, data, status) {
+	    return _cachedETags[method + " " + path] = new ETagResponse(eTag, data, status);
+	  }
+	};
+
+	Request = function(instance, clientOptions, ALL_PLUGINS) {
+	  var emitter, requestFn;
+	  if (clientOptions == null) {
+	    clientOptions = {};
+	  }
+	  if (clientOptions.rootURL == null) {
+	    clientOptions.rootURL = 'https://api.github.com';
+	  }
+	  if (clientOptions.useETags == null) {
+	    clientOptions.useETags = true;
+	  }
+	  if (clientOptions.usePostInsteadOfPatch == null) {
+	    clientOptions.usePostInsteadOfPatch = false;
+	  }
+	  emitter = clientOptions.emitter;
+	  requestFn = function(method, path, data, options, cb) {
+	    var acc, ajaxConfig, headers, i, len, mimeType, plugin, ref;
+	    if (options == null) {
+	      options = {
+	        isRaw: false,
+	        isBase64: false,
+	        isBoolean: false,
+	        contentType: 'application/json'
+	      };
+	    }
+	    if (options == null) {
+	      options = {};
+	    }
+	    if (options.isRaw == null) {
+	      options.isRaw = false;
+	    }
+	    if (options.isBase64 == null) {
+	      options.isBase64 = false;
+	    }
+	    if (options.isBoolean == null) {
+	      options.isBoolean = false;
+	    }
+	    if (options.contentType == null) {
+	      options.contentType = 'application/json';
+	    }
+	    if (!/^http/.test(path)) {
+	      path = "" + clientOptions.rootURL + path;
+	    }
+	    headers = {
+	      'Accept': clientOptions.acceptHeader,
+	      'User-Agent': userAgent || void 0
+	    };
+	    acc = {
+	      method: method,
+	      path: path,
+	      clientOptions: clientOptions,
+	      headers: headers,
+	      options: options
+	    };
+	    for (i = 0, len = ALL_PLUGINS.length; i < len; i++) {
+	      plugin = ALL_PLUGINS[i];
+	      if (plugin.requestMiddleware) {
+	        ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
+	        if (method) {
+	          acc.method = method;
+	        }
+	        if (mimeType) {
+	          acc.mimeType = mimeType;
+	        }
+	        if (headers) {
+	          _.extend(acc.headers, headers);
+	        }
+	      }
+	    }
+	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
+	    if (options.isRaw) {
+	      headers['Accept'] = 'application/vnd.github.raw';
+	    }
+	    if (cacheHandler.get(method, path)) {
+	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
+	    }
+	    ajaxConfig = {
+	      url: path,
+	      type: method,
+	      contentType: options.contentType,
+	      mimeType: mimeType,
+	      headers: headers,
+	      processData: false,
+	      data: !options.isRaw && data && JSON.stringify(data) || data,
+	      dataType: !options.isRaw ? 'json' : void 0
+	    };
+	    if (options.isBoolean) {
+	      ajaxConfig.statusCode = {
+	        204: (function(_this) {
+	          return function() {
+	            return cb(null, true);
+	          };
+	        })(this),
+	        404: (function(_this) {
+	          return function() {
+	            return cb(null, false);
+	          };
+	        })(this)
+	      };
+	    }
+	    if (emitter != null) {
+	      emitter.emit('start', method, path, data, options);
+	    }
+	    return ajax(ajaxConfig, function(err, val) {
+	      var emitterRate, jqXHR, json, rateLimit, rateLimitRemaining, rateLimitReset;
+	      jqXHR = err || val;
+	      if (emitter) {
+	        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
+	        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
+	        rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
+	        emitterRate = {
+	          rate: {
+	            remaining: rateLimitRemaining,
+	            limit: rateLimit,
+	            reset: rateLimitReset
+	          }
+	        };
+	        if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
+	          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
+	        }
+	        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status);
+	      }
+	      if (!err) {
+	        if (jqXHR.status === 302) {
+	          return cb(null, jqXHR.getResponseHeader('Location'));
+	        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
+	          if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
+	            data = JSON.parse(jqXHR.responseText);
+	          } else {
+	            data = jqXHR.responseText;
+	          }
+	          acc = {
+	            clientOptions: clientOptions,
+	            data: data,
+	            options: options,
+	            jqXHR: jqXHR,
+	            status: jqXHR.status,
+	            request: acc,
+	            requestFn: requestFn,
+	            instance: instance
+	          };
+	          data = instance._parseWithContext('', acc);
+	          return cb(null, data, jqXHR.status, jqXHR);
+	        }
+	      } else {
+	        if (options.isBoolean && jqXHR.status === 404) {
+
+	        } else {
+	          err = new Error(jqXHR.responseText);
+	          err.status = jqXHR.status;
+	          if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
+	            if (jqXHR.responseText) {
+	              try {
+	                json = JSON.parse(jqXHR.responseText);
+	              } catch (error) {
+	                cb({
+	                  message: 'Error Parsing Response'
+	                });
+	              }
+	            } else {
+	              json = '';
+	            }
+	            err.json = json;
+	          }
+	          return cb(err);
+	        }
+	      }
+	    });
+	  };
+	  return requestFn;
+	};
+
+	module.exports = Request;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
+
+	if (typeof window !== "undefined" && window !== null) {
+	  base64encode = window.btoa;
+	} else if (typeof global !== "undefined" && global !== null ? global['Buffer'] : void 0) {
+	  base64encode = function(str) {
+	    var buffer;
+	    buffer = new global['Buffer'](str, 'binary');
+	    return buffer.toString('base64');
+	  };
+	} else {
+	  throw new Error('Native btoa function or Buffer is missing');
+	}
+
+	module.exports = base64encode;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	module.exports = window.XMLHTTPRequest;
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var deprecate, toQueryString,
+	  slice = [].slice;
+
+	toQueryString = __webpack_require__(10);
+
+	deprecate = __webpack_require__(4);
+
+	module.exports = function() {
+	  var args, fieldName, fieldValue, i, j, k, len, len1, m, match, optionalNames, optionalParams, param, templateParams, url;
+	  url = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	  if (args.length === 0) {
+	    templateParams = {};
+	  } else {
+	    if (args.length > 1) {
+	      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args');
+	    }
+	    templateParams = args[0];
+	  }
+	  i = 0;
+	  while (m = /(\{[^\}]+\})/.exec(url)) {
+	    match = m[1];
+	    param = '';
+	    switch (match[1]) {
+	      case '/':
+	        fieldName = match.slice(2, match.length - 1);
+	        fieldValue = templateParams[fieldName];
+	        if (fieldValue) {
+	          if (/\//.test(fieldValue)) {
+	            throw new Error("Octokat Error: this field must not contain slashes: " + fieldName);
+	          }
+	          param = "/" + fieldValue;
+	        }
+	        break;
+	      case '+':
+	        fieldName = match.slice(2, match.length - 1);
+	        fieldValue = templateParams[fieldName];
+	        if (fieldValue) {
+	          param = fieldValue;
+	        }
+	        break;
+	      case '?':
+	        optionalNames = match.slice(2, -1).split(',');
+	        optionalParams = {};
+	        for (j = 0, len = optionalNames.length; j < len; j++) {
+	          fieldName = optionalNames[j];
+	          optionalParams[fieldName] = templateParams[fieldName];
+	        }
+	        param = toQueryString(optionalParams);
+	        break;
+	      case '&':
+	        optionalNames = match.slice(2, -1).split(',');
+	        optionalParams = {};
+	        for (k = 0, len1 = optionalNames.length; k < len1; k++) {
+	          fieldName = optionalNames[k];
+	          optionalParams[fieldName] = templateParams[fieldName];
+	        }
+	        param = toQueryString(optionalParams, true);
+	        break;
+	      default:
+	        fieldName = match.slice(1, match.length - 1);
+	        if (templateParams[fieldName]) {
+	          param = templateParams[fieldName];
+	        } else {
+	          throw new Error("Octokat Error: Required parameter is missing: " + fieldName);
+	        }
+	    }
+	    url = url.replace(match, param);
+	    i++;
+	  }
+	  return url;
+	};
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AUTHORIZATION, DEFAULT_HEADER, PATH_TEST, PREVIEW_APIS, URL_VALIDATOR, USE_POST_INSTEAD_OF_PATCH, base64encode, ref;
+
+	ref = __webpack_require__(5), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
+
+	base64encode = __webpack_require__(13);
+
+	PATH_TEST = {
+	  requestMiddleware: function(arg) {
+	    var err, path;
+	    path = arg.path;
+	    if (!URL_VALIDATOR.test(path)) {
+	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+	      return console.warn(err);
+	    }
+	  }
+	};
+
+	USE_POST_INSTEAD_OF_PATCH = {
+	  requestMiddleware: function(arg) {
+	    var method, ref1, usePostInsteadOfPatch;
+	    (ref1 = arg.clientOptions, usePostInsteadOfPatch = ref1.usePostInsteadOfPatch), method = arg.method;
+	    if (usePostInsteadOfPatch && method === 'PATCH') {
+	      return {
+	        method: 'POST'
+	      };
+	    }
+	  }
+	};
+
+	PREVIEW_APIS = {
+	  requestMiddleware: function(arg) {
+	    var acceptHeader, path;
+	    path = arg.path;
+	    acceptHeader = DEFAULT_HEADER(path);
+	    if (acceptHeader) {
+	      return {
+	        headers: {
+	          'Accept': acceptHeader
+	        }
+	      };
+	    }
+	  }
+	};
+
+	AUTHORIZATION = {
+	  requestMiddleware: function(arg) {
+	    var auth, password, ref1, token, username;
+	    ref1 = arg.clientOptions, token = ref1.token, username = ref1.username, password = ref1.password;
+	    if (token || (username && password)) {
+	      if (token) {
+	        auth = "token " + token;
+	      } else {
+	        auth = 'Basic ' + base64encode(username + ":" + password);
+	      }
+	      return {
+	        headers: {
+	          'Authorization': auth
+	        }
+	      };
+	    }
+	  }
+	};
+
+	module.exports = [USE_POST_INSTEAD_OF_PATCH, PREVIEW_APIS, AUTHORIZATION];
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise,
 	  slice = [].slice;
 
@@ -5205,7 +5630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	toPromise = __webpack_require__(8).toPromise;
 
-	applyHypermedia = __webpack_require__(13);
+	applyHypermedia = __webpack_require__(15);
 
 	ref = __webpack_require__(5), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
 
@@ -5457,431 +5882,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  HYPERMEDIA: HYPERMEDIA,
 	  READ_BINARY: READ_BINARY
 	};
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var deprecate, toQueryString,
-	  slice = [].slice;
-
-	toQueryString = __webpack_require__(10);
-
-	deprecate = __webpack_require__(4);
-
-	module.exports = function() {
-	  var args, fieldName, fieldValue, i, j, k, len, len1, m, match, optionalNames, optionalParams, param, templateParams, url;
-	  url = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	  if (args.length === 0) {
-	    templateParams = {};
-	  } else {
-	    if (args.length > 1) {
-	      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args');
-	    }
-	    templateParams = args[0];
-	  }
-	  i = 0;
-	  while (m = /(\{[^\}]+\})/.exec(url)) {
-	    match = m[1];
-	    param = '';
-	    switch (match[1]) {
-	      case '/':
-	        fieldName = match.slice(2, match.length - 1);
-	        fieldValue = templateParams[fieldName];
-	        if (fieldValue) {
-	          if (/\//.test(fieldValue)) {
-	            throw new Error("Octokat Error: this field must not contain slashes: " + fieldName);
-	          }
-	          param = "/" + fieldValue;
-	        }
-	        break;
-	      case '+':
-	        fieldName = match.slice(2, match.length - 1);
-	        fieldValue = templateParams[fieldName];
-	        if (fieldValue) {
-	          param = fieldValue;
-	        }
-	        break;
-	      case '?':
-	        optionalNames = match.slice(2, -1).split(',');
-	        optionalParams = {};
-	        for (j = 0, len = optionalNames.length; j < len; j++) {
-	          fieldName = optionalNames[j];
-	          optionalParams[fieldName] = templateParams[fieldName];
-	        }
-	        param = toQueryString(optionalParams);
-	        break;
-	      case '&':
-	        optionalNames = match.slice(2, -1).split(',');
-	        optionalParams = {};
-	        for (k = 0, len1 = optionalNames.length; k < len1; k++) {
-	          fieldName = optionalNames[k];
-	          optionalParams[fieldName] = templateParams[fieldName];
-	        }
-	        param = toQueryString(optionalParams, true);
-	        break;
-	      default:
-	        fieldName = match.slice(1, match.length - 1);
-	        if (templateParams[fieldName]) {
-	          param = templateParams[fieldName];
-	        } else {
-	          throw new Error("Octokat Error: Required parameter is missing: " + fieldName);
-	        }
-	    }
-	    url = url.replace(match, param);
-	    i++;
-	  }
-	  return url;
-	};
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, Request, _, _cachedETags, ajax, base64encode, userAgent;
-
-	_ = __webpack_require__(2);
-
-	base64encode = __webpack_require__(15);
-
-	DEFAULT_HEADER = __webpack_require__(5).DEFAULT_HEADER;
-
-	if (typeof window === "undefined" || window === null) {
-	  userAgent = 'octokat.js';
-	}
-
-	ajax = function(options, cb) {
-	  var XMLHttpRequest, name, ref, req, value, xhr;
-	  if (typeof window !== "undefined" && window !== null) {
-	    XMLHttpRequest = window.XMLHttpRequest;
-	  } else {
-	    req = require;
-	    XMLHttpRequest = __webpack_require__(16).XMLHttpRequest;
-	  }
-	  xhr = new XMLHttpRequest();
-	  xhr.dataType = options.dataType;
-	  if (typeof xhr.overrideMimeType === "function") {
-	    xhr.overrideMimeType(options.mimeType);
-	  }
-	  xhr.open(options.type, options.url);
-	  if (options.data && options.type !== 'GET') {
-	    xhr.setRequestHeader('Content-Type', options.contentType);
-	  }
-	  ref = options.headers;
-	  for (name in ref) {
-	    value = ref[name];
-	    xhr.setRequestHeader(name, value);
-	  }
-	  xhr.onreadystatechange = function() {
-	    var name1, ref1;
-	    if (4 === xhr.readyState) {
-	      if ((ref1 = options.statusCode) != null) {
-	        if (typeof ref1[name1 = xhr.status] === "function") {
-	          ref1[name1]();
-	        }
-	      }
-	      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
-	        return cb(null, xhr);
-	      } else {
-	        return cb(xhr);
-	      }
-	    }
-	  };
-	  return xhr.send(options.data);
-	};
-
-	_cachedETags = {};
-
-	DEFAULT_CACHE_HANDLER = {
-	  get: function(method, path) {
-	    return _cachedETags[method + " " + path];
-	  },
-	  add: function(method, path, eTag, data, status) {
-	    return _cachedETags[method + " " + path] = new ETagResponse(eTag, data, status);
-	  }
-	};
-
-	Request = function(instance, clientOptions, ALL_PLUGINS) {
-	  var emitter, requestFn;
-	  if (clientOptions == null) {
-	    clientOptions = {};
-	  }
-	  if (clientOptions.rootURL == null) {
-	    clientOptions.rootURL = 'https://api.github.com';
-	  }
-	  if (clientOptions.useETags == null) {
-	    clientOptions.useETags = true;
-	  }
-	  if (clientOptions.usePostInsteadOfPatch == null) {
-	    clientOptions.usePostInsteadOfPatch = false;
-	  }
-	  emitter = clientOptions.emitter;
-	  requestFn = function(method, path, data, options, cb) {
-	    var acc, ajaxConfig, headers, i, len, mimeType, plugin, ref;
-	    if (options == null) {
-	      options = {
-	        isRaw: false,
-	        isBase64: false,
-	        isBoolean: false,
-	        contentType: 'application/json'
-	      };
-	    }
-	    if (options == null) {
-	      options = {};
-	    }
-	    if (options.isRaw == null) {
-	      options.isRaw = false;
-	    }
-	    if (options.isBase64 == null) {
-	      options.isBase64 = false;
-	    }
-	    if (options.isBoolean == null) {
-	      options.isBoolean = false;
-	    }
-	    if (options.contentType == null) {
-	      options.contentType = 'application/json';
-	    }
-	    if (!/^http/.test(path)) {
-	      path = "" + clientOptions.rootURL + path;
-	    }
-	    headers = {
-	      'Accept': clientOptions.acceptHeader,
-	      'User-Agent': userAgent || void 0
-	    };
-	    acc = {
-	      method: method,
-	      path: path,
-	      clientOptions: clientOptions,
-	      headers: headers,
-	      options: options
-	    };
-	    for (i = 0, len = ALL_PLUGINS.length; i < len; i++) {
-	      plugin = ALL_PLUGINS[i];
-	      if (plugin.requestMiddleware) {
-	        ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
-	        if (method) {
-	          acc.method = method;
-	        }
-	        if (mimeType) {
-	          acc.mimeType = mimeType;
-	        }
-	        if (headers) {
-	          _.extend(acc.headers, headers);
-	        }
-	      }
-	    }
-	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
-	    if (options.isRaw) {
-	      headers['Accept'] = 'application/vnd.github.raw';
-	    }
-	    if (cacheHandler.get(method, path)) {
-	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
-	    }
-	    ajaxConfig = {
-	      url: path,
-	      type: method,
-	      contentType: options.contentType,
-	      mimeType: mimeType,
-	      headers: headers,
-	      processData: false,
-	      data: !options.isRaw && data && JSON.stringify(data) || data,
-	      dataType: !options.isRaw ? 'json' : void 0
-	    };
-	    if (options.isBoolean) {
-	      ajaxConfig.statusCode = {
-	        204: (function(_this) {
-	          return function() {
-	            return cb(null, true);
-	          };
-	        })(this),
-	        404: (function(_this) {
-	          return function() {
-	            return cb(null, false);
-	          };
-	        })(this)
-	      };
-	    }
-	    if (emitter != null) {
-	      emitter.emit('start', method, path, data, options);
-	    }
-	    return ajax(ajaxConfig, function(err, val) {
-	      var acc2, emitterRate, j, jqXHR, json, len1, rateLimit, rateLimitRemaining, rateLimitReset;
-	      jqXHR = err || val;
-	      if (emitter) {
-	        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
-	        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
-	        rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
-	        emitterRate = {
-	          rate: {
-	            remaining: rateLimitRemaining,
-	            limit: rateLimit,
-	            reset: rateLimitReset
-	          }
-	        };
-	        if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
-	          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
-	        }
-	        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status);
-	      }
-	      if (!err) {
-	        if (jqXHR.status === 302) {
-	          return cb(null, jqXHR.getResponseHeader('Location'));
-	        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
-	          if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
-	            data = JSON.parse(jqXHR.responseText);
-	          } else {
-	            data = jqXHR.responseText;
-	          }
-	          acc = {
-	            clientOptions: clientOptions,
-	            data: data,
-	            options: options,
-	            jqXHR: jqXHR,
-	            status: jqXHR.status,
-	            request: acc,
-	            requestFn: requestFn,
-	            instance: instance
-	          };
-	          for (j = 0, len1 = ALL_PLUGINS.length; j < len1; j++) {
-	            plugin = ALL_PLUGINS[j];
-	            if (plugin.responseMiddleware) {
-	              acc2 = plugin.responseMiddleware(acc);
-	              _.extend(acc, acc2);
-	            }
-	          }
-	          data = acc.data;
-	          return cb(null, data, jqXHR.status, jqXHR);
-	        }
-	      } else {
-	        if (options.isBoolean && jqXHR.status === 404) {
-
-	        } else {
-	          err = new Error(jqXHR.responseText);
-	          err.status = jqXHR.status;
-	          if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
-	            if (jqXHR.responseText) {
-	              try {
-	                json = JSON.parse(jqXHR.responseText);
-	              } catch (error) {
-	                cb({
-	                  message: 'Error Parsing Response'
-	                });
-	              }
-	            } else {
-	              json = '';
-	            }
-	            err.json = json;
-	          }
-	          return cb(err);
-	        }
-	      }
-	    });
-	  };
-	  return requestFn;
-	};
-
-	module.exports = Request;
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
-
-	if (typeof window !== "undefined" && window !== null) {
-	  base64encode = window.btoa;
-	} else if (typeof global !== "undefined" && global !== null ? global['Buffer'] : void 0) {
-	  base64encode = function(str) {
-	    var buffer;
-	    buffer = new global['Buffer'](str, 'binary');
-	    return buffer.toString('base64');
-	  };
-	} else {
-	  throw new Error('Native btoa function or Buffer is missing');
-	}
-
-	module.exports = base64encode;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	module.exports = window.XMLHTTPRequest;
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AUTHORIZATION, DEFAULT_HEADER, PATH_TEST, PREVIEW_APIS, URL_VALIDATOR, USE_POST_INSTEAD_OF_PATCH, base64encode, ref;
-
-	ref = __webpack_require__(5), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
-
-	base64encode = __webpack_require__(15);
-
-	PATH_TEST = {
-	  requestMiddleware: function(arg) {
-	    var err, path;
-	    path = arg.path;
-	    if (!URL_VALIDATOR.test(path)) {
-	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
-	      return console.warn(err);
-	    }
-	  }
-	};
-
-	USE_POST_INSTEAD_OF_PATCH = {
-	  requestMiddleware: function(arg) {
-	    var method, ref1, usePostInsteadOfPatch;
-	    (ref1 = arg.clientOptions, usePostInsteadOfPatch = ref1.usePostInsteadOfPatch), method = arg.method;
-	    if (usePostInsteadOfPatch && method === 'PATCH') {
-	      return {
-	        method: 'POST'
-	      };
-	    }
-	  }
-	};
-
-	PREVIEW_APIS = {
-	  requestMiddleware: function(arg) {
-	    var acceptHeader, path;
-	    path = arg.path;
-	    acceptHeader = DEFAULT_HEADER(path);
-	    if (acceptHeader) {
-	      return {
-	        headers: {
-	          'Accept': acceptHeader
-	        }
-	      };
-	    }
-	  }
-	};
-
-	AUTHORIZATION = {
-	  requestMiddleware: function(arg) {
-	    var auth, password, ref1, token, username;
-	    ref1 = arg.clientOptions, token = ref1.token, username = ref1.username, password = ref1.password;
-	    if (token || (username && password)) {
-	      if (token) {
-	        auth = "token " + token;
-	      } else {
-	        auth = 'Basic ' + base64encode(username + ":" + password);
-	      }
-	      return {
-	        headers: {
-	          'Authorization': auth
-	        }
-	      };
-	    }
-	  }
-	};
-
-	module.exports = [USE_POST_INSTEAD_OF_PATCH, PREVIEW_APIS, AUTHORIZATION];
 
 
 /***/ },

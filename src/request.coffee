@@ -237,11 +237,7 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
             requestFn # for Hypermedia to generate verb methods
             instance # for Hypermedia to be able to call `.fromUrl`
           }
-          for plugin in ALL_PLUGINS
-            if plugin.responseMiddleware
-              acc2 = plugin.responseMiddleware(acc)
-              _.extend(acc, acc2)
-          {data} = acc
+          data = instance._parseWithContext('', acc)
 
           # # Convert the response to a Base64 encoded string
           # if method is 'GET' and options.isBase64
