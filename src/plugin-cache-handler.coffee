@@ -26,14 +26,20 @@ module.exports = new class CacheMiddleware
     {headers}
 
 
-  responseMiddleware: ({clientOptions, request:{method, path}, status, jqXHR, data}) ->
-    cacheHandler = clientOptions.cacheHandler or @
-    if status is 304
-      {data, status} = cacheHandler.get(method, path)
-    else
-      # Cache the response to reuse later
-      if method is 'GET' and jqXHR.getResponseHeader('ETag') # TODO: and clientOptions.useETags
-        eTag = jqXHR.getResponseHeader('ETag')
-        cacheHandler.add(method, path, eTag, data, jqXHR.status)
+  responseMiddleware: ({clientOptions, request, status, jqXHR, data}) ->
+    return unless jqXHR # The plugins are all used in `octo.parse()` which does not have a jqXHR
 
-    {data, status}
+    # Since this can be called via `octo.parse`, skpi caching when there is no jqXHR
+    if jqXHR
+      {method, path} = request # This is also not defined when octo.parse is called
+
+      cacheHandler = clientOptions.cacheHandler or @
+      if status is 304
+        {data, status} = cacheHandler.get(method, path)
+      else
+        # Cache the response to reuse later
+        if method is 'GET' and jqXHR.getResponseHeader('ETag') # TODO: and clientOptions.useETags
+          eTag = jqXHR.getResponseHeader('ETag')
+          cacheHandler.add(method, path, eTag, data, jqXHR.status)
+
+      {data, status}

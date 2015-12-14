@@ -12,6 +12,7 @@ URL_TESTER = (path) ->
 
 
 injectVerbMethods = (request, path, obj) ->
+  throw new Error('Octokat BUG: request is required') unless request
   # Allow all the verb methods to accept a callback as the last arg
   for verbName, verbFunc of SIMPLE_VERBS_PLUGIN.verbs
     do (verbName, verbFunc) ->

@@ -65,6 +65,8 @@ CAMEL_CASE = new class CamelCase
 
 PAGED_RESULTS = new class PagedResults
   responseMiddleware: ({jqXHR, data}) ->
+    return unless jqXHR # The plugins are all used in `octo.parse()` which does not have a jqXHR
+
     # Only JSON responses have next/prev/first/last link headers
     # Add them to data so the resolved value is iterable
 

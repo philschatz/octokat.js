@@ -1,3 +1,4 @@
+_ = require 'lodash'
 plus = require './plus'
 deprecate = require './deprecate'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
@@ -37,18 +38,31 @@ reChainChildren = (request, url, obj) ->
   obj
 
 
-parse = (obj, path, requestFn, instance) ->
-  url = obj.url or path
+parse = (data, path, requestFn, instance, clientOptions) ->
+  url = data.url or path
   if url
-    {data: obj} = HYPERMEDIA.responseMiddleware({instance, requestFn, data:obj})
-    # TODO: Refactor: make this loop through all installed responseMiddleware plugins
-    {data: obj} = CAMEL_CASE.responseMiddleware({data: obj})
+    # Mostly copied from request.coffee
+    acc = {
+      clientOptions
+      data
+      options: {}
+      # jqXHR # for cacheHandler
+      # status:jqXHR.status # cacheHandler changes this
+      # request:acc # Include the request data for plugins like cacheHandler
+      requestFn # for Hypermedia to generate verb methods
+      instance # for Hypermedia to be able to call `.fromUrl`
+    }
+    for plugin in ALL_PLUGINS
+      if plugin.responseMiddleware
+        acc2 = plugin.responseMiddleware(acc)
+        _.extend(acc, acc2)
+    {data} = acc
 
-    Chainer(requestFn, url, true, {}, obj)
-    reChainChildren(requestFn, url, obj)
+    Chainer(requestFn, url, true, {}, data)
+    reChainChildren(requestFn, url, data)
   else
-    Chainer(requestFn, '', null, TREE_OPTIONS, obj)
-  obj
+    Chainer(requestFn, '', null, TREE_OPTIONS, data)
+  data
 
 
 uncamelizeObj = (obj) ->
@@ -91,7 +105,7 @@ Octokat = (clientOptions={}) ->
       return cb(null, val) if options.raw
 
       unless disableHypermedia
-        obj = parse(val, path, request, instance)
+        obj = parse(val, path, request, instance, clientOptions)
         return cb(null, obj)
       else
         return cb(null, val)
@@ -102,7 +116,7 @@ Octokat = (clientOptions={}) ->
   instance.me = instance.user
 
   instance.parse = (jsonObj) ->
-    parse(jsonObj, '', request, instance)
+    parse(jsonObj, '', request, instance, clientOptions)
 
 
   # TODO remove this depractaion too

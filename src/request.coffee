@@ -233,8 +233,8 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
             options
             jqXHR # for cacheHandler
             status:jqXHR.status # cacheHandler changes this
-            request:acc # Include the request data for plugins like cahceHandler
-            requestFn # for Hypermedia
+            request:acc # Include the request data for plugins like cacheHandler
+            requestFn # for Hypermedia to generate verb methods
             instance # for Hypermedia to be able to call `.fromUrl`
           }
           for plugin in ALL_PLUGINS
