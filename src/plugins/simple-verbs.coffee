@@ -1,4 +1,4 @@
-toQueryString = require '../helper-querystring'
+toQueryString = require '../helpers/querystring'
 
 module.exports =
   verbs:

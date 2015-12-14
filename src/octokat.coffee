@@ -6,8 +6,8 @@ injectVerbMethods = require './verb-methods'
 # Replacer = require './replacer'
 
 Request = require './request'
-{toPromise} = require './helper-promise'
-applyHypermedia = require './helper-hypermedia'
+{toPromise} = require './helpers/promise'
+applyHypermedia = require './helpers/hypermedia'
 
 ALL_PLUGINS = [
   require './plugins/path-check'

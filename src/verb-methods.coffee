@@ -1,5 +1,5 @@
-{toPromise} = require './helper-promise'
-toQueryString = require './helper-querystring'
+{toPromise} = require './helpers/promise'
+toQueryString = require './helpers/querystring'
 
 injectVerbMethods = (plugins, request, path, obj) ->
   throw new Error('Octokat BUG: request is required') unless request

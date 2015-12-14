@@ -1,5 +1,5 @@
-toQueryString = require './helper-querystring'
-deprecate = require './deprecate'
+toQueryString = require './querystring'
+deprecate = require '../deprecate'
 
 module.exports = (url, args...) ->
 

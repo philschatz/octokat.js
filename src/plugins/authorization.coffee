@@ -1,4 +1,4 @@
-base64encode = require '../helper-base64'
+base64encode = require '../helpers/base64'
 
 module.exports =
   requestMiddleware: ({clientOptions:{token, username, password}}) ->
