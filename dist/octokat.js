@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, SIMPLE_VERBS_PLUGIN, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -74,11 +74,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	injectVerbMethods = __webpack_require__(6);
 
-	Request = __webpack_require__(11);
+	Request = __webpack_require__(10);
 
 	toPromise = __webpack_require__(7).toPromise;
 
-	applyHypermedia = __webpack_require__(14);
+	applyHypermedia = __webpack_require__(13);
+
+	SIMPLE_VERBS_PLUGIN = __webpack_require__(14);
 
 	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(15);
 
@@ -86,9 +88,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(17);
 
-	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE]);
+	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([SIMPLE_VERBS_PLUGIN, MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE]);
 
-	reChainChildren = function(request, url, obj) {
+	reChainChildren = function(plugins, request, url, obj) {
 	  var context, j, k, key, len, re, ref1;
 	  for (key in OBJECT_MATCHER) {
 	    re = OBJECT_MATCHER[key];
@@ -99,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        k = ref1[j];
 	        context = context[k];
 	      }
-	      Chainer(request, url, k, context, obj);
+	      Chainer(plugins, request, url, k, context, obj);
 	    }
 	  }
 	  return obj;
@@ -177,7 +179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-	  Chainer(request, '', null, TREE_OPTIONS, instance);
+	  Chainer(plugins, request, '', null, TREE_OPTIONS, instance);
 	  instance.me = instance.user;
 	  instance.parse = function(data) {
 	    var context;
@@ -190,7 +192,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return instance._parseWithContext('', context);
 	  };
 	  instance._parseWithContext = function(path, context) {
-	    var data, j, len, plugin, requestFn, url;
+	    var data, datum, j, l, len, len1, plugin, requestFn, url;
 	    data = context.data, requestFn = context.requestFn;
 	    url = data.url || path;
 	    if (context.options == null) {
@@ -204,10 +206,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    data = context.data;
 	    if (url) {
-	      Chainer(requestFn, url, true, {}, data);
-	      reChainChildren(requestFn, url, data);
+	      Chainer(plugins, requestFn, url, true, {}, data);
+	      reChainChildren(plugins, requestFn, url, data);
 	    } else {
-	      Chainer(requestFn, '', null, TREE_OPTIONS, data);
+	      Chainer(plugins, requestFn, '', null, TREE_OPTIONS, data);
+	      if (Array.isArray(data)) {
+	        for (l = 0, len1 = data.length; l < len1; l++) {
+	          datum = data[l];
+	          reChainChildren(plugins, requestFn, datum.url, datum);
+	        }
+	      }
 	    }
 	    return data;
 	  };
@@ -215,7 +223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var args, defaultFn, path;
 	    path = arguments[0], defaultFn = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [];
 	    path = applyHypermedia.apply(null, [path].concat(slice.call(args)));
-	    injectVerbMethods(request, path, defaultFn);
+	    injectVerbMethods(plugins, request, path, defaultFn);
 	    return defaultFn;
 	  };
 	  instance.fromUrl = function() {
@@ -241,7 +249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 	    if (!/\{/.test(path)) {
-	      injectVerbMethods(request, path, fn);
+	      injectVerbMethods(plugins, request, path, fn);
 	    }
 	    return fn;
 	  };
@@ -575,7 +583,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	injectVerbMethods = __webpack_require__(6);
 
-	Chainer = function(request, path, name, contextTree, fn) {
+	Chainer = function(plugins, request, path, name, contextTree, fn) {
 	  var fn1;
 	  if (fn == null) {
 	    fn = function() {
@@ -589,10 +597,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        separator = '/';
 	      }
-	      return Chainer(request, path + "/" + (args.join(separator)), name, contextTree);
+	      return Chainer(plugins, request, path + "/" + (args.join(separator)), name, contextTree);
 	    };
 	  }
-	  injectVerbMethods(request, path, fn);
+	  injectVerbMethods(plugins, request, path, fn);
 	  if (typeof fn === 'function' || typeof fn === 'object') {
 	    fn1 = function(name) {
 	      delete fn[plus.camelize(name)];
@@ -600,7 +608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        configurable: true,
 	        enumerable: true,
 	        get: function() {
-	          return Chainer(request, path + "/" + name, name, contextTree[name]);
+	          return Chainer(plugins, request, path + "/" + name, name, contextTree[name]);
 	        }
 	      });
 	    };
@@ -618,7 +626,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SIMPLE_VERBS_PLUGIN, URL_TESTER, URL_VALIDATOR, injectVerbMethods, toPromise, toQueryString,
+	var URL_TESTER, URL_VALIDATOR, injectVerbMethods, toPromise, toQueryString,
 	  slice = [].slice;
 
 	URL_VALIDATOR = __webpack_require__(4).URL_VALIDATOR;
@@ -626,8 +634,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	toPromise = __webpack_require__(7).toPromise;
 
 	toQueryString = __webpack_require__(9);
-
-	SIMPLE_VERBS_PLUGIN = __webpack_require__(10);
 
 	URL_TESTER = function(path) {
 	  var err;
@@ -637,30 +643,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	injectVerbMethods = function(request, path, obj) {
-	  var ref, results, verbFunc, verbName;
+	injectVerbMethods = function(plugins, request, path, obj) {
+	  var i, len, plugin, results, verbFunc, verbName;
 	  if (!request) {
 	    throw new Error('Octokat BUG: request is required');
 	  }
-	  ref = SIMPLE_VERBS_PLUGIN.verbs;
 	  results = [];
-	  for (verbName in ref) {
-	    verbFunc = ref[verbName];
-	    results.push((function(verbName, verbFunc) {
-	      obj.url = path;
-	      return obj[verbName] = function() {
-	        var args, makeRequest;
-	        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	        URL_TESTER(path);
-	        makeRequest = function() {
-	          var cb, data, method, options, originalArgs, ref1;
-	          cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	          ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
-	          return request(method, path, data, options, cb);
-	        };
-	        return toPromise(makeRequest).apply(null, args);
-	      };
-	    })(verbName, verbFunc));
+	  for (i = 0, len = plugins.length; i < len; i++) {
+	    plugin = plugins[i];
+	    results.push((function() {
+	      var ref, results1;
+	      ref = plugin.verbs || {};
+	      results1 = [];
+	      for (verbName in ref) {
+	        verbFunc = ref[verbName];
+	        results1.push((function(verbName, verbFunc) {
+	          obj.url = path;
+	          return obj[verbName] = function() {
+	            var args, makeRequest;
+	            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	            URL_TESTER(path);
+	            makeRequest = function() {
+	              var cb, data, method, options, originalArgs, ref1;
+	              cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	              ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
+	              return request(method, path, data, options, cb);
+	            };
+	            return toPromise(makeRequest).apply(null, args);
+	          };
+	        })(verbName, verbFunc));
+	      }
+	      return results1;
+	    })());
 	  }
 	  return results;
 	};
@@ -851,108 +865,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toQueryString,
-	  slice = [].slice;
-
-	toQueryString = __webpack_require__(9);
-
-	module.exports = {
-	  verbs: {
-	    fetch: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query))
-	      };
-	    },
-	    read: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true
-	        }
-	      };
-	    },
-	    readBinary: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true,
-	          isBase64: true
-	        }
-	      };
-	    },
-	    remove: function(path, data) {
-	      return {
-	        method: 'DELETE',
-	        path: path,
-	        data: data,
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    },
-	    create: function(path, data, contentType) {
-	      if (contentType) {
-	        return {
-	          method: 'POST',
-	          path: path,
-	          data: data,
-	          options: {
-	            isRaw: true,
-	            contentType: contentType
-	          }
-	        };
-	      } else {
-	        return {
-	          method: 'POST',
-	          path: path,
-	          data: data
-	        };
-	      }
-	    },
-	    update: function(path, data) {
-	      return {
-	        method: 'PATCH',
-	        path: path,
-	        data: data
-	      };
-	    },
-	    add: function(path, data) {
-	      return {
-	        method: 'PUT',
-	        path: path,
-	        data: data,
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    },
-	    contains: function() {
-	      var args, path;
-	      path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	      return {
-	        method: 'GET',
-	        path: path + "/" + (args.join('/')),
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var require;var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, Request, _cachedETags, ajax, base64encode, plus, userAgent;
 
 	plus = __webpack_require__(2);
 
-	base64encode = __webpack_require__(12);
+	base64encode = __webpack_require__(11);
 
 	DEFAULT_HEADER = __webpack_require__(4).DEFAULT_HEADER;
 
@@ -966,7 +883,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(13).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(12).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1185,7 +1102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -1207,14 +1124,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
@@ -1291,6 +1208,103 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var toQueryString,
+	  slice = [].slice;
+
+	toQueryString = __webpack_require__(9);
+
+	module.exports = {
+	  verbs: {
+	    fetch: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query))
+	      };
+	    },
+	    read: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true
+	        }
+	      };
+	    },
+	    readBinary: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true,
+	          isBase64: true
+	        }
+	      };
+	    },
+	    remove: function(path, data) {
+	      return {
+	        method: 'DELETE',
+	        path: path,
+	        data: data,
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    },
+	    create: function(path, data, contentType) {
+	      if (contentType) {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data,
+	          options: {
+	            isRaw: true,
+	            contentType: contentType
+	          }
+	        };
+	      } else {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data
+	        };
+	      }
+	    },
+	    update: function(path, data) {
+	      return {
+	        method: 'PATCH',
+	        path: path,
+	        data: data
+	      };
+	    },
+	    add: function(path, data) {
+	      return {
+	        method: 'PUT',
+	        path: path,
+	        data: data,
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    },
+	    contains: function() {
+	      var args, path;
+	      path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	      return {
+	        method: 'GET',
+	        path: path + "/" + (args.join('/')),
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1298,7 +1312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	ref = __webpack_require__(4), URL_VALIDATOR = ref.URL_VALIDATOR, DEFAULT_HEADER = ref.DEFAULT_HEADER;
 
-	base64encode = __webpack_require__(12);
+	base64encode = __webpack_require__(11);
 
 	PATH_TEST = {
 	  requestMiddleware: function(arg) {
@@ -1364,7 +1378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var CAMEL_CASE, CamelCase, Chainer, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise,
+	var CAMEL_CASE, CamelCase, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -1373,11 +1387,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	toPromise = __webpack_require__(7).toPromise;
 
-	applyHypermedia = __webpack_require__(14);
+	applyHypermedia = __webpack_require__(13);
 
 	ref = __webpack_require__(4), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
-
-	Chainer = __webpack_require__(5);
 
 	CAMEL_CASE = new (CamelCase = (function() {
 	  function CamelCase() {}
@@ -1487,31 +1499,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  HyperMedia.prototype._replaceObject = function(instance, requestFn, orig) {
-	    var acc, context, j, k, key, l, len, len1, len2, m, re, ref1, ref2, ref3, url, value;
+	    var acc, j, key, len, ref1, value;
 	    acc = {};
 	    ref1 = Object.keys(orig);
 	    for (j = 0, len = ref1.length; j < len; j++) {
 	      key = ref1[j];
 	      value = orig[key];
 	      this._replaceKeyValue(instance, requestFn, acc, key, value);
-	    }
-	    url = acc.url;
-	    if (url) {
-	      Chainer(requestFn, url, true, null, acc);
-	    }
-	    ref2 = Object.keys(OBJECT_MATCHER);
-	    for (l = 0, len1 = ref2.length; l < len1; l++) {
-	      key = ref2[l];
-	      re = OBJECT_MATCHER[key];
-	      if (re.test(url)) {
-	        context = TREE_OPTIONS;
-	        ref3 = key.split('.');
-	        for (m = 0, len2 = ref3.length; m < len2; m++) {
-	          k = ref3[m];
-	          context = context[k];
-	        }
-	        Chainer(requestFn, url, k, context, acc);
-	      }
 	    }
 	    return acc;
 	  };

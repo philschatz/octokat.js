@@ -9,12 +9,13 @@ Request = require './request'
 {toPromise} = require './helper-promise'
 applyHypermedia = require './helper-hypermedia'
 
-
+SIMPLE_VERBS_PLUGIN = require './plugin-simple-verbs'
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
 MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
 MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
 
 ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
+  SIMPLE_VERBS_PLUGIN
   MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
   MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS
   MIDDLEWARE_CACHE_HANDLER  # Run cacheHandler after PagedResults so the link headers are remembered
@@ -26,13 +27,13 @@ ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
 
 # Combine all the classes into one client
 
-reChainChildren = (request, url, obj) ->
+reChainChildren = (plugins, request, url, obj) ->
   for key, re of OBJECT_MATCHER
     if re.test(obj.url)
       context = TREE_OPTIONS
       for k in key.split('.')
         context = context[k]
-      Chainer(request, url, k, context, obj)
+      Chainer(plugins, request, url, k, context, obj)
   obj
 
 
@@ -89,7 +90,7 @@ Octokat = (clientOptions={}) ->
       else
         return cb(null, val)
 
-  Chainer(request, '', null, TREE_OPTIONS, instance)
+  Chainer(plugins, request, '', null, TREE_OPTIONS, instance)
 
   # Special case for `me`
   instance.me = instance.user
@@ -117,17 +118,21 @@ Octokat = (clientOptions={}) ->
 
     # TODO: Move the chainer to a plugin since many people will not need this
     if url
-      Chainer(requestFn, url, true, {}, data)
-      reChainChildren(requestFn, url, data)
+      Chainer(plugins, requestFn, url, true, {}, data)
+      reChainChildren(plugins, requestFn, url, data)
     else
-      Chainer(requestFn, '', null, TREE_OPTIONS, data)
+      Chainer(plugins, requestFn, '', null, TREE_OPTIONS, data)
+      # For the paged results, rechain all children in the array
+      if Array.isArray(data)
+        for datum in data
+          reChainChildren(plugins, requestFn, datum.url, datum)
     data
 
 
   # TODO remove this depractaion too
   instance._fromUrlWithDefault = (path, defaultFn, args...) ->
     path = applyHypermedia(path, args...)
-    injectVerbMethods(request, path, defaultFn)
+    injectVerbMethods(plugins, request, path, defaultFn)
     defaultFn
 
   instance.fromUrl = (path, args...) ->
@@ -146,7 +151,7 @@ Octokat = (clientOptions={}) ->
         instance.fromUrl(path, templateArgs...)
 
     unless /\{/.test(path)
-      injectVerbMethods(request, path, fn)
+      injectVerbMethods(plugins, request, path, fn)
     fn
 
 

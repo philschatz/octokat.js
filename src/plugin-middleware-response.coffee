@@ -3,7 +3,7 @@ deprecate = require './deprecate'
 {toPromise} = require './helper-promise'
 applyHypermedia = require './helper-hypermedia'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
-Chainer = require './chainer'
+# Chainer = require './chainer'
 
 # JSON Replacer
 # ===============================
@@ -102,17 +102,17 @@ HYPERMEDIA = new class HyperMedia
       value = orig[key]
       @_replaceKeyValue(instance, requestFn, acc, key, value)
 
-    # If the URL matches one of the "Object" types (repo, user, comment)
-    # then provide all of the same methods as `octo.repo(...)` would have on it
-    url = acc.url
-    Chainer(requestFn, url, true, null, acc) if url
-    for key in Object.keys(OBJECT_MATCHER)
-      re = OBJECT_MATCHER[key]
-      if re.test(url)
-        context = TREE_OPTIONS
-        for k in key.split('.')
-          context = context[k]
-        Chainer(requestFn, url, k, context, acc)
+    # # If the URL matches one of the "Object" types (repo, user, comment)
+    # # then provide all of the same methods as `octo.repo(...)` would have on it
+    # url = acc.url
+    # Chainer(requestFn, url, true, null, acc) if url
+    # for key in Object.keys(OBJECT_MATCHER)
+    #   re = OBJECT_MATCHER[key]
+    #   if re.test(url)
+    #     context = TREE_OPTIONS
+    #     for k in key.split('.')
+    #       context = context[k]
+    #     Chainer(requestFn, url, k, context, acc)
 
     acc
 

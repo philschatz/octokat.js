@@ -7,7 +7,7 @@ injectVerbMethods = require './verb-methods'
 # Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
 # Constructs a URL for the verb methods (like `.fetch` and `.create`).
 
-Chainer = (request, path, name, contextTree, fn) ->
+Chainer = (plugins, request, path, name, contextTree, fn) ->
   fn ?= (args...) ->
     throw new Error('BUG! must be called with at least one argument') unless args.length
     # Special-case compare because its args turn into '...' instead of the usual '/'
@@ -15,9 +15,9 @@ Chainer = (request, path, name, contextTree, fn) ->
       separator = '...'
     else
       separator = '/'
-    return Chainer(request, "#{path}/#{args.join(separator)}", name, contextTree)
+    return Chainer(plugins, request, "#{path}/#{args.join(separator)}", name, contextTree)
 
-  injectVerbMethods(request, path, fn)
+  injectVerbMethods(plugins, request, path, fn)
 
   if typeof fn is 'function' or typeof fn is 'object'
     for name of contextTree or {}
@@ -28,7 +28,7 @@ Chainer = (request, path, name, contextTree, fn) ->
         Object.defineProperty fn, plus.camelize(name),
           configurable: true
           enumerable: true
-          get: () -> return Chainer(request, "#{path}/#{name}", name, contextTree[name])
+          get: () -> return Chainer(plugins, request, "#{path}/#{name}", name, contextTree[name])
 
 
   return fn
