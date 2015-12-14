@@ -4,7 +4,6 @@ module.exports =
   verbs:
     fetch     : (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}"}
     read      : (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}", options:{isRaw:true}}
-    readBinary: (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}", options:{isRaw:true, isBase64:true}}
     remove    : (path, data) ->   {method:'DELETE', path, data, options:{isBoolean:true}}
     create    : (path, data, contentType) ->
       if contentType

@@ -1233,16 +1233,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      };
 	    },
-	    readBinary: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true,
-	          isBase64: true
-	        }
-	      };
-	    },
 	    remove: function(path, data) {
 	      return {
 	        method: 'DELETE',
@@ -1378,7 +1368,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var CAMEL_CASE, CamelCase, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise,
+	var CAMEL_CASE, CamelCase, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise, toQueryString,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -1386,6 +1376,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	deprecate = __webpack_require__(3);
 
 	toPromise = __webpack_require__(7).toPromise;
+
+	toQueryString = __webpack_require__(9);
 
 	applyHypermedia = __webpack_require__(13);
 
@@ -1579,6 +1571,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	READ_BINARY = new (ReadBinary = (function() {
 	  function ReadBinary() {}
+
+	  ReadBinary.prototype.verbs = {
+	    readBinary: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true,
+	          isBase64: true
+	        }
+	      };
+	    }
+	  };
 
 	  ReadBinary.prototype.requestMiddleware = function(arg) {
 	    var isBase64, options;

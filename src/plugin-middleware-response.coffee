@@ -1,6 +1,7 @@
 plus = require './plus'
 deprecate = require './deprecate'
 {toPromise} = require './helper-promise'
+toQueryString = require './helper-querystring'
 applyHypermedia = require './helper-hypermedia'
 {TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
 # Chainer = require './chainer'
@@ -227,6 +228,9 @@ HYPERMEDIA = new class HyperMedia
 
 
 READ_BINARY = new class ReadBinary
+  verbs:
+    readBinary: (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}", options:{isRaw:true, isBase64:true}}
+
   requestMiddleware: ({options}) ->
     {isBase64} = options
     if isBase64
