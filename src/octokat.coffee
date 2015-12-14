@@ -9,19 +9,22 @@ Request = require './request'
 {toPromise} = require './helper-promise'
 applyHypermedia = require './helper-hypermedia'
 
-SIMPLE_VERBS_PLUGIN = require './plugin-simple-verbs'
+SIMPLE_VERBS_PLUGIN = require './plugins/simple-verbs'
 MIDDLEWARE_REQUEST_PLUGINS = require './plugin-middleware-request'
-MIDDLEWARE_RESPONSE_PLUGINS = require './plugin-middleware-response'
-MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
+CACHE_HANDLER = require './plugins/cache-handler'
+READ_BINARY = require './plugins/read-binary'
+PAGINATION = require './plugins/pagination'
+HYPERMEDIA = require './plugins/hypermedia'
+CAMEL_CASE = require './plugins/camel-case'
 
 ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
   SIMPLE_VERBS_PLUGIN
-  MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
-  MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS
-  MIDDLEWARE_CACHE_HANDLER  # Run cacheHandler after PagedResults so the link headers are remembered
-                            # but before hypermedia so the object is still serializable
-  MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA
-  MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE
+  READ_BINARY
+  PAGINATION
+  CACHE_HANDLER  # Run cacheHandler after PagedResults so the link headers are remembered
+                 # but before hypermedia so the object is still serializable
+  HYPERMEDIA
+  CAMEL_CASE
 ])
 
 

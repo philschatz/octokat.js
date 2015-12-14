@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_REQUEST_PLUGINS, MIDDLEWARE_RESPONSE_PLUGINS, OBJECT_MATCHER, Octokat, Request, SIMPLE_VERBS_PLUGIN, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, CACHE_HANDLER, CAMEL_CASE, Chainer, HYPERMEDIA, MIDDLEWARE_REQUEST_PLUGINS, OBJECT_MATCHER, Octokat, PAGINATION, READ_BINARY, Request, SIMPLE_VERBS_PLUGIN, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -84,11 +84,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	MIDDLEWARE_REQUEST_PLUGINS = __webpack_require__(15);
 
-	MIDDLEWARE_RESPONSE_PLUGINS = __webpack_require__(16);
+	CACHE_HANDLER = __webpack_require__(16);
 
-	MIDDLEWARE_CACHE_HANDLER = __webpack_require__(17);
+	READ_BINARY = __webpack_require__(17);
 
-	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([SIMPLE_VERBS_PLUGIN, MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY, MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS, MIDDLEWARE_CACHE_HANDLER, MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA, MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE]);
+	PAGINATION = __webpack_require__(18);
+
+	HYPERMEDIA = __webpack_require__(19);
+
+	CAMEL_CASE = __webpack_require__(20);
+
+	ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([SIMPLE_VERBS_PLUGIN, READ_BINARY, PAGINATION, CACHE_HANDLER, HYPERMEDIA, CAMEL_CASE]);
 
 	reChainChildren = function(plugins, request, url, obj) {
 	  var context, j, k, key, len, re, ref1;
@@ -1355,268 +1361,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var CAMEL_CASE, CamelCase, HYPERMEDIA, HyperMedia, OBJECT_MATCHER, PAGED_RESULTS, PagedResults, READ_BINARY, ReadBinary, TREE_OPTIONS, applyHypermedia, deprecate, plus, ref, toPromise, toQueryString,
-	  slice = [].slice;
-
-	plus = __webpack_require__(2);
-
-	deprecate = __webpack_require__(3);
-
-	toPromise = __webpack_require__(7).toPromise;
-
-	toQueryString = __webpack_require__(9);
-
-	applyHypermedia = __webpack_require__(13);
-
-	ref = __webpack_require__(4), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
-
-	CAMEL_CASE = new (CamelCase = (function() {
-	  function CamelCase() {}
-
-	  CamelCase.prototype.responseMiddleware = function(arg) {
-	    var data;
-	    data = arg.data;
-	    data = this.replace(data);
-	    return {
-	      data: data
-	    };
-	  };
-
-	  CamelCase.prototype.replace = function(data) {
-	    if (Array.isArray(data)) {
-	      return this._replaceArray(data);
-	    } else if (typeof data === 'function') {
-	      return data;
-	    } else if (data === Object(data)) {
-	      return this._replaceObject(data);
-	    } else {
-	      return data;
-	    }
-	  };
-
-	  CamelCase.prototype._replaceObject = function(orig) {
-	    var acc, j, key, len, ref1, value;
-	    acc = {};
-	    ref1 = Object.keys(orig);
-	    for (j = 0, len = ref1.length; j < len; j++) {
-	      key = ref1[j];
-	      value = orig[key];
-	      this._replaceKeyValue(acc, key, value);
-	    }
-	    return acc;
-	  };
-
-	  CamelCase.prototype._replaceArray = function(orig) {
-	    var arr, item, j, key, len, ref1, value;
-	    arr = (function() {
-	      var j, len, results;
-	      results = [];
-	      for (j = 0, len = orig.length; j < len; j++) {
-	        item = orig[j];
-	        results.push(this.replace(item));
-	      }
-	      return results;
-	    }).call(this);
-	    ref1 = Object.keys(orig);
-	    for (j = 0, len = ref1.length; j < len; j++) {
-	      key = ref1[j];
-	      value = orig[key];
-	      this._replaceKeyValue(arr, key, value);
-	    }
-	    return arr;
-	  };
-
-	  CamelCase.prototype._replaceKeyValue = function(acc, key, value) {
-	    return acc[plus.camelize(key)] = this.replace(value);
-	  };
-
-	  return CamelCase;
-
-	})());
-
-	PAGED_RESULTS = new (PagedResults = (function() {
-	  function PagedResults() {}
-
-	  PagedResults.prototype.responseMiddleware = function(arg) {
-	    var data, discard, href, j, jqXHR, len, links, part, ref1, ref2, rel;
-	    jqXHR = arg.jqXHR, data = arg.data;
-	    if (!jqXHR) {
-	      return;
-	    }
-	    if (Array.isArray(data)) {
-	      data = data.slice(0);
-	      links = jqXHR.getResponseHeader('Link');
-	      ref1 = (links != null ? links.split(',') : void 0) || [];
-	      for (j = 0, len = ref1.length; j < len; j++) {
-	        part = ref1[j];
-	        ref2 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref2[0], href = ref2[1], rel = ref2[2];
-	        data[rel + "_page_url"] = href;
-	      }
-	      return {
-	        data: data
-	      };
-	    }
-	  };
-
-	  return PagedResults;
-
-	})());
-
-	HYPERMEDIA = new (HyperMedia = (function() {
-	  function HyperMedia() {}
-
-	  HyperMedia.prototype.replace = function(instance, requestFn, data) {
-	    if (Array.isArray(data)) {
-	      return this._replaceArray(instance, requestFn, data);
-	    } else if (typeof data === 'function') {
-	      return data;
-	    } else if (data === Object(data)) {
-	      return this._replaceObject(instance, requestFn, data);
-	    } else {
-	      return data;
-	    }
-	  };
-
-	  HyperMedia.prototype._replaceObject = function(instance, requestFn, orig) {
-	    var acc, j, key, len, ref1, value;
-	    acc = {};
-	    ref1 = Object.keys(orig);
-	    for (j = 0, len = ref1.length; j < len; j++) {
-	      key = ref1[j];
-	      value = orig[key];
-	      this._replaceKeyValue(instance, requestFn, acc, key, value);
-	    }
-	    return acc;
-	  };
-
-	  HyperMedia.prototype._replaceArray = function(instance, requestFn, orig) {
-	    var arr, item, j, key, len, ref1, value;
-	    arr = (function() {
-	      var j, len, results;
-	      results = [];
-	      for (j = 0, len = orig.length; j < len; j++) {
-	        item = orig[j];
-	        results.push(this.replace(instance, requestFn, item));
-	      }
-	      return results;
-	    }).call(this);
-	    ref1 = Object.keys(orig);
-	    for (j = 0, len = ref1.length; j < len; j++) {
-	      key = ref1[j];
-	      value = orig[key];
-	      this._replaceKeyValue(instance, requestFn, arr, key, value);
-	    }
-	    return arr;
-	  };
-
-	  HyperMedia.prototype._replaceKeyValue = function(instance, requestFn, acc, key, value) {
-	    var defaultFn, fn, newKey;
-	    if (/_url$/.test(key)) {
-	      if (/^upload_url$/.test(key)) {
-	        defaultFn = function() {
-	          var args;
-	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	          deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');
-	          return defaultFn.create.apply(defaultFn, args);
-	        };
-	        fn = function() {
-	          var args;
-	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	          return instance._fromUrlWithDefault.apply(instance, [value, defaultFn].concat(slice.call(args)))();
-	        };
-	      } else {
-	        defaultFn = function() {
-	          deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
-	          return this.fetch();
-	        };
-	        fn = instance._fromUrlCurried(value, defaultFn);
-	      }
-	      newKey = key.substring(0, key.length - '_url'.length);
-	      acc[newKey] = fn;
-	      if (!/\{/.test(value)) {
-	        return acc[key] = value;
-	      }
-	    } else if (/_at$/.test(key)) {
-	      return acc[key] = value ? new Date(value) : null;
-	    } else {
-	      return acc[key] = this.replace(instance, requestFn, value);
-	    }
-	  };
-
-	  HyperMedia.prototype.responseMiddleware = function(arg) {
-	    var data, instance, requestFn;
-	    instance = arg.instance, requestFn = arg.requestFn, data = arg.data;
-	    data = this.replace(instance, requestFn, data);
-	    return {
-	      data: data
-	    };
-	  };
-
-	  return HyperMedia;
-
-	})());
-
-	READ_BINARY = new (ReadBinary = (function() {
-	  function ReadBinary() {}
-
-	  ReadBinary.prototype.verbs = {
-	    readBinary: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true,
-	          isBase64: true
-	        }
-	      };
-	    }
-	  };
-
-	  ReadBinary.prototype.requestMiddleware = function(arg) {
-	    var isBase64, options;
-	    options = arg.options;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      return {
-	        headers: {
-	          Accept: 'application/vnd.github.raw'
-	        },
-	        mimeType: 'text/plain; charset=x-user-defined'
-	      };
-	    }
-	  };
-
-	  ReadBinary.prototype.responseMiddleware = function(arg) {
-	    var converted, data, i, isBase64, j, options, ref1;
-	    options = arg.options, data = arg.data;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      converted = '';
-	      for (i = j = 0, ref1 = data.length; 0 <= ref1 ? j < ref1 : j > ref1; i = 0 <= ref1 ? ++j : --j) {
-	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
-	      }
-	      return {
-	        data: converted
-	      };
-	    }
-	  };
-
-	  return ReadBinary;
-
-	})());
-
-	module.exports = {
-	  CAMEL_CASE: CAMEL_CASE,
-	  PAGED_RESULTS: PAGED_RESULTS,
-	  HYPERMEDIA: HYPERMEDIA,
-	  READ_BINARY: READ_BINARY
-	};
-
-
-/***/ },
-/* 17 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;
@@ -1678,6 +1422,276 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return CacheMiddleware;
+
+	})());
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ReadBinary, toQueryString;
+
+	toQueryString = __webpack_require__(9);
+
+	module.exports = new (ReadBinary = (function() {
+	  function ReadBinary() {}
+
+	  ReadBinary.prototype.verbs = {
+	    readBinary: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true,
+	          isBase64: true
+	        }
+	      };
+	    }
+	  };
+
+	  ReadBinary.prototype.requestMiddleware = function(arg) {
+	    var isBase64, options;
+	    options = arg.options;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      return {
+	        headers: {
+	          Accept: 'application/vnd.github.raw'
+	        },
+	        mimeType: 'text/plain; charset=x-user-defined'
+	      };
+	    }
+	  };
+
+	  ReadBinary.prototype.responseMiddleware = function(arg) {
+	    var converted, data, i, isBase64, j, options, ref;
+	    options = arg.options, data = arg.data;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      converted = '';
+	      for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+	      }
+	      return {
+	        data: converted
+	      };
+	    }
+	  };
+
+	  return ReadBinary;
+
+	})());
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	var Pagination;
+
+	module.exports = new (Pagination = (function() {
+	  function Pagination() {}
+
+	  Pagination.prototype.responseMiddleware = function(arg) {
+	    var data, discard, href, i, jqXHR, len, links, part, ref, ref1, rel;
+	    jqXHR = arg.jqXHR, data = arg.data;
+	    if (!jqXHR) {
+	      return;
+	    }
+	    if (Array.isArray(data)) {
+	      data = data.slice(0);
+	      links = jqXHR.getResponseHeader('Link');
+	      ref = (links != null ? links.split(',') : void 0) || [];
+	      for (i = 0, len = ref.length; i < len; i++) {
+	        part = ref[i];
+	        ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
+	        data[rel + "_page_url"] = href;
+	      }
+	      return {
+	        data: data
+	      };
+	    }
+	  };
+
+	  return Pagination;
+
+	})());
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var HyperMedia, deprecate,
+	  slice = [].slice;
+
+	deprecate = __webpack_require__(3);
+
+	module.exports = new (HyperMedia = (function() {
+	  function HyperMedia() {}
+
+	  HyperMedia.prototype.replace = function(instance, requestFn, data) {
+	    if (Array.isArray(data)) {
+	      return this._replaceArray(instance, requestFn, data);
+	    } else if (typeof data === 'function') {
+	      return data;
+	    } else if (data === Object(data)) {
+	      return this._replaceObject(instance, requestFn, data);
+	    } else {
+	      return data;
+	    }
+	  };
+
+	  HyperMedia.prototype._replaceObject = function(instance, requestFn, orig) {
+	    var acc, i, key, len, ref, value;
+	    acc = {};
+	    ref = Object.keys(orig);
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      key = ref[i];
+	      value = orig[key];
+	      this._replaceKeyValue(instance, requestFn, acc, key, value);
+	    }
+	    return acc;
+	  };
+
+	  HyperMedia.prototype._replaceArray = function(instance, requestFn, orig) {
+	    var arr, i, item, key, len, ref, value;
+	    arr = (function() {
+	      var i, len, results;
+	      results = [];
+	      for (i = 0, len = orig.length; i < len; i++) {
+	        item = orig[i];
+	        results.push(this.replace(instance, requestFn, item));
+	      }
+	      return results;
+	    }).call(this);
+	    ref = Object.keys(orig);
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      key = ref[i];
+	      value = orig[key];
+	      this._replaceKeyValue(instance, requestFn, arr, key, value);
+	    }
+	    return arr;
+	  };
+
+	  HyperMedia.prototype._replaceKeyValue = function(instance, requestFn, acc, key, value) {
+	    var defaultFn, fn, newKey;
+	    if (/_url$/.test(key)) {
+	      if (/^upload_url$/.test(key)) {
+	        defaultFn = function() {
+	          var args;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');
+	          return defaultFn.create.apply(defaultFn, args);
+	        };
+	        fn = function() {
+	          var args;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          return instance._fromUrlWithDefault.apply(instance, [value, defaultFn].concat(slice.call(args)))();
+	        };
+	      } else {
+	        defaultFn = function() {
+	          deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
+	          return this.fetch();
+	        };
+	        fn = instance._fromUrlCurried(value, defaultFn);
+	      }
+	      newKey = key.substring(0, key.length - '_url'.length);
+	      acc[newKey] = fn;
+	      if (!/\{/.test(value)) {
+	        return acc[key] = value;
+	      }
+	    } else if (/_at$/.test(key)) {
+	      return acc[key] = value ? new Date(value) : null;
+	    } else {
+	      return acc[key] = this.replace(instance, requestFn, value);
+	    }
+	  };
+
+	  HyperMedia.prototype.responseMiddleware = function(arg) {
+	    var data, instance, requestFn;
+	    instance = arg.instance, requestFn = arg.requestFn, data = arg.data;
+	    data = this.replace(instance, requestFn, data);
+	    return {
+	      data: data
+	    };
+	  };
+
+	  return HyperMedia;
+
+	})());
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var CamelCase, plus;
+
+	plus = __webpack_require__(2);
+
+	module.exports = new (CamelCase = (function() {
+	  function CamelCase() {}
+
+	  CamelCase.prototype.responseMiddleware = function(arg) {
+	    var data;
+	    data = arg.data;
+	    data = this.replace(data);
+	    return {
+	      data: data
+	    };
+	  };
+
+	  CamelCase.prototype.replace = function(data) {
+	    if (Array.isArray(data)) {
+	      return this._replaceArray(data);
+	    } else if (typeof data === 'function') {
+	      return data;
+	    } else if (data === Object(data)) {
+	      return this._replaceObject(data);
+	    } else {
+	      return data;
+	    }
+	  };
+
+	  CamelCase.prototype._replaceObject = function(orig) {
+	    var acc, i, key, len, ref, value;
+	    acc = {};
+	    ref = Object.keys(orig);
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      key = ref[i];
+	      value = orig[key];
+	      this._replaceKeyValue(acc, key, value);
+	    }
+	    return acc;
+	  };
+
+	  CamelCase.prototype._replaceArray = function(orig) {
+	    var arr, i, item, key, len, ref, value;
+	    arr = (function() {
+	      var i, len, results;
+	      results = [];
+	      for (i = 0, len = orig.length; i < len; i++) {
+	        item = orig[i];
+	        results.push(this.replace(item));
+	      }
+	      return results;
+	    }).call(this);
+	    ref = Object.keys(orig);
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      key = ref[i];
+	      value = orig[key];
+	      this._replaceKeyValue(arr, key, value);
+	    }
+	    return arr;
+	  };
+
+	  CamelCase.prototype._replaceKeyValue = function(acc, key, value) {
+	    return acc[plus.camelize(key)] = this.replace(value);
+	  };
+
+	  return CamelCase;
 
 	})());
 
