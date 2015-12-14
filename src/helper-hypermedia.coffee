@@ -25,8 +25,16 @@ module.exports = (url, args...) ->
     switch match[1]
       when '/'
         fieldName = match[2...match.length-1] # omit the braces and the slash
-        if templateParams[fieldName]
-          param = "/#{templateParams[fieldName]}"
+        fieldValue = templateParams[fieldName]
+        if fieldValue
+          if /\//.test(fieldValue)
+            throw new Error("Octokat Error: this field must not contain slashes: #{fieldName}")
+          param = "/#{fieldValue}"
+      when '+'
+        fieldName = match[2...match.length-1] # omit the braces and the `+`
+        fieldValue = templateParams[fieldName]
+        if fieldValue
+          param = fieldValue
       when '?'
         # Strip off the "{?" and the trailing "}"
         # For example, the URL is `/assets{?name,label}`
@@ -39,13 +47,20 @@ module.exports = (url, args...) ->
         for fieldName in optionalNames
           optionalParams[fieldName] = templateParams[fieldName]
         param = toQueryString(optionalParams)
+      when '&'
+        optionalNames = match[2..-2].split(',') # omit the braces and the `?` before splitting
+        optionalParams = {}
+        for fieldName in optionalNames
+          optionalParams[fieldName] = templateParams[fieldName]
+        param = toQueryString(optionalParams, true) # true means omitQuestionMark
+
       else
         # This is a required field. ie `{repoName}`
         fieldName = match[1...match.length-1] # omit the braces
         if templateParams[fieldName]
           param = templateParams[fieldName]
         else
-          throw new Error("Octokat Error: param #{fieldName} is required")
+          throw new Error("Octokat Error: Required parameter is missing: #{fieldName}")
 
     url = url.replace(match, param)
     i++

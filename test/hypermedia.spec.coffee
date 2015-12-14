@@ -32,6 +32,24 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, REPO_USER, REPO
         expect(repo.name).to.equal(REPO_NAME)
         done()
 
+    it 'supports & in templates', ->
+      template = 'https://api.github.com/search/code?q={query}{&page,per_page,sort,order}'
+      expected = 'https://api.github.com/search/code?q=octokat&per_page=100'
+      params =
+        query: 'octokat'
+        per_page: 100
+      {url} = client.fromUrl(template, params)
+      expect(url).to.equal(expected)
+
+    it 'throws error if a required field is missing', ->
+      template = 'https://api.github.com/search/code?q={query}{&page,per_page,sort,order}'
+      params =
+        # query: 'octokat'
+        per_page: 100
+
+      fn = -> client.fromUrl(template, params)
+      assert.throw(fn, Error, 'Octokat Error: Required parameter is missing: query')
+
   # describe 'URL Hypermedia Patterns (only tested in Node)', ->
   #
   #   URL_PATTERN = 'https://foo{?name,label}'
