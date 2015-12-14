@@ -8,6 +8,18 @@
 
 URL_VALIDATOR = /// ^
 
+  # Status APIs
+  (https://status.github.com/api/
+    (
+      status.json
+    | last-message.json
+    | messages.json
+    )
+    $
+  )
+
+  |
+
   (https?://[^/]+)? # Optional protocol, host, and port
   (/api/v3)?        # Optional API root for enterprise GitHub users
 
