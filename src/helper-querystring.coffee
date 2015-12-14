@@ -7,7 +7,10 @@ toQueryString = (options) ->
 
   params = []
   for key, value of options or {}
-    params.push "#{key}=#{encodeURIComponent(value)}"
-  return "?#{params.join('&')}"
+    params.push "#{key}=#{encodeURIComponent(value)}" if value
+  if params.length
+    return "?#{params.join('&')}"
+  else
+    return ''
 
 module.exports = toQueryString

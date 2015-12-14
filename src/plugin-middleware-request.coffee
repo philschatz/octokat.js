@@ -4,13 +4,12 @@ base64encode = require './helper-base64'
 PATH_TEST =
   requestMiddleware: ({path}) ->
     unless URL_VALIDATOR.test(path)
-      err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=#{path}"
+      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=#{path}"
       console.warn(err)
 
 USE_POST_INSTEAD_OF_PATCH =
   requestMiddleware: ({clientOptions:{usePostInsteadOfPatch}, method}) ->
     if usePostInsteadOfPatch and method is 'PATCH'
-      console.log 'PHIL USING POST'
       {method: 'POST'}
 
 # Use the preview API header if one of the routes match the preview APIs

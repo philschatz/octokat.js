@@ -1,45 +1,52 @@
 toQueryString = require './helper-querystring'
+deprecate = require './deprecate'
 
 module.exports = (url, args...) ->
+
+  # Deprecated interface. Use an Object to specify the args in the template.
+  # the order of fields in the template should not matter.
+  if args.length is 0
+    templateParams = {}
+  else
+    if args.length > 1
+      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args')
+
+    templateParams = args[0]
 
   # url can contain {name} or {/name} in the URL.
   # for every arg passed in, replace {...} with that arg
   # and remove the rest (they may or may not be optional)
   i = 0
   while m = /(\{[^\}]+\})/.exec(url)
-    # `match` is something like `{/foo}`
+    # `match` is something like `{/foo}` or `{?foo,bar}` or `{foo}` (last one means it is required)
     match = m[1]
-    if i < args.length
-      # replace it
-      param = args[i]
-      switch match[1]
-        when '/'
-          param = "/#{param}"
-        when '?'
-          # Strip off the "{?" and the trailing "}"
-          # For example, the URL is `/assets{?name,label}`
-          #   which turns into `/assets?name=foo.zip`
-          # Used to upload releases via the repo releases API.
-          # TODO: When match contains `,` or
-          # `args.length is 1` and args[0] is object match the args to those in the template
-          optionalNames = match[2..-2].split(',')
-          # If param is a string then just use the 1st optionalName
-          if typeof param is 'object'
-            # TODO: validate the optionalNames
-            if Object.keys(param).length is 0
-              console.warn('Must pass in a dictionary with at least one key when there are multiple optional params')
-            for paramName in Object.keys(param)
-              if optionalNames.indexOf(paramName) < 0
-                console.warn("Invalid parameter '#{paramName}' passed in as argument")
-            param = toQueryString(param)
-          else
-            param = "?#{optionalNames[0]}=#{param}"
+    param = ''
+    # replace it
+    switch match[1]
+      when '/'
+        fieldName = match[2...match.length-1] # omit the braces and the slash
+        if templateParams[fieldName]
+          param = "/#{templateParams[fieldName]}"
+      when '?'
+        # Strip off the "{?" and the trailing "}"
+        # For example, the URL is `/assets{?name,label}`
+        #   which turns into `/assets?name=foo.zip`
+        # Used to upload releases via the repo releases API.
+        # TODO: When match contains `,` or
+        # `args.length is 1` and args[0] is object match the args to those in the template
+        optionalNames = match[2..-2].split(',') # omit the braces and the `?` before splitting
+        optionalParams = {}
+        for fieldName in optionalNames
+          optionalParams[fieldName] = templateParams[fieldName]
+        param = toQueryString(optionalParams)
+      else
+        # This is a required field. ie `{repoName}`
+        fieldName = match[1...match.length-1] # omit the braces
+        if templateParams[fieldName]
+          param = templateParams[fieldName]
+        else
+          throw new Error("Octokat Error: param #{fieldName} is required")
 
-    else
-      # Discard the remaining optional params in the URL
-      param = ''
-      if match[1] isnt '/'
-        throw new Error("BUG: Missing required parameter #{match}")
     url = url.replace(match, param)
     i++
 

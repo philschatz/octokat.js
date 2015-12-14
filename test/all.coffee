@@ -4,3 +4,4 @@ define (require) ->
   require 'cs!./ruby-specs/all'
   require 'cs!./simple.spec'
   require 'cs!./object.spec'
+  require 'cs!./hypermedia.spec'

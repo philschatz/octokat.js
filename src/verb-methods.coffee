@@ -7,7 +7,7 @@ SIMPLE_VERBS_PLUGIN = require './plugin-simple-verbs'
 # Test if the path is constructed correctly
 URL_TESTER = (path) ->
   unless URL_VALIDATOR.test(path)
-    err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=#{path}"
+    err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=#{path}"
     console.warn(err)
 
 

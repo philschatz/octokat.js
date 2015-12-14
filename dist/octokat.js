@@ -606,7 +606,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	URL_TESTER = function(path) {
 	  var err;
 	  if (!URL_VALIDATOR.test(path)) {
-	    err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+	    err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
 	    return console.warn(err);
 	  }
 	};
@@ -800,9 +800,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ref = options || {};
 	  for (key in ref) {
 	    value = ref[key];
-	    params.push(key + "=" + (encodeURIComponent(value)));
+	    if (value) {
+	      params.push(key + "=" + (encodeURIComponent(value)));
+	    }
 	  }
-	  return "?" + (params.join('&'));
+	  if (params.length) {
+	    return "?" + (params.join('&'));
+	  } else {
+	    return '';
+	  }
 	};
 
 	module.exports = toQueryString;
@@ -1173,46 +1179,51 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toQueryString,
+	var deprecate, toQueryString,
 	  slice = [].slice;
 
 	toQueryString = __webpack_require__(9);
 
+	deprecate = __webpack_require__(3);
+
 	module.exports = function() {
-	  var args, i, j, len, m, match, optionalNames, param, paramName, ref, url;
+	  var args, fieldName, i, j, len, m, match, optionalNames, optionalParams, param, templateParams, url;
 	  url = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	  if (args.length === 0) {
+	    templateParams = {};
+	  } else {
+	    if (args.length > 1) {
+	      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args');
+	    }
+	    templateParams = args[0];
+	  }
 	  i = 0;
 	  while (m = /(\{[^\}]+\})/.exec(url)) {
 	    match = m[1];
-	    if (i < args.length) {
-	      param = args[i];
-	      switch (match[1]) {
-	        case '/':
-	          param = "/" + param;
-	          break;
-	        case '?':
-	          optionalNames = match.slice(2, -1).split(',');
-	          if (typeof param === 'object') {
-	            if (Object.keys(param).length === 0) {
-	              console.warn('Must pass in a dictionary with at least one key when there are multiple optional params');
-	            }
-	            ref = Object.keys(param);
-	            for (j = 0, len = ref.length; j < len; j++) {
-	              paramName = ref[j];
-	              if (optionalNames.indexOf(paramName) < 0) {
-	                console.warn("Invalid parameter '" + paramName + "' passed in as argument");
-	              }
-	            }
-	            param = toQueryString(param);
-	          } else {
-	            param = "?" + optionalNames[0] + "=" + param;
-	          }
-	      }
-	    } else {
-	      param = '';
-	      if (match[1] !== '/') {
-	        throw new Error("BUG: Missing required parameter " + match);
-	      }
+	    param = '';
+	    switch (match[1]) {
+	      case '/':
+	        fieldName = match.slice(2, match.length - 1);
+	        if (templateParams[fieldName]) {
+	          param = "/" + templateParams[fieldName];
+	        }
+	        break;
+	      case '?':
+	        optionalNames = match.slice(2, -1).split(',');
+	        optionalParams = {};
+	        for (j = 0, len = optionalNames.length; j < len; j++) {
+	          fieldName = optionalNames[j];
+	          optionalParams[fieldName] = templateParams[fieldName];
+	        }
+	        param = toQueryString(optionalParams);
+	        break;
+	      default:
+	        fieldName = match.slice(1, match.length - 1);
+	        if (templateParams[fieldName]) {
+	          param = templateParams[fieldName];
+	        } else {
+	          throw new Error("Octokat Error: param " + fieldName + " is required");
+	        }
 	    }
 	    url = url.replace(match, param);
 	    i++;
@@ -13888,7 +13899,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var err, path;
 	    path = arg.path;
 	    if (!URL_VALIDATOR.test(path)) {
-	      err = "BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
 	      return console.warn(err);
 	    }
 	  }
@@ -13899,7 +13910,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var method, ref1, usePostInsteadOfPatch;
 	    (ref1 = arg.clientOptions, usePostInsteadOfPatch = ref1.usePostInsteadOfPatch), method = arg.method;
 	    if (usePostInsteadOfPatch && method === 'PATCH') {
-	      console.log('PHIL USING POST');
 	      return {
 	        method: 'POST'
 	      };
