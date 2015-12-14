@@ -20,9 +20,10 @@ MIDDLEWARE_CACHE_HANDLER = require './plugin-cache-handler'
 ALL_PLUGINS = MIDDLEWARE_REQUEST_PLUGINS.concat([
   MIDDLEWARE_RESPONSE_PLUGINS.READ_BINARY
   MIDDLEWARE_RESPONSE_PLUGINS.PAGED_RESULTS
+  MIDDLEWARE_CACHE_HANDLER  # Run cacheHandler after PagedResults so the link headers are remembered
+                            # but before hypermedia so the object is still serializable
   MIDDLEWARE_RESPONSE_PLUGINS.HYPERMEDIA
   MIDDLEWARE_RESPONSE_PLUGINS.CAMEL_CASE
-  MIDDLEWARE_CACHE_HANDLER
 ])
 
 
