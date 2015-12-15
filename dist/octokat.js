@@ -80,7 +80,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	applyHypermedia = __webpack_require__(12);
 
-	ALL_PLUGINS = [__webpack_require__(13), __webpack_require__(14), __webpack_require__(16), __webpack_require__(17), __webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23)];
+	ALL_PLUGINS = [__webpack_require__(13), __webpack_require__(14), __webpack_require__(16), __webpack_require__(17), __webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24)];
 
 	reChainChildren = function(plugins, request, url, obj) {
 	  var context, j, k, key, len, re, ref1;
@@ -336,7 +336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
 
-	URL_VALIDATOR = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user|user\/(repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|hooks\/[^\/]+\/pings|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[^\/]+|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[^\/]+|commits\/[^\/]+\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
+	URL_VALIDATOR = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|hooks\/[^\/]+\/pings|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[^\/]+|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[^\/]+|commits\/[^\/]+\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
 
 	TREE_OPTIONS = {
 	  'zen': false,
@@ -626,30 +626,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	toQueryString = __webpack_require__(9);
 
 	injectVerbMethods = function(plugins, request, path, obj) {
-	  var i, len, plugin, results, verbFunc, verbName;
+	  var fn, i, len, plugin, ref, results, verbFunc, verbName;
 	  if (!request) {
 	    throw new Error('Octokat BUG: request is required');
 	  }
 	  results = [];
 	  for (i = 0, len = plugins.length; i < len; i++) {
 	    plugin = plugins[i];
+	    ref = plugin.verbs || {};
+	    fn = function(verbName, verbFunc) {
+	      obj.url = path;
+	      return obj[verbName] = function() {
+	        var args, makeRequest;
+	        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	        makeRequest = function() {
+	          var cb, data, method, options, originalArgs, ref1;
+	          cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	          ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
+	          return request(method, path, data, options, cb);
+	        };
+	        return toPromise(makeRequest).apply(null, args);
+	      };
+	    };
+	    for (verbName in ref) {
+	      verbFunc = ref[verbName];
+	      fn(verbName, verbFunc);
+	    }
 	    results.push((function() {
-	      var ref, results1;
-	      ref = plugin.verbs || {};
+	      var ref1, results1;
+	      ref1 = plugin.asyncVerbs || {};
 	      results1 = [];
-	      for (verbName in ref) {
-	        verbFunc = ref[verbName];
+	      for (verbName in ref1) {
+	        verbFunc = ref1[verbName];
 	        results1.push((function(verbName, verbFunc) {
 	          obj.url = path;
 	          return obj[verbName] = function() {
 	            var args, makeRequest;
 	            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	            makeRequest = function() {
-	              var cb, data, method, options, originalArgs, ref1;
-	              cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	              ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
-	              return request(method, path, data, options, cb);
-	            };
+	            makeRequest = verbFunc(request, path);
 	            return toPromise(makeRequest).apply(null, args);
 	          };
 	        })(verbName, verbFunc));
@@ -1362,6 +1376,67 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 19 */
+/***/ function(module, exports) {
+
+	var fetchNextPage, getMore, pushAll;
+
+	pushAll = function(target, source) {
+	  return target.push.apply(target, source);
+	};
+
+	getMore = function(fetchable, requestFn, acc, cb) {
+	  var doStuff;
+	  doStuff = function(err, items) {
+	    if (err) {
+	      return cb(err);
+	    }
+	    pushAll(acc, items);
+	    return getMore(items, requestFn, acc, cb);
+	  };
+	  if (!fetchNextPage(fetchable, requestFn, doStuff)) {
+	    return cb(null, acc);
+	  }
+	};
+
+	fetchNextPage = function(obj, requestFn, cb) {
+	  if (typeof obj.next_page === 'string') {
+	    requestFn('GET', obj.next_page, null, null, cb);
+	    return true;
+	  } else if (obj.next_page) {
+	    obj.next_page.fetch(cb);
+	    return true;
+	  } else if (typeof obj.nextPage === 'string') {
+	    requestFn('GET', obj.nextPage, null, null, cb);
+	    return true;
+	  } else if (obj.nextPage) {
+	    obj.nextPage.fetch(cb);
+	    return true;
+	  } else {
+	    return false;
+	  }
+	};
+
+	module.exports = {
+	  asyncVerbs: {
+	    fetchAll: function(requestFn, path) {
+	      return function(cb, query) {
+	        return requestFn('GET', path, query, null, function(err, items) {
+	          var acc;
+	          if (err) {
+	            return cb(err);
+	          }
+	          acc = [];
+	          pushAll(acc, items);
+	          return getMore(items, requestFn, acc, cb);
+	        });
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReadBinary, toQueryString;
@@ -1419,7 +1494,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	var Pagination;
@@ -1454,7 +1529,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;
@@ -1521,7 +1596,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1625,7 +1700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;

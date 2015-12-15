@@ -16,11 +16,14 @@ ALL_PLUGINS = [
   require './plugins/use-post-instead-of-patch'
 
   require './plugins/simple-verbs'
+  require './plugins/fetch-all'
+
   require './plugins/read-binary'
   require './plugins/pagination'
   # Run cacheHandler after PagedResults so the link headers are remembered
   # but before hypermedia so the object is still serializable
   require './plugins/cache-handler'
+
   require './plugins/hypermedia'
   require './plugins/camel-case'
 ]

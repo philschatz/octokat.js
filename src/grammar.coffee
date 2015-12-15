@@ -41,9 +41,9 @@ URL_VALIDATOR = /// ^
     | notifications / threads (/[^/]+) / subscription
     | gitignore/templates (/[^/]+)?
 
-    | user
-    | user/ (
-        repos
+    | user (/\d+)?          # Fetching paged results for a user uses the userid
+    | user (/\d+)? / (
+      | repos
       | orgs
       | followers
       | following (/[^/]+)?
