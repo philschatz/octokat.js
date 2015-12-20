@@ -61,24 +61,66 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, uncamelizeObj,
+	var ALL_PLUGINS, HypermediaPlugin, Octokat, OctokatBase, deprecate;
+
+	deprecate = __webpack_require__(2);
+
+	OctokatBase = __webpack_require__(3);
+
+	HypermediaPlugin = __webpack_require__(12);
+
+	ALL_PLUGINS = [__webpack_require__(13), __webpack_require__(18), __webpack_require__(19), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27), HypermediaPlugin, __webpack_require__(28)];
+
+	Octokat = function(clientOptions) {
+	  var instance;
+	  if (clientOptions == null) {
+	    clientOptions = {};
+	  }
+	  if (clientOptions.plugins == null) {
+	    clientOptions.plugins = ALL_PLUGINS;
+	  }
+	  if (clientOptions.disableHypermedia) {
+	    deprecate('Please use the clientOptions.plugins array and just do not include the hypermedia plugin');
+	    clientOptions.plugins = clientOptions.plugins.filter(function(plugin) {
+	      return plugin !== HypermediaPlugin;
+	    });
+	  }
+	  instance = new OctokatBase(clientOptions);
+	  return instance;
+	};
+
+	module.exports = Octokat;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	module.exports = function(message) {
+	  return typeof console !== "undefined" && console !== null ? typeof console.warn === "function" ? console.warn("Octokat Deprecation: " + message) : void 0 : void 0;
+	};
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OBJECT_MATCHER, OctokatBase, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, uncamelizeObj,
 	  slice = [].slice;
 
-	plus = __webpack_require__(2);
+	plus = __webpack_require__(4);
 
-	deprecate = __webpack_require__(3);
+	deprecate = __webpack_require__(2);
 
-	ref = __webpack_require__(4), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
+	ref = __webpack_require__(5), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
 
-	Chainer = __webpack_require__(5);
+	Chainer = __webpack_require__(6);
 
-	injectVerbMethods = __webpack_require__(6);
+	injectVerbMethods = __webpack_require__(7);
 
-	Request = __webpack_require__(8);
+	Request = __webpack_require__(9);
 
-	applyHypermedia = __webpack_require__(10);
-
-	ALL_PLUGINS = [__webpack_require__(11), __webpack_require__(16), __webpack_require__(17), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27)];
+	applyHypermedia = __webpack_require__(11);
 
 	reChainChildren = function(plugins, request, url, obj) {
 	  var context, j, k, key, len, re, ref1;
@@ -123,12 +165,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	Octokat = function(clientOptions) {
+	OctokatBase = function(clientOptions) {
 	  var disableHypermedia, instance, plugins, request;
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
-	  plugins = clientOptions.plugins || ALL_PLUGINS;
+	  plugins = clientOptions.plugins || [];
 	  disableHypermedia = clientOptions.disableHypermedia;
 	  if (disableHypermedia == null) {
 	    disableHypermedia = false;
@@ -250,12 +292,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return instance;
 	};
 
-	module.exports = Octokat;
+	module.exports = OctokatBase;
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 2 */
+/* 4 */
 /***/ function(module, exports) {
 
 	var plus;
@@ -312,16 +354,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	module.exports = function(message) {
-	  return typeof console !== "undefined" && console !== null ? typeof console.warn === "function" ? console.warn("Octokat Deprecation: " + message) : void 0 : void 0;
-	};
-
-
-/***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
@@ -555,15 +588,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Chainer, injectVerbMethods, plus,
 	  slice = [].slice;
 
-	plus = __webpack_require__(2);
+	plus = __webpack_require__(4);
 
-	injectVerbMethods = __webpack_require__(6);
+	injectVerbMethods = __webpack_require__(7);
 
 	Chainer = function(plugins, request, path, name, contextTree, fn) {
 	  var fn1;
@@ -605,13 +638,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var injectVerbMethods, toPromise, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(7);
+	toQueryString = __webpack_require__(8);
 
 	toPromise = function(orig, newPromise) {
 	  return function() {
@@ -698,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -731,12 +764,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var DEFAULT_CACHE_HANDLER, Request, _cachedETags, ajax, plus, userAgent;
 
-	plus = __webpack_require__(2);
+	plus = __webpack_require__(4);
 
 	if (typeof window === "undefined" || window === null) {
 	  userAgent = 'octokat.js';
@@ -748,7 +781,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(9).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(10).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -967,22 +1000,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(7);
+	toQueryString = __webpack_require__(8);
 
-	deprecate = __webpack_require__(3);
+	deprecate = __webpack_require__(2);
 
 	module.exports = function() {
 	  var args, fieldName, fieldValue, i, j, k, len, len1, m, match, optionalNames, optionalParams, param, templateParams, url;
@@ -1051,609 +1084,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var allPromises, newPromise, ref, ref1, ref2;
-
-	ref = __webpack_require__(12), newPromise = ref.newPromise, allPromises = ref.allPromises;
-
-	if (!(newPromise && allPromises)) {
-	  ref1 = __webpack_require__(13), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
-	}
-
-	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
-	  ref2 = __webpack_require__(14), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
-	}
-
-	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
-	  if (typeof console !== "undefined" && console !== null) {
-	    if (typeof console.warn === "function") {
-	      console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
-	    }
-	  }
-	} else if ((typeof window === "undefined" || window === null) && !newPromise) {
-	  throw new Error('Could not find a promise lib for node. Seems like a bug');
-	}
-
-	module.exports = {
-	  promiseCreator: {
-	    newPromise: newPromise,
-	    allPromises: allPromises
-	  }
-	};
-
-
-/***/ },
 /* 12 */
-/***/ function(module, exports) {
-
-	var allPromises, injector, newPromise, ref,
-	  slice = [].slice;
-
-	if (typeof window !== "undefined" && window !== null) {
-	  if (window.Q) {
-	    newPromise = (function(_this) {
-	      return function(fn) {
-	        var deferred, reject, resolve;
-	        deferred = window.Q.defer();
-	        resolve = function(val) {
-	          return deferred.resolve(val);
-	        };
-	        reject = function(err) {
-	          return deferred.reject(err);
-	        };
-	        fn(resolve, reject);
-	        return deferred.promise;
-	      };
-	    })(this);
-	    allPromises = function(promises) {
-	      return window.Q.all(promises);
-	    };
-	  } else if (window.angular) {
-	    newPromise = null;
-	    allPromises = null;
-	    injector = angular.injector(['ng']);
-	    injector.invoke(function($q) {
-	      newPromise = function(fn) {
-	        var deferred, reject, resolve;
-	        deferred = $q.defer();
-	        resolve = function(val) {
-	          return deferred.resolve(val);
-	        };
-	        reject = function(err) {
-	          return deferred.reject(err);
-	        };
-	        fn(resolve, reject);
-	        return deferred.promise;
-	      };
-	      return allPromises = function(promises) {
-	        return $q.all(promises);
-	      };
-	    });
-	  } else if ((ref = window.jQuery) != null ? ref.Deferred : void 0) {
-	    newPromise = (function(_this) {
-	      return function(fn) {
-	        var promise, reject, resolve;
-	        promise = window.jQuery.Deferred();
-	        resolve = function(val) {
-	          return promise.resolve(val);
-	        };
-	        reject = function(val) {
-	          return promise.reject(val);
-	        };
-	        fn(resolve, reject);
-	        return promise.promise();
-	      };
-	    })(this);
-	    allPromises = (function(_this) {
-	      return function(promises) {
-	        var ref1;
-	        return (ref1 = window.jQuery).when.apply(ref1, promises).then(function() {
-	          var promises;
-	          promises = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	          return promises;
-	        });
-	      };
-	    })(this);
-	  }
-	}
-
-	module.exports = {
-	  newPromise: newPromise,
-	  allPromises: allPromises
-	};
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	var allPromises, newPromise;
-
-	if (typeof Promise !== "undefined" && Promise !== null) {
-	  newPromise = (function(_this) {
-	    return function(fn) {
-	      return new Promise(function(resolve, reject) {
-	        if (resolve.fulfill) {
-	          return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
-	        } else {
-	          return fn.apply(null, arguments);
-	        }
-	      });
-	    };
-	  })(this);
-	  allPromises = (function(_this) {
-	    return function(promises) {
-	      return Promise.all(promises);
-	    };
-	  })(this);
-	}
-
-	module.exports = {
-	  newPromise: newPromise,
-	  allPromises: allPromises
-	};
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;var Promise, allPromises, newPromise, req;
-
-	req = require;
-
-	Promise = this.Promise || __webpack_require__(15).Promise;
-
-	newPromise = function(fn) {
-	  return new Promise(fn);
-	};
-
-	allPromises = function(promises) {
-	  return Promise.all(promises);
-	};
-
-	module.exports = {
-	  newPromise: newPromise,
-	  allPromises: allPromises
-	};
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	module.exports = window.Promise;
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var URL_VALIDATOR;
-
-	URL_VALIDATOR = __webpack_require__(4).URL_VALIDATOR;
-
-	module.exports = {
-	  requestMiddleware: function(arg) {
-	    var err, path;
-	    path = arg.path;
-	    if (!URL_VALIDATOR.test(path)) {
-	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
-	      return console.warn(err);
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var base64encode;
-
-	base64encode = __webpack_require__(18);
-
-	module.exports = {
-	  requestMiddleware: function(arg) {
-	    var auth, password, ref, token, username;
-	    ref = arg.clientOptions, token = ref.token, username = ref.username, password = ref.password;
-	    if (token || (username && password)) {
-	      if (token) {
-	        auth = "token " + token;
-	      } else {
-	        auth = 'Basic ' + base64encode(username + ":" + password);
-	      }
-	      return {
-	        headers: {
-	          'Authorization': auth
-	        }
-	      };
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
-
-	if (typeof window !== "undefined" && window !== null) {
-	  base64encode = window.btoa;
-	} else if (typeof global !== "undefined" && global !== null ? global['Buffer'] : void 0) {
-	  base64encode = function(str) {
-	    var buffer;
-	    buffer = new global['Buffer'](str, 'binary');
-	    return buffer.toString('base64');
-	  };
-	} else {
-	  throw new Error('Native btoa function or Buffer is missing');
-	}
-
-	module.exports = base64encode;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var DEFAULT_HEADER;
-
-	DEFAULT_HEADER = __webpack_require__(4).DEFAULT_HEADER;
-
-	module.exports = {
-	  requestMiddleware: function(arg) {
-	    var acceptHeader, path;
-	    path = arg.path;
-	    acceptHeader = DEFAULT_HEADER(path);
-	    if (acceptHeader) {
-	      return {
-	        headers: {
-	          'Accept': acceptHeader
-	        }
-	      };
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  requestMiddleware: function(arg) {
-	    var method, ref, usePostInsteadOfPatch;
-	    (ref = arg.clientOptions, usePostInsteadOfPatch = ref.usePostInsteadOfPatch), method = arg.method;
-	    if (usePostInsteadOfPatch && method === 'PATCH') {
-	      return {
-	        method: 'POST'
-	      };
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var toQueryString,
-	  slice = [].slice;
-
-	toQueryString = __webpack_require__(7);
-
-	module.exports = {
-	  verbs: {
-	    fetch: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query))
-	      };
-	    },
-	    read: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true
-	        }
-	      };
-	    },
-	    remove: function(path, data) {
-	      return {
-	        method: 'DELETE',
-	        path: path,
-	        data: data,
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    },
-	    create: function(path, data, contentType) {
-	      if (contentType) {
-	        return {
-	          method: 'POST',
-	          path: path,
-	          data: data,
-	          options: {
-	            isRaw: true,
-	            contentType: contentType
-	          }
-	        };
-	      } else {
-	        return {
-	          method: 'POST',
-	          path: path,
-	          data: data
-	        };
-	      }
-	    },
-	    update: function(path, data) {
-	      return {
-	        method: 'PATCH',
-	        path: path,
-	        data: data
-	      };
-	    },
-	    add: function(path, data) {
-	      return {
-	        method: 'PUT',
-	        path: path,
-	        data: data,
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    },
-	    contains: function() {
-	      var args, path;
-	      path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	      return {
-	        method: 'GET',
-	        path: path + "/" + (args.join('/')),
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 22 */
-/***/ function(module, exports) {
-
-	var fetchNextPage, getMore, pushAll;
-
-	pushAll = function(target, source) {
-	  return target.push.apply(target, source);
-	};
-
-	getMore = function(fetchable, requestFn, acc, cb) {
-	  var doStuff;
-	  doStuff = function(err, items) {
-	    if (err) {
-	      return cb(err);
-	    }
-	    pushAll(acc, items);
-	    return getMore(items, requestFn, acc, cb);
-	  };
-	  if (!fetchNextPage(fetchable, requestFn, doStuff)) {
-	    return cb(null, acc);
-	  }
-	};
-
-	fetchNextPage = function(obj, requestFn, cb) {
-	  if (typeof obj.next_page === 'string') {
-	    requestFn('GET', obj.next_page, null, null, cb);
-	    return true;
-	  } else if (obj.next_page) {
-	    obj.next_page.fetch(cb);
-	    return true;
-	  } else if (typeof obj.nextPage === 'string') {
-	    requestFn('GET', obj.nextPage, null, null, cb);
-	    return true;
-	  } else if (obj.nextPage) {
-	    obj.nextPage.fetch(cb);
-	    return true;
-	  } else {
-	    return false;
-	  }
-	};
-
-	module.exports = {
-	  asyncVerbs: {
-	    fetchAll: function(requestFn, path) {
-	      return function(cb, query) {
-	        return requestFn('GET', path, query, null, function(err, items) {
-	          var acc;
-	          if (err) {
-	            return cb(err);
-	          }
-	          acc = [];
-	          pushAll(acc, items);
-	          return getMore(items, requestFn, acc, cb);
-	        });
-	      };
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ReadBinary, toQueryString;
-
-	toQueryString = __webpack_require__(7);
-
-	module.exports = new (ReadBinary = (function() {
-	  function ReadBinary() {}
-
-	  ReadBinary.prototype.verbs = {
-	    readBinary: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true,
-	          isBase64: true
-	        }
-	      };
-	    }
-	  };
-
-	  ReadBinary.prototype.requestMiddleware = function(arg) {
-	    var isBase64, options;
-	    options = arg.options;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      return {
-	        headers: {
-	          Accept: 'application/vnd.github.raw'
-	        },
-	        mimeType: 'text/plain; charset=x-user-defined'
-	      };
-	    }
-	  };
-
-	  ReadBinary.prototype.responseMiddleware = function(arg) {
-	    var converted, data, i, isBase64, j, options, ref;
-	    options = arg.options, data = arg.data;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      converted = '';
-	      for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
-	      }
-	      return {
-	        data: converted
-	      };
-	    }
-	  };
-
-	  return ReadBinary;
-
-	})());
-
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	var Pagination;
-
-	module.exports = new (Pagination = (function() {
-	  function Pagination() {}
-
-	  Pagination.prototype.responseMiddleware = function(arg) {
-	    var data, discard, href, i, jqXHR, len, links, part, ref, ref1, rel;
-	    jqXHR = arg.jqXHR, data = arg.data;
-	    if (!jqXHR) {
-	      return;
-	    }
-	    if (Array.isArray(data)) {
-	      data = data.slice(0);
-	      links = jqXHR.getResponseHeader('Link');
-	      ref = (links != null ? links.split(',') : void 0) || [];
-	      for (i = 0, len = ref.length; i < len; i++) {
-	        part = ref[i];
-	        ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
-	        data[rel + "_page_url"] = href;
-	      }
-	      return {
-	        data: data
-	      };
-	    }
-	  };
-
-	  return Pagination;
-
-	})());
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	var CacheMiddleware;
-
-	module.exports = new (CacheMiddleware = (function() {
-	  function CacheMiddleware() {
-	    this._cachedETags = {};
-	  }
-
-	  CacheMiddleware.prototype.get = function(method, path) {
-	    return this._cachedETags[method + " " + path];
-	  };
-
-	  CacheMiddleware.prototype.add = function(method, path, eTag, data, status) {
-	    return this._cachedETags[method + " " + path] = {
-	      eTag: eTag,
-	      data: data,
-	      status: status
-	    };
-	  };
-
-	  CacheMiddleware.prototype.requestMiddleware = function(arg) {
-	    var cacheHandler, clientOptions, headers, method, path;
-	    clientOptions = arg.clientOptions, method = arg.method, path = arg.path;
-	    headers = {};
-	    cacheHandler = clientOptions.cacheHandler || this;
-	    if (cacheHandler.get(method, path)) {
-	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
-	    } else {
-	      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
-	    }
-	    return {
-	      headers: headers
-	    };
-	  };
-
-	  CacheMiddleware.prototype.responseMiddleware = function(arg) {
-	    var cacheHandler, clientOptions, data, eTag, jqXHR, method, path, ref, request, status;
-	    clientOptions = arg.clientOptions, request = arg.request, status = arg.status, jqXHR = arg.jqXHR, data = arg.data;
-	    if (!jqXHR) {
-	      return;
-	    }
-	    if (jqXHR) {
-	      method = request.method, path = request.path;
-	      cacheHandler = clientOptions.cacheHandler || this;
-	      if (status === 304) {
-	        ref = cacheHandler.get(method, path), data = ref.data, status = ref.status;
-	      } else {
-	        if (method === 'GET' && jqXHR.getResponseHeader('ETag')) {
-	          eTag = jqXHR.getResponseHeader('ETag');
-	          cacheHandler.add(method, path, eTag, data, jqXHR.status);
-	        }
-	      }
-	      return {
-	        data: data,
-	        status: status
-	      };
-	    }
-	  };
-
-	  return CacheMiddleware;
-
-	})());
-
-
-/***/ },
-/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
 	  slice = [].slice;
 
-	deprecate = __webpack_require__(3);
+	deprecate = __webpack_require__(2);
 
 	module.exports = new (HyperMedia = (function() {
 	  function HyperMedia() {}
@@ -1751,12 +1188,608 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var allPromises, newPromise, ref, ref1, ref2;
+
+	ref = __webpack_require__(14), newPromise = ref.newPromise, allPromises = ref.allPromises;
+
+	if (!(newPromise && allPromises)) {
+	  ref1 = __webpack_require__(15), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
+	}
+
+	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
+	  ref2 = __webpack_require__(16), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
+	}
+
+	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
+	  if (typeof console !== "undefined" && console !== null) {
+	    if (typeof console.warn === "function") {
+	      console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
+	    }
+	  }
+	} else if ((typeof window === "undefined" || window === null) && !newPromise) {
+	  throw new Error('Could not find a promise lib for node. Seems like a bug');
+	}
+
+	module.exports = {
+	  promiseCreator: {
+	    newPromise: newPromise,
+	    allPromises: allPromises
+	  }
+	};
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	var allPromises, injector, newPromise, ref,
+	  slice = [].slice;
+
+	if (typeof window !== "undefined" && window !== null) {
+	  if (window.Q) {
+	    newPromise = (function(_this) {
+	      return function(fn) {
+	        var deferred, reject, resolve;
+	        deferred = window.Q.defer();
+	        resolve = function(val) {
+	          return deferred.resolve(val);
+	        };
+	        reject = function(err) {
+	          return deferred.reject(err);
+	        };
+	        fn(resolve, reject);
+	        return deferred.promise;
+	      };
+	    })(this);
+	    allPromises = function(promises) {
+	      return window.Q.all(promises);
+	    };
+	  } else if (window.angular) {
+	    newPromise = null;
+	    allPromises = null;
+	    injector = angular.injector(['ng']);
+	    injector.invoke(function($q) {
+	      newPromise = function(fn) {
+	        var deferred, reject, resolve;
+	        deferred = $q.defer();
+	        resolve = function(val) {
+	          return deferred.resolve(val);
+	        };
+	        reject = function(err) {
+	          return deferred.reject(err);
+	        };
+	        fn(resolve, reject);
+	        return deferred.promise;
+	      };
+	      return allPromises = function(promises) {
+	        return $q.all(promises);
+	      };
+	    });
+	  } else if ((ref = window.jQuery) != null ? ref.Deferred : void 0) {
+	    newPromise = (function(_this) {
+	      return function(fn) {
+	        var promise, reject, resolve;
+	        promise = window.jQuery.Deferred();
+	        resolve = function(val) {
+	          return promise.resolve(val);
+	        };
+	        reject = function(val) {
+	          return promise.reject(val);
+	        };
+	        fn(resolve, reject);
+	        return promise.promise();
+	      };
+	    })(this);
+	    allPromises = (function(_this) {
+	      return function(promises) {
+	        var ref1;
+	        return (ref1 = window.jQuery).when.apply(ref1, promises).then(function() {
+	          var promises;
+	          promises = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          return promises;
+	        });
+	      };
+	    })(this);
+	  }
+	}
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	var allPromises, newPromise;
+
+	if (typeof Promise !== "undefined" && Promise !== null) {
+	  newPromise = (function(_this) {
+	    return function(fn) {
+	      return new Promise(function(resolve, reject) {
+	        if (resolve.fulfill) {
+	          return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
+	        } else {
+	          return fn.apply(null, arguments);
+	        }
+	      });
+	    };
+	  })(this);
+	  allPromises = (function(_this) {
+	    return function(promises) {
+	      return Promise.all(promises);
+	    };
+	  })(this);
+	}
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var Promise, allPromises, newPromise, req;
+
+	req = require;
+
+	Promise = this.Promise || __webpack_require__(17).Promise;
+
+	newPromise = function(fn) {
+	  return new Promise(fn);
+	};
+
+	allPromises = function(promises) {
+	  return Promise.all(promises);
+	};
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	module.exports = window.Promise;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var URL_VALIDATOR;
+
+	URL_VALIDATOR = __webpack_require__(5).URL_VALIDATOR;
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var err, path;
+	    path = arg.path;
+	    if (!URL_VALIDATOR.test(path)) {
+	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
+	      return console.warn(err);
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var base64encode;
+
+	base64encode = __webpack_require__(20);
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var auth, password, ref, token, username;
+	    ref = arg.clientOptions, token = ref.token, username = ref.username, password = ref.password;
+	    if (token || (username && password)) {
+	      if (token) {
+	        auth = "token " + token;
+	      } else {
+	        auth = 'Basic ' + base64encode(username + ":" + password);
+	      }
+	      return {
+	        headers: {
+	          'Authorization': auth
+	        }
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
+
+	if (typeof window !== "undefined" && window !== null) {
+	  base64encode = window.btoa;
+	} else if (typeof global !== "undefined" && global !== null ? global['Buffer'] : void 0) {
+	  base64encode = function(str) {
+	    var buffer;
+	    buffer = new global['Buffer'](str, 'binary');
+	    return buffer.toString('base64');
+	  };
+	} else {
+	  throw new Error('Native btoa function or Buffer is missing');
+	}
+
+	module.exports = base64encode;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var DEFAULT_HEADER;
+
+	DEFAULT_HEADER = __webpack_require__(5).DEFAULT_HEADER;
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var acceptHeader, path;
+	    path = arg.path;
+	    acceptHeader = DEFAULT_HEADER(path);
+	    if (acceptHeader) {
+	      return {
+	        headers: {
+	          'Accept': acceptHeader
+	        }
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  requestMiddleware: function(arg) {
+	    var method, ref, usePostInsteadOfPatch;
+	    (ref = arg.clientOptions, usePostInsteadOfPatch = ref.usePostInsteadOfPatch), method = arg.method;
+	    if (usePostInsteadOfPatch && method === 'PATCH') {
+	      return {
+	        method: 'POST'
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var toQueryString,
+	  slice = [].slice;
+
+	toQueryString = __webpack_require__(8);
+
+	module.exports = {
+	  verbs: {
+	    fetch: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query))
+	      };
+	    },
+	    read: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true
+	        }
+	      };
+	    },
+	    remove: function(path, data) {
+	      return {
+	        method: 'DELETE',
+	        path: path,
+	        data: data,
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    },
+	    create: function(path, data, contentType) {
+	      if (contentType) {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data,
+	          options: {
+	            isRaw: true,
+	            contentType: contentType
+	          }
+	        };
+	      } else {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data
+	        };
+	      }
+	    },
+	    update: function(path, data) {
+	      return {
+	        method: 'PATCH',
+	        path: path,
+	        data: data
+	      };
+	    },
+	    add: function(path, data) {
+	      return {
+	        method: 'PUT',
+	        path: path,
+	        data: data,
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    },
+	    contains: function() {
+	      var args, path;
+	      path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	      return {
+	        method: 'GET',
+	        path: path + "/" + (args.join('/')),
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	var fetchNextPage, getMore, pushAll;
+
+	pushAll = function(target, source) {
+	  return target.push.apply(target, source);
+	};
+
+	getMore = function(fetchable, requestFn, acc, cb) {
+	  var doStuff;
+	  doStuff = function(err, items) {
+	    if (err) {
+	      return cb(err);
+	    }
+	    pushAll(acc, items);
+	    return getMore(items, requestFn, acc, cb);
+	  };
+	  if (!fetchNextPage(fetchable, requestFn, doStuff)) {
+	    return cb(null, acc);
+	  }
+	};
+
+	fetchNextPage = function(obj, requestFn, cb) {
+	  if (typeof obj.next_page === 'string') {
+	    requestFn('GET', obj.next_page, null, null, cb);
+	    return true;
+	  } else if (obj.next_page) {
+	    obj.next_page.fetch(cb);
+	    return true;
+	  } else if (typeof obj.nextPage === 'string') {
+	    requestFn('GET', obj.nextPage, null, null, cb);
+	    return true;
+	  } else if (obj.nextPage) {
+	    obj.nextPage.fetch(cb);
+	    return true;
+	  } else {
+	    return false;
+	  }
+	};
+
+	module.exports = {
+	  asyncVerbs: {
+	    fetchAll: function(requestFn, path) {
+	      return function(cb, query) {
+	        return requestFn('GET', path, query, null, function(err, items) {
+	          var acc;
+	          if (err) {
+	            return cb(err);
+	          }
+	          acc = [];
+	          pushAll(acc, items);
+	          return getMore(items, requestFn, acc, cb);
+	        });
+	      };
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ReadBinary, toQueryString;
+
+	toQueryString = __webpack_require__(8);
+
+	module.exports = new (ReadBinary = (function() {
+	  function ReadBinary() {}
+
+	  ReadBinary.prototype.verbs = {
+	    readBinary: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true,
+	          isBase64: true
+	        }
+	      };
+	    }
+	  };
+
+	  ReadBinary.prototype.requestMiddleware = function(arg) {
+	    var isBase64, options;
+	    options = arg.options;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      return {
+	        headers: {
+	          Accept: 'application/vnd.github.raw'
+	        },
+	        mimeType: 'text/plain; charset=x-user-defined'
+	      };
+	    }
+	  };
+
+	  ReadBinary.prototype.responseMiddleware = function(arg) {
+	    var converted, data, i, isBase64, j, options, ref;
+	    options = arg.options, data = arg.data;
+	    isBase64 = options.isBase64;
+	    if (isBase64) {
+	      converted = '';
+	      for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+	      }
+	      return {
+	        data: converted
+	      };
+	    }
+	  };
+
+	  return ReadBinary;
+
+	})());
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	var Pagination;
+
+	module.exports = new (Pagination = (function() {
+	  function Pagination() {}
+
+	  Pagination.prototype.responseMiddleware = function(arg) {
+	    var data, discard, href, i, jqXHR, len, links, part, ref, ref1, rel;
+	    jqXHR = arg.jqXHR, data = arg.data;
+	    if (!jqXHR) {
+	      return;
+	    }
+	    if (Array.isArray(data)) {
+	      data = data.slice(0);
+	      links = jqXHR.getResponseHeader('Link');
+	      ref = (links != null ? links.split(',') : void 0) || [];
+	      for (i = 0, len = ref.length; i < len; i++) {
+	        part = ref[i];
+	        ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
+	        data[rel + "_page_url"] = href;
+	      }
+	      return {
+	        data: data
+	      };
+	    }
+	  };
+
+	  return Pagination;
+
+	})());
+
+
+/***/ },
 /* 27 */
+/***/ function(module, exports) {
+
+	var CacheMiddleware;
+
+	module.exports = new (CacheMiddleware = (function() {
+	  function CacheMiddleware() {
+	    this._cachedETags = {};
+	  }
+
+	  CacheMiddleware.prototype.get = function(method, path) {
+	    return this._cachedETags[method + " " + path];
+	  };
+
+	  CacheMiddleware.prototype.add = function(method, path, eTag, data, status) {
+	    return this._cachedETags[method + " " + path] = {
+	      eTag: eTag,
+	      data: data,
+	      status: status
+	    };
+	  };
+
+	  CacheMiddleware.prototype.requestMiddleware = function(arg) {
+	    var cacheHandler, clientOptions, headers, method, path;
+	    clientOptions = arg.clientOptions, method = arg.method, path = arg.path;
+	    headers = {};
+	    cacheHandler = clientOptions.cacheHandler || this;
+	    if (cacheHandler.get(method, path)) {
+	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
+	    } else {
+	      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
+	    }
+	    return {
+	      headers: headers
+	    };
+	  };
+
+	  CacheMiddleware.prototype.responseMiddleware = function(arg) {
+	    var cacheHandler, clientOptions, data, eTag, jqXHR, method, path, ref, request, status;
+	    clientOptions = arg.clientOptions, request = arg.request, status = arg.status, jqXHR = arg.jqXHR, data = arg.data;
+	    if (!jqXHR) {
+	      return;
+	    }
+	    if (jqXHR) {
+	      method = request.method, path = request.path;
+	      cacheHandler = clientOptions.cacheHandler || this;
+	      if (status === 304) {
+	        ref = cacheHandler.get(method, path), data = ref.data, status = ref.status;
+	      } else {
+	        if (method === 'GET' && jqXHR.getResponseHeader('ETag')) {
+	          eTag = jqXHR.getResponseHeader('ETag');
+	          cacheHandler.add(method, path, eTag, data, jqXHR.status);
+	        }
+	      }
+	      return {
+	        data: data,
+	        status: status
+	      };
+	    }
+	  };
+
+	  return CacheMiddleware;
+
+	})());
+
+
+/***/ },
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;
 
-	plus = __webpack_require__(2);
+	plus = __webpack_require__(4);
 
 	module.exports = new (CamelCase = (function() {
 	  function CamelCase() {}
