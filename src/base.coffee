@@ -1,25 +1,12 @@
 plus = require './plus'
 deprecate = require './deprecate'
 TREE_OPTIONS = require './grammar/tree-options'
-OBJECT_MATCHER = require './grammar/object-matcher'
 Chainer = require './chainer'
-injectVerbMethods = require './verb-methods'
+VerbMethods = require './verb-methods'
 # Replacer = require './replacer'
 
 Request = require './request'
 applyHypermedia = require './helpers/hypermedia'
-
-
-# Combine all the classes into one client
-
-reChainChildren = (plugins, request, url, obj) ->
-  for key, re of OBJECT_MATCHER
-    if re.test(obj.url)
-      context = TREE_OPTIONS
-      for k in key.split('.')
-        context = context[k]
-      Chainer(plugins, request, url, k, context, obj)
-  obj
 
 
 uncamelizeObj = (obj) ->
@@ -45,7 +32,6 @@ OctokatBase = (clientOptions={}) ->
 
   # the octokat instance
   instance = {}
-
 
   request = (method, path, data, options={raw:false, isBase64:false, isBoolean:false}, cb) ->
     # replacer = new Replacer(request)
@@ -75,7 +61,9 @@ OctokatBase = (clientOptions={}) ->
       else
         return cb(null, val)
 
-  Chainer(plugins, request, '', null, TREE_OPTIONS, instance)
+
+  verbMethods = new VerbMethods(plugins, request)
+  (new Chainer(verbMethods)).chain('', null, TREE_OPTIONS, instance)
 
   # Special case for `me`
   instance.me = instance.user
@@ -102,22 +90,25 @@ OctokatBase = (clientOptions={}) ->
     {data} = context
 
     # TODO: Move the chainer to a plugin since many people will not need this
+    # TODO: Figure out why this requestFn is better than the global requestFn
+    verbMethods = new VerbMethods(plugins, requestFn)
+    chainer = new Chainer(verbMethods)
     if url
-      Chainer(plugins, requestFn, url, true, {}, data)
-      reChainChildren(plugins, requestFn, url, data)
+      chainer.chain(url, true, {}, data)
+      chainer.chainChildren(url, data)
     else
-      Chainer(plugins, requestFn, '', null, TREE_OPTIONS, data)
+      chainer.chain('', null, TREE_OPTIONS, data)
       # For the paged results, rechain all children in the array
       if Array.isArray(data)
         for datum in data
-          reChainChildren(plugins, requestFn, datum.url, datum)
+          chainer.chainChildren(datum.url, datum)
     data
 
 
   # TODO remove this depractaion too
   instance._fromUrlWithDefault = (path, defaultFn, args...) ->
     path = applyHypermedia(path, args...)
-    injectVerbMethods(plugins, request, path, defaultFn)
+    verbMethods.injectVerbMethods(path, defaultFn)
     defaultFn
 
   instance.fromUrl = (path, args...) ->
@@ -136,7 +127,7 @@ OctokatBase = (clientOptions={}) ->
         instance.fromUrl(path, templateArgs...)
 
     unless /\{/.test(path)
-      injectVerbMethods(plugins, request, path, fn)
+      verbMethods.injectVerbMethods(path, fn)
     fn
 
 

@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OBJECT_MATCHER, OctokatBase, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OctokatBase, Request, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(4);
@@ -114,32 +114,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	TREE_OPTIONS = __webpack_require__(5);
 
-	OBJECT_MATCHER = __webpack_require__(6);
+	Chainer = __webpack_require__(6);
 
-	Chainer = __webpack_require__(7);
-
-	injectVerbMethods = __webpack_require__(8);
+	VerbMethods = __webpack_require__(8);
 
 	Request = __webpack_require__(10);
 
 	applyHypermedia = __webpack_require__(12);
-
-	reChainChildren = function(plugins, request, url, obj) {
-	  var context, j, k, key, len, re, ref;
-	  for (key in OBJECT_MATCHER) {
-	    re = OBJECT_MATCHER[key];
-	    if (re.test(obj.url)) {
-	      context = TREE_OPTIONS;
-	      ref = key.split('.');
-	      for (j = 0, len = ref.length; j < len; j++) {
-	        k = ref[j];
-	        context = context[k];
-	      }
-	      Chainer(plugins, request, url, k, context, obj);
-	    }
-	  }
-	  return obj;
-	};
 
 	uncamelizeObj = function(obj) {
 	  var i, j, key, len, o, ref, value;
@@ -168,7 +149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	OctokatBase = function(clientOptions) {
-	  var disableHypermedia, instance, plugins, request;
+	  var disableHypermedia, instance, plugins, request, verbMethods;
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
@@ -213,7 +194,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-	  Chainer(plugins, request, '', null, TREE_OPTIONS, instance);
+	  verbMethods = new VerbMethods(plugins, request);
+	  (new Chainer(verbMethods)).chain('', null, TREE_OPTIONS, instance);
 	  instance.me = instance.user;
 	  instance.parse = function(data) {
 	    var context;
@@ -226,7 +208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return instance._parseWithContext('', context);
 	  };
 	  instance._parseWithContext = function(path, context) {
-	    var data, datum, j, l, len, len1, plugin, requestFn, url;
+	    var chainer, data, datum, j, k, len, len1, plugin, requestFn, url;
 	    data = context.data, requestFn = context.requestFn;
 	    url = data.url || path;
 	    if (context.options == null) {
@@ -239,15 +221,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    data = context.data;
+	    verbMethods = new VerbMethods(plugins, requestFn);
+	    chainer = new Chainer(verbMethods);
 	    if (url) {
-	      Chainer(plugins, requestFn, url, true, {}, data);
-	      reChainChildren(plugins, requestFn, url, data);
+	      chainer.chain(url, true, {}, data);
+	      chainer.chainChildren(url, data);
 	    } else {
-	      Chainer(plugins, requestFn, '', null, TREE_OPTIONS, data);
+	      chainer.chain('', null, TREE_OPTIONS, data);
 	      if (Array.isArray(data)) {
-	        for (l = 0, len1 = data.length; l < len1; l++) {
-	          datum = data[l];
-	          reChainChildren(plugins, requestFn, datum.url, datum);
+	        for (k = 0, len1 = data.length; k < len1; k++) {
+	          datum = data[k];
+	          chainer.chainChildren(datum.url, datum);
 	        }
 	      }
 	    }
@@ -257,7 +241,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var args, defaultFn, path;
 	    path = arguments[0], defaultFn = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [];
 	    path = applyHypermedia.apply(null, [path].concat(slice.call(args)));
-	    injectVerbMethods(plugins, request, path, defaultFn);
+	    verbMethods.injectVerbMethods(path, defaultFn);
 	    return defaultFn;
 	  };
 	  instance.fromUrl = function() {
@@ -283,7 +267,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    };
 	    if (!/\{/.test(path)) {
-	      injectVerbMethods(plugins, request, path, fn);
+	      verbMethods.injectVerbMethods(path, fn);
 	    }
 	    return fn;
 	  };
@@ -554,6 +538,90 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Chainer, OBJECT_MATCHER, TREE_OPTIONS, VerbMethods, plus,
+	  slice = [].slice;
+
+	TREE_OPTIONS = __webpack_require__(5);
+
+	OBJECT_MATCHER = __webpack_require__(7);
+
+	plus = __webpack_require__(4);
+
+	VerbMethods = __webpack_require__(8);
+
+	module.exports = Chainer = (function() {
+	  function Chainer(_verbMethods) {
+	    this._verbMethods = _verbMethods;
+	  }
+
+	  Chainer.prototype.chain = function(path, name, contextTree, fn) {
+	    var fn1;
+	    if (fn == null) {
+	      fn = (function(_this) {
+	        return function() {
+	          var args, separator;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          if (!args.length) {
+	            throw new Error('BUG! must be called with at least one argument');
+	          }
+	          if (name === 'compare') {
+	            separator = '...';
+	          } else {
+	            separator = '/';
+	          }
+	          return _this.chain(path + "/" + (args.join(separator)), name, contextTree);
+	        };
+	      })(this);
+	    }
+	    this._verbMethods.injectVerbMethods(path, fn);
+	    if (typeof fn === 'function' || typeof fn === 'object') {
+	      fn1 = (function(_this) {
+	        return function(name) {
+	          delete fn[plus.camelize(name)];
+	          return Object.defineProperty(fn, plus.camelize(name), {
+	            configurable: true,
+	            enumerable: true,
+	            get: function() {
+	              return _this.chain(path + "/" + name, name, contextTree[name]);
+	            }
+	          });
+	        };
+	      })(this);
+	      for (name in contextTree || {}) {
+	        fn1(name);
+	      }
+	    }
+	    return fn;
+	  };
+
+	  Chainer.prototype.chainChildren = function(url, obj) {
+	    var context, i, k, key, len, re, ref;
+	    for (key in OBJECT_MATCHER) {
+	      re = OBJECT_MATCHER[key];
+	      if (re.test(obj.url)) {
+	        context = TREE_OPTIONS;
+	        ref = key.split('.');
+	        for (i = 0, len = ref.length; i < len; i++) {
+	          k = ref[i];
+	          context = context[k];
+	        }
+	        this.chain(url, k, context, obj);
+	      }
+	    }
+	    return obj;
+	  };
+
+	  return Chainer;
+
+	})();
+
+	module.exports = Chainer;
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -567,61 +635,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Chainer, injectVerbMethods, plus,
-	  slice = [].slice;
-
-	plus = __webpack_require__(4);
-
-	injectVerbMethods = __webpack_require__(8);
-
-	Chainer = function(plugins, request, path, name, contextTree, fn) {
-	  var fn1;
-	  if (fn == null) {
-	    fn = function() {
-	      var args, separator;
-	      args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	      if (!args.length) {
-	        throw new Error('BUG! must be called with at least one argument');
-	      }
-	      if (name === 'compare') {
-	        separator = '...';
-	      } else {
-	        separator = '/';
-	      }
-	      return Chainer(plugins, request, path + "/" + (args.join(separator)), name, contextTree);
-	    };
-	  }
-	  injectVerbMethods(plugins, request, path, fn);
-	  if (typeof fn === 'function' || typeof fn === 'object') {
-	    fn1 = function(name) {
-	      delete fn[plus.camelize(name)];
-	      return Object.defineProperty(fn, plus.camelize(name), {
-	        configurable: true,
-	        enumerable: true,
-	        get: function() {
-	          return Chainer(plugins, request, path + "/" + name, name, contextTree[name]);
-	        }
-	      });
-	    };
-	    for (name in contextTree || {}) {
-	      fn1(name);
-	    }
-	  }
-	  return fn;
-	};
-
-	module.exports = Chainer;
-
-
-/***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var injectVerbMethods, toPromise, toQueryString,
+	var VerbMethods, extend, filter, forOwn, toPromise, toQueryString,
 	  slice = [].slice;
+
+	filter = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/filter\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+
+	forOwn = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/object/forOwn\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+
+	extend = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/object/extend\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	toQueryString = __webpack_require__(9);
 
@@ -650,63 +674,81 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	injectVerbMethods = function(plugins, request, path, obj) {
-	  var allPromises, fn, i, j, len, len1, newPromise, plugin, ref, ref1, results, verbFunc, verbName;
-	  if (!request) {
-	    throw new Error('Octokat BUG: request is required');
-	  }
-	  for (i = 0, len = plugins.length; i < len; i++) {
-	    plugin = plugins[i];
-	    if (plugin.promiseCreator) {
-	      ref = plugin.promiseCreator, newPromise = ref.newPromise, allPromises = ref.allPromises;
-	      break;
+	VerbMethods = (function() {
+	  function VerbMethods(plugins, _requestFn) {
+	    var i, j, len, len1, plugin, promisePlugins, ref, ref1;
+	    this._requestFn = _requestFn;
+	    if (!this._requestFn) {
+	      throw new Error('Octokat BUG: request is required');
+	    }
+	    promisePlugins = filter(plugins, function(arg) {
+	      var promiseCreator;
+	      promiseCreator = arg.promiseCreator;
+	      return promiseCreator;
+	    });
+	    if (promisePlugins) {
+	      this._promisePlugin = promisePlugins[0];
+	    }
+	    this._syncVerbs = {};
+	    ref = filter(plugins, function(arg) {
+	      var verbs;
+	      verbs = arg.verbs;
+	      return verbs;
+	    });
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      plugin = ref[i];
+	      extend(this._syncVerbs, plugin.verbs);
+	    }
+	    this._asyncVerbs = {};
+	    ref1 = filter(plugins, function(arg) {
+	      var asyncVerbs;
+	      asyncVerbs = arg.asyncVerbs;
+	      return asyncVerbs;
+	    });
+	    for (j = 0, len1 = ref1.length; j < len1; j++) {
+	      plugin = ref1[j];
+	      extend(this._asyncVerbs, plugin.asyncVerbs);
 	    }
 	  }
-	  results = [];
-	  for (j = 0, len1 = plugins.length; j < len1; j++) {
-	    plugin = plugins[j];
-	    ref1 = plugin.verbs || {};
-	    fn = function(verbName, verbFunc) {
-	      obj.url = path;
-	      return obj[verbName] = function() {
-	        var args, makeRequest;
-	        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	        makeRequest = function() {
-	          var cb, data, method, options, originalArgs, ref2;
-	          cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	          ref2 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref2.method, path = ref2.path, data = ref2.data, options = ref2.options;
-	          return request(method, path, data, options, cb);
-	        };
-	        return toPromise(makeRequest, newPromise).apply(null, args);
-	      };
-	    };
-	    for (verbName in ref1) {
-	      verbFunc = ref1[verbName];
-	      fn(verbName, verbFunc);
-	    }
-	    results.push((function() {
-	      var ref2, results1;
-	      ref2 = plugin.asyncVerbs || {};
-	      results1 = [];
-	      for (verbName in ref2) {
-	        verbFunc = ref2[verbName];
-	        results1.push((function(verbName, verbFunc) {
-	          obj.url = path;
-	          return obj[verbName] = function() {
-	            var args, makeRequest;
-	            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	            makeRequest = verbFunc(request, path);
-	            return toPromise(makeRequest, newPromise).apply(null, args);
-	          };
-	        })(verbName, verbFunc));
-	      }
-	      return results1;
-	    })());
-	  }
-	  return results;
-	};
 
-	module.exports = injectVerbMethods;
+	  VerbMethods.prototype.injectVerbMethods = function(path, obj) {
+	    var allPromises, newPromise, ref;
+	    if (this._promisePlugin) {
+	      ref = this._promisePlugin.promiseCreator, newPromise = ref.newPromise, allPromises = ref.allPromises;
+	    }
+	    obj.url = path;
+	    forOwn(this._syncVerbs, (function(_this) {
+	      return function(verbFunc, verbName) {
+	        return obj[verbName] = function() {
+	          var args, makeRequest;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          makeRequest = function() {
+	            var cb, data, method, options, originalArgs, ref1;
+	            cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	            ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
+	            return _this._requestFn(method, path, data, options, cb);
+	          };
+	          return toPromise(makeRequest, newPromise).apply(null, args);
+	        };
+	      };
+	    })(this));
+	    return forOwn(this._asyncVerbs, (function(_this) {
+	      return function(verbFunc, verbName) {
+	        return obj[verbName] = function() {
+	          var args, makeRequest;
+	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          makeRequest = verbFunc(_this._requestFn, path);
+	          return toPromise(makeRequest, newPromise).apply(null, args);
+	        };
+	      };
+	    })(this));
+	  };
+
+	  return VerbMethods;
+
+	})();
+
+	module.exports = VerbMethods;
 
 
 /***/ },

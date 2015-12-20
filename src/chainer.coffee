@@ -1,5 +1,7 @@
+TREE_OPTIONS = require './grammar/tree-options'
+OBJECT_MATCHER = require './grammar/object-matcher'
 plus = require './plus'
-injectVerbMethods = require './verb-methods'
+VerbMethods = require './verb-methods'
 
 # Daisy-Chainer
 # ===============================
@@ -7,31 +9,43 @@ injectVerbMethods = require './verb-methods'
 # Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
 # Constructs a URL for the verb methods (like `.fetch` and `.create`).
 
-Chainer = (plugins, request, path, name, contextTree, fn) ->
-  fn ?= (args...) ->
-    throw new Error('BUG! must be called with at least one argument') unless args.length
-    # Special-case compare because its args turn into '...' instead of the usual '/'
-    if name is 'compare'
-      separator = '...'
-    else
-      separator = '/'
-    return Chainer(plugins, request, "#{path}/#{args.join(separator)}", name, contextTree)
+module.exports = class Chainer
+  constructor: (@_verbMethods) ->
 
-  injectVerbMethods(plugins, request, path, fn)
+  chain: (path, name, contextTree, fn) ->
+    fn ?= (args...) =>
+      throw new Error('BUG! must be called with at least one argument') unless args.length
+      # Special-case compare because its args turn into '...' instead of the usual '/'
+      if name is 'compare'
+        separator = '...'
+      else
+        separator = '/'
+      return @chain("#{path}/#{args.join(separator)}", name, contextTree)
 
-  if typeof fn is 'function' or typeof fn is 'object'
-    for name of contextTree or {}
-      do (name) ->
-        # Delete the key if it already exists
-        delete fn[plus.camelize(name)]
+    @_verbMethods.injectVerbMethods(path, fn)
 
-        Object.defineProperty fn, plus.camelize(name),
-          configurable: true
-          enumerable: true
-          get: () -> return Chainer(plugins, request, "#{path}/#{name}", name, contextTree[name])
+    if typeof fn is 'function' or typeof fn is 'object'
+      for name of contextTree or {}
+        do (name) =>
+          # Delete the key if it already exists
+          delete fn[plus.camelize(name)]
+
+          Object.defineProperty fn, plus.camelize(name),
+            configurable: true
+            enumerable: true
+            get: => @chain("#{path}/#{name}", name, contextTree[name])
 
 
-  return fn
+    return fn
+
+  chainChildren: (url, obj) ->
+    for key, re of OBJECT_MATCHER
+      if re.test(obj.url)
+        context = TREE_OPTIONS
+        for k in key.split('.')
+          context = context[k]
+        @chain(url, k, context, obj)
+    obj
 
 
 module.exports = Chainer
