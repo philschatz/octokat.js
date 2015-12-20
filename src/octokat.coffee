@@ -6,10 +6,10 @@ injectVerbMethods = require './verb-methods'
 # Replacer = require './replacer'
 
 Request = require './request'
-{toPromise} = require './helpers/promise'
 applyHypermedia = require './helpers/hypermedia'
 
 ALL_PLUGINS = [
+  require './plugins/promise/library-first'
   require './plugins/path-check'
   require './plugins/authorization'
   require './plugins/preview-apis'
@@ -160,10 +160,10 @@ Octokat = (clientOptions={}) ->
 
 
   # Add the GitHub Status API https://status.github.com/api
-  instance.status =     toPromise (cb) -> request('GET', 'https://status.github.com/api/status.json', null, null, cb)
-  instance.status.api = toPromise (cb) -> request('GET', 'https://status.github.com/api.json', null, null, cb)
-  instance.status.lastMessage = toPromise (cb) -> request('GET', 'https://status.github.com/api/last-message.json', null, null, cb)
-  instance.status.messages = toPromise (cb) -> request('GET', 'https://status.github.com/api/messages.json', null, null, cb)
+  instance.status = instance.fromUrl('https://status.github.com/api/status.json')
+  instance.status.api = instance.fromUrl('https://status.github.com/api.json')
+  instance.status.lastMessage = instance.fromUrl('https://status.github.com/api/last-message.json')
+  instance.status.messages = instance.fromUrl('https://status.github.com/api/messages.json')
 
   return instance
 

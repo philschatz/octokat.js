@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, toPromise, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var ALL_PLUGINS, Chainer, OBJECT_MATCHER, Octokat, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(2);
@@ -74,13 +74,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	injectVerbMethods = __webpack_require__(6);
 
-	Request = __webpack_require__(10);
+	Request = __webpack_require__(8);
 
-	toPromise = __webpack_require__(7).toPromise;
+	applyHypermedia = __webpack_require__(10);
 
-	applyHypermedia = __webpack_require__(12);
-
-	ALL_PLUGINS = [__webpack_require__(13), __webpack_require__(14), __webpack_require__(16), __webpack_require__(17), __webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24)];
+	ALL_PLUGINS = [__webpack_require__(11), __webpack_require__(16), __webpack_require__(17), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27)];
 
 	reChainChildren = function(plugins, request, url, obj) {
 	  var context, j, k, key, len, re, ref1;
@@ -245,18 +243,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return fn;
 	  };
-	  instance.status = toPromise(function(cb) {
-	    return request('GET', 'https://status.github.com/api/status.json', null, null, cb);
-	  });
-	  instance.status.api = toPromise(function(cb) {
-	    return request('GET', 'https://status.github.com/api.json', null, null, cb);
-	  });
-	  instance.status.lastMessage = toPromise(function(cb) {
-	    return request('GET', 'https://status.github.com/api/last-message.json', null, null, cb);
-	  });
-	  instance.status.messages = toPromise(function(cb) {
-	    return request('GET', 'https://status.github.com/api/messages.json', null, null, cb);
-	  });
+	  instance.status = instance.fromUrl('https://status.github.com/api/status.json');
+	  instance.status.api = instance.fromUrl('https://status.github.com/api.json');
+	  instance.status.lastMessage = instance.fromUrl('https://status.github.com/api/last-message.json');
+	  instance.status.messages = instance.fromUrl('https://status.github.com/api/messages.json');
 	  return instance;
 	};
 
@@ -621,170 +611,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var injectVerbMethods, toPromise, toQueryString,
 	  slice = [].slice;
 
-	toPromise = __webpack_require__(7).toPromise;
+	toQueryString = __webpack_require__(7);
 
-	toQueryString = __webpack_require__(9);
-
-	injectVerbMethods = function(plugins, request, path, obj) {
-	  var fn, i, len, plugin, ref, results, verbFunc, verbName;
-	  if (!request) {
-	    throw new Error('Octokat BUG: request is required');
-	  }
-	  results = [];
-	  for (i = 0, len = plugins.length; i < len; i++) {
-	    plugin = plugins[i];
-	    ref = plugin.verbs || {};
-	    fn = function(verbName, verbFunc) {
-	      obj.url = path;
-	      return obj[verbName] = function() {
-	        var args, makeRequest;
-	        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	        makeRequest = function() {
-	          var cb, data, method, options, originalArgs, ref1;
-	          cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	          ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
-	          return request(method, path, data, options, cb);
-	        };
-	        return toPromise(makeRequest).apply(null, args);
-	      };
-	    };
-	    for (verbName in ref) {
-	      verbFunc = ref[verbName];
-	      fn(verbName, verbFunc);
-	    }
-	    results.push((function() {
-	      var ref1, results1;
-	      ref1 = plugin.asyncVerbs || {};
-	      results1 = [];
-	      for (verbName in ref1) {
-	        verbFunc = ref1[verbName];
-	        results1.push((function(verbName, verbFunc) {
-	          obj.url = path;
-	          return obj[verbName] = function() {
-	            var args, makeRequest;
-	            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	            makeRequest = verbFunc(request, path);
-	            return toPromise(makeRequest).apply(null, args);
-	          };
-	        })(verbName, verbFunc));
-	      }
-	      return results1;
-	    })());
-	  }
-	  return results;
-	};
-
-	module.exports = injectVerbMethods;
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;var Promise, allPromises, injector, newPromise, ref, req, toPromise,
-	  slice = [].slice;
-
-	if (typeof window !== "undefined" && window !== null) {
-	  if (window.Q) {
-	    newPromise = (function(_this) {
-	      return function(fn) {
-	        var deferred, reject, resolve;
-	        deferred = window.Q.defer();
-	        resolve = function(val) {
-	          return deferred.resolve(val);
-	        };
-	        reject = function(err) {
-	          return deferred.reject(err);
-	        };
-	        fn(resolve, reject);
-	        return deferred.promise;
-	      };
-	    })(this);
-	    allPromises = function(promises) {
-	      return window.Q.all(promises);
-	    };
-	  } else if (window.angular) {
-	    newPromise = null;
-	    allPromises = null;
-	    injector = angular.injector(['ng']);
-	    injector.invoke(function($q) {
-	      newPromise = function(fn) {
-	        var deferred, reject, resolve;
-	        deferred = $q.defer();
-	        resolve = function(val) {
-	          return deferred.resolve(val);
-	        };
-	        reject = function(err) {
-	          return deferred.reject(err);
-	        };
-	        fn(resolve, reject);
-	        return deferred.promise;
-	      };
-	      return allPromises = function(promises) {
-	        return $q.all(promises);
-	      };
-	    });
-	  } else if ((ref = window.jQuery) != null ? ref.Deferred : void 0) {
-	    newPromise = (function(_this) {
-	      return function(fn) {
-	        var promise, reject, resolve;
-	        promise = window.jQuery.Deferred();
-	        resolve = function(val) {
-	          return promise.resolve(val);
-	        };
-	        reject = function(val) {
-	          return promise.reject(val);
-	        };
-	        fn(resolve, reject);
-	        return promise.promise();
-	      };
-	    })(this);
-	    allPromises = (function(_this) {
-	      return function(promises) {
-	        var ref1;
-	        return (ref1 = window.jQuery).when.apply(ref1, promises).then(function() {
-	          var promises;
-	          promises = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	          return promises;
-	        });
-	      };
-	    })(this);
-	  } else if (window.Promise) {
-	    newPromise = (function(_this) {
-	      return function(fn) {
-	        return new window.Promise(function(resolve, reject) {
-	          if (resolve.fulfill) {
-	            return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
-	          } else {
-	            return fn.apply(null, arguments);
-	          }
-	        });
-	      };
-	    })(this);
-	    allPromises = (function(_this) {
-	      return function(promises) {
-	        return window.Promise.all(promises);
-	      };
-	    })(this);
-	  } else {
-	    if (typeof console !== "undefined" && console !== null) {
-	      if (typeof console.warn === "function") {
-	        console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
-	      }
-	    }
-	  }
-	} else {
-	  req = require;
-	  Promise = this.Promise || __webpack_require__(8).Promise;
-	  newPromise = function(fn) {
-	    return new Promise(fn);
-	  };
-	  allPromises = function(promises) {
-	    return Promise.all(promises);
-	  };
-	}
-
-	toPromise = function(orig) {
+	toPromise = function(orig, newPromise) {
 	  return function() {
 	    var args, last;
 	    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
@@ -809,22 +638,67 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	module.exports = {
-	  newPromise: newPromise,
-	  allPromises: allPromises,
-	  toPromise: toPromise
+	injectVerbMethods = function(plugins, request, path, obj) {
+	  var allPromises, fn, i, j, len, len1, newPromise, plugin, ref, ref1, results, verbFunc, verbName;
+	  if (!request) {
+	    throw new Error('Octokat BUG: request is required');
+	  }
+	  for (i = 0, len = plugins.length; i < len; i++) {
+	    plugin = plugins[i];
+	    if (plugin.promiseCreator) {
+	      ref = plugin.promiseCreator, newPromise = ref.newPromise, allPromises = ref.allPromises;
+	      break;
+	    }
+	  }
+	  results = [];
+	  for (j = 0, len1 = plugins.length; j < len1; j++) {
+	    plugin = plugins[j];
+	    ref1 = plugin.verbs || {};
+	    fn = function(verbName, verbFunc) {
+	      obj.url = path;
+	      return obj[verbName] = function() {
+	        var args, makeRequest;
+	        args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	        makeRequest = function() {
+	          var cb, data, method, options, originalArgs, ref2;
+	          cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	          ref2 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref2.method, path = ref2.path, data = ref2.data, options = ref2.options;
+	          return request(method, path, data, options, cb);
+	        };
+	        return toPromise(makeRequest, newPromise).apply(null, args);
+	      };
+	    };
+	    for (verbName in ref1) {
+	      verbFunc = ref1[verbName];
+	      fn(verbName, verbFunc);
+	    }
+	    results.push((function() {
+	      var ref2, results1;
+	      ref2 = plugin.asyncVerbs || {};
+	      results1 = [];
+	      for (verbName in ref2) {
+	        verbFunc = ref2[verbName];
+	        results1.push((function(verbName, verbFunc) {
+	          obj.url = path;
+	          return obj[verbName] = function() {
+	            var args, makeRequest;
+	            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	            makeRequest = verbFunc(request, path);
+	            return toPromise(makeRequest, newPromise).apply(null, args);
+	          };
+	        })(verbName, verbFunc));
+	      }
+	      return results1;
+	    })());
+	  }
+	  return results;
 	};
 
-
-/***/ },
-/* 8 */
-/***/ function(module, exports) {
-
-	module.exports = window.Promise;
+	module.exports = injectVerbMethods;
 
 
 /***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -857,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var DEFAULT_CACHE_HANDLER, Request, _cachedETags, ajax, plus, userAgent;
@@ -874,7 +748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(11).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(9).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1093,20 +967,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(7);
 
 	deprecate = __webpack_require__(3);
 
@@ -1177,7 +1051,184 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var allPromises, newPromise, ref, ref1, ref2;
+
+	ref = __webpack_require__(12), newPromise = ref.newPromise, allPromises = ref.allPromises;
+
+	if (!(newPromise && allPromises)) {
+	  ref1 = __webpack_require__(13), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
+	}
+
+	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
+	  ref2 = __webpack_require__(14), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
+	}
+
+	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
+	  if (typeof console !== "undefined" && console !== null) {
+	    if (typeof console.warn === "function") {
+	      console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
+	    }
+	  }
+	} else if ((typeof window === "undefined" || window === null) && !newPromise) {
+	  throw new Error('Could not find a promise lib for node. Seems like a bug');
+	}
+
+	module.exports = {
+	  promiseCreator: {
+	    newPromise: newPromise,
+	    allPromises: allPromises
+	  }
+	};
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	var allPromises, injector, newPromise, ref,
+	  slice = [].slice;
+
+	if (typeof window !== "undefined" && window !== null) {
+	  if (window.Q) {
+	    newPromise = (function(_this) {
+	      return function(fn) {
+	        var deferred, reject, resolve;
+	        deferred = window.Q.defer();
+	        resolve = function(val) {
+	          return deferred.resolve(val);
+	        };
+	        reject = function(err) {
+	          return deferred.reject(err);
+	        };
+	        fn(resolve, reject);
+	        return deferred.promise;
+	      };
+	    })(this);
+	    allPromises = function(promises) {
+	      return window.Q.all(promises);
+	    };
+	  } else if (window.angular) {
+	    newPromise = null;
+	    allPromises = null;
+	    injector = angular.injector(['ng']);
+	    injector.invoke(function($q) {
+	      newPromise = function(fn) {
+	        var deferred, reject, resolve;
+	        deferred = $q.defer();
+	        resolve = function(val) {
+	          return deferred.resolve(val);
+	        };
+	        reject = function(err) {
+	          return deferred.reject(err);
+	        };
+	        fn(resolve, reject);
+	        return deferred.promise;
+	      };
+	      return allPromises = function(promises) {
+	        return $q.all(promises);
+	      };
+	    });
+	  } else if ((ref = window.jQuery) != null ? ref.Deferred : void 0) {
+	    newPromise = (function(_this) {
+	      return function(fn) {
+	        var promise, reject, resolve;
+	        promise = window.jQuery.Deferred();
+	        resolve = function(val) {
+	          return promise.resolve(val);
+	        };
+	        reject = function(val) {
+	          return promise.reject(val);
+	        };
+	        fn(resolve, reject);
+	        return promise.promise();
+	      };
+	    })(this);
+	    allPromises = (function(_this) {
+	      return function(promises) {
+	        var ref1;
+	        return (ref1 = window.jQuery).when.apply(ref1, promises).then(function() {
+	          var promises;
+	          promises = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+	          return promises;
+	        });
+	      };
+	    })(this);
+	  }
+	}
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
 /* 13 */
+/***/ function(module, exports) {
+
+	var allPromises, newPromise;
+
+	if (typeof Promise !== "undefined" && Promise !== null) {
+	  newPromise = (function(_this) {
+	    return function(fn) {
+	      return new Promise(function(resolve, reject) {
+	        if (resolve.fulfill) {
+	          return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
+	        } else {
+	          return fn.apply(null, arguments);
+	        }
+	      });
+	    };
+	  })(this);
+	  allPromises = (function(_this) {
+	    return function(promises) {
+	      return Promise.all(promises);
+	    };
+	  })(this);
+	}
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var Promise, allPromises, newPromise, req;
+
+	req = require;
+
+	Promise = this.Promise || __webpack_require__(15).Promise;
+
+	newPromise = function(fn) {
+	  return new Promise(fn);
+	};
+
+	allPromises = function(promises) {
+	  return Promise.all(promises);
+	};
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	module.exports = window.Promise;
+
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var URL_VALIDATOR;
@@ -1197,12 +1248,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var base64encode;
 
-	base64encode = __webpack_require__(15);
+	base64encode = __webpack_require__(18);
 
 	module.exports = {
 	  requestMiddleware: function(arg) {
@@ -1225,7 +1276,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 18 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -1247,7 +1298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 16 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DEFAULT_HEADER;
@@ -1271,7 +1322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1288,13 +1339,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(7);
 
 	module.exports = {
 	  verbs: {
@@ -1375,7 +1426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 19 */
+/* 22 */
 /***/ function(module, exports) {
 
 	var fetchNextPage, getMore, pushAll;
@@ -1436,12 +1487,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReadBinary, toQueryString;
 
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(7);
 
 	module.exports = new (ReadBinary = (function() {
 	  function ReadBinary() {}
@@ -1494,7 +1545,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 21 */
+/* 24 */
 /***/ function(module, exports) {
 
 	var Pagination;
@@ -1529,7 +1580,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;
@@ -1596,7 +1647,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1700,7 +1751,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;
