@@ -1,4 +1,4 @@
-{URL_VALIDATOR} = require '../grammar'
+URL_VALIDATOR = require '../grammar/url-validator'
 
 module.exports =
   requestMiddleware: ({path}) ->

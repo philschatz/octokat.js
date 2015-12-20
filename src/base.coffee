@@ -1,6 +1,7 @@
 plus = require './plus'
 deprecate = require './deprecate'
-{TREE_OPTIONS, OBJECT_MATCHER} = require './grammar'
+TREE_OPTIONS = require './grammar/tree-options'
+OBJECT_MATCHER = require './grammar/object-matcher'
 Chainer = require './chainer'
 injectVerbMethods = require './verb-methods'
 # Replacer = require './replacer'

@@ -67,9 +67,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	OctokatBase = __webpack_require__(3);
 
-	HypermediaPlugin = __webpack_require__(12);
+	HypermediaPlugin = __webpack_require__(13);
 
-	ALL_PLUGINS = [__webpack_require__(13), __webpack_require__(18), __webpack_require__(19), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27), HypermediaPlugin, __webpack_require__(28)];
+	ALL_PLUGINS = [__webpack_require__(14), __webpack_require__(19), __webpack_require__(21), __webpack_require__(23), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27), __webpack_require__(28), __webpack_require__(29), __webpack_require__(30), HypermediaPlugin, __webpack_require__(31)];
 
 	Octokat = function(clientOptions) {
 	  var instance;
@@ -105,32 +105,34 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OBJECT_MATCHER, OctokatBase, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, ref, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OBJECT_MATCHER, OctokatBase, Request, TREE_OPTIONS, applyHypermedia, deprecate, injectVerbMethods, plus, reChainChildren, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(4);
 
 	deprecate = __webpack_require__(2);
 
-	ref = __webpack_require__(5), TREE_OPTIONS = ref.TREE_OPTIONS, OBJECT_MATCHER = ref.OBJECT_MATCHER;
+	TREE_OPTIONS = __webpack_require__(5);
 
-	Chainer = __webpack_require__(6);
+	OBJECT_MATCHER = __webpack_require__(6);
 
-	injectVerbMethods = __webpack_require__(7);
+	Chainer = __webpack_require__(7);
 
-	Request = __webpack_require__(9);
+	injectVerbMethods = __webpack_require__(8);
 
-	applyHypermedia = __webpack_require__(11);
+	Request = __webpack_require__(10);
+
+	applyHypermedia = __webpack_require__(12);
 
 	reChainChildren = function(plugins, request, url, obj) {
-	  var context, j, k, key, len, re, ref1;
+	  var context, j, k, key, len, re, ref;
 	  for (key in OBJECT_MATCHER) {
 	    re = OBJECT_MATCHER[key];
 	    if (re.test(obj.url)) {
 	      context = TREE_OPTIONS;
-	      ref1 = key.split('.');
-	      for (j = 0, len = ref1.length; j < len; j++) {
-	        k = ref1[j];
+	      ref = key.split('.');
+	      for (j = 0, len = ref.length; j < len; j++) {
+	        k = ref[j];
 	        context = context[k];
 	      }
 	      Chainer(plugins, request, url, k, context, obj);
@@ -140,7 +142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	uncamelizeObj = function(obj) {
-	  var i, j, key, len, o, ref1, value;
+	  var i, j, key, len, o, ref, value;
 	  if (Array.isArray(obj)) {
 	    return (function() {
 	      var j, len, results;
@@ -153,9 +155,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })();
 	  } else if (obj === Object(obj)) {
 	    o = {};
-	    ref1 = Object.keys(obj);
-	    for (j = 0, len = ref1.length; j < len; j++) {
-	      key = ref1[j];
+	    ref = Object.keys(obj);
+	    for (j = 0, len = ref.length; j < len; j++) {
+	      key = ref[j];
 	      value = obj[key];
 	      o[plus.uncamelize(key)] = uncamelizeObj(value);
 	    }
@@ -177,7 +179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  instance = {};
 	  request = function(method, path, data, options, cb) {
-	    var _request, ref1;
+	    var _request, ref;
 	    if (options == null) {
 	      options = {
 	        raw: false,
@@ -185,7 +187,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        isBoolean: false
 	      };
 	    }
-	    if (data && !(typeof global !== "undefined" && global !== null ? (ref1 = global['Buffer']) != null ? ref1.isBuffer(data) : void 0 : void 0)) {
+	    if (data && !(typeof global !== "undefined" && global !== null ? (ref = global['Buffer']) != null ? ref.isBuffer(data) : void 0 : void 0)) {
 	      data = uncamelizeObj(data);
 	    }
 	    _request = Request(instance, clientOptions, plugins);
@@ -357,11 +359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports) {
 
-	var DEFAULT_HEADER, OBJECT_MATCHER, PREVIEW_HEADERS, TREE_OPTIONS, URL_VALIDATOR;
-
-	URL_VALIDATOR = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|hooks\/[^\/]+\/pings|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[^\/]+|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[^\/]+|commits\/[^\/]+\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
-
-	TREE_OPTIONS = {
+	module.exports = {
 	  'zen': false,
 	  'octocat': false,
 	  'organizations': false,
@@ -442,8 +440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      'statuses': false
 	    },
 	    'hooks': {
-	      'tests': false,
-	      'pings': false
+	      'tests': false
 	    },
 	    'assignees': false,
 	    'languages': false,
@@ -554,7 +551,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	OBJECT_MATCHER = {
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	module.exports = {
 	  'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
 	  'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
 	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)[^\/]+$/,
@@ -563,32 +565,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
 	};
 
-	PREVIEW_HEADERS = {
-	  'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
-	  'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/,
-	  'application/vnd.github.mirage-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/authorizations|\/authorizations\/clients\/([^\/]{20})|\/authorizations\/clients\/([^\/]{20})\/([^\/]+)|\/authorizations\/([\d]+)|\/applications\/([^\/]{20})\/tokens|\/applications\/([^\/]{20})\/tokens\/([^\/]+))$/
-	};
-
-	DEFAULT_HEADER = function(url) {
-	  var key, val;
-	  for (key in PREVIEW_HEADERS) {
-	    val = PREVIEW_HEADERS[key];
-	    if (val.test(url)) {
-	      return key;
-	    }
-	  }
-	};
-
-	module.exports = {
-	  URL_VALIDATOR: URL_VALIDATOR,
-	  TREE_OPTIONS: TREE_OPTIONS,
-	  OBJECT_MATCHER: OBJECT_MATCHER,
-	  DEFAULT_HEADER: DEFAULT_HEADER
-	};
-
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Chainer, injectVerbMethods, plus,
@@ -596,7 +575,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	plus = __webpack_require__(4);
 
-	injectVerbMethods = __webpack_require__(7);
+	injectVerbMethods = __webpack_require__(8);
 
 	Chainer = function(plugins, request, path, name, contextTree, fn) {
 	  var fn1;
@@ -638,13 +617,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var injectVerbMethods, toPromise, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
 	toPromise = function(orig, newPromise) {
 	  return function() {
@@ -731,7 +710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -764,7 +743,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var DEFAULT_CACHE_HANDLER, Request, _cachedETags, ajax, plus, userAgent;
@@ -781,7 +760,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(10).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(11).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1000,20 +979,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
 	deprecate = __webpack_require__(2);
 
@@ -1084,7 +1063,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1188,19 +1167,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var allPromises, newPromise, ref, ref1, ref2;
 
-	ref = __webpack_require__(14), newPromise = ref.newPromise, allPromises = ref.allPromises;
+	ref = __webpack_require__(15), newPromise = ref.newPromise, allPromises = ref.allPromises;
 
 	if (!(newPromise && allPromises)) {
-	  ref1 = __webpack_require__(15), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
+	  ref1 = __webpack_require__(16), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
 	}
 
 	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
-	  ref2 = __webpack_require__(16), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
+	  ref2 = __webpack_require__(17), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
 	}
 
 	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
@@ -1222,7 +1201,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	var allPromises, injector, newPromise, ref,
@@ -1303,7 +1282,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	var allPromises, newPromise;
@@ -1334,14 +1313,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var Promise, allPromises, newPromise, req;
 
 	req = require;
 
-	Promise = this.Promise || __webpack_require__(17).Promise;
+	Promise = this.Promise || __webpack_require__(18).Promise;
 
 	newPromise = function(fn) {
 	  return new Promise(fn);
@@ -1358,19 +1337,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = window.Promise;
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var URL_VALIDATOR;
 
-	URL_VALIDATOR = __webpack_require__(5).URL_VALIDATOR;
+	URL_VALIDATOR = __webpack_require__(20);
 
 	module.exports = {
 	  requestMiddleware: function(arg) {
@@ -1385,12 +1364,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 19 */
+/* 20 */
+/***/ function(module, exports) {
+
+	module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
+
+
+/***/ },
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var base64encode;
 
-	base64encode = __webpack_require__(20);
+	base64encode = __webpack_require__(22);
 
 	module.exports = {
 	  requestMiddleware: function(arg) {
@@ -1413,7 +1399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -1435,12 +1421,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DEFAULT_HEADER;
+	var DEFAULT_HEADER, PREVIEW_HEADERS;
 
-	DEFAULT_HEADER = __webpack_require__(5).DEFAULT_HEADER;
+	PREVIEW_HEADERS = __webpack_require__(24);
+
+	DEFAULT_HEADER = function(url) {
+	  var key, val;
+	  for (key in PREVIEW_HEADERS) {
+	    val = PREVIEW_HEADERS[key];
+	    if (val.test(url)) {
+	      return key;
+	    }
+	  }
+	};
 
 	module.exports = {
 	  requestMiddleware: function(arg) {
@@ -1459,7 +1455,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 24 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
+	  'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/,
+	  'application/vnd.github.mirage-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/authorizations|\/authorizations\/clients\/([^\/]{20})|\/authorizations\/clients\/([^\/]{20})\/([^\/]+)|\/authorizations\/([\d]+)|\/applications\/([^\/]{20})\/tokens|\/applications\/([^\/]{20})\/tokens\/([^\/]+))$/
+	};
+
+
+/***/ },
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1476,13 +1483,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
 	module.exports = {
 	  verbs: {
@@ -1563,7 +1570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports) {
 
 	var fetchNextPage, getMore, pushAll;
@@ -1624,12 +1631,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReadBinary, toQueryString;
 
-	toQueryString = __webpack_require__(8);
+	toQueryString = __webpack_require__(9);
 
 	module.exports = new (ReadBinary = (function() {
 	  function ReadBinary() {}
@@ -1682,7 +1689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports) {
 
 	var Pagination;
@@ -1717,7 +1724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports) {
 
 	var CacheMiddleware;
@@ -1784,7 +1791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;

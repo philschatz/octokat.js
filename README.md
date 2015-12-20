@@ -61,7 +61,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
   - Preview APIs (Deployments, Teams, Licenses, etc)
   - Enterprise APIs
 
-For the full list of supported methods see [./src/grammar.coffee](./src/grammar.coffee), [./examples/](./examples/), [Travis tests](https://travis-ci.org/philschatz/octokat.js),
+For the full list of supported methods see [./src/grammar/](./src/grammar/), [./examples/](./examples/), [Travis tests](https://travis-ci.org/philschatz/octokat.js),
 or the [./test](./test/) directory.
 
 # Overview
