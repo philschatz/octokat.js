@@ -5,7 +5,7 @@ Chainer = require './chainer'
 VerbMethods = require './verb-methods'
 # Replacer = require './replacer'
 
-Request = require './request'
+Requester = require './requester'
 applyHypermedia = require './helpers/hypermedia'
 
 
@@ -43,16 +43,16 @@ OctokatBase = (clientOptions={}) ->
       data = uncamelizeObj(data)
 
     # For each request, convert the JSON into Objects
-    _request = Request(instance, clientOptions, plugins)
+    requester = new Requester(instance, clientOptions, plugins)
 
-    return _request method, path, data, options, (err, val) ->
+    return requester.request method, path, data, options, (err, val) ->
       return cb(err) if err
       return cb(null, val) if options.raw
 
       unless disableHypermedia
         context = {
           data: val
-          requestFn: _request
+          requester
           instance
           clientOptions
         }
@@ -62,7 +62,7 @@ OctokatBase = (clientOptions={}) ->
         return cb(null, val)
 
 
-  verbMethods = new VerbMethods(plugins, request)
+  verbMethods = new VerbMethods(plugins, {request})
   (new Chainer(verbMethods)).chain('', null, TREE_OPTIONS, instance)
 
   # Special case for `me`
@@ -70,7 +70,7 @@ OctokatBase = (clientOptions={}) ->
 
   instance.parse = (data) ->
     context = {
-      requestFn: request
+      requester: {request}
       data
       instance
       clientOptions
@@ -78,7 +78,7 @@ OctokatBase = (clientOptions={}) ->
     instance._parseWithContext('', context)
 
   instance._parseWithContext = (path, context) ->
-    {data, requestFn} = context
+    {data, requester} = context
     url = data.url or path
 
     # TODO: Remove this check since it modifies the object
@@ -91,7 +91,7 @@ OctokatBase = (clientOptions={}) ->
 
     # TODO: Move the chainer to a plugin since many people will not need this
     # TODO: Figure out why this requestFn is better than the global requestFn
-    verbMethods = new VerbMethods(plugins, requestFn)
+    verbMethods = new VerbMethods(plugins, requester)
     chainer = new Chainer(verbMethods)
     if url
       chainer.chain(url, true, {}, data)

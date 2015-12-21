@@ -1,3 +1,6 @@
+filter = require 'lodash/collection/filter'
+forEach = require 'lodash/collection/forEach'
+
 plus = require './plus'
 # base64encode = require './helpers/base64'
 # {DEFAULT_HEADER} = require './grammar'
@@ -62,15 +65,18 @@ DEFAULT_CACHE_HANDLER =
 # # Construct the request function.
 # It contains all the auth credentials passed in to the client constructor
 
-Request = (instance, clientOptions={}, ALL_PLUGINS) ->
+module.exports = class Requester
+  constructor: (@_instance, @_clientOptions={}, plugins) ->
 
-  # Provide an option to override the default URL
-  clientOptions.rootURL ?= 'https://api.github.com'
-  clientOptions.useETags ?= true
-  clientOptions.usePostInsteadOfPatch ?= false
+    # Provide an option to override the default URL
+    @_clientOptions.rootURL ?= 'https://api.github.com'
+    @_clientOptions.useETags ?= true
+    @_clientOptions.usePostInsteadOfPatch ?= false
 
-  # These are updated whenever a request is made (optional)
-  emitter = clientOptions.emitter
+    # These are updated whenever a request is made (optional)
+    @_emitter = @_clientOptions.emitter
+
+    @_pluginMiddleware = filter plugins, ({requestMiddleware}) -> requestMiddleware
 
   # # Cached responses are stored in this object keyed by `path`
   # _cachedETags = {}
@@ -85,7 +91,7 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
   # HTTP Request Abstraction
   # =======
   #
-  requestFn = (method, path, data, options={isRaw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
+  request: (method, path, data, options={isRaw:false, isBase64:false, isBoolean:false, contentType:'application/json'}, cb) ->
 
     options             ?= {}
     options.isRaw       ?= false
@@ -100,22 +106,21 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
 
     # Only prefix the path when it does not begin with http.
     # This is so pagination works (which provides absolute URLs).
-    path = "#{clientOptions.rootURL}#{path}" if not /^http/.test(path)
+    path = "#{@_clientOptions.rootURL}#{path}" if not /^http/.test(path)
 
     headers =
-      'Accept': clientOptions.acceptHeader
+      'Accept': @_clientOptions.acceptHeader
       # Set the `User-Agent` because it is required and NodeJS
       # does not send one by default.
       # See http://developer.github.com/v3/#user-agent-required
       'User-Agent': userAgent or undefined
 
-    acc = {method, path, clientOptions, headers, options}
-    for plugin in ALL_PLUGINS
-      if plugin.requestMiddleware
-        {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
-        acc.method = method if method
-        acc.mimeType = mimeType if mimeType
-        plus.extend(acc.headers, headers)
+    acc = {method, path, headers, options, clientOptions: @_clientOptions}
+    forEach @_pluginMiddleware, (plugin) ->
+      {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
+      acc.method = method if method
+      acc.mimeType = mimeType if mimeType
+      plus.extend(acc.headers, headers)
 
     {method, headers, mimeType} = acc
 
@@ -125,7 +130,7 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
 
     # headers = {
     #   # Use the preview API header if one of the routes match the preview APIs
-    #   'Accept': clientOptions.acceptHeader or DEFAULT_HEADER(path)
+    #   'Accept': @_clientOptions.acceptHeader or DEFAULT_HEADER(path)
     # }
     headers['Accept'] = 'application/vnd.github.raw' if options.isRaw
 
@@ -138,11 +143,11 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
     if cacheHandler.get(method, path)
       headers['If-None-Match'] = cacheHandler.get(method, path).eTag
 
-    # if (clientOptions.token) or (clientOptions.username and clientOptions.password)
-    #   if clientOptions.token
-    #     auth = "token #{clientOptions.token}"
+    # if (@_clientOptions.token) or (@_clientOptions.username and @_clientOptions.password)
+    #   if @_clientOptions.token
+    #     auth = "token #{@_clientOptions.token}"
     #   else
-    #     auth = 'Basic ' + base64encode("#{clientOptions.username}:#{clientOptions.password}")
+    #     auth = 'Basic ' + base64encode("#{@_clientOptions.username}:#{@_clientOptions.password}")
     #   headers['Authorization'] = auth
 
 
@@ -166,14 +171,13 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
         204: () => cb(null, true)
         404: () => cb(null, false)
 
-    emitter?.emit('start', method, path, data, options)
+    @_emitter?.emit('start', method, path, data, options)
 
-    ajax ajaxConfig, (err, val) ->
-
+    ajax ajaxConfig, (err, val) =>
       jqXHR = err or val
       # Fire listeners when the request completes or fails
 
-      if emitter
+      if @_emitter
         rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
         rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
         rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
@@ -186,14 +190,14 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
 
         if jqXHR.getResponseHeader('X-OAuth-Scopes')
           emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
-        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status)
+        @_emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status)
 
       unless err
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
         # # If the response was a 304 then return the cached version
         # if jqXHR.status is 304
-        #   if clientOptions.useETags and cacheHandler.get(method, path)
+        #   if @_clientOptions.useETags and cacheHandler.get(method, path)
         #     eTagResponse = cacheHandler.get(method, path)
         #
         #     cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
@@ -226,16 +230,16 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
 
 
           acc = {
-            clientOptions
+            clientOptions: @_clientOptions
             data
             options
             jqXHR # for cacheHandler
             status:jqXHR.status # cacheHandler changes this
             request:acc # Include the request data for plugins like cacheHandler
-            requestFn # for Hypermedia to generate verb methods
-            instance # for Hypermedia to be able to call `.fromUrl`
+            requester:@ # for Hypermedia to generate verb methods
+            instance: @_instance # for Hypermedia to be able to call `.fromUrl`
           }
-          data = instance._parseWithContext('', acc)
+          data = @_instance._parseWithContext('', acc)
 
           # # Convert the response to a Base64 encoded string
           # if method is 'GET' and options.isBase64
@@ -248,7 +252,7 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
           #   data = converted
 
           # # Cache the response to reuse later
-          # if method is 'GET' and jqXHR.getResponseHeader('ETag') and clientOptions.useETags
+          # if method is 'GET' and jqXHR.getResponseHeader('ETag') and @_clientOptions.useETags
           #   eTag = jqXHR.getResponseHeader('ETag')
           #   cacheHandler.add(method, path, eTag, data, jqXHR.status)
 
@@ -274,7 +278,3 @@ Request = (instance, clientOptions={}, ALL_PLUGINS) ->
               json = ''
             err.json = json
           cb(err)
-
-  return requestFn
-
-module.exports = Request

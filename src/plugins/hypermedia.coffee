@@ -1,21 +1,21 @@
 deprecate = require '../deprecate'
 
 module.exports = new class HyperMedia
-  replace: (instance, requestFn, data) ->
+  replace: (instance, data) ->
     if Array.isArray(data)
-      return @_replaceArray(instance, requestFn, data)
+      return @_replaceArray(instance, data)
     else if typeof data is 'function'
       return data
     else if data == Object(data)
-      return @_replaceObject(instance, requestFn, data)
+      return @_replaceObject(instance, data)
     else
       return data
 
-  _replaceObject: (instance, requestFn, orig) ->
+  _replaceObject: (instance, orig) ->
     acc = {}
     for key in Object.keys(orig)
       value = orig[key]
-      @_replaceKeyValue(instance, requestFn, acc, key, value)
+      @_replaceKeyValue(instance, acc, key, value)
 
     # # If the URL matches one of the "Object" types (repo, user, comment)
     # # then provide all of the same methods as `octo.repo(...)` would have on it
@@ -31,16 +31,16 @@ module.exports = new class HyperMedia
 
     acc
 
-  _replaceArray: (instance, requestFn, orig) ->
-    arr = (@replace(instance, requestFn, item) for item in orig)
+  _replaceArray: (instance, orig) ->
+    arr = (@replace(instance, item) for item in orig)
     # Convert the nextPage methods for paged results
     for key in Object.keys(orig)
       value = orig[key]
-      @_replaceKeyValue(instance, requestFn, arr, key, value)
+      @_replaceKeyValue(instance, arr, key, value)
     arr
 
   # Convert things that end in `_url` to methods which return a Promise
-  _replaceKeyValue: (instance, requestFn, acc, key, value) ->
+  _replaceKeyValue: (instance, acc, key, value) ->
     if /_url$/.test(key)
 
       # fn = (cb, args...) =>
@@ -134,8 +134,8 @@ module.exports = new class HyperMedia
       acc[key] = if value then new Date(value) else null
 
     else
-      acc[key] = @replace(instance, requestFn, value)
+      acc[key] = @replace(instance, value)
 
-  responseMiddleware: ({instance, requestFn, data}) ->
-    data = @replace(instance, requestFn, data)
+  responseMiddleware: ({instance, data}) ->
+    data = @replace(instance, data)
     {data}

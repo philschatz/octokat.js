@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OctokatBase, Request, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OctokatBase, Requester, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(4);
@@ -118,7 +118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	VerbMethods = __webpack_require__(8);
 
-	Request = __webpack_require__(10);
+	Requester = __webpack_require__(10);
 
 	applyHypermedia = __webpack_require__(12);
 
@@ -160,7 +160,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  instance = {};
 	  request = function(method, path, data, options, cb) {
-	    var _request, ref;
+	    var ref, requester;
 	    if (options == null) {
 	      options = {
 	        raw: false,
@@ -171,8 +171,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (data && !(typeof global !== "undefined" && global !== null ? (ref = global['Buffer']) != null ? ref.isBuffer(data) : void 0 : void 0)) {
 	      data = uncamelizeObj(data);
 	    }
-	    _request = Request(instance, clientOptions, plugins);
-	    return _request(method, path, data, options, function(err, val) {
+	    requester = new Requester(instance, clientOptions, plugins);
+	    return requester.request(method, path, data, options, function(err, val) {
 	      var context, obj;
 	      if (err) {
 	        return cb(err);
@@ -183,7 +183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!disableHypermedia) {
 	        context = {
 	          data: val,
-	          requestFn: _request,
+	          requester: requester,
 	          instance: instance,
 	          clientOptions: clientOptions
 	        };
@@ -194,13 +194,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-	  verbMethods = new VerbMethods(plugins, request);
+	  verbMethods = new VerbMethods(plugins, {
+	    request: request
+	  });
 	  (new Chainer(verbMethods)).chain('', null, TREE_OPTIONS, instance);
 	  instance.me = instance.user;
 	  instance.parse = function(data) {
 	    var context;
 	    context = {
-	      requestFn: request,
+	      requester: {
+	        request: request
+	      },
 	      data: data,
 	      instance: instance,
 	      clientOptions: clientOptions
@@ -208,8 +212,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return instance._parseWithContext('', context);
 	  };
 	  instance._parseWithContext = function(path, context) {
-	    var chainer, data, datum, j, k, len, len1, plugin, requestFn, url;
-	    data = context.data, requestFn = context.requestFn;
+	    var chainer, data, datum, j, k, len, len1, plugin, requester, url;
+	    data = context.data, requester = context.requester;
 	    url = data.url || path;
 	    if (context.options == null) {
 	      context.options = {};
@@ -221,7 +225,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    data = context.data;
-	    verbMethods = new VerbMethods(plugins, requestFn);
+	    verbMethods = new VerbMethods(plugins, requester);
 	    chainer = new Chainer(verbMethods);
 	    if (url) {
 	      chainer.chain(url, true, {}, data);
@@ -675,10 +679,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	VerbMethods = (function() {
-	  function VerbMethods(plugins, _requestFn) {
+	  function VerbMethods(plugins, _requester) {
 	    var i, j, len, len1, plugin, promisePlugins, ref, ref1;
-	    this._requestFn = _requestFn;
-	    if (!this._requestFn) {
+	    this._requester = _requester;
+	    if (!this._requester) {
 	      throw new Error('Octokat BUG: request is required');
 	    }
 	    promisePlugins = filter(plugins, function(arg) {
@@ -726,7 +730,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var cb, data, method, options, originalArgs, ref1;
 	            cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
 	            ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
-	            return _this._requestFn(method, path, data, options, cb);
+	            return _this._requester.request(method, path, data, options, cb);
 	          };
 	          return toPromise(makeRequest, newPromise).apply(null, args);
 	        };
@@ -737,7 +741,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return obj[verbName] = function() {
 	          var args, makeRequest;
 	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-	          makeRequest = verbFunc(_this._requestFn, path);
+	          makeRequest = verbFunc(_this._requester, path);
 	          return toPromise(makeRequest, newPromise).apply(null, args);
 	        };
 	      };
@@ -788,7 +792,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var DEFAULT_CACHE_HANDLER, Request, _cachedETags, ajax, plus, userAgent;
+	var require;var DEFAULT_CACHE_HANDLER, Requester, _cachedETags, ajax, filter, forEach, plus, userAgent;
+
+	filter = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/filter\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+
+	forEach = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/forEach\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	plus = __webpack_require__(4);
 
@@ -847,23 +855,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	Request = function(instance, clientOptions, ALL_PLUGINS) {
-	  var emitter, requestFn;
-	  if (clientOptions == null) {
-	    clientOptions = {};
+	module.exports = Requester = (function() {
+	  function Requester(_instance, _clientOptions, plugins) {
+	    var base, base1, base2;
+	    this._instance = _instance;
+	    this._clientOptions = _clientOptions != null ? _clientOptions : {};
+	    if ((base = this._clientOptions).rootURL == null) {
+	      base.rootURL = 'https://api.github.com';
+	    }
+	    if ((base1 = this._clientOptions).useETags == null) {
+	      base1.useETags = true;
+	    }
+	    if ((base2 = this._clientOptions).usePostInsteadOfPatch == null) {
+	      base2.usePostInsteadOfPatch = false;
+	    }
+	    this._emitter = this._clientOptions.emitter;
+	    this._pluginMiddleware = filter(plugins, function(arg) {
+	      var requestMiddleware;
+	      requestMiddleware = arg.requestMiddleware;
+	      return requestMiddleware;
+	    });
 	  }
-	  if (clientOptions.rootURL == null) {
-	    clientOptions.rootURL = 'https://api.github.com';
-	  }
-	  if (clientOptions.useETags == null) {
-	    clientOptions.useETags = true;
-	  }
-	  if (clientOptions.usePostInsteadOfPatch == null) {
-	    clientOptions.usePostInsteadOfPatch = false;
-	  }
-	  emitter = clientOptions.emitter;
-	  requestFn = function(method, path, data, options, cb) {
-	    var acc, ajaxConfig, headers, i, len, mimeType, plugin, ref;
+
+	  Requester.prototype.request = function(method, path, data, options, cb) {
+	    var acc, ajaxConfig, headers, mimeType, ref;
 	    if (options == null) {
 	      options = {
 	        isRaw: false,
@@ -888,32 +903,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	      options.contentType = 'application/json';
 	    }
 	    if (!/^http/.test(path)) {
-	      path = "" + clientOptions.rootURL + path;
+	      path = "" + this._clientOptions.rootURL + path;
 	    }
 	    headers = {
-	      'Accept': clientOptions.acceptHeader,
+	      'Accept': this._clientOptions.acceptHeader,
 	      'User-Agent': userAgent || void 0
 	    };
 	    acc = {
 	      method: method,
 	      path: path,
-	      clientOptions: clientOptions,
 	      headers: headers,
-	      options: options
+	      options: options,
+	      clientOptions: this._clientOptions
 	    };
-	    for (i = 0, len = ALL_PLUGINS.length; i < len; i++) {
-	      plugin = ALL_PLUGINS[i];
-	      if (plugin.requestMiddleware) {
-	        ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
-	        if (method) {
-	          acc.method = method;
-	        }
-	        if (mimeType) {
-	          acc.mimeType = mimeType;
-	        }
-	        plus.extend(acc.headers, headers);
+	    forEach(this._pluginMiddleware, function(plugin) {
+	      var mimeType, ref;
+	      ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
+	      if (method) {
+	        acc.method = method;
 	      }
-	    }
+	      if (mimeType) {
+	        acc.mimeType = mimeType;
+	      }
+	      return plus.extend(acc.headers, headers);
+	    });
 	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
 	    if (options.isRaw) {
 	      headers['Accept'] = 'application/vnd.github.raw';
@@ -945,79 +958,81 @@ return /******/ (function(modules) { // webpackBootstrap
 	        })(this)
 	      };
 	    }
-	    if (emitter != null) {
-	      emitter.emit('start', method, path, data, options);
+	    if ((ref = this._emitter) != null) {
+	      ref.emit('start', method, path, data, options);
 	    }
-	    return ajax(ajaxConfig, function(err, val) {
-	      var emitterRate, jqXHR, json, rateLimit, rateLimitRemaining, rateLimitReset;
-	      jqXHR = err || val;
-	      if (emitter) {
-	        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
-	        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
-	        rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
-	        emitterRate = {
-	          rate: {
-	            remaining: rateLimitRemaining,
-	            limit: rateLimit,
-	            reset: rateLimitReset
-	          }
-	        };
-	        if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
-	          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
-	        }
-	        emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status);
-	      }
-	      if (!err) {
-	        if (jqXHR.status === 302) {
-	          return cb(null, jqXHR.getResponseHeader('Location'));
-	        } else if (!(jqXHR.status === 204 && options.isBoolean)) {
-	          if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
-	            data = JSON.parse(jqXHR.responseText);
-	          } else {
-	            data = jqXHR.responseText;
-	          }
-	          acc = {
-	            clientOptions: clientOptions,
-	            data: data,
-	            options: options,
-	            jqXHR: jqXHR,
-	            status: jqXHR.status,
-	            request: acc,
-	            requestFn: requestFn,
-	            instance: instance
-	          };
-	          data = instance._parseWithContext('', acc);
-	          return cb(null, data, jqXHR.status, jqXHR);
-	        }
-	      } else {
-	        if (options.isBoolean && jqXHR.status === 404) {
-
-	        } else {
-	          err = new Error(jqXHR.responseText);
-	          err.status = jqXHR.status;
-	          if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
-	            if (jqXHR.responseText) {
-	              try {
-	                json = JSON.parse(jqXHR.responseText);
-	              } catch (error) {
-	                cb({
-	                  message: 'Error Parsing Response'
-	                });
-	              }
-	            } else {
-	              json = '';
+	    return ajax(ajaxConfig, (function(_this) {
+	      return function(err, val) {
+	        var emitterRate, jqXHR, json, rateLimit, rateLimitRemaining, rateLimitReset;
+	        jqXHR = err || val;
+	        if (_this._emitter) {
+	          rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
+	          rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
+	          rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
+	          emitterRate = {
+	            rate: {
+	              remaining: rateLimitRemaining,
+	              limit: rateLimit,
+	              reset: rateLimitReset
 	            }
-	            err.json = json;
+	          };
+	          if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
+	            emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
 	          }
-	          return cb(err);
+	          _this._emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status);
 	        }
-	      }
-	    });
-	  };
-	  return requestFn;
-	};
+	        if (!err) {
+	          if (jqXHR.status === 302) {
+	            return cb(null, jqXHR.getResponseHeader('Location'));
+	          } else if (!(jqXHR.status === 204 && options.isBoolean)) {
+	            if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
+	              data = JSON.parse(jqXHR.responseText);
+	            } else {
+	              data = jqXHR.responseText;
+	            }
+	            acc = {
+	              clientOptions: _this._clientOptions,
+	              data: data,
+	              options: options,
+	              jqXHR: jqXHR,
+	              status: jqXHR.status,
+	              request: acc,
+	              requester: _this,
+	              instance: _this._instance
+	            };
+	            data = _this._instance._parseWithContext('', acc);
+	            return cb(null, data, jqXHR.status, jqXHR);
+	          }
+	        } else {
+	          if (options.isBoolean && jqXHR.status === 404) {
 
-	module.exports = Request;
+	          } else {
+	            err = new Error(jqXHR.responseText);
+	            err.status = jqXHR.status;
+	            if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
+	              if (jqXHR.responseText) {
+	                try {
+	                  json = JSON.parse(jqXHR.responseText);
+	                } catch (error) {
+	                  cb({
+	                    message: 'Error Parsing Response'
+	                  });
+	                }
+	              } else {
+	                json = '';
+	              }
+	              err.json = json;
+	            }
+	            return cb(err);
+	          }
+	        }
+	      };
+	    })(this));
+	  };
+
+	  return Requester;
+
+	})();
 
 
 /***/ },
@@ -1116,38 +1131,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = new (HyperMedia = (function() {
 	  function HyperMedia() {}
 
-	  HyperMedia.prototype.replace = function(instance, requestFn, data) {
+	  HyperMedia.prototype.replace = function(instance, data) {
 	    if (Array.isArray(data)) {
-	      return this._replaceArray(instance, requestFn, data);
+	      return this._replaceArray(instance, data);
 	    } else if (typeof data === 'function') {
 	      return data;
 	    } else if (data === Object(data)) {
-	      return this._replaceObject(instance, requestFn, data);
+	      return this._replaceObject(instance, data);
 	    } else {
 	      return data;
 	    }
 	  };
 
-	  HyperMedia.prototype._replaceObject = function(instance, requestFn, orig) {
+	  HyperMedia.prototype._replaceObject = function(instance, orig) {
 	    var acc, i, key, len, ref, value;
 	    acc = {};
 	    ref = Object.keys(orig);
 	    for (i = 0, len = ref.length; i < len; i++) {
 	      key = ref[i];
 	      value = orig[key];
-	      this._replaceKeyValue(instance, requestFn, acc, key, value);
+	      this._replaceKeyValue(instance, acc, key, value);
 	    }
 	    return acc;
 	  };
 
-	  HyperMedia.prototype._replaceArray = function(instance, requestFn, orig) {
+	  HyperMedia.prototype._replaceArray = function(instance, orig) {
 	    var arr, i, item, key, len, ref, value;
 	    arr = (function() {
 	      var i, len, results;
 	      results = [];
 	      for (i = 0, len = orig.length; i < len; i++) {
 	        item = orig[i];
-	        results.push(this.replace(instance, requestFn, item));
+	        results.push(this.replace(instance, item));
 	      }
 	      return results;
 	    }).call(this);
@@ -1155,12 +1170,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (i = 0, len = ref.length; i < len; i++) {
 	      key = ref[i];
 	      value = orig[key];
-	      this._replaceKeyValue(instance, requestFn, arr, key, value);
+	      this._replaceKeyValue(instance, arr, key, value);
 	    }
 	    return arr;
 	  };
 
-	  HyperMedia.prototype._replaceKeyValue = function(instance, requestFn, acc, key, value) {
+	  HyperMedia.prototype._replaceKeyValue = function(instance, acc, key, value) {
 	    var defaultFn, fn, newKey;
 	    if (/_url$/.test(key)) {
 	      if (/^upload_url$/.test(key)) {
@@ -1190,14 +1205,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else if (/_at$/.test(key)) {
 	      return acc[key] = value ? new Date(value) : null;
 	    } else {
-	      return acc[key] = this.replace(instance, requestFn, value);
+	      return acc[key] = this.replace(instance, value);
 	    }
 	  };
 
 	  HyperMedia.prototype.responseMiddleware = function(arg) {
-	    var data, instance, requestFn;
-	    instance = arg.instance, requestFn = arg.requestFn, data = arg.data;
-	    data = this.replace(instance, requestFn, data);
+	    var data, instance;
+	    instance = arg.instance, data = arg.data;
+	    data = this.replace(instance, data);
 	    return {
 	      data: data
 	    };
@@ -1621,29 +1636,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return target.push.apply(target, source);
 	};
 
-	getMore = function(fetchable, requestFn, acc, cb) {
+	getMore = function(fetchable, requester, acc, cb) {
 	  var doStuff;
 	  doStuff = function(err, items) {
 	    if (err) {
 	      return cb(err);
 	    }
 	    pushAll(acc, items);
-	    return getMore(items, requestFn, acc, cb);
+	    return getMore(items, requester, acc, cb);
 	  };
-	  if (!fetchNextPage(fetchable, requestFn, doStuff)) {
+	  if (!fetchNextPage(fetchable, requester, doStuff)) {
 	    return cb(null, acc);
 	  }
 	};
 
-	fetchNextPage = function(obj, requestFn, cb) {
+	fetchNextPage = function(obj, requester, cb) {
 	  if (typeof obj.next_page === 'string') {
-	    requestFn('GET', obj.next_page, null, null, cb);
+	    requester.request('GET', obj.next_page, null, null, cb);
 	    return true;
 	  } else if (obj.next_page) {
 	    obj.next_page.fetch(cb);
 	    return true;
 	  } else if (typeof obj.nextPage === 'string') {
-	    requestFn('GET', obj.nextPage, null, null, cb);
+	    requester.request('GET', obj.nextPage, null, null, cb);
 	    return true;
 	  } else if (obj.nextPage) {
 	    obj.nextPage.fetch(cb);
@@ -1655,16 +1670,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	  asyncVerbs: {
-	    fetchAll: function(requestFn, path) {
+	    fetchAll: function(requester, path) {
 	      return function(cb, query) {
-	        return requestFn('GET', path, query, null, function(err, items) {
+	        return requester.request('GET', path, query, null, function(err, items) {
 	          var acc;
 	          if (err) {
 	            return cb(err);
 	          }
 	          acc = [];
 	          pushAll(acc, items);
-	          return getMore(items, requestFn, acc, cb);
+	          return getMore(items, requester, acc, cb);
 	        });
 	      };
 	    }

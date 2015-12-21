@@ -20,8 +20,8 @@ toPromise = (orig, newPromise) ->
       throw new Error('You must specify a callback or have a promise library loaded')
 
 class VerbMethods
-  constructor: (plugins, @_requestFn) ->
-    throw new Error('Octokat BUG: request is required') unless @_requestFn
+  constructor: (plugins, @_requester) ->
+    throw new Error('Octokat BUG: request is required') unless @_requester
 
     promisePlugins = filter plugins, ({promiseCreator}) -> promiseCreator
     if promisePlugins
@@ -43,12 +43,12 @@ class VerbMethods
       obj[verbName] = (args...) =>
         makeRequest =  (cb, originalArgs...) =>
           {method, path, data, options} = verbFunc(path, originalArgs...)
-          @_requestFn(method, path, data, options, cb)
+          @_requester.request(method, path, data, options, cb)
         return toPromise(makeRequest, newPromise)(args...)
 
     forOwn @_asyncVerbs, (verbFunc, verbName) =>
       obj[verbName] = (args...) =>
-        makeRequest = verbFunc(@_requestFn, path) # Curried function
+        makeRequest = verbFunc(@_requester, path) # Curried function
         return toPromise(makeRequest, newPromise)(args...)
 
 
