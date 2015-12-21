@@ -1,7 +1,4 @@
-filter = require 'lodash/collection/filter'
-forEach = require 'lodash/collection/forEach'
-
-plus = require './plus'
+{filter, forEach, extend} = require './plus'
 
 
 # Request Function
@@ -91,7 +88,7 @@ module.exports = class Requester
       {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
       acc.method = method if method
       acc.mimeType = mimeType if mimeType
-      plus.extend(acc.headers, headers)
+      extend(acc.headers, headers)
 
     {method, headers, mimeType} = acc
 

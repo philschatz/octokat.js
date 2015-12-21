@@ -1,3 +1,8 @@
+# Both of these internal methods are really small/simple and we are only
+# working with arrays anyway
+filter = require 'lodash/internal/arrayFilter'
+forEach = require 'lodash/internal/arrayEach'
+
 # require('underscore-plus')
 plus =
   camelize: (string) ->
@@ -25,5 +30,13 @@ plus =
     if source
       for key in Object.keys(source)
         target[key] = source[key]
+
+  # Just _.forOwn(obj, iterator)
+  forOwn: (obj, iterator) ->
+    for key in Object.keys(obj)
+      iterator(obj[key], key)
+
+  filter: filter
+  forEach: forEach
 
 module.exports = plus

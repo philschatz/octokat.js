@@ -67,9 +67,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	OctokatBase = __webpack_require__(3);
 
-	HypermediaPlugin = __webpack_require__(13);
+	HypermediaPlugin = __webpack_require__(15);
 
-	ALL_PLUGINS = [__webpack_require__(14), __webpack_require__(19), __webpack_require__(21), __webpack_require__(23), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27), __webpack_require__(28), __webpack_require__(29), __webpack_require__(30), HypermediaPlugin, __webpack_require__(31)];
+	ALL_PLUGINS = [__webpack_require__(16), __webpack_require__(21), __webpack_require__(23), __webpack_require__(25), __webpack_require__(27), __webpack_require__(28), __webpack_require__(29), __webpack_require__(30), __webpack_require__(31), __webpack_require__(32), HypermediaPlugin, __webpack_require__(33)];
 
 	Octokat = function(clientOptions) {
 	  var instance;
@@ -112,15 +112,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	deprecate = __webpack_require__(2);
 
-	TREE_OPTIONS = __webpack_require__(5);
+	TREE_OPTIONS = __webpack_require__(7);
 
-	Chainer = __webpack_require__(6);
+	Chainer = __webpack_require__(8);
 
-	VerbMethods = __webpack_require__(8);
+	VerbMethods = __webpack_require__(10);
 
-	Requester = __webpack_require__(10);
+	Requester = __webpack_require__(12);
 
-	applyHypermedia = __webpack_require__(12);
+	applyHypermedia = __webpack_require__(14);
 
 	uncamelizeObj = function(obj) {
 	  var i, j, key, len, o, ref, value;
@@ -288,9 +288,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var plus;
+	var filter, forEach, plus;
+
+	filter = __webpack_require__(5);
+
+	forEach = __webpack_require__(6);
 
 	plus = {
 	  camelize: function(string) {
@@ -337,7 +341,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      return results;
 	    }
-	  }
+	  },
+	  forOwn: function(obj, iterator) {
+	    var i, key, len, ref, results;
+	    ref = Object.keys(obj);
+	    results = [];
+	    for (i = 0, len = ref.length; i < len; i++) {
+	      key = ref[i];
+	      results.push(iterator(obj[key], key));
+	    }
+	    return results;
+	  },
+	  filter: filter,
+	  forEach: forEach
 	};
 
 	module.exports = plus;
@@ -345,6 +361,65 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	/**
+	 * A specialized version of `_.filter` for arrays without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} predicate The function invoked per iteration.
+	 * @returns {Array} Returns the new filtered array.
+	 */
+	function arrayFilter(array, predicate) {
+	  var index = -1,
+	      length = array.length,
+	      resIndex = -1,
+	      result = [];
+
+	  while (++index < length) {
+	    var value = array[index];
+	    if (predicate(value, index, array)) {
+	      result[++resIndex] = value;
+	    }
+	  }
+	  return result;
+	}
+
+	module.exports = arrayFilter;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	/**
+	 * A specialized version of `_.forEach` for arrays without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @returns {Array} Returns `array`.
+	 */
+	function arrayEach(array, iteratee) {
+	  var index = -1,
+	      length = array.length;
+
+	  while (++index < length) {
+	    if (iteratee(array[index], index, array) === false) {
+	      break;
+	    }
+	  }
+	  return array;
+	}
+
+	module.exports = arrayEach;
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -541,19 +616,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Chainer, OBJECT_MATCHER, TREE_OPTIONS, VerbMethods, plus,
 	  slice = [].slice;
 
-	TREE_OPTIONS = __webpack_require__(5);
+	TREE_OPTIONS = __webpack_require__(7);
 
-	OBJECT_MATCHER = __webpack_require__(7);
+	OBJECT_MATCHER = __webpack_require__(9);
 
 	plus = __webpack_require__(4);
 
-	VerbMethods = __webpack_require__(8);
+	VerbMethods = __webpack_require__(10);
 
 	module.exports = Chainer = (function() {
 	  function Chainer(_verbMethods) {
@@ -625,7 +700,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -639,19 +714,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var VerbMethods, extend, filter, forOwn, toPromise, toQueryString,
+	var VerbMethods, extend, filter, forOwn, ref, toPromise, toQueryString,
 	  slice = [].slice;
 
-	filter = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/filter\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	ref = __webpack_require__(4), filter = ref.filter, forOwn = ref.forOwn, extend = ref.extend;
 
-	forOwn = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/object/forOwn\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-
-	extend = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/object/extend\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(11);
 
 	toPromise = function(orig, newPromise) {
 	  return function() {
@@ -680,7 +751,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = VerbMethods = (function() {
 	  function VerbMethods(plugins, _requester) {
-	    var i, j, len, len1, plugin, promisePlugins, ref, ref1;
+	    var i, j, len, len1, plugin, promisePlugins, ref1, ref2;
 	    this._requester = _requester;
 	    if (!this._requester) {
 	      throw new Error('Octokat BUG: request is required');
@@ -694,31 +765,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this._promisePlugin = promisePlugins[0];
 	    }
 	    this._syncVerbs = {};
-	    ref = filter(plugins, function(arg) {
+	    ref1 = filter(plugins, function(arg) {
 	      var verbs;
 	      verbs = arg.verbs;
 	      return verbs;
 	    });
-	    for (i = 0, len = ref.length; i < len; i++) {
-	      plugin = ref[i];
+	    for (i = 0, len = ref1.length; i < len; i++) {
+	      plugin = ref1[i];
 	      extend(this._syncVerbs, plugin.verbs);
 	    }
 	    this._asyncVerbs = {};
-	    ref1 = filter(plugins, function(arg) {
+	    ref2 = filter(plugins, function(arg) {
 	      var asyncVerbs;
 	      asyncVerbs = arg.asyncVerbs;
 	      return asyncVerbs;
 	    });
-	    for (j = 0, len1 = ref1.length; j < len1; j++) {
-	      plugin = ref1[j];
+	    for (j = 0, len1 = ref2.length; j < len1; j++) {
+	      plugin = ref2[j];
 	      extend(this._asyncVerbs, plugin.asyncVerbs);
 	    }
 	  }
 
 	  VerbMethods.prototype.injectVerbMethods = function(path, obj) {
-	    var allPromises, newPromise, ref;
+	    var allPromises, newPromise, ref1;
 	    if (this._promisePlugin) {
-	      ref = this._promisePlugin.promiseCreator, newPromise = ref.newPromise, allPromises = ref.allPromises;
+	      ref1 = this._promisePlugin.promiseCreator, newPromise = ref1.newPromise, allPromises = ref1.allPromises;
 	    }
 	    obj.url = path;
 	    forOwn(this._syncVerbs, (function(_this) {
@@ -727,9 +798,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var args, makeRequest;
 	          args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
 	          makeRequest = function() {
-	            var cb, data, method, options, originalArgs, ref1;
+	            var cb, data, method, options, originalArgs, ref2;
 	            cb = arguments[0], originalArgs = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	            ref1 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref1.method, path = ref1.path, data = ref1.data, options = ref1.options;
+	            ref2 = verbFunc.apply(null, [path].concat(slice.call(originalArgs))), method = ref2.method, path = ref2.path, data = ref2.data, options = ref2.options;
 	            return _this._requester.request(method, path, data, options, cb);
 	          };
 	          return toPromise(makeRequest, newPromise).apply(null, args);
@@ -754,7 +825,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -787,28 +858,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var Requester, ajax, filter, forEach, plus, userAgent;
+	var require;var Requester, ajax, extend, filter, forEach, ref, userAgent;
 
-	filter = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/filter\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-
-	forEach = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/forEach\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-
-	plus = __webpack_require__(4);
+	ref = __webpack_require__(4), filter = ref.filter, forEach = ref.forEach, extend = ref.extend;
 
 	if (typeof window === "undefined" || window === null) {
 	  userAgent = 'octokat.js';
 	}
 
 	ajax = function(options, cb) {
-	  var XMLHttpRequest, name, ref, req, value, xhr;
+	  var XMLHttpRequest, name, ref1, req, value, xhr;
 	  if (typeof window !== "undefined" && window !== null) {
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(11).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(13).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -819,17 +886,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (options.data && options.type !== 'GET') {
 	    xhr.setRequestHeader('Content-Type', options.contentType);
 	  }
-	  ref = options.headers;
-	  for (name in ref) {
-	    value = ref[name];
+	  ref1 = options.headers;
+	  for (name in ref1) {
+	    value = ref1[name];
 	    xhr.setRequestHeader(name, value);
 	  }
 	  xhr.onreadystatechange = function() {
-	    var name1, ref1;
+	    var name1, ref2;
 	    if (4 === xhr.readyState) {
-	      if ((ref1 = options.statusCode) != null) {
-	        if (typeof ref1[name1 = xhr.status] === "function") {
-	          ref1[name1]();
+	      if ((ref2 = options.statusCode) != null) {
+	        if (typeof ref2[name1 = xhr.status] === "function") {
+	          ref2[name1]();
 	        }
 	      }
 	      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
@@ -865,7 +932,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  Requester.prototype.request = function(method, path, data, options, cb) {
-	    var acc, ajaxConfig, headers, mimeType, ref;
+	    var acc, ajaxConfig, headers, mimeType, ref1;
 	    if (options == null) {
 	      options = {
 	        isRaw: false,
@@ -904,15 +971,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      clientOptions: this._clientOptions
 	    };
 	    forEach(this._pluginMiddleware, function(plugin) {
-	      var mimeType, ref;
-	      ref = plugin.requestMiddleware(acc) || {}, method = ref.method, headers = ref.headers, mimeType = ref.mimeType;
+	      var mimeType, ref1;
+	      ref1 = plugin.requestMiddleware(acc) || {}, method = ref1.method, headers = ref1.headers, mimeType = ref1.mimeType;
 	      if (method) {
 	        acc.method = method;
 	      }
 	      if (mimeType) {
 	        acc.mimeType = mimeType;
 	      }
-	      return plus.extend(acc.headers, headers);
+	      return extend(acc.headers, headers);
 	    });
 	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
 	    if (options.isRaw) {
@@ -942,8 +1009,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        })(this)
 	      };
 	    }
-	    if ((ref = this._emitter) != null) {
-	      ref.emit('start', method, path, data, options);
+	    if ((ref1 = this._emitter) != null) {
+	      ref1.emit('start', method, path, data, options);
 	    }
 	    return ajax(ajaxConfig, (function(_this) {
 	      return function(err, val) {
@@ -1020,20 +1087,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(11);
 
 	deprecate = __webpack_require__(2);
 
@@ -1104,7 +1171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1208,19 +1275,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PreferLibraryOverNativePromises, allPromises, newPromise, ref, ref1, ref2;
 
-	ref = __webpack_require__(15), newPromise = ref.newPromise, allPromises = ref.allPromises;
+	ref = __webpack_require__(17), newPromise = ref.newPromise, allPromises = ref.allPromises;
 
 	if (!(newPromise && allPromises)) {
-	  ref1 = __webpack_require__(16), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
+	  ref1 = __webpack_require__(18), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
 	}
 
 	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
-	  ref2 = __webpack_require__(17), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
+	  ref2 = __webpack_require__(19), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
 	}
 
 	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
@@ -1247,7 +1314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports) {
 
 	var allPromises, injector, newPromise, ref,
@@ -1328,7 +1395,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports) {
 
 	var allPromises, newPromise;
@@ -1359,14 +1426,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var Promise, allPromises, newPromise, req;
 
 	req = require;
 
-	Promise = this.Promise || __webpack_require__(18).Promise;
+	Promise = this.Promise || __webpack_require__(20).Promise;
 
 	newPromise = function(fn) {
 	  return new Promise(fn);
@@ -1383,19 +1450,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = window.Promise;
 
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PathValidator, URL_VALIDATOR;
 
-	URL_VALIDATOR = __webpack_require__(20);
+	URL_VALIDATOR = __webpack_require__(22);
 
 	module.exports = new (PathValidator = (function() {
 	  function PathValidator() {}
@@ -1415,19 +1482,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
 	module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
 
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Authorization, base64encode;
 
-	base64encode = __webpack_require__(22);
+	base64encode = __webpack_require__(24);
 
 	module.exports = new (Authorization = (function() {
 	  function Authorization() {}
@@ -1455,7 +1522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -1477,12 +1544,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DEFAULT_HEADER, PREVIEW_HEADERS, PreviewApis;
 
-	PREVIEW_HEADERS = __webpack_require__(24);
+	PREVIEW_HEADERS = __webpack_require__(26);
 
 	DEFAULT_HEADER = function(url) {
 	  var key, val;
@@ -1516,7 +1583,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1527,7 +1594,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports) {
 
 	var UsePostInsteadOfPatch;
@@ -1551,13 +1618,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var SimpleVerbs, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(11);
 
 	module.exports = new (SimpleVerbs = (function() {
 	  function SimpleVerbs() {}
@@ -1643,7 +1710,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports) {
 
 	var FetchAll, fetchNextPage, getMore, pushAll;
@@ -1709,12 +1776,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReadBinary, toQueryString;
 
-	toQueryString = __webpack_require__(9);
+	toQueryString = __webpack_require__(11);
 
 	module.exports = new (ReadBinary = (function() {
 	  function ReadBinary() {}
@@ -1767,7 +1834,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports) {
 
 	var Pagination;
@@ -1802,7 +1869,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports) {
 
 	var CacheHandler;
@@ -1869,7 +1936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;

@@ -1,6 +1,4 @@
-filter = require 'lodash/collection/filter'
-forOwn = require 'lodash/object/forOwn'
-extend = require 'lodash/object/extend'
+{filter, forOwn, extend} = require './plus'
 toQueryString = require './helpers/querystring'
 
 # When `origFn` is not passed a callback as the last argument then return a
