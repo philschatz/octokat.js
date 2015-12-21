@@ -5,7 +5,7 @@ HypermediaPlugin = require './plugins/hypermedia'
 
 ALL_PLUGINS = [
   require './plugins/promise/library-first'
-  require './plugins/path-check'
+  require './plugins/path-validator'
   require './plugins/authorization'
   require './plugins/preview-apis'
   require './plugins/use-post-instead-of-patch'
@@ -22,7 +22,6 @@ ALL_PLUGINS = [
   HypermediaPlugin
   require './plugins/camel-case'
 ]
-
 
 Octokat = (clientOptions={}) ->
 

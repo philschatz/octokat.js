@@ -27,7 +27,7 @@ fetchNextPage = (obj, requester, cb) ->
   else
     false
 
-module.exports =
+module.exports = new class FetchAll
   asyncVerbs:
     fetchAll: (requester, path) -> (cb, query) ->
       # TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage

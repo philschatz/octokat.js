@@ -1,4 +1,4 @@
-module.exports = new class CacheMiddleware
+module.exports = new class CacheHandler
   constructor: ->
     @_cachedETags = {}
 

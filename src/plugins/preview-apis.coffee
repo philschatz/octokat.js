@@ -5,7 +5,7 @@ DEFAULT_HEADER = (url) ->
     return key if val.test(url)
 
 # Use the preview API header if one of the routes match the preview APIs
-module.exports =
+module.exports = new class PreviewApis
   requestMiddleware: ({path}) ->
     acceptHeader = DEFAULT_HEADER(path)
     if acceptHeader

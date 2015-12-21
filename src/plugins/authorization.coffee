@@ -1,6 +1,6 @@
 base64encode = require '../helpers/base64'
 
-module.exports =
+module.exports = new class Authorization
   requestMiddleware: ({clientOptions:{token, username, password}}) ->
     if token or (username and password)
       if token

@@ -1211,7 +1211,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var allPromises, newPromise, ref, ref1, ref2;
+	var PreferLibraryOverNativePromises, allPromises, newPromise, ref, ref1, ref2;
 
 	ref = __webpack_require__(15), newPromise = ref.newPromise, allPromises = ref.allPromises;
 
@@ -1233,12 +1233,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  throw new Error('Could not find a promise lib for node. Seems like a bug');
 	}
 
-	module.exports = {
-	  promiseCreator: {
+	module.exports = new (PreferLibraryOverNativePromises = (function() {
+	  function PreferLibraryOverNativePromises() {}
+
+	  PreferLibraryOverNativePromises.prototype.promiseCreator = {
 	    newPromise: newPromise,
 	    allPromises: allPromises
-	  }
-	};
+	  };
+
+	  return PreferLibraryOverNativePromises;
+
+	})());
 
 
 /***/ },
@@ -1388,20 +1393,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var URL_VALIDATOR;
+	var PathValidator, URL_VALIDATOR;
 
 	URL_VALIDATOR = __webpack_require__(20);
 
-	module.exports = {
-	  requestMiddleware: function(arg) {
+	module.exports = new (PathValidator = (function() {
+	  function PathValidator() {}
+
+	  PathValidator.prototype.requestMiddleware = function(arg) {
 	    var err, path;
 	    path = arg.path;
 	    if (!URL_VALIDATOR.test(path)) {
 	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
 	      return console.warn(err);
 	    }
-	  }
-	};
+	  };
+
+	  return PathValidator;
+
+	})());
 
 
 /***/ },
@@ -1415,12 +1425,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var base64encode;
+	var Authorization, base64encode;
 
 	base64encode = __webpack_require__(22);
 
-	module.exports = {
-	  requestMiddleware: function(arg) {
+	module.exports = new (Authorization = (function() {
+	  function Authorization() {}
+
+	  Authorization.prototype.requestMiddleware = function(arg) {
 	    var auth, password, ref, token, username;
 	    ref = arg.clientOptions, token = ref.token, username = ref.username, password = ref.password;
 	    if (token || (username && password)) {
@@ -1435,8 +1447,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      };
 	    }
-	  }
-	};
+	  };
+
+	  return Authorization;
+
+	})());
 
 
 /***/ },
@@ -1465,7 +1480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DEFAULT_HEADER, PREVIEW_HEADERS;
+	var DEFAULT_HEADER, PREVIEW_HEADERS, PreviewApis;
 
 	PREVIEW_HEADERS = __webpack_require__(24);
 
@@ -1479,8 +1494,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	module.exports = {
-	  requestMiddleware: function(arg) {
+	module.exports = new (PreviewApis = (function() {
+	  function PreviewApis() {}
+
+	  PreviewApis.prototype.requestMiddleware = function(arg) {
 	    var acceptHeader, path;
 	    path = arg.path;
 	    acceptHeader = DEFAULT_HEADER(path);
@@ -1491,8 +1508,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      };
 	    }
-	  }
-	};
+	  };
+
+	  return PreviewApis;
+
+	})());
 
 
 /***/ },
@@ -1510,8 +1530,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 25 */
 /***/ function(module, exports) {
 
-	module.exports = {
-	  requestMiddleware: function(arg) {
+	var UsePostInsteadOfPatch;
+
+	module.exports = new (UsePostInsteadOfPatch = (function() {
+	  function UsePostInsteadOfPatch() {}
+
+	  UsePostInsteadOfPatch.prototype.requestMiddleware = function(arg) {
 	    var method, ref, usePostInsteadOfPatch;
 	    (ref = arg.clientOptions, usePostInsteadOfPatch = ref.usePostInsteadOfPatch), method = arg.method;
 	    if (usePostInsteadOfPatch && method === 'PATCH') {
@@ -1519,21 +1543,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        method: 'POST'
 	      };
 	    }
-	  }
-	};
+	  };
+
+	  return UsePostInsteadOfPatch;
+
+	})());
 
 
 /***/ },
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toQueryString,
+	var SimpleVerbs, toQueryString,
 	  slice = [].slice;
 
 	toQueryString = __webpack_require__(9);
 
-	module.exports = {
-	  verbs: {
+	module.exports = new (SimpleVerbs = (function() {
+	  function SimpleVerbs() {}
+
+	  SimpleVerbs.prototype.verbs = {
 	    fetch: function(path, query) {
 	      return {
 	        method: 'GET',
@@ -1606,15 +1635,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      };
 	    }
-	  }
-	};
+	  };
+
+	  return SimpleVerbs;
+
+	})());
 
 
 /***/ },
 /* 27 */
 /***/ function(module, exports) {
 
-	var fetchNextPage, getMore, pushAll;
+	var FetchAll, fetchNextPage, getMore, pushAll;
 
 	pushAll = function(target, source) {
 	  return target.push.apply(target, source);
@@ -1652,8 +1684,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	module.exports = {
-	  asyncVerbs: {
+	module.exports = new (FetchAll = (function() {
+	  function FetchAll() {}
+
+	  FetchAll.prototype.asyncVerbs = {
 	    fetchAll: function(requester, path) {
 	      return function(cb, query) {
 	        return requester.request('GET', path, query, null, function(err, items) {
@@ -1667,8 +1701,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	      };
 	    }
-	  }
-	};
+	  };
+
+	  return FetchAll;
+
+	})());
 
 
 /***/ },
@@ -1768,18 +1805,18 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 30 */
 /***/ function(module, exports) {
 
-	var CacheMiddleware;
+	var CacheHandler;
 
-	module.exports = new (CacheMiddleware = (function() {
-	  function CacheMiddleware() {
+	module.exports = new (CacheHandler = (function() {
+	  function CacheHandler() {
 	    this._cachedETags = {};
 	  }
 
-	  CacheMiddleware.prototype.get = function(method, path) {
+	  CacheHandler.prototype.get = function(method, path) {
 	    return this._cachedETags[method + " " + path];
 	  };
 
-	  CacheMiddleware.prototype.add = function(method, path, eTag, data, status) {
+	  CacheHandler.prototype.add = function(method, path, eTag, data, status) {
 	    return this._cachedETags[method + " " + path] = {
 	      eTag: eTag,
 	      data: data,
@@ -1787,7 +1824,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  };
 
-	  CacheMiddleware.prototype.requestMiddleware = function(arg) {
+	  CacheHandler.prototype.requestMiddleware = function(arg) {
 	    var cacheHandler, clientOptions, headers, method, path;
 	    clientOptions = arg.clientOptions, method = arg.method, path = arg.path;
 	    headers = {};
@@ -1802,7 +1839,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  };
 
-	  CacheMiddleware.prototype.responseMiddleware = function(arg) {
+	  CacheHandler.prototype.responseMiddleware = function(arg) {
 	    var cacheHandler, clientOptions, data, eTag, jqXHR, method, path, ref, request, status;
 	    clientOptions = arg.clientOptions, request = arg.request, status = arg.status, jqXHR = arg.jqXHR, data = arg.data;
 	    if (!jqXHR) {
@@ -1826,7 +1863,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  return CacheMiddleware;
+	  return CacheHandler;
 
 	})());
 

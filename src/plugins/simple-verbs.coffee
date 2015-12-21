@@ -1,6 +1,6 @@
 toQueryString = require '../helpers/querystring'
 
-module.exports =
+module.exports = new class SimpleVerbs
   verbs:
     fetch     : (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}"}
     read      : (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}", options:{isRaw:true}}

@@ -12,5 +12,5 @@ else if !window? and not newPromise
   # Running in NodeJS
   throw new Error('Could not find a promise lib for node. Seems like a bug')
 
-module.exports =
+module.exports = new class PreferLibraryOverNativePromises
   promiseCreator: {newPromise, allPromises}
