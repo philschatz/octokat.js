@@ -3,7 +3,6 @@ deprecate = require './deprecate'
 TREE_OPTIONS = require './grammar/tree-options'
 Chainer = require './chainer'
 VerbMethods = require './verb-methods'
-# Replacer = require './replacer'
 
 Requester = require './requester'
 applyHypermedia = require './helpers/hypermedia'

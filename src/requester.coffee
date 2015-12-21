@@ -2,8 +2,6 @@ filter = require 'lodash/collection/filter'
 forEach = require 'lodash/collection/forEach'
 
 plus = require './plus'
-# base64encode = require './helpers/base64'
-# {DEFAULT_HEADER} = require './grammar'
 
 
 # Request Function
@@ -48,20 +46,6 @@ ajax = (options, cb) ->
   xhr.send(options.data)
 
 
-# # Class for caching ETag responses
-# class ETagResponse
-#   constructor: (@eTag, @data, @status) ->
-
-
-# Cached responses are stored in this object keyed by `path`
-_cachedETags = {}
-DEFAULT_CACHE_HANDLER =
-  get: (method, path) ->
-    _cachedETags["#{method} #{path}"]
-  add: (method, path, eTag, data, status) ->
-    _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, status)
-
-
 # # Construct the request function.
 # It contains all the auth credentials passed in to the client constructor
 
@@ -78,16 +62,6 @@ module.exports = class Requester
 
     @_pluginMiddleware = filter plugins, ({requestMiddleware}) -> requestMiddleware
 
-  # # Cached responses are stored in this object keyed by `path`
-  # _cachedETags = {}
-  #
-  # cacheHandler = clientOptions.cacheHandler or {
-  #   get: (method, path) ->
-  #     _cachedETags["#{method} #{path}"]
-  #   add: (method, path, eTag, data, status) ->
-  #     _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, status)
-  # }
-
   # HTTP Request Abstraction
   # =======
   #
@@ -100,9 +74,6 @@ module.exports = class Requester
     options.contentType ?= 'application/json'
 
     # console.log method, path, data, options, typeof cb
-
-    # if method is 'PATCH' and clientOptions.usePostInsteadOfPatch
-    #   method = 'POST'
 
     # Only prefix the path when it does not begin with http.
     # This is so pagination works (which provides absolute URLs).
@@ -124,32 +95,7 @@ module.exports = class Requester
 
     {method, headers, mimeType} = acc
 
-    # # Support binary data by overriding the response mimeType
-    # mimeType = undefined
-    # mimeType = 'text/plain; charset=x-user-defined' if options.isBase64
-
-    # headers = {
-    #   # Use the preview API header if one of the routes match the preview APIs
-    #   'Accept': @_clientOptions.acceptHeader or DEFAULT_HEADER(path)
-    # }
     headers['Accept'] = 'application/vnd.github.raw' if options.isRaw
-
-    # # Set the `User-Agent` because it is required and NodeJS
-    # # does not send one by default.
-    # # See http://developer.github.com/v3/#user-agent-required
-    # headers['User-Agent'] = userAgent if userAgent
-
-    # Send the ETag if re-requesting a URL
-    if cacheHandler.get(method, path)
-      headers['If-None-Match'] = cacheHandler.get(method, path).eTag
-
-    # if (@_clientOptions.token) or (@_clientOptions.username and @_clientOptions.password)
-    #   if @_clientOptions.token
-    #     auth = "token #{@_clientOptions.token}"
-    #   else
-    #     auth = 'Basic ' + base64encode("#{@_clientOptions.username}:#{@_clientOptions.password}")
-    #   headers['Authorization'] = auth
-
 
     ajaxConfig =
       # Be sure to **not** blow the cache with a random number
@@ -175,8 +121,8 @@ module.exports = class Requester
 
     ajax ajaxConfig, (err, val) =>
       jqXHR = err or val
-      # Fire listeners when the request completes or fails
 
+      # Fire listeners when the request completes or fails
       if @_emitter
         rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
         rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
@@ -195,15 +141,6 @@ module.exports = class Requester
       unless err
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
-        # # If the response was a 304 then return the cached version
-        # if jqXHR.status is 304
-        #   if @_clientOptions.useETags and cacheHandler.get(method, path)
-        #     eTagResponse = cacheHandler.get(method, path)
-        #
-        #     cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
-        #   else
-        #     cb(null, jqXHR.responseText, jqXHR.status, jqXHR)
-
         # Respond with the redirect URL (for archive links)
         # TODO: implement a `followRedirects` flag
         if jqXHR.status is 302
@@ -212,18 +149,6 @@ module.exports = class Requester
         else unless jqXHR.status is 204 and options.isBoolean
           if jqXHR.responseText and ajaxConfig.dataType is 'json'
             data = JSON.parse(jqXHR.responseText)
-
-            # # Only JSON responses have next/prev/first/last link headers
-            # # Add them to data so the resolved value is iterable
-            #
-            # # Parse the Link headers
-            # # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-            # links = jqXHR.getResponseHeader('Link')
-            # for part in links?.split(',') or []
-            #   [discard, href, rel] = part.match(/<([^>]+)>;\ rel="([^"]+)"/)
-            #   # Add the pagination functions on the JSON since Promises resolve one value
-            #   # Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-            #   data["#{rel}_page_url"] = href
 
           else
             data = jqXHR.responseText
@@ -234,27 +159,12 @@ module.exports = class Requester
             data
             options
             jqXHR # for cacheHandler
-            status:jqXHR.status # cacheHandler changes this
-            request:acc # Include the request data for plugins like cacheHandler
-            requester:@ # for Hypermedia to generate verb methods
+            status: jqXHR.status # cacheHandler changes this
+            request: acc # Include the request data for plugins like cacheHandler
+            requester: @ # for Hypermedia to generate verb methods
             instance: @_instance # for Hypermedia to be able to call `.fromUrl`
           }
           data = @_instance._parseWithContext('', acc)
-
-          # # Convert the response to a Base64 encoded string
-          # if method is 'GET' and options.isBase64
-          #   # Convert raw data to binary chopping off the higher-order bytes in each char.
-          #   # Useful for Base64 encoding.
-          #   converted = ''
-          #   for i in [0...data.length]
-          #     converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
-          #
-          #   data = converted
-
-          # # Cache the response to reuse later
-          # if method is 'GET' and jqXHR.getResponseHeader('ETag') and @_clientOptions.useETags
-          #   eTag = jqXHR.getResponseHeader('ETag')
-          #   cacheHandler.add(method, path, eTag, data, jqXHR.status)
 
           cb(null, data, jqXHR.status, jqXHR)
 

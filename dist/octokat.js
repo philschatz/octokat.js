@@ -678,7 +678,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	VerbMethods = (function() {
+	module.exports = VerbMethods = (function() {
 	  function VerbMethods(plugins, _requester) {
 	    var i, j, len, len1, plugin, promisePlugins, ref, ref1;
 	    this._requester = _requester;
@@ -752,8 +752,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	})();
 
-	module.exports = VerbMethods;
-
 
 /***/ },
 /* 9 */
@@ -792,7 +790,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var DEFAULT_CACHE_HANDLER, Requester, _cachedETags, ajax, filter, forEach, plus, userAgent;
+	var require;var Requester, ajax, filter, forEach, plus, userAgent;
 
 	filter = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"lodash/collection/filter\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
@@ -842,17 +840,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 	  return xhr.send(options.data);
-	};
-
-	_cachedETags = {};
-
-	DEFAULT_CACHE_HANDLER = {
-	  get: function(method, path) {
-	    return _cachedETags[method + " " + path];
-	  },
-	  add: function(method, path, eTag, data, status) {
-	    return _cachedETags[method + " " + path] = new ETagResponse(eTag, data, status);
-	  }
 	};
 
 	module.exports = Requester = (function() {
@@ -930,9 +917,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
 	    if (options.isRaw) {
 	      headers['Accept'] = 'application/vnd.github.raw';
-	    }
-	    if (cacheHandler.get(method, path)) {
-	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
 	    }
 	    ajaxConfig = {
 	      url: path,

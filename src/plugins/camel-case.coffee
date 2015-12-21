@@ -22,18 +22,6 @@ module.exports = new class CamelCase
       value = orig[key]
       @_replaceKeyValue(acc, key, value)
 
-    # # If the URL matches one of the "Object" types (repo, user, comment)
-    # # then provide all of the same methods as `octo.repo(...)` would have on it
-    # url = acc.url
-    # Chainer(requestFn, url, true, null, acc) if url
-    # for key in Object.keys(OBJECT_MATCHER)
-    #   re = OBJECT_MATCHER[key]
-    #   if re.test(url)
-    #     context = TREE_OPTIONS
-    #     for k in key.split('.')
-    #       context = context[k]
-    #     Chainer(requestFn, url, k, context, acc)
-    #
     acc
 
   _replaceArray: (orig) ->

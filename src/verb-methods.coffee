@@ -3,7 +3,9 @@ forOwn = require 'lodash/object/forOwn'
 extend = require 'lodash/object/extend'
 toQueryString = require './helpers/querystring'
 
-
+# When `origFn` is not passed a callback as the last argument then return a
+# Promise, or error if no Promise can be found (see `plugins/promise/*` for
+# some strategies for loading a Promise implementation)
 toPromise = (orig, newPromise) ->
   return (args...) ->
     last = args[args.length - 1]
@@ -19,7 +21,8 @@ toPromise = (orig, newPromise) ->
     else
       throw new Error('You must specify a callback or have a promise library loaded')
 
-class VerbMethods
+
+module.exports = class VerbMethods
   constructor: (plugins, @_requester) ->
     throw new Error('Octokat BUG: request is required') unless @_requester
 
@@ -34,6 +37,7 @@ class VerbMethods
     for plugin in filter(plugins, ({asyncVerbs}) -> asyncVerbs)
       extend @_asyncVerbs, plugin.asyncVerbs
 
+  # Injects verb methods onto `obj`
   injectVerbMethods: (path, obj) ->
     if @_promisePlugin
       {newPromise, allPromises} = @_promisePlugin.promiseCreator
@@ -50,36 +54,3 @@ class VerbMethods
       obj[verbName] = (args...) =>
         makeRequest = verbFunc(@_requester, path) # Curried function
         return toPromise(makeRequest, newPromise)(args...)
-
-
-#
-# injectVerbMethods = (plugins, request, path, obj) ->
-#
-#
-#   # find the promise plugin (use the last one set)
-#   # TODO: Move these loops out so they are evaluated only once when the library is initialized
-#   for plugin in plugins
-#     if plugin.promiseCreator
-#       {newPromise, allPromises} = plugin.promiseCreator
-#       break
-#
-#   # Allow all the verb methods to accept a callback as the last arg
-#   # TODO: This part is really slow. It should be cached somehow (maybe using getters/setters?)
-#   for plugin in plugins
-#     for verbName, verbFunc of plugin.verbs or {}
-#       do (verbName, verbFunc) ->
-#         obj.url = path # Mostly for testing
-#         obj[verbName] = (args...) ->
-#           makeRequest =  (cb, originalArgs...) ->
-#             {method, path, data, options} = verbFunc(path, originalArgs...)
-#             request(method, path, data, options, cb)
-#           return toPromise(makeRequest, newPromise)(args...)
-#
-#     for verbName, verbFunc of plugin.asyncVerbs or {}
-#       do (verbName, verbFunc) ->
-#         obj.url = path # Mostly for testing
-#         obj[verbName] = (args...) ->
-#           makeRequest = verbFunc(request, path) # Curried function
-#           return toPromise(makeRequest, newPromise)(args...)
-
-module.exports = VerbMethods
