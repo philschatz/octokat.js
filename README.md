@@ -1,6 +1,10 @@
-# Octokat.js [![Build Status](https://travis-ci.org/philschatz/octokat.js.svg)](https://travis-ci.org/philschatz/octokat.js)
-[![Dependency Status](https://david-dm.org/philschatz/octokat.js/status.svg)](https://david-dm.org/philschatz/octokat.js)
-[![devDependency Status](https://david-dm.org/philschatz/octokat.js/dev-status.svg)](https://david-dm.org/philschatz/octokat.js#info=devDependencies)
+# Octokat.js
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][downloads-url]
+[![build status][travis-image]][travis-url]
+[![dependency status][dependency-image]][dependency-url]
+[![dev dependency status][dev-dependency-image]][dev-dependency-url]
+
 
 <a href="https://tonicdev.com/npm/octokat" target="_window">Try it out in your browser!</a> (REPL)
 
@@ -448,3 +452,18 @@ See [Travis tests](https://travis-ci.org/philschatz/octokat.js) or run `npm test
 [linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded HTTP fixtures from GitHub
 and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in the browser.
 If you are adding tests be sure to include the updated fixtures in the Pull Request.
+
+
+
+
+
+[npm-image]: https://img.shields.io/npm/v/octokat.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/octokat
+[downloads-image]: http://img.shields.io/npm/dm/octokat.svg?style=flat-square
+[downloads-url]: https://npmjs.org/package/octokat
+[travis-image]: https://img.shields.io/travis/philschatz/octokat.js.svg?style=flat-square
+[travis-url]: https://travis-ci.org/philschatz/octokat.js
+[dependency-image]: https://img.shields.io/david/philschatz/octokat.js.svg?style=flat-square
+[dependency-url]: https://david-dm.org/philschatz/octokat.js
+[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/octokat.js.svg?style=flat-square
+[dev-dependency-url]: https://david-dm.org/philschatz/octokat.js#info=devDependencies
