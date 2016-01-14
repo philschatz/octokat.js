@@ -178,7 +178,7 @@ Request = (clientOptions={}) ->
 
             cb(null, eTagResponse.data, eTagResponse.status, jqXHR)
           else
-            cb(null, jqXHR.responseText, status, jqXHR)
+            cb(null, jqXHR.responseText, jqXHR.status, jqXHR)
 
         # Respond with the redirect URL (for archive links)
         # TODO: implement a `followRedirects` flag

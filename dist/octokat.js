@@ -992,7 +992,7 @@ Request = function(clientOptions) {
             eTagResponse = cacheHandler.get(method, path);
             return cb(null, eTagResponse.data, eTagResponse.status, jqXHR);
           } else {
-            return cb(null, jqXHR.responseText, status, jqXHR);
+            return cb(null, jqXHR.responseText, jqXHR.status, jqXHR);
           }
         } else if (jqXHR.status === 302) {
           return cb(null, jqXHR.getResponseHeader('Location'));
