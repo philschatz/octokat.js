@@ -7,7 +7,6 @@
 [![dev dependency status][dev-dependency-image]][dev-dependency-url]
 
 
-
 <a href="https://tonicdev.com/npm/octokat" target="_window">Try it out in your browser!</a> (REPL)
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
