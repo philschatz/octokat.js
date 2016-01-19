@@ -1,3 +1,5 @@
+toQueryString = require '../helpers/querystring'
+
 pushAll = (target, source) ->
   target.push.apply(target, source)
 
@@ -31,7 +33,7 @@ module.exports = new class FetchAll
   asyncVerbs:
     fetchAll: (requester, path) -> (cb, query) ->
       # TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
-      requester.request 'GET', path, query, null, (err, items) ->
+      requester.request 'GET', "#{path}#{toQueryString(query)}", null, null, (err, items) ->
         return cb(err) if err
         acc = []
         pushAll(acc, items)

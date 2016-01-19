@@ -1724,9 +1724,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 29 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	var FetchAll, fetchNextPage, getMore, pushAll;
+	var FetchAll, fetchNextPage, getMore, pushAll, toQueryString;
+
+	toQueryString = __webpack_require__(11);
 
 	pushAll = function(target, source) {
 	  return target.push.apply(target, source);
@@ -1770,7 +1772,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  FetchAll.prototype.asyncVerbs = {
 	    fetchAll: function(requester, path) {
 	      return function(cb, query) {
-	        return requester.request('GET', path, query, null, function(err, items) {
+	        return requester.request('GET', "" + path + (toQueryString(query)), null, null, function(err, items) {
 	          var acc;
 	          if (err) {
 	            return cb(err);
