@@ -46,6 +46,8 @@ ajax = (options, cb) ->
 # # Construct the request function.
 # It contains all the auth credentials passed in to the client constructor
 
+eventId = 0 # counter for the emitter so it is easier to match up requests
+
 module.exports = class Requester
   constructor: (@_instance, @_clientOptions={}, plugins) ->
 
@@ -55,7 +57,8 @@ module.exports = class Requester
     @_clientOptions.usePostInsteadOfPatch ?= false
 
     # These are updated whenever a request is made (optional)
-    @_emitter = @_clientOptions.emitter
+    if typeof @_clientOptions.emitter is 'function'
+      @_emit = @_clientOptions.emitter
 
     @_pluginMiddleware = filter plugins, ({requestMiddleware}) -> requestMiddleware
 
@@ -114,26 +117,29 @@ module.exports = class Requester
         204: () => cb(null, true)
         404: () => cb(null, false)
 
-    @_emitter?.emit('start', method, path, data, options)
+    eventId++
+    @_emit?('start', eventId, {method, path, data, options})
 
     ajax ajaxConfig, (err, val) =>
       jqXHR = err or val
 
       # Fire listeners when the request completes or fails
-      if @_emitter
+      if @_emit
         rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
         rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
         rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
+        # Reset time is in seconds, not milliseconds
+        # if rateLimitReset
+        #   rateLimitReset = new Date(rateLimitReset * 1000)
 
         emitterRate =
-          rate:   # to match the JSON format of `GET /rate_limit`
-            remaining: rateLimitRemaining
-            limit: rateLimit
-            reset: rateLimitReset # Reset time is in seconds, not milliseconds
+          remaining: rateLimitRemaining
+          limit: rateLimit
+          reset: rateLimitReset
 
         if jqXHR.getResponseHeader('X-OAuth-Scopes')
           emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
-        @_emitter.emit('request', emitterRate, method, path, data, options, jqXHR.status)
+        @_emit('end', eventId, {method, path, data, options}, jqXHR.status, emitterRate)
 
       unless err
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
