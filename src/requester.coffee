@@ -125,20 +125,22 @@ module.exports = class Requester
 
       # Fire listeners when the request completes or fails
       if @_emit
-        rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
-        rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
-        rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
-        # Reset time is in seconds, not milliseconds
-        # if rateLimitReset
-        #   rateLimitReset = new Date(rateLimitReset * 1000)
 
-        emitterRate =
-          remaining: rateLimitRemaining
-          limit: rateLimit
-          reset: rateLimitReset
+        if jqXHR.getResponseHeader('X-RateLimit-Limit')
+          rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
+          rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
+          rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
+          # Reset time is in seconds, not milliseconds
+          # if rateLimitReset
+          #   rateLimitReset = new Date(rateLimitReset * 1000)
 
-        if jqXHR.getResponseHeader('X-OAuth-Scopes')
-          emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
+          emitterRate =
+            remaining: rateLimitRemaining
+            limit: rateLimit
+            reset: rateLimitReset
+
+          if jqXHR.getResponseHeader('X-OAuth-Scopes')
+            emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
         @_emit('end', eventId, {method, path, data, options}, jqXHR.status, emitterRate)
 
       unless err
