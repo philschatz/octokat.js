@@ -7,8 +7,6 @@
 # Generates the actual HTTP requests to GitHub.
 # Handles ETag caching, authentication headers, boolean requests, and paged results
 
-userAgent = 'octokat.js' unless window?
-
 # Simple jQuery.ajax() shim that returns a promise for a xhr object
 ajax = (options, cb) ->
 
@@ -80,11 +78,13 @@ module.exports = class Requester
     path = "#{@_clientOptions.rootURL}#{path}" if not /^http/.test(path)
 
     headers =
-      'Accept': @_clientOptions.acceptHeader
+      'Accept': @_clientOptions.acceptHeader or 'application/json'
+
+    unless window?
       # Set the `User-Agent` because it is required and NodeJS
       # does not send one by default.
       # See http://developer.github.com/v3/#user-agent-required
-      'User-Agent': userAgent or undefined
+      headers['User-Agent'] = 'octokat.js'
 
     acc = {method, path, headers, options, clientOptions: @_clientOptions}
     forEach @_pluginMiddleware, (plugin) ->

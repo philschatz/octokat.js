@@ -11,7 +11,7 @@ module.exports =
   ///
   'issues': /// ^ (https?://[^/]+)? (/api/v3)?
     /repos/ [^/]+ / [^/]+
-    /(issues|pulls) [^/]+
+    /(issues|pulls)/ [^/]+
     $
   ///
   'users': /// ^ (https?://[^/]+)? (/api/v3)?

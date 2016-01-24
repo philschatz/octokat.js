@@ -19,3 +19,9 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
       .then (users) ->
         expect(users).to.not.be.empty
         expect(users[0].gists.fetch).to.be.a.function
+
+    it 'has does not add the root context to returned objects', ->
+      client.repos(REPO_USER, REPO_NAME).issues(1).fetch().then (issue) ->
+        console.log issue
+        expect(issue.user.avatar.url).to.not.be.null
+        expect(issue.user.avatar.url).to.be.a.string

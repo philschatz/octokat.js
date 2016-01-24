@@ -231,7 +231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      chainer.chain(url, true, {}, data);
 	      chainer.chainChildren(url, data);
 	    } else {
-	      chainer.chain('', null, TREE_OPTIONS, data);
+	      chainer.chain('', null, {}, data);
 	      if (Array.isArray(data)) {
 	        for (k = 0, len1 = data.length; k < len1; k++) {
 	          datum = data[k];
@@ -706,7 +706,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	  'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
 	  'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
-	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)[^\/]+$/,
+	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)\/[^\/]+$/,
 	  'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
 	  'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
 	  'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
@@ -861,13 +861,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var Requester, ajax, eventId, extend, filter, forEach, ref, userAgent;
+	var require;var Requester, ajax, eventId, extend, filter, forEach, ref;
 
 	ref = __webpack_require__(4), filter = ref.filter, forEach = ref.forEach, extend = ref.extend;
-
-	if (typeof window === "undefined" || window === null) {
-	  userAgent = 'octokat.js';
-	}
 
 	ajax = function(options, cb) {
 	  var XMLHttpRequest, name, ref1, req, value, xhr;
@@ -964,9 +960,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      path = "" + this._clientOptions.rootURL + path;
 	    }
 	    headers = {
-	      'Accept': this._clientOptions.acceptHeader,
-	      'User-Agent': userAgent || void 0
+	      'Accept': this._clientOptions.acceptHeader || 'application/json'
 	    };
+	    if (typeof window === "undefined" || window === null) {
+	      headers['User-Agent'] = 'octokat.js';
+	    }
 	    acc = {
 	      method: method,
 	      path: path,

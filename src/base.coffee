@@ -96,7 +96,7 @@ OctokatBase = (clientOptions={}) ->
       chainer.chain(url, true, {}, data)
       chainer.chainChildren(url, data)
     else
-      chainer.chain('', null, TREE_OPTIONS, data)
+      chainer.chain('', null, {}, data)
       # For the paged results, rechain all children in the array
       if Array.isArray(data)
         for datum in data
