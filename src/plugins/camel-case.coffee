@@ -11,6 +11,8 @@ module.exports = new class CamelCase
       return @_replaceArray(data)
     else if typeof data is 'function'
       return data
+    else if data instanceof Date
+      return data
     else if data == Object(data)
       return @_replaceObject(data)
     else

@@ -1200,6 +1200,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this._replaceArray(instance, data);
 	    } else if (typeof data === 'function') {
 	      return data;
+	    } else if (data instanceof Date) {
+	      return data;
 	    } else if (data === Object(data)) {
 	      return this._replaceObject(instance, data);
 	    } else {
@@ -1974,6 +1976,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (Array.isArray(data)) {
 	      return this._replaceArray(data);
 	    } else if (typeof data === 'function') {
+	      return data;
+	    } else if (data instanceof Date) {
 	      return data;
 	    } else if (data === Object(data)) {
 	      return this._replaceObject(data);

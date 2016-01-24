@@ -50,6 +50,20 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, REPO_USER, REPO
       fn = -> client.fromUrl(template, params)
       assert.throw(fn, Error, 'Octokat Error: Required parameter is missing: query')
 
+
+  describe 'Hypermedia type conversion', ->
+    it 'converts date strings to dates (parse)', ->
+      json =
+        created_at: '2016-01-01'
+      expectedMs = Date.parse(json.created_at)
+      actualMs = client.parse(json).createdAt.getTime()
+      expect(actualMs).to.equal(expectedMs)
+
+    it 'converts date strings to dates (fetch)', (done) ->
+      client.repos(REPO_USER, REPO_NAME).fetch().then (info) ->
+        expect(info.createdAt).to.be.an.instanceof(Date)
+        done()
+
   # describe 'URL Hypermedia Patterns (only tested in Node)', ->
   #
   #   URL_PATTERN = 'https://foo{?name,label}'
