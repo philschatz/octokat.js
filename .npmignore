@@ -1,10 +1,10 @@
 .*
 dist/octokat.js
-src/
+# src/
 test/
 bower.json
-Gruntfile.coffee
+# Gruntfile.coffee
 
 /bower_components
 /fixtures*
-/foo*
+/examples
