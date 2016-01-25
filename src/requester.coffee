@@ -59,6 +59,7 @@ module.exports = class Requester
       @_emit = @_clientOptions.emitter
 
     @_pluginMiddleware = filter plugins, ({requestMiddleware}) -> requestMiddleware
+    @_plugins = plugins
 
   # HTTP Request Abstraction
   # =======
@@ -161,6 +162,7 @@ module.exports = class Requester
 
           acc = {
             clientOptions: @_clientOptions
+            plugins: @_plugins
             data
             options
             jqXHR # for cacheHandler

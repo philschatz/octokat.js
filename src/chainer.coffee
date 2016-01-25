@@ -1,7 +1,4 @@
-TREE_OPTIONS = require './grammar/tree-options'
-OBJECT_MATCHER = require './grammar/object-matcher'
 plus = require './plus'
-VerbMethods = require './verb-methods'
 
 # Daisy-Chainer
 # ===============================
@@ -37,15 +34,5 @@ module.exports = class Chainer
 
 
     return fn
-
-  chainChildren: (url, obj) ->
-    for key, re of OBJECT_MATCHER
-      if re.test(obj.url)
-        context = TREE_OPTIONS
-        for k in key.split('.')
-          context = context[k]
-        @chain(url, k, context, obj)
-    obj
-
 
 module.exports = Chainer

@@ -4,6 +4,7 @@ OctokatBase = require './base'
 HypermediaPlugin = require './plugins/hypermedia'
 
 ALL_PLUGINS = [
+  require './plugins/object-chainer' # re-chain methods when we detect an object (issue, comment, user, etc)
   require './plugins/promise/library-first'
   require './plugins/path-validator'
   require './plugins/authorization'

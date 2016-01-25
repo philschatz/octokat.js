@@ -67,9 +67,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	OctokatBase = __webpack_require__(3);
 
-	HypermediaPlugin = __webpack_require__(15);
+	HypermediaPlugin = __webpack_require__(17);
 
-	ALL_PLUGINS = [__webpack_require__(16), __webpack_require__(21), __webpack_require__(23), __webpack_require__(25), __webpack_require__(27), __webpack_require__(28), __webpack_require__(29), __webpack_require__(30), __webpack_require__(31), __webpack_require__(32), HypermediaPlugin, __webpack_require__(33)];
+	ALL_PLUGINS = [__webpack_require__(18), __webpack_require__(20), __webpack_require__(24), __webpack_require__(26), __webpack_require__(28), __webpack_require__(30), __webpack_require__(11), __webpack_require__(31), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34), HypermediaPlugin, __webpack_require__(35)];
 
 	Octokat = function(clientOptions) {
 	  var instance;
@@ -105,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, OctokatBase, Requester, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, NativePromiseOnlyPlugin, OctokatBase, Requester, SimpleVerbsPlugin, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(4);
@@ -116,11 +116,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Chainer = __webpack_require__(8);
 
-	VerbMethods = __webpack_require__(10);
+	VerbMethods = __webpack_require__(9);
 
-	Requester = __webpack_require__(12);
+	SimpleVerbsPlugin = __webpack_require__(11);
 
-	applyHypermedia = __webpack_require__(14);
+	NativePromiseOnlyPlugin = __webpack_require__(12);
+
+	Requester = __webpack_require__(14);
+
+	applyHypermedia = __webpack_require__(16);
 
 	uncamelizeObj = function(obj) {
 	  var i, j, key, len, o, ref, value;
@@ -153,7 +157,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
-	  plugins = clientOptions.plugins || [];
+	  plugins = clientOptions.plugins || [SimpleVerbsPlugin, NativePromiseOnlyPlugin];
 	  disableHypermedia = clientOptions.disableHypermedia;
 	  if (disableHypermedia == null) {
 	    disableHypermedia = false;
@@ -183,6 +187,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!disableHypermedia) {
 	        context = {
 	          data: val,
+	          plugins: plugins,
 	          requester: requester,
 	          instance: instance,
 	          clientOptions: clientOptions
@@ -205,6 +210,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      requester: {
 	        request: request
 	      },
+	      plugins: plugins,
 	      data: data,
 	      instance: instance,
 	      clientOptions: clientOptions
@@ -212,9 +218,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return instance._parseWithContext('', context);
 	  };
 	  instance._parseWithContext = function(path, context) {
-	    var chainer, data, datum, j, k, len, len1, plugin, requester, url;
+	    var data, j, len, plugin, requester, url;
 	    data = context.data, requester = context.requester;
 	    url = data.url || path;
+	    plus.extend(context, {
+	      url: url
+	    });
 	    for (j = 0, len = plugins.length; j < len; j++) {
 	      plugin = plugins[j];
 	      if (plugin.responseMiddleware) {
@@ -222,20 +231,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    data = context.data;
-	    verbMethods = new VerbMethods(plugins, requester);
-	    chainer = new Chainer(verbMethods);
-	    if (url) {
-	      chainer.chain(url, true, {}, data);
-	      chainer.chainChildren(url, data);
-	    } else {
-	      chainer.chain('', null, {}, data);
-	      if (Array.isArray(data)) {
-	        for (k = 0, len1 = data.length; k < len1; k++) {
-	          datum = data[k];
-	          chainer.chainChildren(datum.url, datum);
-	        }
-	      }
-	    }
 	    return data;
 	  };
 	  instance._fromUrlWithDefault = function() {
@@ -616,16 +611,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Chainer, OBJECT_MATCHER, TREE_OPTIONS, VerbMethods, plus,
+	var Chainer, plus,
 	  slice = [].slice;
 
-	TREE_OPTIONS = __webpack_require__(7);
-
-	OBJECT_MATCHER = __webpack_require__(9);
-
 	plus = __webpack_require__(4);
-
-	VerbMethods = __webpack_require__(10);
 
 	module.exports = Chainer = (function() {
 	  function Chainer(_verbMethods) {
@@ -672,23 +661,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return fn;
 	  };
 
-	  Chainer.prototype.chainChildren = function(url, obj) {
-	    var context, i, k, key, len, re, ref;
-	    for (key in OBJECT_MATCHER) {
-	      re = OBJECT_MATCHER[key];
-	      if (re.test(obj.url)) {
-	        context = TREE_OPTIONS;
-	        ref = key.split('.');
-	        for (i = 0, len = ref.length; i < len; i++) {
-	          k = ref[i];
-	          context = context[k];
-	        }
-	        this.chain(url, k, context, obj);
-	      }
-	    }
-	    return obj;
-	  };
-
 	  return Chainer;
 
 	})();
@@ -698,20 +670,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 9 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
-	  'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
-	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)\/[^\/]+$/,
-	  'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
-	  'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
-	  'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
-	};
-
-
-/***/ },
-/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var VerbMethods, extend, filter, forOwn, ref, toPromise, toQueryString,
@@ -719,7 +677,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	ref = __webpack_require__(4), filter = ref.filter, forOwn = ref.forOwn, extend = ref.extend;
 
-	toQueryString = __webpack_require__(11);
+	toQueryString = __webpack_require__(10);
 
 	toPromise = function(orig, newPromise) {
 	  return function() {
@@ -822,7 +780,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -855,7 +813,146 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var SimpleVerbs, toQueryString,
+	  slice = [].slice;
+
+	toQueryString = __webpack_require__(10);
+
+	module.exports = new (SimpleVerbs = (function() {
+	  function SimpleVerbs() {}
+
+	  SimpleVerbs.prototype.verbs = {
+	    fetch: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query))
+	      };
+	    },
+	    read: function(path, query) {
+	      return {
+	        method: 'GET',
+	        path: "" + path + (toQueryString(query)),
+	        options: {
+	          isRaw: true
+	        }
+	      };
+	    },
+	    remove: function(path, data) {
+	      return {
+	        method: 'DELETE',
+	        path: path,
+	        data: data,
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    },
+	    create: function(path, data, contentType) {
+	      if (contentType) {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data,
+	          options: {
+	            isRaw: true,
+	            contentType: contentType
+	          }
+	        };
+	      } else {
+	        return {
+	          method: 'POST',
+	          path: path,
+	          data: data
+	        };
+	      }
+	    },
+	    update: function(path, data) {
+	      return {
+	        method: 'PATCH',
+	        path: path,
+	        data: data
+	      };
+	    },
+	    add: function(path, data) {
+	      return {
+	        method: 'PUT',
+	        path: path,
+	        data: data,
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    },
+	    contains: function() {
+	      var args, path;
+	      path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+	      return {
+	        method: 'GET',
+	        path: path + "/" + (args.join('/')),
+	        options: {
+	          isBoolean: true
+	        }
+	      };
+	    }
+	  };
+
+	  return SimpleVerbs;
+
+	})());
+
+
+/***/ },
 /* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UseNativePromises;
+
+	module.exports = new (UseNativePromises = (function() {
+	  function UseNativePromises() {}
+
+	  UseNativePromises.prototype.promiseCreator = __webpack_require__(13);
+
+	  return UseNativePromises;
+
+	})());
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	var allPromises, newPromise;
+
+	if (typeof Promise !== "undefined" && Promise !== null) {
+	  newPromise = (function(_this) {
+	    return function(fn) {
+	      return new Promise(function(resolve, reject) {
+	        if (resolve.fulfill) {
+	          return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
+	        } else {
+	          return fn.apply(null, arguments);
+	        }
+	      });
+	    };
+	  })(this);
+	  allPromises = (function(_this) {
+	    return function(promises) {
+	      return Promise.all(promises);
+	    };
+	  })(this);
+	}
+
+	module.exports = {
+	  newPromise: newPromise,
+	  allPromises: allPromises
+	};
+
+
+/***/ },
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var Requester, ajax, eventId, extend, filter, forEach, ref;
@@ -868,7 +965,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(13).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(15).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -926,6 +1023,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      requestMiddleware = arg.requestMiddleware;
 	      return requestMiddleware;
 	    });
+	    this._plugins = plugins;
 	  }
 
 	  Requester.prototype.request = function(method, path, data, options, cb) {
@@ -1053,6 +1151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            acc = {
 	              clientOptions: _this._clientOptions,
+	              plugins: _this._plugins,
 	              data: data,
 	              options: options,
 	              jqXHR: jqXHR,
@@ -1097,20 +1196,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(11);
+	toQueryString = __webpack_require__(10);
 
 	deprecate = __webpack_require__(2);
 
@@ -1181,7 +1280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1287,19 +1386,97 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Chainer, OBJECT_MATCHER, ObjectChainer, TREE_OPTIONS, VerbMethods;
+
+	OBJECT_MATCHER = __webpack_require__(19);
+
+	TREE_OPTIONS = __webpack_require__(7);
+
+	VerbMethods = __webpack_require__(9);
+
+	Chainer = __webpack_require__(8);
+
+	module.exports = new (ObjectChainer = (function() {
+	  function ObjectChainer() {}
+
+	  ObjectChainer.prototype.chainChildren = function(chainer, url, obj) {
+	    var context, i, k, key, len, re, ref, results;
+	    results = [];
+	    for (key in OBJECT_MATCHER) {
+	      re = OBJECT_MATCHER[key];
+	      if (re.test(obj.url)) {
+	        context = TREE_OPTIONS;
+	        ref = key.split('.');
+	        for (i = 0, len = ref.length; i < len; i++) {
+	          k = ref[i];
+	          context = context[k];
+	        }
+	        results.push(chainer.chain(url, k, context, obj));
+	      } else {
+	        results.push(void 0);
+	      }
+	    }
+	    return results;
+	  };
+
+	  ObjectChainer.prototype.responseMiddleware = function(arg) {
+	    var chainer, data, datum, i, len, plugins, requester, url, verbMethods;
+	    plugins = arg.plugins, requester = arg.requester, data = arg.data, url = arg.url;
+	    verbMethods = new VerbMethods(plugins, requester);
+	    chainer = new Chainer(verbMethods);
+	    if (url) {
+	      chainer.chain(url, true, {}, data);
+	      this.chainChildren(chainer, url, data);
+	    } else {
+	      chainer.chain('', null, {}, data);
+	      if (Array.isArray(data)) {
+	        for (i = 0, len = data.length; i < len; i++) {
+	          datum = data[i];
+	          this.chainChildren(chainer, datum.url, datum);
+	        }
+	      }
+	    }
+	    return {
+	      data: data
+	    };
+	  };
+
+	  return ObjectChainer;
+
+	})());
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
+	  'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
+	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)\/[^\/]+$/,
+	  'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
+	  'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
+	  'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
+	};
+
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PreferLibraryOverNativePromises, allPromises, newPromise, ref, ref1, ref2;
 
-	ref = __webpack_require__(17), newPromise = ref.newPromise, allPromises = ref.allPromises;
+	ref = __webpack_require__(21), newPromise = ref.newPromise, allPromises = ref.allPromises;
 
 	if (!(newPromise && allPromises)) {
-	  ref1 = __webpack_require__(18), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
+	  ref1 = __webpack_require__(13), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
 	}
 
 	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
-	  ref2 = __webpack_require__(19), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
+	  ref2 = __webpack_require__(22), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
 	}
 
 	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
@@ -1326,7 +1503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 21 */
 /***/ function(module, exports) {
 
 	var allPromises, injector, newPromise, ref,
@@ -1407,45 +1584,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	var allPromises, newPromise;
-
-	if (typeof Promise !== "undefined" && Promise !== null) {
-	  newPromise = (function(_this) {
-	    return function(fn) {
-	      return new Promise(function(resolve, reject) {
-	        if (resolve.fulfill) {
-	          return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
-	        } else {
-	          return fn.apply(null, arguments);
-	        }
-	      });
-	    };
-	  })(this);
-	  allPromises = (function(_this) {
-	    return function(promises) {
-	      return Promise.all(promises);
-	    };
-	  })(this);
-	}
-
-	module.exports = {
-	  newPromise: newPromise,
-	  allPromises: allPromises
-	};
-
-
-/***/ },
-/* 19 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var Promise, allPromises, newPromise, req;
 
 	req = require;
 
-	Promise = this.Promise || __webpack_require__(20).Promise;
+	Promise = this.Promise || __webpack_require__(23).Promise;
 
 	newPromise = function(fn) {
 	  return new Promise(fn);
@@ -1462,19 +1608,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 23 */
 /***/ function(module, exports) {
 
 	module.exports = window.Promise;
 
 
 /***/ },
-/* 21 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PathValidator, URL_VALIDATOR;
 
-	URL_VALIDATOR = __webpack_require__(22);
+	URL_VALIDATOR = __webpack_require__(25);
 
 	module.exports = new (PathValidator = (function() {
 	  function PathValidator() {}
@@ -1494,19 +1640,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
 
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Authorization, base64encode;
 
-	base64encode = __webpack_require__(24);
+	base64encode = __webpack_require__(27);
 
 	module.exports = new (Authorization = (function() {
 	  function Authorization() {}
@@ -1534,7 +1680,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -1556,12 +1702,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DEFAULT_HEADER, PREVIEW_HEADERS, PreviewApis;
 
-	PREVIEW_HEADERS = __webpack_require__(26);
+	PREVIEW_HEADERS = __webpack_require__(29);
 
 	DEFAULT_HEADER = function(url) {
 	  var key, val;
@@ -1595,7 +1741,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1605,7 +1751,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports) {
 
 	var UsePostInsteadOfPatch;
@@ -1629,104 +1775,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var SimpleVerbs, toQueryString,
-	  slice = [].slice;
-
-	toQueryString = __webpack_require__(11);
-
-	module.exports = new (SimpleVerbs = (function() {
-	  function SimpleVerbs() {}
-
-	  SimpleVerbs.prototype.verbs = {
-	    fetch: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query))
-	      };
-	    },
-	    read: function(path, query) {
-	      return {
-	        method: 'GET',
-	        path: "" + path + (toQueryString(query)),
-	        options: {
-	          isRaw: true
-	        }
-	      };
-	    },
-	    remove: function(path, data) {
-	      return {
-	        method: 'DELETE',
-	        path: path,
-	        data: data,
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    },
-	    create: function(path, data, contentType) {
-	      if (contentType) {
-	        return {
-	          method: 'POST',
-	          path: path,
-	          data: data,
-	          options: {
-	            isRaw: true,
-	            contentType: contentType
-	          }
-	        };
-	      } else {
-	        return {
-	          method: 'POST',
-	          path: path,
-	          data: data
-	        };
-	      }
-	    },
-	    update: function(path, data) {
-	      return {
-	        method: 'PATCH',
-	        path: path,
-	        data: data
-	      };
-	    },
-	    add: function(path, data) {
-	      return {
-	        method: 'PUT',
-	        path: path,
-	        data: data,
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    },
-	    contains: function() {
-	      var args, path;
-	      path = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-	      return {
-	        method: 'GET',
-	        path: path + "/" + (args.join('/')),
-	        options: {
-	          isBoolean: true
-	        }
-	      };
-	    }
-	  };
-
-	  return SimpleVerbs;
-
-	})());
-
-
-/***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var FetchAll, fetchNextPage, getMore, pushAll, toQueryString;
 
-	toQueryString = __webpack_require__(11);
+	toQueryString = __webpack_require__(10);
 
 	pushAll = function(target, source) {
 	  return target.push.apply(target, source);
@@ -1789,12 +1843,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReadBinary, toQueryString;
 
-	toQueryString = __webpack_require__(11);
+	toQueryString = __webpack_require__(10);
 
 	module.exports = new (ReadBinary = (function() {
 	  function ReadBinary() {}
@@ -1851,7 +1905,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports) {
 
 	var Pagination;
@@ -1886,7 +1940,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports) {
 
 	var CacheHandler;
@@ -1953,7 +2007,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;

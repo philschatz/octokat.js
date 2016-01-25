@@ -4,6 +4,10 @@ TREE_OPTIONS = require './grammar/tree-options'
 Chainer = require './chainer'
 VerbMethods = require './verb-methods'
 
+# Use the following plugins by default (they should be neglegible additional code)
+SimpleVerbsPlugin = require './plugins/simple-verbs'
+NativePromiseOnlyPlugin = require './plugins/promise/native-only'
+
 Requester = require './requester'
 applyHypermedia = require './helpers/hypermedia'
 
@@ -23,7 +27,7 @@ uncamelizeObj = (obj) ->
 
 OctokatBase = (clientOptions={}) ->
 
-  plugins = clientOptions.plugins or []
+  plugins = clientOptions.plugins or [SimpleVerbsPlugin, NativePromiseOnlyPlugin]
 
   # TODO remove disableHypermedia
   {disableHypermedia} = clientOptions
@@ -52,6 +56,7 @@ OctokatBase = (clientOptions={}) ->
       unless disableHypermedia
         context = {
           data: val
+          plugins
           requester
           instance
           clientOptions
@@ -71,6 +76,7 @@ OctokatBase = (clientOptions={}) ->
   instance.parse = (data) ->
     context = {
       requester: {request}
+      plugins
       data
       instance
       clientOptions
@@ -80,25 +86,12 @@ OctokatBase = (clientOptions={}) ->
   instance._parseWithContext = (path, context) ->
     {data, requester} = context
     url = data.url or path
+    plus.extend(context, {url})
 
     for plugin in plugins
       if plugin.responseMiddleware
         plus.extend(context, plugin.responseMiddleware(context))
     {data} = context
-
-    # TODO: Move the chainer to a plugin since many people will not need this
-    # TODO: Figure out why this requestFn is better than the global requestFn
-    verbMethods = new VerbMethods(plugins, requester)
-    chainer = new Chainer(verbMethods)
-    if url
-      chainer.chain(url, true, {}, data)
-      chainer.chainChildren(url, data)
-    else
-      chainer.chain('', null, {}, data)
-      # For the paged results, rechain all children in the array
-      if Array.isArray(data)
-        for datum in data
-          chainer.chainChildren(datum.url, datum)
     data
 
 
