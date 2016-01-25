@@ -25,6 +25,7 @@ OctokatBase = (clientOptions={}) ->
 
   plugins = clientOptions.plugins or []
 
+  # TODO remove disableHypermedia
   {disableHypermedia} = clientOptions
   # set defaults
   disableHypermedia ?= false
@@ -80,9 +81,6 @@ OctokatBase = (clientOptions={}) ->
     {data, requester} = context
     url = data.url or path
 
-    # TODO: Remove this check since it modifies the object
-    context.options ?= {} # some plugins require this object to be set
-
     for plugin in plugins
       if plugin.responseMiddleware
         plus.extend(context, plugin.responseMiddleware(context))
@@ -104,7 +102,7 @@ OctokatBase = (clientOptions={}) ->
     data
 
 
-  # TODO remove this depractaion too
+  # TODO remove this deprectaion too
   instance._fromUrlWithDefault = (path, defaultFn, args...) ->
     path = applyHypermedia(path, args...)
     verbMethods.injectVerbMethods(path, defaultFn)

@@ -40,7 +40,8 @@ module.exports = (url, args...) ->
         # For example, the URL is `/assets{?name,label}`
         #   which turns into `/assets?name=foo.zip`
         # Used to upload releases via the repo releases API.
-        # TODO: When match contains `,` or
+        #
+        # When match contains `,` or
         # `args.length is 1` and args[0] is object match the args to those in the template
         optionalNames = match[2..-2].split(',') # omit the braces and the `?` before splitting
         optionalParams = {}

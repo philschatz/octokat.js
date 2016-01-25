@@ -14,15 +14,15 @@ module.exports =
     $
   ///
 
-  # https://developer.github.com/v3/oauth_authorizations/
-  'application/vnd.github.mirage-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
-    (
-        /authorizations
-      | /authorizations/clients/ ([^/]{20})
-      | /authorizations/clients/ ([^/]{20}) / ([^/]+) # fingerprint
-      | /authorizations/ ([\d]+)
-      | /applications/ ([^/]{20}) /tokens
-      | /applications/ ([^/]{20}) /tokens/ ([^/]+)
-    )
-    $
-  ///
+  # # https://developer.github.com/v3/oauth_authorizations/
+  # 'application/vnd.github.mirage-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
+  #   (
+  #       /authorizations
+  #     | /authorizations/clients/ ([^/]{20})
+  #     | /authorizations/clients/ ([^/]{20}) / ([^/]+) # fingerprint
+  #     | /authorizations/ ([\d]+)
+  #     | /applications/ ([^/]{20}) /tokens
+  #     | /applications/ ([^/]{20}) /tokens/ ([^/]+)
+  #   )
+  #   $
+  # ///

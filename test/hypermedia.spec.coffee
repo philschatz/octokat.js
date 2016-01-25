@@ -22,7 +22,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, REPO_USER, REPO
       expect(url).to.equal(expected)
 
 
-    it 'supports fetching from a hypermedia-constructed URL', (done) ->
+    it 'supports fetching from a hypermedia-constructed URL', ->
       template = '/repos/{repoUser}{/repoName}'
       params =
         repoUser: REPO_USER
@@ -30,7 +30,6 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, REPO_USER, REPO
       client.fromUrl(template, params).fetch()
       .then (repo) ->
         expect(repo.name).to.equal(REPO_NAME)
-        done()
 
     it 'supports & in templates', ->
       template = 'https://api.github.com/search/code?q={query}{&page,per_page,sort,order}'
@@ -59,10 +58,9 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, REPO_USER, REPO
       actualMs = client.parse(json).createdAt.getTime()
       expect(actualMs).to.equal(expectedMs)
 
-    it 'converts date strings to dates (fetch)', (done) ->
+    it 'converts date strings to dates (fetch)', ->
       client.repos(REPO_USER, REPO_NAME).fetch().then (info) ->
         expect(info.createdAt).to.be.an.instanceof(Date)
-        done()
 
   # describe 'URL Hypermedia Patterns (only tested in Node)', ->
   #

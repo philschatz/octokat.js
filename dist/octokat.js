@@ -215,9 +215,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var chainer, data, datum, j, k, len, len1, plugin, requester, url;
 	    data = context.data, requester = context.requester;
 	    url = data.url || path;
-	    if (context.options == null) {
-	      context.options = {};
-	    }
 	    for (j = 0, len = plugins.length; j < len; j++) {
 	      plugin = plugins[j];
 	      if (plugin.responseMiddleware) {
@@ -1603,8 +1600,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	  'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
-	  'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/,
-	  'application/vnd.github.mirage-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/authorizations|\/authorizations\/clients\/([^\/]{20})|\/authorizations\/clients\/([^\/]{20})\/([^\/]+)|\/authorizations\/([\d]+)|\/applications\/([^\/]{20})\/tokens|\/applications\/([^\/]{20})\/tokens\/([^\/]+))$/
+	  'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/
 	};
 
 
@@ -1819,29 +1815,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ReadBinary.prototype.requestMiddleware = function(arg) {
 	    var isBase64, options;
 	    options = arg.options;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      return {
-	        headers: {
-	          Accept: 'application/vnd.github.raw'
-	        },
-	        mimeType: 'text/plain; charset=x-user-defined'
-	      };
+	    if (options) {
+	      isBase64 = options.isBase64;
+	      if (isBase64) {
+	        return {
+	          headers: {
+	            Accept: 'application/vnd.github.raw'
+	          },
+	          mimeType: 'text/plain; charset=x-user-defined'
+	        };
+	      }
 	    }
 	  };
 
 	  ReadBinary.prototype.responseMiddleware = function(arg) {
 	    var converted, data, i, isBase64, j, options, ref;
 	    options = arg.options, data = arg.data;
-	    isBase64 = options.isBase64;
-	    if (isBase64) {
-	      converted = '';
-	      for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-	        converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+	    if (options) {
+	      isBase64 = options.isBase64;
+	      if (isBase64) {
+	        converted = '';
+	        for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+	          converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+	        }
+	        return {
+	          data: converted
+	        };
 	      }
-	      return {
-	        data: converted
-	      };
 	    }
 	  };
 

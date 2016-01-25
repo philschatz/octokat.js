@@ -35,9 +35,8 @@ module.exports = new class HyperMedia
 
       if /^upload_url$/.test(key)
         # POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
-        # Pull off the last 2 args to .upload()
         defaultFn = (args...) ->
-          # TODO: Maybe always set isRaw=true when contentType is prvided
+          # TODO: Maybe always set isRaw=true when contentType is provided
           deprecate('call .upload({name, label}).create(data, contentType)' +
             ' instead of .upload(name, data, contentType)')
           defaultFn.create(args...)

@@ -38,7 +38,7 @@ module.exports = new class CacheHandler
         {data, status} = cacheHandler.get(method, path)
       else
         # Cache the response to reuse later
-        if method is 'GET' and jqXHR.getResponseHeader('ETag') # TODO: and clientOptions.useETags
+        if method is 'GET' and jqXHR.getResponseHeader('ETag')
           eTag = jqXHR.getResponseHeader('ETag')
           cacheHandler.add(method, path, eTag, data, jqXHR.status)
 

@@ -25,3 +25,6 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, TOKEN, REPO_US
       client = new Octokat({token: TOKEN, emitter: emitter})
       client.repos(REPO_USER, REPO_NAME).fetch().then (info) ->
         expect(info).to.not.be.null
+
+      # Mocha 3 does not like it when a promise is returned _and_ a done callback is expected
+      return null

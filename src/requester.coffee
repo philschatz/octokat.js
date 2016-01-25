@@ -147,7 +147,7 @@ module.exports = class Requester
         # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
         # Respond with the redirect URL (for archive links)
-        # TODO: implement a `followRedirects` flag
+        # TODO: implement a `followRedirects` plugin
         if jqXHR.status is 302
           cb(null, jqXHR.getResponseHeader('Location'))
         # If it was a boolean question and the server responded with 204 ignore.
