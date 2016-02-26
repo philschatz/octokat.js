@@ -48,6 +48,15 @@ class ETagResponse
   constructor: (@eTag, @data, @status) ->
 
 
+# Cached responses are stored in this object keyed by `path`
+_cachedETags = {}
+DEFAULT_CACHE_HANDLER =
+  get: (method, path) ->
+    _cachedETags["#{method} #{path}"]
+  add: (method, path, eTag, data, status) ->
+    _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, status)
+
+
 # # Construct the request function.
 # It contains all the auth credentials passed in to the client constructor
 
@@ -61,15 +70,7 @@ Request = (clientOptions={}) ->
   # These are updated whenever a request is made (optional)
   emitter = clientOptions.emitter
 
-  # Cached responses are stored in this object keyed by `path`
-  _cachedETags = {}
-
-  cacheHandler = clientOptions.cacheHandler or {
-    get: (method, path) ->
-      _cachedETags["#{method} #{path}"]
-    add: (method, path, eTag, data, status) ->
-      _cachedETags["#{method} #{path}"] = new ETagResponse(eTag, data, status)
-  }
+  cacheHandler = clientOptions.cacheHandler or DEFAULT_CACHE_HANDLER
 
   # HTTP Request Abstraction
   # =======

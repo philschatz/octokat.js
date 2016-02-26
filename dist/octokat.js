@@ -798,7 +798,7 @@ module.exports = Replacer;
 
 
 },{"./chainer":1,"./grammar":2,"./helper-promise":4,"./helper-querystring":5,"./plus":7}],9:[function(require,module,exports){
-var DEFAULT_HEADER, ETagResponse, Request, ajax, base64encode, userAgent;
+var DEFAULT_CACHE_HANDLER, DEFAULT_HEADER, ETagResponse, Request, _cachedETags, ajax, base64encode, userAgent;
 
 base64encode = require('./helper-base64');
 
@@ -859,8 +859,19 @@ ETagResponse = (function() {
 
 })();
 
+_cachedETags = {};
+
+DEFAULT_CACHE_HANDLER = {
+  get: function(method, path) {
+    return _cachedETags[method + " " + path];
+  },
+  add: function(method, path, eTag, data, status) {
+    return _cachedETags[method + " " + path] = new ETagResponse(eTag, data, status);
+  }
+};
+
 Request = function(clientOptions) {
-  var _cachedETags, cacheHandler, emitter;
+  var cacheHandler, emitter;
   if (clientOptions == null) {
     clientOptions = {};
   }
@@ -874,15 +885,7 @@ Request = function(clientOptions) {
     clientOptions.usePostInsteadOfPatch = false;
   }
   emitter = clientOptions.emitter;
-  _cachedETags = {};
-  cacheHandler = clientOptions.cacheHandler || {
-    get: function(method, path) {
-      return _cachedETags[method + " " + path];
-    },
-    add: function(method, path, eTag, data, status) {
-      return _cachedETags[method + " " + path] = new ETagResponse(eTag, data, status);
-    }
-  };
+  cacheHandler = clientOptions.cacheHandler || DEFAULT_CACHE_HANDLER;
   return function(method, path, data, options, cb) {
     var ajaxConfig, auth, headers, mimeType;
     if (options == null) {
