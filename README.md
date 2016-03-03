@@ -1,9 +1,11 @@
 # Octokat.js
+[![gh-board][kanban-image]][kanban-url]
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][downloads-url]
 [![build status][travis-image]][travis-url]
 [![dependency status][dependency-image]][dependency-url]
 [![dev dependency status][dev-dependency-image]][dev-dependency-url]
+
 
 
 <a href="https://tonicdev.com/npm/octokat" target="_window">Try it out in your browser!</a> (REPL)
@@ -456,7 +458,8 @@ If you are adding tests be sure to include the updated fixtures in the Pull Requ
 
 
 
-
+[kanban-image]: https://img.shields.io/github/issues/philschatz/octokat.js.svg?style=flat-square&label=kanban%20board%20%28gh-board%29
+[kanban-url]: http://philschatz.com/gh-board/#/r/philschatz:octokat.js
 [npm-image]: https://img.shields.io/npm/v/octokat.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/octokat
 [downloads-image]: http://img.shields.io/npm/dm/octokat.svg?style=flat-square
