@@ -130,8 +130,8 @@ URL_VALIDATOR = /// ^
         | pages / builds
         | pages / builds / latest
         | commits
-        | commits / [a-f0-9]{40}
-        | commits / [a-f0-9]{40} / (
+        | commits / [^/]+
+        | commits / [^/]+ / (
               comments
             | status
             | statuses
