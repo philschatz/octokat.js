@@ -458,15 +458,15 @@ If you are adding tests be sure to include the updated fixtures in the Pull Requ
 
 
 
-[kanban-image]: https://img.shields.io/github/issues/philschatz/octokat.js.svg?style=flat-square&label=kanban%20board%20%28gh-board%29
+[kanban-image]: https://img.shields.io/github/issues/philschatz/octokat.js.svg?label=kanban%20board%20%28gh-board%29
 [kanban-url]: http://philschatz.com/gh-board/#/r/philschatz:octokat.js
-[npm-image]: https://img.shields.io/npm/v/octokat.svg?style=flat-square
+[npm-image]: https://img.shields.io/npm/v/octokat.svg
 [npm-url]: https://npmjs.org/package/octokat
-[downloads-image]: http://img.shields.io/npm/dm/octokat.svg?style=flat-square
+[downloads-image]: http://img.shields.io/npm/dm/octokat.svg
 [downloads-url]: https://npmjs.org/package/octokat
-[travis-image]: https://img.shields.io/travis/philschatz/octokat.js.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/philschatz/octokat.js.svg
 [travis-url]: https://travis-ci.org/philschatz/octokat.js
-[dependency-image]: https://img.shields.io/david/philschatz/octokat.js.svg?style=flat-square
+[dependency-image]: https://img.shields.io/david/philschatz/octokat.js.svg
 [dependency-url]: https://david-dm.org/philschatz/octokat.js
-[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/octokat.js.svg?style=flat-square
+[dev-dependency-image]: https://img.shields.io/david/dev/philschatz/octokat.js.svg
 [dev-dependency-url]: https://david-dm.org/philschatz/octokat.js#info=devDependencies
