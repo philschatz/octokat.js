@@ -100,6 +100,7 @@ URL_VALIDATOR = /// ^
         | hooks
         | hooks /[^/]+
         | hooks /[^/]+ /tests
+        | hooks /[^/]+ /pings
         | assignees
         | languages
         | teams
@@ -301,6 +302,7 @@ TREE_OPTIONS =
       'statuses'    : false
     'hooks':
       'tests'       : false
+      'pings'       : false
     'assignees'     : false
     'languages'     : false
     'teams'         : false
