@@ -125,13 +125,13 @@ URL_VALIDATOR = /// ^
         | events
         | notifications
         | merges
-        | statuses / [a-f0-9]{40}
+        | statuses / [^/]+
         | pages
         | pages / builds
         | pages / builds / latest
         | commits
-        | commits / [a-f0-9]{40}
-        | commits / [a-f0-9]{40} / (
+        | commits / [^/]+
+        | commits / [^/]+ / (
               comments
             | status
             | statuses
