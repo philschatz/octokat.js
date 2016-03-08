@@ -34,7 +34,8 @@ ajax = (options, cb) ->
     if 4 == xhr.readyState
       options.statusCode?[xhr.status]?()
 
-      if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302
+      # When disconnected, pass if the status is 0 so the cacheHandler has a chance to return the cached version
+      if xhr.status >= 200 and xhr.status < 300 or xhr.status is 304 or xhr.status is 302 or xhr.status is 0
         cb(null, xhr)
       else
         cb(xhr)

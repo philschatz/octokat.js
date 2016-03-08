@@ -989,7 +989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          ref2[name1]();
 	        }
 	      }
-	      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302) {
+	      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302 || xhr.status === 0) {
 	        return cb(null, xhr);
 	      } else {
 	        return cb(xhr);
@@ -1459,6 +1459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)\/[^\/]+$/,
 	  'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
 	  'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
+	  'teams': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/teams\/[^\/]+$/,
 	  'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
 	};
 
@@ -1986,7 +1987,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (jqXHR) {
 	      method = request.method, path = request.path;
 	      cacheHandler = clientOptions.cacheHandler || this;
-	      if (status === 304) {
+	      if (status === 304 || status === 0) {
 	        ref = cacheHandler.get(method, path), data = ref.data, status = ref.status;
 	      } else {
 	        if (method === 'GET' && jqXHR.getResponseHeader('ETag')) {

@@ -34,7 +34,7 @@ module.exports = new class CacheHandler
       {method, path} = request # This is also not defined when octo.parse is called
 
       cacheHandler = clientOptions.cacheHandler or @
-      if status is 304
+      if status is 304 or status is 0
         {data, status} = cacheHandler.get(method, path)
       else
         # Cache the response to reuse later
