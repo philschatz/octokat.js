@@ -434,6 +434,10 @@ OBJECT_MATCHER =
     /orgs/ [^/]+
     $
   ///
+  'teams': /// ^ (https?://[^/]+)? (/api/v3)?
+    /teams/ [^/]+
+    $
+  ///
   'repos.comments': /// ^
     (https?://[^/]+)? # Optional protocol, host, and port
     (/api/v3)?        # Optional API root for enterprise GitHub users
