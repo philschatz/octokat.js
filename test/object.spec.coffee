@@ -4,21 +4,21 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, USERNAME, TOKEN
   describe 'Returned Objects', ->
     it 'has the same methods on octo.repos(REPO_ID).fetch().then(repo) as octo.me.repos.fetch().then(repos[0])', ->
       client.me.repos.fetch()
-      .then (repos) ->
-        expect(repos).to.not.be.empty
-        repos[0].forks.fetch()
+      .then ({items}) ->
+        expect(items).to.not.be.empty
+        items[0].forks.fetch()
 
     it 'has the same methods on octo.gists(ID).fetch().then(gist) as octo.gists.public.fetch().then(gists[0])', ->
       client.gists.public.fetch()
-      .then (gists) ->
-        expect(gists).to.not.be.empty
-        expect(gists[0].star.contains).to.be.a.function
+      .then ({items}) ->
+        expect(items).to.not.be.empty
+        expect(items[0].star.contains).to.be.a.function
 
     it 'has the same methods on octo.users(ID).fetch().then(user) as octo.users.fetch().then(users[0])', ->
       client.users.fetch()
-      .then (users) ->
-        expect(users).to.not.be.empty
-        expect(users[0].gists.fetch).to.be.a.function
+      .then ({items}) ->
+        expect(items).to.not.be.empty
+        expect(items[0].gists.fetch).to.be.a.function
 
     it 'has does not add the root context to returned objects', ->
       client.repos(REPO_USER, REPO_NAME).issues(1).fetch().then (issue) ->

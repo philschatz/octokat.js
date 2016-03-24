@@ -9,8 +9,8 @@ define (require) ->
 
     it "lists available downloads", ->
       client.repos("github/hubot").downloads.fetch()
-      .then (downloads) ->
-        expect(downloads[downloads.length-1].description).to.equal("Version 1.0.0 of the Hubot Campfire Bot")
+      .then ({items}) ->
+        expect(items[items.length-1].description).to.equal("Version 1.0.0 of the Hubot Campfire Bot")
 
     it "gets a single download", ->
       client.repos("github/hubot").downloads(165347).fetch()

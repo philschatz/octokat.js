@@ -4,7 +4,7 @@
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
   "scripts": {
-    "build": "coffeelint --file ./coffeelint.json src/**.coffee && npm run dist",
+    "build": "coffeelint --file ./coffeelint.json src/**/*.coffee && npm run dist",
     "pretest": "npm run build",
     "test": "npm run test-node && npm run test-browser",
     "test-node": "VCR_MODE=cache ./node_modules/.bin/mocha --reporter spec --require coffee-script/register test/**/node**.coffee",
