@@ -6,7 +6,7 @@ module.exports = new class Pagination
     # Add them to data so the resolved value is iterable
 
     if Array.isArray(data)
-      data = data[...]
+      data = {items: data[...]} # Convert to object so we can add the next/prev/first/last link headers
 
       # Parse the Link headers
       # of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
