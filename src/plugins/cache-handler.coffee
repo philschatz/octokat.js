@@ -35,9 +35,13 @@ module.exports = new class CacheHandler
 
       cacheHandler = clientOptions.cacheHandler or @
       if status is 304 or status is 0
-        {data, status} = cacheHandler.get(method, path)
-        # Set a flag on the object so users know this is a cached response
-        data.__IS_CACHED = ref.eTag or true
+        ref = cacheHandler.get(method, path)
+        if ref
+          {data, status, eTag} = ref
+          # Set a flag on the object so users know this is a cached response
+          data.__IS_CACHED = eTag or true
+        else
+          throw new Error('ERROR: Bug in Octokat cacheHandler. It had an eTag but not the cached response')
       else
         # Cache the response to reuse later
         if method is 'GET' and jqXHR.getResponseHeader('ETag')

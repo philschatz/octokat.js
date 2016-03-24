@@ -1,6 +1,8 @@
 toQueryString = require '../helpers/querystring'
 
 pushAll = (target, source) ->
+  unless Array.isArray(source)
+    throw new Error('Octokat Error: Calling fetchAll on a request that does not yield an array');
   target.push.apply(target, source)
 
 getMore = (fetchable, requester, acc, cb) ->
@@ -21,7 +23,7 @@ fetchNextPage = (obj, requester, cb) ->
     obj.next_page.fetch(cb)
     true
   else if typeof obj.nextPageUrl is 'string'
-    requester.request('GET', obj.nextPage, null, null, cb)
+    requester.request('GET', obj.nextPageUrl, null, null, cb)
     true
   else if obj.nextPage
     obj.nextPage.fetch(cb)
