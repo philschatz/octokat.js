@@ -36,6 +36,8 @@ module.exports = new class CacheHandler
       cacheHandler = clientOptions.cacheHandler or @
       if status is 304 or status is 0
         {data, status} = cacheHandler.get(method, path)
+        # Set a flag on the object so users know this is a cached response
+        data.__IS_CACHED = ref.eTag or true
       else
         # Cache the response to reuse later
         if method is 'GET' and jqXHR.getResponseHeader('ETag')
