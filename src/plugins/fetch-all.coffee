@@ -2,7 +2,7 @@ toQueryString = require '../helpers/querystring'
 
 pushAll = (target, source) ->
   unless Array.isArray(source)
-    throw new Error('Octokat Error: Calling fetchAll on a request that does not yield an array');
+    throw new Error('Octokat Error: Calling fetchAll on a request that does not yield an array')
   target.push.apply(target, source)
 
 getMore = (fetchable, requester, acc, cb) ->
