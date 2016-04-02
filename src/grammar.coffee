@@ -153,6 +153,7 @@ URL_VALIDATOR = /// ^
         | pulls/ [0-9]+ / (
               files
             | commits
+            | merge
             )
         | git/ (
               refs
