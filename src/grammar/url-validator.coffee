@@ -156,6 +156,7 @@ module.exports = /// ^
         | pulls/ [0-9]+ / (
               files
             | commits
+            | merge
             )
         | git/ (
               refs
