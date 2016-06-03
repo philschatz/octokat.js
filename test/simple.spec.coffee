@@ -132,14 +132,14 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         .fetch().then (val) ->
           expect(val).to.not.be.null
 
-      it 'supports octo.parse(json)', () ->
-        json =
-          url: 'https://api.github.com/repos/philschatz/octokat.js'
-          foo_url: 'http://philschatz.com'
-          field: 'Hello there!'
-          bar:
-            baz_url: 'http://philschatz.com'
-        ret = client.parse(json)
+    it 'supports octo.parse(json)', (done) ->
+      json =
+        url: 'https://api.github.com/repos/philschatz/octokat.js'
+        foo_url: 'http://philschatz.com'
+        field: 'Hello there!'
+        bar:
+          baz_url: 'http://philschatz.com'
+      client.parse json, (err, ret) ->
         expect(ret.field).to.equal(json.field)
         expect(ret.url).to.equal(json.url)
         expect(ret.foo.url).to.equal(json.foo_url)
@@ -148,6 +148,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         # Make sure the obj was detected to be a repo
         expect(ret.fetch).to.not.be.null
         expect(ret.issues).to.not.be.null
+        done()
 
     describe 'Miscellaneous APIs', () ->
       itIsOk(GH, 'zen.read')

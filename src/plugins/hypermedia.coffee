@@ -63,6 +63,8 @@ module.exports = new class HyperMedia
     else
       acc[key] = @replace(instance, value)
 
-  responseMiddleware: ({instance, data}) ->
+  responseMiddlewareAsync: (input, cb) ->
+    {instance, data} = input
     data = @replace(instance, data)
-    {data}
+    input.data = data # or throw new Error('BUG! Expected JSON data to exist')
+    cb(null, input)

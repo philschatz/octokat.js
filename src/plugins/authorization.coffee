@@ -1,10 +1,13 @@
 base64encode = require '../helpers/base64'
 
 module.exports = new class Authorization
-  requestMiddleware: ({clientOptions:{token, username, password}}) ->
+  requestMiddlewareAsync: (input, cb) ->
+    input.headers ?= {}
+    {headers, clientOptions:{token, username, password}} = input
     if token or (username and password)
       if token
         auth = "token #{token}"
       else
         auth = 'Basic ' + base64encode("#{username}:#{password}")
-      {headers: {'Authorization': auth}}
+      input.headers['Authorization'] = auth
+    return cb(null, input)

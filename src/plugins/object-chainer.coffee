@@ -1,7 +1,7 @@
 OBJECT_MATCHER = require '../grammar/object-matcher'
 TREE_OPTIONS = require '../grammar/tree-options'
 
-VerbMethods = require '../verb-methods'
+{VerbMethods} = require '../verb-methods'
 Chainer = require '../chainer'
 
 module.exports = new class ObjectChainer
@@ -13,7 +13,10 @@ module.exports = new class ObjectChainer
           context = context[k]
         chainer.chain(url, k, context, obj)
 
-  responseMiddleware: ({plugins, requester, data, url}) ->
+  responseMiddlewareAsync: (input, cb) ->
+    {plugins, requester, data, url} = input
+    # unless data
+    #    throw new Error('BUG! Expected JSON data to exist')
     verbMethods = new VerbMethods(plugins, requester)
     chainer = new Chainer(verbMethods)
     if url
@@ -26,4 +29,4 @@ module.exports = new class ObjectChainer
         for datum in data
           @chainChildren(chainer, datum.url, datum)
 
-    {data}
+    cb(null, input)

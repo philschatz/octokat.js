@@ -2,6 +2,15 @@
 # working with arrays anyway
 filter = require 'lodash/internal/arrayFilter'
 forEach = require 'lodash/internal/arrayEach'
+map = require 'lodash/internal/arrayMap'
+
+# From async
+onlyOnce = (fn) ->
+  return () ->
+    throw new Error("Callback was already called.") if fn is null
+    callFn = fn
+    fn = null
+    callFn.apply(@, arguments)
 
 # require('underscore-plus')
 plus =
@@ -25,6 +34,24 @@ plus =
       else
         '-'
 
+  waterfall: (tasks, cb) ->
+    taskIndex = 0
+    nextTask = (val) ->
+      if taskIndex is tasks.length
+        return cb(null, val)
+
+      taskCallback = onlyOnce (err, val) ->
+        return cb(err, val) if err
+        nextTask(val)
+
+      task = tasks[taskIndex++]
+      if val
+        task(val, taskCallback)
+      else
+        task(taskCallback)
+
+    nextTask(null) # Initial value passed to the 1st
+
   # Just _.extend(target, source)
   extend: (target, source) ->
     if source
@@ -38,5 +65,6 @@ plus =
 
   filter: filter
   forEach: forEach
+  map: map
 
 module.exports = plus

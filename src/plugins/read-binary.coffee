@@ -4,16 +4,17 @@ module.exports = new class ReadBinary
   verbs:
     readBinary: (path, query) -> {method:'GET', path:"#{path}#{toQueryString(query)}", options:{isRaw:true, isBase64:true}}
 
-  requestMiddleware: ({options}) ->
+  requestMiddlewareAsync: (input, cb) ->
+    {options} = input
     if options
       {isBase64} = options
       if isBase64
-        return {
-          headers: {Accept: 'application/vnd.github.raw'}
-          mimeType: 'text/plain; charset=x-user-defined'
-        }
+        input.headers['Accept'] = 'application/vnd.github.raw'
+        input.mimeType = 'text/plain; charset=x-user-defined'
+    cb(null, input)
 
-  responseMiddleware: ({options, data}) ->
+  responseMiddlewareAsync: (input, cb) ->
+    {options, data} = input
     if options
       {isBase64} = options
       # Convert the response to a Base64 encoded string
@@ -24,4 +25,5 @@ module.exports = new class ReadBinary
         for i in [0...data.length]
           converted += String.fromCharCode(data.charCodeAt(i) & 0xff)
 
-        {data:converted}
+        input.data = converted # or throw new Error('BUG! Expected JSON data to exist')
+    cb(null, input)

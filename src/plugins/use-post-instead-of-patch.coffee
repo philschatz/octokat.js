@@ -1,4 +1,6 @@
 module.exports = new class UsePostInsteadOfPatch
-  requestMiddleware: ({clientOptions:{usePostInsteadOfPatch}, method}) ->
+  requestMiddlewareAsync: (input, cb) ->
+    {clientOptions:{usePostInsteadOfPatch}, method} = input
     if usePostInsteadOfPatch and method is 'PATCH'
-      {method: 'POST'}
+      input.method = 'POST'
+    cb(null, input)

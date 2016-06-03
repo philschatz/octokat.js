@@ -1,4 +1,4 @@
-{filter, forEach, extend} = require './plus'
+{filter, forEach, extend, map, waterfall} = require './plus'
 
 
 # Request Function
@@ -59,7 +59,8 @@ module.exports = class Requester
     if typeof @_clientOptions.emitter is 'function'
       @_emit = @_clientOptions.emitter
 
-    @_pluginMiddleware = filter plugins, ({requestMiddleware}) -> requestMiddleware
+    @_pluginMiddlewareAsync = map filter(plugins, ({requestMiddlewareAsync}) -> requestMiddlewareAsync), (plugin) ->
+      plugin.requestMiddlewareAsync.bind(plugin)
     @_plugins = plugins
 
   # HTTP Request Abstraction
@@ -89,110 +90,113 @@ module.exports = class Requester
       headers['User-Agent'] = 'octokat.js'
 
     acc = {method, path, headers, options, clientOptions: @_clientOptions}
-    forEach @_pluginMiddleware, (plugin) ->
-      {method, headers, mimeType} = plugin.requestMiddleware(acc) or {}
-      acc.method = method if method
-      acc.mimeType = mimeType if mimeType
-      extend(acc.headers, headers)
 
-    {method, headers, mimeType} = acc
+    # To use async.waterfall we need to pass in the initial data (`acc`)
+    # so we create an initial function that just takes a callback
+    initial = (cb) -> cb(null, acc)
+    pluginsPlusInitial = [initial].concat(@_pluginMiddlewareAsync)
 
-    headers['Accept'] = 'application/vnd.github.raw' if options.isRaw
+    waterfall pluginsPlusInitial, (err, acc) =>
+      return cb(err, acc) if err
 
-    ajaxConfig =
-      # Be sure to **not** blow the cache with a random number
-      # (GitHub will respond with 5xx or CORS errors)
-      url: path
-      type: method
-      contentType: options.contentType
-      mimeType: mimeType
-      headers: headers
+      {method, headers, mimeType} = acc
 
-      processData: false # Don't convert to QueryString
-      data: !options.isRaw and data and JSON.stringify(data) or data
-      dataType: 'json' unless options.isRaw
+      headers['Accept'] = 'application/vnd.github.raw' if options.isRaw
 
-    # If the request is a boolean yes/no question GitHub will indicate
-    # via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-    if options.isBoolean
-      ajaxConfig.statusCode =
-        204: () => cb(null, true)
-        404: () => cb(null, false)
+      ajaxConfig =
+        # Be sure to **not** blow the cache with a random number
+        # (GitHub will respond with 5xx or CORS errors)
+        url: path
+        type: method
+        contentType: options.contentType
+        mimeType: mimeType
+        headers: headers
 
-    eventId++
-    @_emit?('start', eventId, {method, path, data, options})
+        processData: false # Don't convert to QueryString
+        data: !options.isRaw and data and JSON.stringify(data) or data
+        dataType: 'json' unless options.isRaw
 
-    ajax ajaxConfig, (err, val) =>
-      jqXHR = err or val
+      # If the request is a boolean yes/no question GitHub will indicate
+      # via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+      if options.isBoolean
+        ajaxConfig.statusCode =
+          204: () => cb(null, true)
+          404: () => cb(null, false)
 
-      # Fire listeners when the request completes or fails
-      if @_emit
+      eventId++
+      @_emit?('start', eventId, {method, path, data, options})
 
-        if jqXHR.getResponseHeader('X-RateLimit-Limit')
-          rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
-          rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
-          rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
-          # Reset time is in seconds, not milliseconds
-          # if rateLimitReset
-          #   rateLimitReset = new Date(rateLimitReset * 1000)
+      ajax ajaxConfig, (err, val) =>
+        jqXHR = err or val
 
-          emitterRate =
-            remaining: rateLimitRemaining
-            limit: rateLimit
-            reset: rateLimitReset
+        # Fire listeners when the request completes or fails
+        if @_emit
 
-          if jqXHR.getResponseHeader('X-OAuth-Scopes')
-            emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
-        @_emit('end', eventId, {method, path, data, options}, jqXHR.status, emitterRate)
+          if jqXHR.getResponseHeader('X-RateLimit-Limit')
+            rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
+            rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
+            rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
+            # Reset time is in seconds, not milliseconds
+            # if rateLimitReset
+            #   rateLimitReset = new Date(rateLimitReset * 1000)
 
-      unless err
-        # Return the result and Base64 encode it if `options.isBase64` flag is set.
+            emitterRate =
+              remaining: rateLimitRemaining
+              limit: rateLimit
+              reset: rateLimitReset
 
-        # Respond with the redirect URL (for archive links)
-        # TODO: implement a `followRedirects` plugin
-        if jqXHR.status is 302
-          cb(null, jqXHR.getResponseHeader('Location'))
-        # If it was a boolean question and the server responded with 204 ignore.
-        else unless jqXHR.status is 204 and options.isBoolean
-          if jqXHR.responseText and ajaxConfig.dataType is 'json'
-            data = JSON.parse(jqXHR.responseText)
+            if jqXHR.getResponseHeader('X-OAuth-Scopes')
+              emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
+          @_emit('end', eventId, {method, path, data, options}, jqXHR.status, emitterRate)
 
-          else
-            data = jqXHR.responseText
+        unless err
+          # Return the result and Base64 encode it if `options.isBase64` flag is set.
 
+          # Respond with the redirect URL (for archive links)
+          # TODO: implement a `followRedirects` plugin
+          if jqXHR.status is 302
+            cb(null, jqXHR.getResponseHeader('Location'))
+          # If it was a boolean question and the server responded with 204 ignore.
+          else unless jqXHR.status is 204 and options.isBoolean
+            if jqXHR.responseText and ajaxConfig.dataType is 'json'
+              data = JSON.parse(jqXHR.responseText)
 
-          acc = {
-            clientOptions: @_clientOptions
-            plugins: @_plugins
-            data
-            options
-            jqXHR # for cacheHandler
-            status: jqXHR.status # cacheHandler changes this
-            request: acc # Include the request data for plugins like cacheHandler
-            requester: @ # for Hypermedia to generate verb methods
-            instance: @_instance # for Hypermedia to be able to call `.fromUrl`
-          }
-          data = @_instance._parseWithContext('', acc)
-
-          cb(null, data, jqXHR.status, jqXHR)
-
-      else
-        # Parse the error if one occurs
-
-        # If the request was for a Boolean then a 404 should be treated as a "false"
-        if options.isBoolean and jqXHR.status is 404
-          # cb(null, false) # Already handled
-        else
-          err = new Error(jqXHR.responseText)
-          err.status = jqXHR.status
-          unless jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
-            if jqXHR.responseText
-              try
-                json = JSON.parse(jqXHR.responseText)
-              catch
-                cb({message: 'Error Parsing Response'})
             else
-              # In the case of 404 errors, `responseText` is an empty string
-              json = ''
-            err.json = json
-          cb(err)
+              data = jqXHR.responseText
+
+
+            acc = {
+              clientOptions: @_clientOptions
+              plugins: @_plugins
+              data
+              options
+              jqXHR # for cacheHandler
+              status: jqXHR.status # cacheHandler changes this
+              request: acc # Include the request data for plugins like cacheHandler
+              requester: @ # for Hypermedia to generate verb methods
+              instance: @_instance # for Hypermedia to be able to call `.fromUrl`
+            }
+            @_instance._parseWithContext '', acc, (err, val) ->
+              return cb(err, val) if err
+              cb(null, val, jqXHR.status, jqXHR)
+
+        else
+          # Parse the error if one occurs
+
+          # If the request was for a Boolean then a 404 should be treated as a "false"
+          if options.isBoolean and jqXHR.status is 404
+            # cb(null, false) # Already handled
+          else
+            err = new Error(jqXHR.responseText)
+            err.status = jqXHR.status
+            unless jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
+              if jqXHR.responseText
+                try
+                  json = JSON.parse(jqXHR.responseText)
+                catch
+                  cb({message: 'Error Parsing Response'})
+              else
+                # In the case of 404 errors, `responseText` is an empty string
+                json = ''
+              err.json = json
+            cb(err)

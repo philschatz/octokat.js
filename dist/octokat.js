@@ -67,9 +67,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	OctokatBase = __webpack_require__(3);
 
-	HypermediaPlugin = __webpack_require__(17);
+	HypermediaPlugin = __webpack_require__(18);
 
-	ALL_PLUGINS = [__webpack_require__(18), __webpack_require__(20), __webpack_require__(24), __webpack_require__(26), __webpack_require__(28), __webpack_require__(30), __webpack_require__(11), __webpack_require__(31), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34), HypermediaPlugin, __webpack_require__(35)];
+	ALL_PLUGINS = [__webpack_require__(19), __webpack_require__(21), __webpack_require__(25), __webpack_require__(27), __webpack_require__(29), __webpack_require__(31), __webpack_require__(12), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34), __webpack_require__(35), HypermediaPlugin, __webpack_require__(36)];
 
 	Octokat = function(clientOptions) {
 	  var instance;
@@ -105,29 +105,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, NativePromiseOnlyPlugin, OctokatBase, Requester, SimpleVerbsPlugin, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, uncamelizeObj,
+	/* WEBPACK VAR INJECTION */(function(global) {var Chainer, NativePromiseOnlyPlugin, OctokatBase, Requester, SimpleVerbsPlugin, TREE_OPTIONS, VerbMethods, applyHypermedia, deprecate, plus, ref, toPromise, uncamelizeObj,
 	  slice = [].slice;
 
 	plus = __webpack_require__(4);
 
 	deprecate = __webpack_require__(2);
 
-	TREE_OPTIONS = __webpack_require__(7);
+	TREE_OPTIONS = __webpack_require__(8);
 
-	Chainer = __webpack_require__(8);
+	Chainer = __webpack_require__(9);
 
-	VerbMethods = __webpack_require__(9);
+	ref = __webpack_require__(10), VerbMethods = ref.VerbMethods, toPromise = ref.toPromise;
 
-	SimpleVerbsPlugin = __webpack_require__(11);
+	SimpleVerbsPlugin = __webpack_require__(12);
 
-	NativePromiseOnlyPlugin = __webpack_require__(12);
+	NativePromiseOnlyPlugin = __webpack_require__(13);
 
-	Requester = __webpack_require__(14);
+	Requester = __webpack_require__(15);
 
-	applyHypermedia = __webpack_require__(16);
+	applyHypermedia = __webpack_require__(17);
 
 	uncamelizeObj = function(obj) {
-	  var i, j, key, len, o, ref, value;
+	  var i, j, key, len, o, ref1, value;
 	  if (Array.isArray(obj)) {
 	    return (function() {
 	      var j, len, results;
@@ -140,9 +140,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })();
 	  } else if (obj === Object(obj)) {
 	    o = {};
-	    ref = Object.keys(obj);
-	    for (j = 0, len = ref.length; j < len; j++) {
-	      key = ref[j];
+	    ref1 = Object.keys(obj);
+	    for (j = 0, len = ref1.length; j < len; j++) {
+	      key = ref1[j];
 	      value = obj[key];
 	      o[plus.uncamelize(key)] = uncamelizeObj(value);
 	    }
@@ -153,7 +153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	OctokatBase = function(clientOptions) {
-	  var disableHypermedia, instance, plugins, request, verbMethods;
+	  var disableHypermedia, instance, newPromise, plugins, request, verbMethods;
 	  if (clientOptions == null) {
 	    clientOptions = {};
 	  }
@@ -164,7 +164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  instance = {};
 	  request = function(method, path, data, options, cb) {
-	    var ref, requester;
+	    var ref1, requester;
 	    if (options == null) {
 	      options = {
 	        raw: false,
@@ -172,12 +172,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        isBoolean: false
 	      };
 	    }
-	    if (data && !(typeof global !== "undefined" && global !== null ? (ref = global['Buffer']) != null ? ref.isBuffer(data) : void 0 : void 0)) {
+	    if (data && !(typeof global !== "undefined" && global !== null ? (ref1 = global['Buffer']) != null ? ref1.isBuffer(data) : void 0 : void 0)) {
 	      data = uncamelizeObj(data);
 	    }
 	    requester = new Requester(instance, clientOptions, plugins);
 	    return requester.request(method, path, data, options, function(err, val) {
-	      var context, obj;
+	      var context;
 	      if (err) {
 	        return cb(err);
 	      }
@@ -192,8 +192,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          instance: instance,
 	          clientOptions: clientOptions
 	        };
-	        obj = instance._parseWithContext(path, context);
-	        return cb(null, obj);
+	        return instance._parseWithContext(path, context, cb);
 	      } else {
 	        return cb(null, val);
 	      }
@@ -204,7 +203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  });
 	  (new Chainer(verbMethods)).chain('', null, TREE_OPTIONS, instance);
 	  instance.me = instance.user;
-	  instance.parse = function(data) {
+	  instance.parse = function(cb, data) {
 	    var context;
 	    context = {
 	      requester: {
@@ -215,23 +214,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	      instance: instance,
 	      clientOptions: clientOptions
 	    };
-	    return instance._parseWithContext('', context);
+	    return instance._parseWithContext('', context, cb);
 	  };
-	  instance._parseWithContext = function(path, context) {
-	    var data, j, len, plugin, requester, url;
-	    data = context.data, requester = context.requester;
-	    url = data.url || path;
-	    plus.extend(context, {
-	      url: url
-	    });
-	    for (j = 0, len = plugins.length; j < len; j++) {
-	      plugin = plugins[j];
-	      if (plugin.responseMiddleware) {
-	        plus.extend(context, plugin.responseMiddleware(context));
-	      }
+	  newPromise = plugins.filter(function(arg) {
+	    var promiseCreator;
+	    promiseCreator = arg.promiseCreator;
+	    return promiseCreator;
+	  })[0].promiseCreator.newPromise;
+	  instance.parse = toPromise(instance.parse, newPromise);
+	  instance._parseWithContext = function(path, context, cb) {
+	    var data, requester, responseMiddlewareAsyncs;
+	    if (typeof cb !== 'function') {
+	      throw new Error('Callback is required');
 	    }
-	    data = context.data;
-	    return data;
+	    data = context.data, requester = context.requester;
+	    context.url = (data != null ? data.url : void 0) || path;
+	    responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function(arg) {
+	      var responseMiddlewareAsync;
+	      responseMiddlewareAsync = arg.responseMiddlewareAsync;
+	      return responseMiddlewareAsync;
+	    }), function(plugin) {
+	      return plugin.responseMiddlewareAsync.bind(plugin);
+	    });
+	    responseMiddlewareAsyncs.unshift(function(cb) {
+	      return cb(null, context);
+	    });
+	    return plus.waterfall(responseMiddlewareAsyncs, function(err, val) {
+	      if (err) {
+	        return cb(err, val);
+	      }
+	      data = val.data;
+	      return cb(err, data);
+	    });
 	  };
 	  instance._fromUrlWithDefault = function() {
 	    var args, defaultFn, path;
@@ -282,11 +296,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var filter, forEach, plus;
+	var filter, forEach, map, onlyOnce, plus;
 
 	filter = __webpack_require__(5);
 
 	forEach = __webpack_require__(6);
+
+	map = __webpack_require__(7);
+
+	onlyOnce = function(fn) {
+	  return function() {
+	    var callFn;
+	    if (fn === null) {
+	      throw new Error("Callback was already called.");
+	    }
+	    callFn = fn;
+	    fn = null;
+	    return callFn.apply(this, arguments);
+	  };
+	};
 
 	plus = {
 	  camelize: function(string) {
@@ -322,6 +350,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  },
+	  waterfall: function(tasks, cb) {
+	    var nextTask, taskIndex;
+	    taskIndex = 0;
+	    nextTask = function(val) {
+	      var task, taskCallback;
+	      if (taskIndex === tasks.length) {
+	        return cb(null, val);
+	      }
+	      taskCallback = onlyOnce(function(err, val) {
+	        if (err) {
+	          return cb(err, val);
+	        }
+	        return nextTask(val);
+	      });
+	      task = tasks[taskIndex++];
+	      if (val) {
+	        return task(val, taskCallback);
+	      } else {
+	        return task(taskCallback);
+	      }
+	    };
+	    return nextTask(null);
+	  },
 	  extend: function(target, source) {
 	    var i, key, len, ref, results;
 	    if (source) {
@@ -345,7 +396,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return results;
 	  },
 	  filter: filter,
-	  forEach: forEach
+	  forEach: forEach,
+	  map: map
 	};
 
 	module.exports = plus;
@@ -412,6 +464,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	/**
+	 * A specialized version of `_.map` for arrays without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @returns {Array} Returns the new mapped array.
+	 */
+	function arrayMap(array, iteratee) {
+	  var index = -1,
+	      length = array.length,
+	      result = Array(length);
+
+	  while (++index < length) {
+	    result[index] = iteratee(array[index], index, array);
+	  }
+	  return result;
+	}
+
+	module.exports = arrayMap;
+
+
+/***/ },
+/* 8 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -608,7 +687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Chainer, plus,
@@ -669,7 +748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var VerbMethods, extend, filter, forOwn, ref, toPromise, toQueryString,
@@ -677,7 +756,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	ref = __webpack_require__(4), filter = ref.filter, forOwn = ref.forOwn, extend = ref.extend;
 
-	toQueryString = __webpack_require__(10);
+	toQueryString = __webpack_require__(11);
 
 	toPromise = function(orig, newPromise) {
 	  return function() {
@@ -704,7 +783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	module.exports = VerbMethods = (function() {
+	VerbMethods = (function() {
 	  function VerbMethods(plugins, _requester) {
 	    var i, j, len, len1, plugin, promisePlugins, ref1, ref2;
 	    this._requester = _requester;
@@ -778,9 +857,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	})();
 
+	module.exports = {
+	  VerbMethods: VerbMethods,
+	  toPromise: toPromise
+	};
+
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	var toQueryString;
@@ -813,13 +897,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var SimpleVerbs, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(10);
+	toQueryString = __webpack_require__(11);
 
 	module.exports = new (SimpleVerbs = (function() {
 	  function SimpleVerbs() {}
@@ -905,7 +989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var UseNativePromises;
@@ -913,7 +997,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = new (UseNativePromises = (function() {
 	  function UseNativePromises() {}
 
-	  UseNativePromises.prototype.promiseCreator = __webpack_require__(13);
+	  UseNativePromises.prototype.promiseCreator = __webpack_require__(14);
 
 	  return UseNativePromises;
 
@@ -921,7 +1005,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	var allPromises, newPromise;
@@ -952,12 +1036,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;var Requester, ajax, eventId, extend, filter, forEach, ref;
+	var require;var Requester, ajax, eventId, extend, filter, forEach, map, ref, waterfall;
 
-	ref = __webpack_require__(4), filter = ref.filter, forEach = ref.forEach, extend = ref.extend;
+	ref = __webpack_require__(4), filter = ref.filter, forEach = ref.forEach, extend = ref.extend, map = ref.map, waterfall = ref.waterfall;
 
 	ajax = function(options, cb) {
 	  var XMLHttpRequest, name, ref1, req, value, xhr;
@@ -965,7 +1049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = window.XMLHttpRequest;
 	  } else {
 	    req = require;
-	    XMLHttpRequest = __webpack_require__(15).XMLHttpRequest;
+	    XMLHttpRequest = __webpack_require__(16).XMLHttpRequest;
 	  }
 	  xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
@@ -1018,16 +1102,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof this._clientOptions.emitter === 'function') {
 	      this._emit = this._clientOptions.emitter;
 	    }
-	    this._pluginMiddleware = filter(plugins, function(arg) {
-	      var requestMiddleware;
-	      requestMiddleware = arg.requestMiddleware;
-	      return requestMiddleware;
+	    this._pluginMiddlewareAsync = map(filter(plugins, function(arg) {
+	      var requestMiddlewareAsync;
+	      requestMiddlewareAsync = arg.requestMiddlewareAsync;
+	      return requestMiddlewareAsync;
+	    }), function(plugin) {
+	      return plugin.requestMiddlewareAsync.bind(plugin);
 	    });
 	    this._plugins = plugins;
 	  }
 
 	  Requester.prototype.request = function(method, path, data, options, cb) {
-	    var acc, ajaxConfig, headers, mimeType;
+	    var acc, headers, initial, pluginsPlusInitial;
 	    if (options == null) {
 	      options = {
 	        isRaw: false,
@@ -1067,125 +1153,124 @@ return /******/ (function(modules) { // webpackBootstrap
 	      options: options,
 	      clientOptions: this._clientOptions
 	    };
-	    forEach(this._pluginMiddleware, function(plugin) {
-	      var mimeType, ref1;
-	      ref1 = plugin.requestMiddleware(acc) || {}, method = ref1.method, headers = ref1.headers, mimeType = ref1.mimeType;
-	      if (method) {
-	        acc.method = method;
-	      }
-	      if (mimeType) {
-	        acc.mimeType = mimeType;
-	      }
-	      return extend(acc.headers, headers);
-	    });
-	    method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
-	    if (options.isRaw) {
-	      headers['Accept'] = 'application/vnd.github.raw';
-	    }
-	    ajaxConfig = {
-	      url: path,
-	      type: method,
-	      contentType: options.contentType,
-	      mimeType: mimeType,
-	      headers: headers,
-	      processData: false,
-	      data: !options.isRaw && data && JSON.stringify(data) || data,
-	      dataType: !options.isRaw ? 'json' : void 0
+	    initial = function(cb) {
+	      return cb(null, acc);
 	    };
-	    if (options.isBoolean) {
-	      ajaxConfig.statusCode = {
-	        204: (function(_this) {
-	          return function() {
-	            return cb(null, true);
-	          };
-	        })(this),
-	        404: (function(_this) {
-	          return function() {
-	            return cb(null, false);
-	          };
-	        })(this)
-	      };
-	    }
-	    eventId++;
-	    if (typeof this._emit === "function") {
-	      this._emit('start', eventId, {
-	        method: method,
-	        path: path,
-	        data: data,
-	        options: options
-	      });
-	    }
-	    return ajax(ajaxConfig, (function(_this) {
-	      return function(err, val) {
-	        var emitterRate, jqXHR, json, rateLimit, rateLimitRemaining, rateLimitReset;
-	        jqXHR = err || val;
-	        if (_this._emit) {
-	          if (jqXHR.getResponseHeader('X-RateLimit-Limit')) {
-	            rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
-	            rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
-	            rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
-	            emitterRate = {
-	              remaining: rateLimitRemaining,
-	              limit: rateLimit,
-	              reset: rateLimitReset
-	            };
-	            if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
-	              emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
+	    pluginsPlusInitial = [initial].concat(this._pluginMiddlewareAsync);
+	    return waterfall(pluginsPlusInitial, (function(_this) {
+	      return function(err, acc) {
+	        var ajaxConfig, mimeType;
+	        if (err) {
+	          return cb(err, acc);
+	        }
+	        method = acc.method, headers = acc.headers, mimeType = acc.mimeType;
+	        if (options.isRaw) {
+	          headers['Accept'] = 'application/vnd.github.raw';
+	        }
+	        ajaxConfig = {
+	          url: path,
+	          type: method,
+	          contentType: options.contentType,
+	          mimeType: mimeType,
+	          headers: headers,
+	          processData: false,
+	          data: !options.isRaw && data && JSON.stringify(data) || data,
+	          dataType: !options.isRaw ? 'json' : void 0
+	        };
+	        if (options.isBoolean) {
+	          ajaxConfig.statusCode = {
+	            204: function() {
+	              return cb(null, true);
+	            },
+	            404: function() {
+	              return cb(null, false);
 	            }
-	          }
-	          _this._emit('end', eventId, {
+	          };
+	        }
+	        eventId++;
+	        if (typeof _this._emit === "function") {
+	          _this._emit('start', eventId, {
 	            method: method,
 	            path: path,
 	            data: data,
 	            options: options
-	          }, jqXHR.status, emitterRate);
+	          });
 	        }
-	        if (!err) {
-	          if (jqXHR.status === 302) {
-	            return cb(null, jqXHR.getResponseHeader('Location'));
-	          } else if (!(jqXHR.status === 204 && options.isBoolean)) {
-	            if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
-	              data = JSON.parse(jqXHR.responseText);
-	            } else {
-	              data = jqXHR.responseText;
-	            }
-	            acc = {
-	              clientOptions: _this._clientOptions,
-	              plugins: _this._plugins,
-	              data: data,
-	              options: options,
-	              jqXHR: jqXHR,
-	              status: jqXHR.status,
-	              request: acc,
-	              requester: _this,
-	              instance: _this._instance
-	            };
-	            data = _this._instance._parseWithContext('', acc);
-	            return cb(null, data, jqXHR.status, jqXHR);
-	          }
-	        } else {
-	          if (options.isBoolean && jqXHR.status === 404) {
-
-	          } else {
-	            err = new Error(jqXHR.responseText);
-	            err.status = jqXHR.status;
-	            if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
-	              if (jqXHR.responseText) {
-	                try {
-	                  json = JSON.parse(jqXHR.responseText);
-	                } catch (error) {
-	                  cb({
-	                    message: 'Error Parsing Response'
-	                  });
-	                }
-	              } else {
-	                json = '';
+	        return ajax(ajaxConfig, function(err, val) {
+	          var emitterRate, jqXHR, json, rateLimit, rateLimitRemaining, rateLimitReset;
+	          jqXHR = err || val;
+	          if (_this._emit) {
+	            if (jqXHR.getResponseHeader('X-RateLimit-Limit')) {
+	              rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'));
+	              rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'));
+	              rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'));
+	              emitterRate = {
+	                remaining: rateLimitRemaining,
+	                limit: rateLimit,
+	                reset: rateLimitReset
+	              };
+	              if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
+	                emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
 	              }
-	              err.json = json;
 	            }
-	            return cb(err);
+	            _this._emit('end', eventId, {
+	              method: method,
+	              path: path,
+	              data: data,
+	              options: options
+	            }, jqXHR.status, emitterRate);
 	          }
-	        }
+	          if (!err) {
+	            if (jqXHR.status === 302) {
+	              return cb(null, jqXHR.getResponseHeader('Location'));
+	            } else if (!(jqXHR.status === 204 && options.isBoolean)) {
+	              if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
+	                data = JSON.parse(jqXHR.responseText);
+	              } else {
+	                data = jqXHR.responseText;
+	              }
+	              acc = {
+	                clientOptions: _this._clientOptions,
+	                plugins: _this._plugins,
+	                data: data,
+	                options: options,
+	                jqXHR: jqXHR,
+	                status: jqXHR.status,
+	                request: acc,
+	                requester: _this,
+	                instance: _this._instance
+	              };
+	              return _this._instance._parseWithContext('', acc, function(err, val) {
+	                if (err) {
+	                  return cb(err, val);
+	                }
+	                return cb(null, val, jqXHR.status, jqXHR);
+	              });
+	            }
+	          } else {
+	            if (options.isBoolean && jqXHR.status === 404) {
+
+	            } else {
+	              err = new Error(jqXHR.responseText);
+	              err.status = jqXHR.status;
+	              if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
+	                if (jqXHR.responseText) {
+	                  try {
+	                    json = JSON.parse(jqXHR.responseText);
+	                  } catch (error) {
+	                    cb({
+	                      message: 'Error Parsing Response'
+	                    });
+	                  }
+	                } else {
+	                  json = '';
+	                }
+	                err.json = json;
+	              }
+	              return cb(err);
+	            }
+	          }
+	        });
 	      };
 	    })(this));
 	  };
@@ -1196,20 +1281,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	module.exports = window.XMLHTTPRequest;
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var deprecate, toQueryString,
 	  slice = [].slice;
 
-	toQueryString = __webpack_require__(10);
+	toQueryString = __webpack_require__(11);
 
 	deprecate = __webpack_require__(2);
 
@@ -1280,7 +1365,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var HyperMedia, deprecate,
@@ -1371,13 +1456,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  HyperMedia.prototype.responseMiddleware = function(arg) {
+	  HyperMedia.prototype.responseMiddlewareAsync = function(input, cb) {
 	    var data, instance;
-	    instance = arg.instance, data = arg.data;
+	    instance = input.instance, data = input.data;
 	    data = this.replace(instance, data);
-	    return {
-	      data: data
-	    };
+	    input.data = data;
+	    return cb(null, input);
 	  };
 
 	  return HyperMedia;
@@ -1386,18 +1470,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Chainer, OBJECT_MATCHER, ObjectChainer, TREE_OPTIONS, VerbMethods;
 
-	OBJECT_MATCHER = __webpack_require__(19);
+	OBJECT_MATCHER = __webpack_require__(20);
 
-	TREE_OPTIONS = __webpack_require__(7);
+	TREE_OPTIONS = __webpack_require__(8);
 
-	VerbMethods = __webpack_require__(9);
+	VerbMethods = __webpack_require__(10).VerbMethods;
 
-	Chainer = __webpack_require__(8);
+	Chainer = __webpack_require__(9);
 
 	module.exports = new (ObjectChainer = (function() {
 	  function ObjectChainer() {}
@@ -1422,9 +1506,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return results;
 	  };
 
-	  ObjectChainer.prototype.responseMiddleware = function(arg) {
+	  ObjectChainer.prototype.responseMiddlewareAsync = function(input, cb) {
 	    var chainer, data, datum, i, len, plugins, requester, url, verbMethods;
-	    plugins = arg.plugins, requester = arg.requester, data = arg.data, url = arg.url;
+	    plugins = input.plugins, requester = input.requester, data = input.data, url = input.url;
 	    verbMethods = new VerbMethods(plugins, requester);
 	    chainer = new Chainer(verbMethods);
 	    if (url) {
@@ -1439,9 +1523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 	    }
-	    return {
-	      data: data
-	    };
+	    return cb(null, input);
 	  };
 
 	  return ObjectChainer;
@@ -1450,7 +1532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1465,19 +1547,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PreferLibraryOverNativePromises, allPromises, newPromise, ref, ref1, ref2;
 
-	ref = __webpack_require__(21), newPromise = ref.newPromise, allPromises = ref.allPromises;
+	ref = __webpack_require__(22), newPromise = ref.newPromise, allPromises = ref.allPromises;
 
 	if (!(newPromise && allPromises)) {
-	  ref1 = __webpack_require__(13), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
+	  ref1 = __webpack_require__(14), newPromise = ref1.newPromise, allPromises = ref1.allPromises;
 	}
 
 	if (!((typeof window !== "undefined" && window !== null) || newPromise)) {
-	  ref2 = __webpack_require__(22), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
+	  ref2 = __webpack_require__(23), newPromise = ref2.newPromise, allPromises = ref2.allPromises;
 	}
 
 	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
@@ -1504,7 +1586,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	var allPromises, injector, newPromise, ref,
@@ -1585,14 +1667,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;var Promise, allPromises, newPromise, req;
 
 	req = require;
 
-	Promise = this.Promise || __webpack_require__(23).Promise;
+	Promise = this.Promise || __webpack_require__(24).Promise;
 
 	newPromise = function(fn) {
 	  return new Promise(fn);
@@ -1609,30 +1691,31 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = window.Promise;
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PathValidator, URL_VALIDATOR;
 
-	URL_VALIDATOR = __webpack_require__(25);
+	URL_VALIDATOR = __webpack_require__(26);
 
 	module.exports = new (PathValidator = (function() {
 	  function PathValidator() {}
 
-	  PathValidator.prototype.requestMiddleware = function(arg) {
+	  PathValidator.prototype.requestMiddlewareAsync = function(input, cb) {
 	    var err, path;
-	    path = arg.path;
+	    path = input.path;
 	    if (!URL_VALIDATOR.test(path)) {
 	      err = "Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=" + path;
-	      return console.warn(err);
+	      console.warn(err);
 	    }
+	    return cb(null, input);
 	  };
 
 	  return PathValidator;
@@ -1641,38 +1724,38 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20}|[0-9]+)|([a-f0-9]{20}|[0-9]+)\/forks|([a-f0-9]{20}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Authorization, base64encode;
 
-	base64encode = __webpack_require__(27);
+	base64encode = __webpack_require__(28);
 
 	module.exports = new (Authorization = (function() {
 	  function Authorization() {}
 
-	  Authorization.prototype.requestMiddleware = function(arg) {
-	    var auth, password, ref, token, username;
-	    ref = arg.clientOptions, token = ref.token, username = ref.username, password = ref.password;
+	  Authorization.prototype.requestMiddlewareAsync = function(input, cb) {
+	    var auth, headers, password, ref, token, username;
+	    if (input.headers == null) {
+	      input.headers = {};
+	    }
+	    headers = input.headers, (ref = input.clientOptions, token = ref.token, username = ref.username, password = ref.password);
 	    if (token || (username && password)) {
 	      if (token) {
 	        auth = "token " + token;
 	      } else {
 	        auth = 'Basic ' + base64encode(username + ":" + password);
 	      }
-	      return {
-	        headers: {
-	          'Authorization': auth
-	        }
-	      };
+	      input.headers['Authorization'] = auth;
 	    }
+	    return cb(null, input);
 	  };
 
 	  return Authorization;
@@ -1681,7 +1764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var base64encode;
@@ -1703,12 +1786,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DEFAULT_HEADER, PREVIEW_HEADERS, PreviewApis;
 
-	PREVIEW_HEADERS = __webpack_require__(29);
+	PREVIEW_HEADERS = __webpack_require__(30);
 
 	DEFAULT_HEADER = function(url) {
 	  var key, val;
@@ -1723,17 +1806,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = new (PreviewApis = (function() {
 	  function PreviewApis() {}
 
-	  PreviewApis.prototype.requestMiddleware = function(arg) {
+	  PreviewApis.prototype.requestMiddlewareAsync = function(input, cb) {
 	    var acceptHeader, path;
-	    path = arg.path;
+	    path = input.path;
 	    acceptHeader = DEFAULT_HEADER(path);
 	    if (acceptHeader) {
-	      return {
-	        headers: {
-	          'Accept': acceptHeader
-	        }
-	      };
+	      input.headers['Accept'] = acceptHeader;
 	    }
+	    return cb(null, input);
 	  };
 
 	  return PreviewApis;
@@ -1742,7 +1822,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1752,7 +1832,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	var UsePostInsteadOfPatch;
@@ -1760,14 +1840,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = new (UsePostInsteadOfPatch = (function() {
 	  function UsePostInsteadOfPatch() {}
 
-	  UsePostInsteadOfPatch.prototype.requestMiddleware = function(arg) {
+	  UsePostInsteadOfPatch.prototype.requestMiddlewareAsync = function(input, cb) {
 	    var method, ref, usePostInsteadOfPatch;
-	    (ref = arg.clientOptions, usePostInsteadOfPatch = ref.usePostInsteadOfPatch), method = arg.method;
+	    (ref = input.clientOptions, usePostInsteadOfPatch = ref.usePostInsteadOfPatch), method = input.method;
 	    if (usePostInsteadOfPatch && method === 'PATCH') {
-	      return {
-	        method: 'POST'
-	      };
+	      input.method = 'POST';
 	    }
+	    return cb(null, input);
 	  };
 
 	  return UsePostInsteadOfPatch;
@@ -1776,12 +1855,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var FetchAll, fetchNextPage, getMore, pushAll, toQueryString;
 
-	toQueryString = __webpack_require__(10);
+	toQueryString = __webpack_require__(11);
 
 	pushAll = function(target, source) {
 	  if (!Array.isArray(source)) {
@@ -1847,12 +1926,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ReadBinary, toQueryString;
 
-	toQueryString = __webpack_require__(10);
+	toQueryString = __webpack_require__(11);
 
 	module.exports = new (ReadBinary = (function() {
 	  function ReadBinary() {}
@@ -1870,25 +1949,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  ReadBinary.prototype.requestMiddleware = function(arg) {
+	  ReadBinary.prototype.requestMiddlewareAsync = function(input, cb) {
 	    var isBase64, options;
-	    options = arg.options;
+	    options = input.options;
 	    if (options) {
 	      isBase64 = options.isBase64;
 	      if (isBase64) {
-	        return {
-	          headers: {
-	            Accept: 'application/vnd.github.raw'
-	          },
-	          mimeType: 'text/plain; charset=x-user-defined'
-	        };
+	        input.headers['Accept'] = 'application/vnd.github.raw';
+	        input.mimeType = 'text/plain; charset=x-user-defined';
 	      }
 	    }
+	    return cb(null, input);
 	  };
 
-	  ReadBinary.prototype.responseMiddleware = function(arg) {
+	  ReadBinary.prototype.responseMiddlewareAsync = function(input, cb) {
 	    var converted, data, i, isBase64, j, options, ref;
-	    options = arg.options, data = arg.data;
+	    options = input.options, data = input.data;
 	    if (options) {
 	      isBase64 = options.isBase64;
 	      if (isBase64) {
@@ -1896,11 +1972,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (i = j = 0, ref = data.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
 	          converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
 	        }
-	        return {
-	          data: converted
-	        };
+	        input.data = converted;
 	      }
 	    }
+	    return cb(null, input);
 	  };
 
 	  return ReadBinary;
@@ -1909,7 +1984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	var Pagination;
@@ -1917,11 +1992,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = new (Pagination = (function() {
 	  function Pagination() {}
 
-	  Pagination.prototype.responseMiddleware = function(arg) {
+	  Pagination.prototype.responseMiddlewareAsync = function(input, cb) {
 	    var data, discard, href, i, jqXHR, len, links, part, ref, ref1, rel;
-	    jqXHR = arg.jqXHR, data = arg.data;
+	    jqXHR = input.jqXHR, data = input.data;
 	    if (!jqXHR) {
-	      return;
+	      return cb(null, input);
 	    }
 	    if (Array.isArray(data)) {
 	      data = {
@@ -1934,10 +2009,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        ref1 = part.match(/<([^>]+)>;\ rel="([^"]+)"/), discard = ref1[0], href = ref1[1], rel = ref1[2];
 	        data[rel + "_page_url"] = href;
 	      }
-	      return {
-	        data: data
-	      };
+	      input.data = data;
 	    }
+	    return cb(null, input);
 	  };
 
 	  return Pagination;
@@ -1946,7 +2020,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	var CacheHandler;
@@ -1968,26 +2042,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  };
 
-	  CacheHandler.prototype.requestMiddleware = function(arg) {
-	    var cacheHandler, clientOptions, headers, method, path;
-	    clientOptions = arg.clientOptions, method = arg.method, path = arg.path;
-	    headers = {};
+	  CacheHandler.prototype.requestMiddlewareAsync = function(input, cb) {
+	    var cacheHandler, clientOptions, method, path;
+	    clientOptions = input.clientOptions, method = input.method, path = input.path;
+	    if (input.headers == null) {
+	      input.headers = {};
+	    }
 	    cacheHandler = clientOptions.cacheHandler || this;
 	    if (cacheHandler.get(method, path)) {
-	      headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
+	      input.headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
 	    } else {
-	      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
+	      input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
 	    }
-	    return {
-	      headers: headers
-	    };
+	    return cb(null, input);
 	  };
 
-	  CacheHandler.prototype.responseMiddleware = function(arg) {
+	  CacheHandler.prototype.responseMiddlewareAsync = function(input, cb) {
 	    var cacheHandler, clientOptions, data, eTag, jqXHR, method, path, ref, request, status;
-	    clientOptions = arg.clientOptions, request = arg.request, status = arg.status, jqXHR = arg.jqXHR, data = arg.data;
+	    clientOptions = input.clientOptions, request = input.request, status = input.status, jqXHR = input.jqXHR, data = input.data;
 	    if (!jqXHR) {
-	      return;
+	      return cb(null, input);
 	    }
 	    if (jqXHR) {
 	      method = request.method, path = request.path;
@@ -2006,10 +2080,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          cacheHandler.add(method, path, eTag, data, jqXHR.status);
 	        }
 	      }
-	      return {
-	        data: data,
-	        status: status
-	      };
+	      input.data = data;
+	      input.status = status;
+	      return cb(null, input);
 	    }
 	  };
 
@@ -2019,7 +2092,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var CamelCase, plus;
@@ -2029,13 +2102,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = new (CamelCase = (function() {
 	  function CamelCase() {}
 
-	  CamelCase.prototype.responseMiddleware = function(arg) {
+	  CamelCase.prototype.responseMiddlewareAsync = function(input, cb) {
 	    var data;
-	    data = arg.data;
+	    data = input.data;
 	    data = this.replace(data);
-	    return {
-	      data: data
-	    };
+	    input.data = data;
+	    return cb(null, input);
 	  };
 
 	  CamelCase.prototype.replace = function(data) {

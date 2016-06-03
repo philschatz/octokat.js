@@ -20,7 +20,7 @@ toPromise = (orig, newPromise) ->
       throw new Error('You must specify a callback or have a promise library loaded')
 
 
-module.exports = class VerbMethods
+class VerbMethods
   constructor: (plugins, @_requester) ->
     throw new Error('Octokat BUG: request is required') unless @_requester
 
@@ -52,3 +52,5 @@ module.exports = class VerbMethods
       obj[verbName] = (args...) =>
         makeRequest = verbFunc(@_requester, path) # Curried function
         return toPromise(makeRequest, newPromise)(args...)
+
+module.exports = {VerbMethods, toPromise}

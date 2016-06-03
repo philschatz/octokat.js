@@ -9,25 +9,27 @@ module.exports = new class CacheHandler
   add: (method, path, eTag, data, status) ->
     @_cachedETags["#{method} #{path}"] = {eTag, data, status}
 
-  requestMiddleware: ({clientOptions, method, path}) ->
-    headers = {}
+  requestMiddlewareAsync: (input, cb) ->
+    {clientOptions, method, path} = input
+    input.headers ?= {}
     cacheHandler = clientOptions.cacheHandler or @
     # Send the ETag if re-requesting a URL
     if cacheHandler.get(method, path)
-      headers['If-None-Match'] = cacheHandler.get(method, path).eTag
+      input.headers['If-None-Match'] = cacheHandler.get(method, path).eTag
     else
       # The browser will sneak in a 'If-Modified-Since' header if the GET has been requested before
       # but for some reason the cached response does not seem to be available
       # in the jqXHR object.
       # So, the first time a URL is requested set this date to 0 so we always get a response the 1st time
       # a URL is requested.
-      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
+      input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
 
-    {headers}
+    cb(null, input)
 
 
-  responseMiddleware: ({clientOptions, request, status, jqXHR, data}) ->
-    return unless jqXHR # The plugins are all used in `octo.parse()` which does not have a jqXHR
+  responseMiddlewareAsync: (input, cb) ->
+    {clientOptions, request, status, jqXHR, data} = input
+    return cb(null, input) unless jqXHR # The plugins are all used in `octo.parse()` which does not have a jqXHR
 
     # Since this can be called via `octo.parse`, skpi caching when there is no jqXHR
     if jqXHR
@@ -48,4 +50,6 @@ module.exports = new class CacheHandler
           eTag = jqXHR.getResponseHeader('ETag')
           cacheHandler.add(method, path, eTag, data, jqXHR.status)
 
-      {data, status}
+      input.data = data
+      input.status = status
+      cb(null, input)

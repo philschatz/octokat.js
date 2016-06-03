@@ -6,7 +6,10 @@ DEFAULT_HEADER = (url) ->
 
 # Use the preview API header if one of the routes match the preview APIs
 module.exports = new class PreviewApis
-  requestMiddleware: ({path}) ->
+  requestMiddlewareAsync: (input, cb) ->
+    {path} = input
     acceptHeader = DEFAULT_HEADER(path)
     if acceptHeader
-      {headers: {'Accept': acceptHeader}}
+      input.headers['Accept'] = acceptHeader
+
+    cb(null, input)

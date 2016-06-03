@@ -2,9 +2,11 @@ plus = require '../plus'
 
 module.exports = new class CamelCase
 
-  responseMiddleware: ({data}) ->
+  responseMiddlewareAsync: (input, cb) ->
+    {data} = input
     data = @replace(data)
-    {data}
+    input.data = data # or throw new Error('BUG! Expected JSON data to exist')
+    cb(null, input)
 
   replace: (data) ->
     if Array.isArray(data)

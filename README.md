@@ -425,7 +425,9 @@ repo.releases(123456).fetch()
 ## Parsing JSON
 
 If you are using webhooks, the JSON returned by GitHub can be parsed using
-`octo.parse(json)` to return a rich object with all the methods Octokat provides.
+`octo.parse(json)` to yield a rich object with all the methods Octokat provides.
+
+`octo.parse(json)` is asynchronous and can take either a callback or returns a promise.
 
 ## Using URLs Directly
 

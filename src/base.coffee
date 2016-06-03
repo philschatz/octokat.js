@@ -2,7 +2,7 @@ plus = require './plus'
 deprecate = require './deprecate'
 TREE_OPTIONS = require './grammar/tree-options'
 Chainer = require './chainer'
-VerbMethods = require './verb-methods'
+{VerbMethods, toPromise} = require './verb-methods'
 
 # Use the following plugins by default (they should be neglegible additional code)
 SimpleVerbsPlugin = require './plugins/simple-verbs'
@@ -61,8 +61,7 @@ OctokatBase = (clientOptions={}) ->
           instance
           clientOptions
         }
-        obj = instance._parseWithContext(path, context)
-        return cb(null, obj)
+        return instance._parseWithContext(path, context, cb)
       else
         return cb(null, val)
 
@@ -73,7 +72,7 @@ OctokatBase = (clientOptions={}) ->
   # Special case for `me`
   instance.me = instance.user
 
-  instance.parse = (data) ->
+  instance.parse = (cb, data) -> # The signature of toPromise has cb as the 1st arg
     context = {
       requester: {request}
       plugins
@@ -81,18 +80,26 @@ OctokatBase = (clientOptions={}) ->
       instance
       clientOptions
     }
-    instance._parseWithContext('', context)
+    instance._parseWithContext('', context, cb)
 
-  instance._parseWithContext = (path, context) ->
+  # If not callback is provided then return a promise
+  {newPromise} = plugins.filter(({promiseCreator}) -> promiseCreator)[0].promiseCreator
+  instance.parse = toPromise(instance.parse, newPromise)
+
+  instance._parseWithContext = (path, context, cb) ->
+    throw new Error('Callback is required') unless typeof cb is 'function'
     {data, requester} = context
-    url = data.url or path
-    plus.extend(context, {url})
+    context.url = data?.url or path
 
-    for plugin in plugins
-      if plugin.responseMiddleware
-        plus.extend(context, plugin.responseMiddleware(context))
-    {data} = context
-    data
+    responseMiddlewareAsyncs = plus.map plus.filter(plugins, ({responseMiddlewareAsync}) -> responseMiddlewareAsync), (plugin) ->
+      plugin.responseMiddlewareAsync.bind(plugin)
+
+    # async.waterfall requires that the 1st entry take 0 arguments
+    responseMiddlewareAsyncs.unshift((cb) -> cb(null, context))
+    plus.waterfall responseMiddlewareAsyncs, (err, val) ->
+      return cb(err, val) if err
+      {data} = val
+      cb(err, data)
 
 
   # TODO remove this deprectaion too
