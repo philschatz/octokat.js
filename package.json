@@ -6,7 +6,7 @@
   "scripts": {
     "test": "VCR_MODE=cache grunt test --verbose",
     "dist": "grunt dist --verbose",
-    "prepublish": "npm dist",
+    "prepublish": "npm run-script dist",
     "update": "bower update",
     "bump": "grunt release",
     "blanket": {
