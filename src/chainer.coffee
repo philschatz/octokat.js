@@ -9,7 +9,7 @@ injectVerbMethods = require './verb-methods'
 
 Chainer = (request, path, name, contextTree, fn) ->
   fn ?= (args...) ->
-    throw new Error('BUG! must be called with at least one argument') unless args.length
+    return Chainer(request, path, name, contextTree) unless args.length
     # Special-case compare because its args turn into '...' instead of the usual '/'
     if name is 'compare'
       separator = '...'
