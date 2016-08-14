@@ -10,51 +10,6 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: pkg
 
-    # Lint
-    # ----
-
-    # CoffeeLint
-    coffeelint:
-      options:
-        arrow_spacing:
-          level: 'error'
-        line_endings:
-          level: 'error'
-          value: 'unix'
-        max_line_length:
-          level: 'error'
-          value: 150
-        no_unnecessary_fat_arrows:
-          level: "ignore"
-
-      source: ['src/*.coffee']
-      grunt: 'Gruntfile.coffee'
-
-
-    # Dist
-    # ----
-    browserify:
-      options:
-        browserifyOptions:
-          extensions: ['.js', '.coffee']
-          standalone: 'Octokat'
-          debug: false # Source Maps
-        transform: ['coffeeify']
-      octokat:
-        files:
-          'dist/octokat.js': ['src/octokat.coffee']
-
-
-    # Clean
-    clean:
-      files:
-        src: [
-          'dist/'
-          'tmp/'
-        ]
-        # filter: 'isFile'
-
-
     # Release a new version and push upstream
     bump:
       options:
@@ -108,22 +63,6 @@ module.exports = (grunt) ->
       tasks: ['dist']
 
 
-    # Build the JS files for npm so the library can be used with browserify
-    coffee:
-      compile:
-        files:
-          'dist/node/chainer.js'        : 'src/chainer.coffee'
-          'dist/node/grammar.js'        : 'src/grammar.coffee'
-          'dist/node/helper-base64.js'  : 'src/helper-base64.coffee'
-          'dist/node/helper-promise.js' : 'src/helper-promise.coffee'
-          'dist/node/helper-querystring.js' : 'src/helper-querystring.coffee'
-          'dist/node/octokat.js'        : 'src/octokat.coffee'
-          'dist/node/plus.js'           : 'src/plus.coffee'
-          'dist/node/replacer.js'       : 'src/replacer.coffee'
-          'dist/node/request.js'        : 'src/request.coffee'
-          'dist/node/verb-methods.js'   : 'src/verb-methods.coffee'
-
-
   # Dependencies
   # ============
   for name of pkg.dependencies when name.substring(0, 6) is 'grunt-'
@@ -135,15 +74,7 @@ module.exports = (grunt) ->
   # Tasks
   # =====
 
-  grunt.registerTask 'dist', [
-    'clean'
-    'coffeelint'
-    'browserify' # Build single file for browsers
-    'coffee' # Build JS files for npm
-  ]
-
   grunt.registerTask 'test', [
-    # 'dist'
     'mochaTest'
     'connect'
     'mocha_phantomjs'
