@@ -1,3 +1,4 @@
+# Grunt is now used only for tagging releases.
 module.exports = (grunt) ->
 
   fs = require('fs')
@@ -20,13 +21,6 @@ module.exports = (grunt) ->
         # Files to bump the version number of
         files: ['package.json', 'bower.json']
 
-    mochaTest:
-      test:
-        options:
-          reporter: 'spec'
-          require: 'coffee-script'
-        src: ['test/**/node*.coffee']
-
     # Used for coveralls.io code coverage
     mochacov:
       options:
@@ -47,21 +41,6 @@ module.exports = (grunt) ->
         log: true
         reporter: 'Dot'
 
-    mocha_phantomjs:
-      all:
-        options:
-          urls: [ 'http://localhost:9876/test/index.html' ]
-
-    connect:
-      server:
-        options:
-          port: 9876
-          base: '.'
-
-    watch:
-      files: 'src/**/*.coffee'
-      tasks: ['dist']
-
 
   # Dependencies
   # ============
@@ -70,16 +49,6 @@ module.exports = (grunt) ->
   for name of pkg.devDependencies when name.substring(0, 6) is 'grunt-'
     if grunt.file.exists("./node_modules/#{name}")
       grunt.loadNpmTasks(name)
-
-  # Tasks
-  # =====
-
-  grunt.registerTask 'test', [
-    'mochaTest'
-    'connect'
-    'mocha_phantomjs'
-    # 'blanket_mocha' # NOTE: Uncomment once the `suiteURL` problem noted above is fixed
-  ]
 
   # Dist
   # -----
