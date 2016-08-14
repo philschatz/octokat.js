@@ -932,8 +932,6 @@ Request = function(clientOptions) {
     }
     if (cacheHandler.get(method, path)) {
       headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
-    } else {
-      headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
     }
     if (clientOptions.token || (clientOptions.username && clientOptions.password)) {
       if (clientOptions.token) {
