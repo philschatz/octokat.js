@@ -14,6 +14,9 @@ module.exports = {
     filename: '[name].js'
   },
   module: {
+    noParse: [
+      /promise-filler/
+    ],
     loaders: [
       { test: /\.coffee$/, loader: 'coffee-loader' }
     ]
