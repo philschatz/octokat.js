@@ -17,11 +17,6 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
     promise.then(null, onError)
     return promise
 
-  helper1 = (done, promise, func) ->
-    return trapFail promise
-    .then(func)
-    .then () -> done()
-
   some = (arr, fn) ->
     for entry in arr
       do (entry) ->
@@ -94,20 +89,19 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         return {finalArgs, context}
 
 
-      it "#{obj}#{code}", (done) ->
+      it "#{obj}#{code}", ->
         {finalArgs, context} = constructMethod()
         # If the last arg was something like 'fetch' then
         if isFuncArgs
-          context().then(cb).then(()-> done())
+          context().then(cb)
         else
-          context(finalArgs...).then(cb).then(()-> done())
+          context(finalArgs...).then(cb)
 
-      it "#{obj}#{code} (callback ver)", (done) ->
+      it "#{obj}#{code} (callback ver)", ->
         {finalArgs, context} = constructMethod()
         context finalArgs..., (err, val) ->
           return assert.fail(err) if err
           cb(val)
-          done()
 
 
     itIsOk = (obj, args...) ->
@@ -128,17 +122,15 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
       STATE[GH] = client
 
     describe 'Synchronous methods', () ->
-      it "supports octo.fromUrl('https://api.github.com/repos/#{REPO_USER}/#{REPO_NAME}')", (done) ->
+      it "supports octo.fromUrl('https://api.github.com/repos/#{REPO_USER}/#{REPO_NAME}')", ->
         client.fromUrl("https://api.github.com/repos/#{REPO_USER}/#{REPO_NAME}")
         .fetch().then (val) ->
           expect(val).to.not.be.null
-          done()
 
-      it "supports octo.fromUrl('/repos/#{REPO_USER}/#{REPO_NAME}')", (done) ->
+      it "supports octo.fromUrl('/repos/#{REPO_USER}/#{REPO_NAME}')", ->
         client.fromUrl("/repos/#{REPO_USER}/#{REPO_NAME}")
         .fetch().then (val) ->
           expect(val).to.not.be.null
-          done()
 
       it 'supports octo.parse(json)', () ->
         json =
@@ -187,37 +179,33 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
 
     describe 'Paged Results', () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", (done) ->
+      it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", ->
         trapFail STATE[GH].gists.public.fetch()
         .then (results) ->
           results.nextPage()
           .then (moreResults) ->
-            done()
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", (done) ->
+      it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", ->
         trapFail STATE[GH].gists.public.fetch()
         .then (results) ->
           results.nextPage()
           .then (moreResults) ->
             moreResults.prevPage()
             .then () ->
-              done()
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", (done) ->
+      it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", ->
         trapFail STATE[GH].gists.public.fetch()
         .then (results) ->
           results.nextPage()
           .then (moreResults) ->
             moreResults.firstPage()
             .then () ->
-              done()
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", (done) ->
+      it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", ->
         trapFail STATE[GH].gists.public.fetch()
         .then (results) ->
           results.lastPage()
           .then (moreResults) ->
-            done()
 
 
     describe "#{REPO} = #{GH}.repos(OWNER, NAME)", () ->
@@ -246,10 +234,9 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
       itIsArray(REPO, 'stargazers.fetch')
       itIsArray(REPO, 'forks.fetch')
 
-      it "camelCases URL fields that are not templated (ie #{REPO}.htmlUrl)", (done) ->
+      it "camelCases URL fields that are not templated (ie #{REPO}.htmlUrl)", ->
         STATE[REPO].fetch().then (repo) ->
           expect(repo.htmlUrl).to.be.a('string')
-          done()
 
       describe "#{REPO}.issues...", () ->
         itIsArray(REPO, 'issues.fetch')
@@ -295,16 +282,15 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
           STATE[GH].repos('philschatz', 'octokat.js').git.refs('pull/2/head').fetch().then (pullRef) ->
             expect(pullRef).to.be.a('object')
 
-        it '.git.blobs.create("Hello")   and .blobs(sha).read()', (done) ->
+        it '.git.blobs.create("Hello")   and .blobs(sha).read()', ->
           STATE[REPO].git.blobs.create({content:'Hello', encoding:'utf-8'})
           .then ({sha}) ->
             expect(sha).to.be.ok
             STATE[REPO].git.blobs(sha).read()
             .then (v) ->
               expect(v).to.equal('Hello')
-              done()
 
-        it '.git.blobs.create(...) and .blobs(...).readBinary()', (done) ->
+        it '.git.blobs.create(...) and .blobs(...).readBinary()', ->
           STATE[REPO].git.blobs.create({content:btoa('Hello'), encoding: 'base64'})
           .then ({sha}) ->
             expect(sha).to.be.ok
@@ -312,33 +298,30 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
             .then (v) ->
               expect(v).to.have.string('Hello')
 
-              done()
               # Make sure the library does not just ignore the isBase64 flag
               # TODO: This is commented because caching is only based on the path, not the flags (or the verb)
               # STATE[REPO].git.blobs.one(sha)
               # .then (v) ->
               #   expect(v).to.not.have.string('Hello')
-              #   done()
 
 
 
       describe 'Collaborator changes', () ->
-        it 'gets a list of collaborators', (done) ->
+        it 'gets a list of collaborators', ->
           trapFail STATE[REPO].collaborators.fetch()
-          .then (v) -> expect(v).to.be.an.array; done()
+          .then (v) -> expect(v).to.be.an.array
 
-        it 'tests membership', (done) ->
+        it 'tests membership', ->
           trapFail STATE[REPO].collaborators.contains(REPO_USER)
-          .then (v) -> expect(v).to.be.true; done()
+          .then (v) -> expect(v).to.be.true
 
-        it 'adds and removes a collaborator', (done) ->
+        it 'adds and removes a collaborator', ->
           trapFail STATE[REPO].collaborators(OTHER_USERNAME).add()
           .then (v) ->
             expect(v).to.be.ok
             trapFail STATE[REPO].collaborators(OTHER_USERNAME).remove()
             .then (v) ->
               expect(v).to.be.true
-              done()
 
 
     describe "#{USER} = #{GH}.users(USERNAME)", () ->
@@ -358,11 +341,10 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
       itIsArray(USER, 'receivedEvents.fetch')
       itIsArray(USER, 'starred.fetch')
 
-      it "camelCases URL fields that are not templated (ie #{USER}.avatarUrl)", (done) ->
+      it "camelCases URL fields that are not templated (ie #{USER}.avatarUrl)", ->
         STATE[USER].fetch().then (repo) ->
           expect(repo.htmlUrl).to.be.a('string')
           expect(repo.avatarUrl).to.be.a('string')
-          done()
 
     describe "#{ORG} = #{GH}.orgs(ORG_NAME)", () ->
 
@@ -400,7 +382,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
 
       describe 'Multistep operations', () ->
 
-        it '.starred.add(OWNER, REPO), .starred.is(...), and then .starred.remove(...)', (done) ->
+        it '.starred.add(OWNER, REPO), .starred.is(...), and then .starred.remove(...)', ->
           trapFail STATE[ME].starred(REPO_USER, REPO_NAME).add()
           .then () ->
             STATE[ME].starred.contains(REPO_USER, REPO_NAME)
@@ -409,12 +391,11 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
               STATE[ME].starred(REPO_USER, REPO_NAME).remove()
               .then (v) ->
                 expect(v).to.be.true
-                done()
 
 
     describe "#{GIST} = #{GH}.gist(GIST_ID)", () ->
 
-      before (done) ->
+      before ->
 
         # Create a Test Gist for all the tests
         config =
@@ -427,20 +408,16 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         STATE[GH].gists.create(config)
         .then (gist) ->
           STATE[GIST] = gist
-          done()
 
       # itIsOk(GIST, 'fetch')
 
       # itIsArray(GIST, 'forks.all')
 
       # TODO: For some reason this test fails in the browser. Probably POST vs PUT?
-      it 'can be .starred.add() and .starred.remove()', (done) ->
+      it 'can be .starred.add() and .starred.remove()', ->
         STATE[GIST].star.add()
         .then () ->
           STATE[GIST].star.remove()
-          .then () ->
-            done()
-
 
 
     describe "#{ISSUE} = #{REPO}.issues(1)", () ->
@@ -459,15 +436,13 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         itIsOk(REPO, 'issues.comments', 43218269, 'fetch')
 
         # Deprecated. Now provides only `issueUrl`
-        # it 'comment.issue()', (done) ->
+        # it 'comment.issue()', ->
         #   trapFail STATE[REPO].issues.comments(43218269).fetch()
         #   .then (comment) ->
         #     comment.issue()
-        #     .then (v) ->
-        #       done()
 
   describe 'Allows disabling hypermedia conversion', () ->
-    it 'returns a simple JSON object when fetching a repository', (done) ->
+    it 'returns a simple JSON object when fetching a repository', ->
       client = new Octokat({token: TOKEN, disableHypermedia: true})
       client.repos(REPO_USER, REPO_NAME).fetch()
       .then (repo) ->
@@ -476,4 +451,3 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         expect(repo.created_at).to.be.a('string')
         # Serializing the object as JSON should work
         JSON.stringify(repo)
-        done()

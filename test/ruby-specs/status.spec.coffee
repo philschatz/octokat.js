@@ -12,14 +12,11 @@ define (require) ->
     describe 'Status', () ->
       @timeout(LONG_TIMEOUT)
 
-      it "returns the current system status", (done) ->
+      it "returns the current system status", ->
         client.status()
-        .then () -> done()
 
-      it "returns the last human message", (done) ->
+      it "returns the last human message", ->
         client.status.lastMessage()
-        .then () -> done()
 
-      it "returns the most recent status messages", (done) ->
+      it "returns the most recent status messages", ->
         client.status.messages()
-        .then () -> done()

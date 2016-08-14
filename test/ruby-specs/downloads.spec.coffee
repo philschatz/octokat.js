@@ -7,14 +7,12 @@ define (require) ->
   describe 'Downloads', () ->
     @timeout(LONG_TIMEOUT)
 
-    it "lists available downloads", (done) ->
+    it "lists available downloads", ->
       client.repos("github/hubot").downloads.fetch()
       .then (downloads) ->
         expect(downloads[downloads.length-1].description).to.equal("Version 1.0.0 of the Hubot Campfire Bot")
-        done()
 
-    it "gets a single download", (done) ->
+    it "gets a single download", ->
       client.repos("github/hubot").downloads(165347).fetch()
       .then (download) ->
         expect(download.name).to.equal("hubot-2.1.0.tar.gz")
-        done()
