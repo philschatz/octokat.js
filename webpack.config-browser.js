@@ -14,6 +14,9 @@ module.exports = {
     filename: '[name].js'
   },
   module: {
+    noParse: [
+      /promise-filler/
+    ],
     loaders: [
       { test: /\.coffee$/, loader: 'coffee-loader' }
     ]
@@ -21,6 +24,7 @@ module.exports = {
   resolve: {
     alias: {
       xmlhttprequest: path.join(__dirname, '/src/hacks/xmlhttprequest-filler.js'),
+      'es6-promise': path.join(__dirname, '/src/hacks/promise-filler.js'),
     },
     extensions: ['', '.coffee']
   }
