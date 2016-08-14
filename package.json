@@ -4,8 +4,9 @@
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
   "scripts": {
+    "pretest": "npm run dist",
     "test": "VCR_MODE=cache grunt test --verbose",
-    "dist": "webpack -v --progress",
+    "dist": "webpack --config ./webpack.config-node.js -v --progress && webpack --config ./webpack.config-browser.js -v --progress",
     "update": "bower update",
     "bump": "grunt release",
     "blanket": {

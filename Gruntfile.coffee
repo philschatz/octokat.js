@@ -143,7 +143,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'test', [
-    'dist'
+    # 'dist'
     'mochaTest'
     'connect'
     'mocha_phantomjs'
