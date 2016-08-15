@@ -51,14 +51,13 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {client, REPO_USER, REPO
 
 
   describe 'Hypermedia type conversion', ->
-    it 'converts date strings to dates (parse)', (done) ->
+    it 'converts date strings to dates (parse)', ->
       json =
         created_at: '2016-01-01'
       expectedMs = Date.parse(json.created_at)
       client.parse(json).then (val) ->
         actualMs = val.createdAt.getTime()
         expect(actualMs).to.equal(expectedMs)
-        done()
 
     it 'converts date strings to dates (fetch)', ->
       client.repos(REPO_USER, REPO_NAME).fetch().then (info) ->
