@@ -733,10 +733,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports) {
 
-	// Webpack tries to include this package when building for node
-	// Therefore, we stub it out and then tell webpack to noParse this file
-	// so that it is properly require'd in the node build.
-	module.exports = require('es6-promise');
+	module.exports = window.Promise;
 
 
 /***/ },
@@ -1226,16 +1223,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	var x;
-	if (typeof window !== 'undefined') {
-	  x = window.XMLHTTPRequest;
-	} else {
-	  x = __webpack_require__(12);
-	}
-
-	module.exports = x;
+	module.exports = window.XMLHTTPRequest;
 
 
 /***/ }

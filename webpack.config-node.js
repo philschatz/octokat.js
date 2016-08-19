@@ -15,6 +15,7 @@ module.exports = {
     filename: '[name].js'
   },
   module: {
+    // Tell webpack to preserve the `require('xmlhttprequest')` call
     noParse: [
       /promise-filler/,
       /xmlhttprequest-filler/
@@ -25,8 +26,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      xmlhttprequest: path.join(__dirname, '/src/hacks/xmlhttprequest-filler.js'),
-      'es6-promise': path.join(__dirname, '/src/hacks/promise-filler.js'),
+      xmlhttprequest: path.join(__dirname, 'src/hacks/xmlhttprequest-filler-node.js'),
+      'es6-promise': path.join(__dirname, 'src/hacks/promise-filler-node.js'),
     },
     extensions: ['', '.coffee']
   }
