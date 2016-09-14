@@ -1,0 +1,16 @@
+{
+  "arrow_spacing": {
+    "level": "error"
+  },
+  "line_endings": {
+    "level": "error",
+    "value": "unix"
+  },
+  "max_line_length": {
+    "level": "error",
+    "value": 150
+  },
+  "no_unnecessary_fat_arrows": {
+    "level": "ignore"
+  }
+}

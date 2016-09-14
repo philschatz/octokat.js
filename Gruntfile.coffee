@@ -1,3 +1,4 @@
+# Grunt is now used only for tagging releases.
 module.exports = (grunt) ->
 
   fs = require('fs')
@@ -10,51 +11,6 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: pkg
 
-    # Lint
-    # ----
-
-    # CoffeeLint
-    coffeelint:
-      options:
-        arrow_spacing:
-          level: 'error'
-        line_endings:
-          level: 'error'
-          value: 'unix'
-        max_line_length:
-          level: 'error'
-          value: 150
-        no_unnecessary_fat_arrows:
-          level: "ignore"
-
-      source: ['src/*.coffee']
-      grunt: 'Gruntfile.coffee'
-
-
-    # Dist
-    # ----
-    browserify:
-      options:
-        browserifyOptions:
-          extensions: ['.js', '.coffee']
-          standalone: 'Octokat'
-          debug: false # Source Maps
-        transform: ['coffeeify']
-      octokat:
-        files:
-          'dist/octokat.js': ['src/octokat.coffee']
-
-
-    # Clean
-    clean:
-      files:
-        src: [
-          'dist/'
-          'tmp/'
-        ]
-        # filter: 'isFile'
-
-
     # Release a new version and push upstream
     bump:
       options:
@@ -64,13 +20,6 @@ module.exports = (grunt) ->
         commitFiles: ['package.json', 'bower.json', 'dist/octokat.js']
         # Files to bump the version number of
         files: ['package.json', 'bower.json']
-
-    mochaTest:
-      test:
-        options:
-          reporter: 'spec'
-          require: 'coffee-script'
-        src: ['test/**/node*.coffee']
 
     # Used for coveralls.io code coverage
     mochacov:
@@ -92,37 +41,6 @@ module.exports = (grunt) ->
         log: true
         reporter: 'Dot'
 
-    mocha_phantomjs:
-      all:
-        options:
-          urls: [ 'http://localhost:9876/test/index.html' ]
-
-    connect:
-      server:
-        options:
-          port: 9876
-          base: '.'
-
-    watch:
-      files: 'src/**/*.coffee'
-      tasks: ['dist']
-
-
-    # Build the JS files for npm so the library can be used with browserify
-    coffee:
-      compile:
-        files:
-          'dist/node/chainer.js'        : 'src/chainer.coffee'
-          'dist/node/grammar.js'        : 'src/grammar.coffee'
-          'dist/node/helper-base64.js'  : 'src/helper-base64.coffee'
-          'dist/node/helper-promise.js' : 'src/helper-promise.coffee'
-          'dist/node/helper-querystring.js' : 'src/helper-querystring.coffee'
-          'dist/node/octokat.js'        : 'src/octokat.coffee'
-          'dist/node/plus.js'           : 'src/plus.coffee'
-          'dist/node/replacer.js'       : 'src/replacer.coffee'
-          'dist/node/request.js'        : 'src/request.coffee'
-          'dist/node/verb-methods.js'   : 'src/verb-methods.coffee'
-
 
   # Dependencies
   # ============
@@ -131,24 +49,6 @@ module.exports = (grunt) ->
   for name of pkg.devDependencies when name.substring(0, 6) is 'grunt-'
     if grunt.file.exists("./node_modules/#{name}")
       grunt.loadNpmTasks(name)
-
-  # Tasks
-  # =====
-
-  grunt.registerTask 'dist', [
-    'clean'
-    'coffeelint'
-    'browserify' # Build single file for browsers
-    'coffee' # Build JS files for npm
-  ]
-
-  grunt.registerTask 'test', [
-    'dist'
-    'mochaTest'
-    'connect'
-    'mocha_phantomjs'
-    # 'blanket_mocha' # NOTE: Uncomment once the `suiteURL` problem noted above is fixed
-  ]
 
   # Dist
   # -----

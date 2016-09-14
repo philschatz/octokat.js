@@ -7,25 +7,21 @@ define (require) ->
   describe 'Stats', () ->
     @timeout(LONG_TIMEOUT)
 
-    it "returns contributors and their contribution stats", (done) ->
+    it "returns contributors and their contribution stats", ->
       client.repos('octokit/octokit.rb').stats.contributors.fetch()
-      .then () -> done()
 
-    it "returns the commit activity stats", (done) ->
+    it "returns the commit activity stats", ->
       client.repos('octokit/octokit.rb').stats.commitActivity.fetch()
-      .then () -> done()
 
     # Commented because it seems to always return a 403
-    # it "returns the code frequency stats", (done) ->
+    # it "returns the code frequency stats", ->
     #   client.repos(test_repo).stats.codeFrequency.fetch()
     #   .then () -> done()
 
-    it "returns the owner and contributor participation stats", (done) ->
+    it "returns the owner and contributor participation stats", ->
       client.repos('octokit/octokit.rb').stats.participation.fetch()
-      .then () -> done()
 
-    it "returns commit count by hour punch card stats", (done) ->
+    it "returns commit count by hour punch card stats", ->
       client.repos('octokit/octokit.rb').stats.punchCard.fetch()
-      .then () -> done()
 
     # TODO: There is a duplicate test here for pengwynn/pingwynn (and a few others)
