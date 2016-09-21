@@ -225,7 +225,10 @@ Request = (clientOptions={}) ->
           err.status = jqXHR.status
           unless jqXHR.getResponseHeader('Content-Type') != 'application/json; charset=utf-8'
             if jqXHR.responseText
-              json = JSON.parse(jqXHR.responseText)
+              try
+                json = JSON.parse(jqXHR.responseText)
+              catch
+                cb({message: 'Error Parsing Response'})
             else
               # In the case of 404 errors, `responseText` is an empty string
               json = ''
