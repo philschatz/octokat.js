@@ -442,6 +442,10 @@ octo.fromUrl("https://api.github.com/repos/philschatz/octokat.js/issues/1").fetc
 octo.fromUrl("/repos/philschatz/octokat.js/issues").fetch({state: 'open'}, cb);
 ```
 
+## Todo
+- Add Option for Two factor authentication
+- Add option to pass header as cahce control: no cache
+
 ## Development
 
 - Run `npm install`
