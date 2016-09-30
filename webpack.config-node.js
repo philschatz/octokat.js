@@ -5,7 +5,7 @@ module.exports = {
   cache: true,
   entry: {
     octokat: [
-      './src/octokat.coffee',
+      './src/octokat.js',
     ]
   },
   output: {
@@ -21,6 +21,7 @@ module.exports = {
       /xmlhttprequest-filler/
     ],
     loaders: [
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel'},
       { test: /\.coffee$/, loader: 'coffee-loader' }
     ]
   },
