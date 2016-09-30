@@ -1183,7 +1183,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          err.status = jqXHR.status;
 	          if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
 	            if (jqXHR.responseText) {
-	              json = JSON.parse(jqXHR.responseText);
+	              try {
+	                json = JSON.parse(jqXHR.responseText);
+	              } catch (error) {
+	                cb({
+	                  message: 'Error Parsing Response'
+	                });
+	              }
 	            } else {
 	              json = '';
 	            }
