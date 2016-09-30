@@ -1767,21 +1767,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var require;'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var req = require; // Hack so requireJS does not try to load `es6-promise` in the browser
-	// Use native promises if Harmony is on
-	var Promise = undefined.Promise || __webpack_require__(24).Promise;
-	var newPromise = function newPromise(fn) {
-	  return new Promise(fn);
-	};
-	var allPromises = function allPromises(promises) {
-	  return Promise.all(promises);
-	};
+	(function (root) {
+	  var req = require; // Hack so requireJS does not try to load `es6-promise` in the browser
+	  // Use native promises if Harmony is on
+	  var Promise = this.Promise || __webpack_require__(24).Promise;
+	  var newPromise = function newPromise(fn) {
+	    return new Promise(fn);
+	  };
+	  var allPromises = function allPromises(promises) {
+	    return Promise.all(promises);
+	  };
 
-	exports.newPromise = newPromise;
-	exports.allPromises = allPromises;
+	  module.exports = { newPromise: newPromise, allPromises: allPromises };
+	})(undefined);
 
 /***/ },
 /* 24 */
