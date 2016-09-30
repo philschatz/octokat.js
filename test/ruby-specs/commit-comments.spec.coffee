@@ -12,8 +12,8 @@ define (require) ->
 
     it "returns a list of comments for a specific commit", ->
       client.repos("sferik/rails_admin").commits("629e9fd9d4df25528e84d31afdc8ebeb0f56fbb3").comments.fetch()
-      .then (commit_comments) ->
-        expect(commit_comments[0].user.login).to.equal("bbenezech")
+      .then ({items}) ->
+        expect(items[0].user.login).to.equal("bbenezech")
 
     it "returns a single commit comment", ->
       client.repos("sferik/rails_admin").comments("861907").fetch()
@@ -23,8 +23,8 @@ define (require) ->
     context "with commit comment", ->
       before ->
         client.repos(test_repo).commits.fetch()
-        .then (commits) =>
-          @commit = commits[0]
+        .then ({items}) =>
+          @commit = items[0]
           client.repos(test_repo).commits(@commit.sha).comments.create({body:":metal:\n:sparkles:\n:cake:"})
           .then (@commit_comment) =>
 

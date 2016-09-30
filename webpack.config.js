@@ -14,18 +14,14 @@ module.exports = {
     filename: '[name].js'
   },
   module: {
-    noParse: [
-      /promise-filler/
-    ],
     loaders: [
       { test: /\.coffee$/, loader: 'coffee-loader' }
     ]
   },
   resolve: {
     alias: {
-      xmlhttprequest: path.join(__dirname, 'src/hacks/xmlhttprequest-filler-browser.js'),
-      'es6-promise': path.join(__dirname, 'src/hacks/promise-filler-browser.js'),
+      xmlhttprequest: path.join(__dirname, '/src/hacks/xmlhttprequest-filler.js'),
     },
-    extensions: ['', '.js', '.coffee']
+    extensions: ['', '.coffee']
   }
 };

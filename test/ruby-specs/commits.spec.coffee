@@ -9,8 +9,8 @@ define (require) ->
 
     it "returns all commits", ->
       client.repos("sferik/rails_admin").commits.fetch()
-      .then (commits) ->
-        expect(commits[0].author).to.be.ok
+      .then ({items}) ->
+        expect(items[0].author).to.be.ok
 
     # it "handles branch or sha argument", ->
     it "handles the sha option", ->
@@ -18,8 +18,8 @@ define (require) ->
 
     it "returns all commits on the specified date", ->
       client.repos("sferik/rails_admin").commits.fetch({since:"2011-01-20"})
-      .then (commits) ->
-        expect(commits).to.be.an.Array
+      .then ({items}) ->
+        expect(items).to.be.an.Array
 
 
     it "returns a commit", ->
@@ -34,8 +34,8 @@ define (require) ->
 
     it "creates a commit", ->
       client.repos(test_repo).commits.fetch()
-      .then (commits) ->
-        last_commit = commits[commits.length-1]
+      .then ({items}) ->
+        last_commit = items[items.length-1]
 
         client.repos(test_repo).git.commits.create({message: "My commit message", tree:last_commit.commit.tree.sha, parents:[last_commit.sha]})
 
@@ -44,8 +44,8 @@ define (require) ->
       afterRemove = () ->
         repo = client.repos(test_repo)
         repo.commits.fetch()
-        .then (commits) ->
-          last_commit = commits[commits.length-1]
+        .then ({items}) ->
+          last_commit = items[items.length-1]
           repo.git.refs.create({ref:"refs/heads/branch-to-merge", sha:last_commit.sha})
           .then (v) ->
             head = 'master'

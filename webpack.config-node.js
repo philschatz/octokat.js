@@ -29,6 +29,6 @@ module.exports = {
       xmlhttprequest: path.join(__dirname, 'src/hacks/xmlhttprequest-filler-node.js'),
       'es6-promise': path.join(__dirname, 'src/hacks/promise-filler-node.js'),
     },
-    extensions: ['', '.coffee']
+    extensions: ['', '.js', '.coffee']
   }
 };

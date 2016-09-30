@@ -4,7 +4,7 @@
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
   "scripts": {
-    "build": "coffeelint --file ./coffeelint.json src/**.coffee && npm run dist",
+    "build": "coffeelint --file ./coffeelint.json src/**/*.coffee && npm run dist",
     "pretest": "npm run build",
     "test": "npm run test-node && npm run test-browser",
     "test-node": "VCR_MODE=cache ./node_modules/.bin/mocha --reporter spec --require coffee-script/register test/**/node**.coffee",
@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "es6-promise": "3.0.2",
+    "lodash": "^3.10.1",
     "xmlhttprequest": "~1.8.0"
   },
   "devDependencies": {
@@ -31,6 +32,7 @@
     "grunt": "~0.4.5",
     "grunt-bump": "~0.3.1",
     "http-server": "^0.9.0",
+    "lodash": "^3.10.1",
     "mocha": "^3.0.2",
     "mocha-phantomjs": "^4.1.0",
     "octokat-fixtures": "git://github.com/philschatz/octokat-fixtures",

@@ -132,14 +132,14 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         .fetch().then (val) ->
           expect(val).to.not.be.null
 
-      it 'supports octo.parse(json)', () ->
-        json =
-          url: 'https://api.github.com/repos/philschatz/octokat.js'
-          foo_url: 'http://philschatz.com'
-          field: 'Hello there!'
-          bar:
-            baz_url: 'http://philschatz.com'
-        ret = client.parse(json)
+    it 'supports octo.parse(json)', (done) ->
+      json =
+        url: 'https://api.github.com/repos/philschatz/octokat.js'
+        foo_url: 'http://philschatz.com'
+        field: 'Hello there!'
+        bar:
+          baz_url: 'http://philschatz.com'
+      client.parse json, (err, ret) ->
         expect(ret.field).to.equal(json.field)
         expect(ret.url).to.equal(json.url)
         expect(ret.foo.url).to.equal(json.foo_url)
@@ -148,6 +148,7 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         # Make sure the obj was detected to be a repo
         expect(ret.fetch).to.not.be.null
         expect(ret.issues).to.not.be.null
+        done()
 
     describe 'Miscellaneous APIs', () ->
       itIsOk(GH, 'zen.read')
@@ -179,33 +180,65 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
 
     describe 'Paged Results', () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.nextPage()
-          .then (moreResults) ->
+      describe 'Deprecated Notation', ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.nextPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then ({nextPage}) ->
+            nextPage()
+            .then ({items}) ->
+              expect(items).to.be.an('array')
+              expect(items).to.have.length.at.least(1)
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.nextPage()
-          .then (moreResults) ->
-            moreResults.prevPage()
-            .then () ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.prevPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then ({nextPage}) ->
+            nextPage()
+            .then ({prevPage}) ->
+              prevPage()
+              .then () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.nextPage()
-          .then (moreResults) ->
-            moreResults.firstPage()
-            .then () ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.firstPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then ({nextPage}) ->
+            nextPage()
+            .then ({firstPage}) ->
+              firstPage()
+              .then () ->
 
-      it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", ->
-        trapFail STATE[GH].gists.public.fetch()
-        .then (results) ->
-          results.lastPage()
-          .then (moreResults) ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.lastPage()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then ({lastPage}) ->
+            lastPage()
+
+      describe 'New Notation', ->
+        it "#{GH}.gists.public.fetch().then(results) -> results.nextPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then ({nextPage}) ->
+            nextPage.fetch()
+            .then ({items}) ->
+              expect(items).to.be.an('array')
+              expect(items).to.have.length.at.least(1)
+
+        it "#{GH}.gists.public.fetch().then(results) -> results.prevPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then ({nextPage}) ->
+            nextPage.fetch()
+            .then ({prevPage}) ->
+              prevPage.fetch()
+              .then () ->
+
+        it "#{GH}.gists.public.fetch().then(results) -> results.firstPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.nextPage.fetch()
+            .then (moreResults) ->
+              moreResults.firstPage.fetch()
+              .then () ->
+
+        it "#{GH}.gists.public.fetch().then(results) -> results.lastPage.fetch()", ->
+          trapFail STATE[GH].gists.public.fetch()
+          .then (results) ->
+            results.lastPage.fetch()
 
 
     describe "#{REPO} = #{GH}.repos(OWNER, NAME)", () ->
@@ -270,9 +303,9 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         # itIsOk(REPO, 'git.trees.create', {tree: [sha], base_tree: sha})
 
         it '.git.refs.tags.fetch()', () ->
-          STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags.fetch().then (tags) ->
-            expect(tags).to.be.a('array')
-            expect(tags.length).to.equal(17)
+          STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags.fetch().then ({items}) ->
+            expect(items).to.be.a('array')
+            expect(items.length).to.equal(17)
 
         it '.git.refs.tags("v0.1.1").fetch()', () ->
           STATE[GH].repos('philschatz', 'octokat.js').git.refs.tags('v0.1.1').fetch().then (tag) ->
@@ -441,13 +474,34 @@ define ['chai', 'cs!./test-config'], ({assert, expect}, {Octokat, client, USERNA
         #   .then (comment) ->
         #     comment.issue()
 
-  describe 'Allows disabling hypermedia conversion', () ->
-    it 'returns a simple JSON object when fetching a repository', ->
-      client = new Octokat({token: TOKEN, disableHypermedia: true})
+  # TODO: Refactor: put this back in once the constructor allows setting plugins
+  # describe 'Allows disabling hypermedia conversion', () ->
+  #   it 'returns a simple JSON object when fetching a repository', ->
+  #     client = new Octokat({token: TOKEN, disableHypermedia: true})
+  #     client.repos(REPO_USER, REPO_NAME).fetch()
+  #     .then (repo) ->
+  #       expect(repo.full_name).to.not.be.null
+  #       expect(repo.html_url).to.not.be.null
+  #       expect(repo.created_at).to.be.a('string')
+  #       # Serializing the object as JSON should work
+  #       JSON.stringify(repo)
+
+  describe 'Cache Handler', () ->
+    it ' is called when refetching a URL', ->
+      retreivedFromCache = false
+      cacheHandler = new class CacheHandler
+        constructor: ->
+          @_cachedETags = {}
+        get: (method, path) ->
+          retreivedFromCache = !!@_cachedETags["#{method} #{path}"]
+          @_cachedETags["#{method} #{path}"]
+        add: (method, path, eTag, data, status) ->
+          @_cachedETags["#{method} #{path}"] = {eTag, data, status}
+
+      client = new Octokat({cacheHandler})
       client.repos(REPO_USER, REPO_NAME).fetch()
-      .then (repo) ->
-        expect(repo.full_name).to.not.be.null
-        expect(repo.html_url).to.not.be.null
-        expect(repo.created_at).to.be.a('string')
-        # Serializing the object as JSON should work
-        JSON.stringify(repo)
+      .then (repo1) ->
+        client.repos(REPO_USER, REPO_NAME).fetch()
+        .then (repo2) ->
+          expect(JSON.stringify(repo1) is JSON.stringify(repo2)).to.be.true
+          expect(retreivedFromCache).to.be.true
