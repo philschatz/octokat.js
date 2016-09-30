@@ -1,5 +1,4 @@
 const { filter, forOwn, extend } = require('./plus')
-const toQueryString = require('./helpers/querystring')
 
 // When `origFn` is not passed a callback as the last argument then return a
 // Promise, or error if no Promise can be found (see `plugins/promise/*` for
@@ -36,13 +35,13 @@ class VerbMethods {
     this._syncVerbs = {}
     let iterable = filter(plugins, ({verbs}) => verbs)
     for (let i = 0; i < iterable.length; i++) {
-      var plugin = iterable[i]
+      let plugin = iterable[i]
       extend(this._syncVerbs, plugin.verbs)
     }
     this._asyncVerbs = {}
     let iterable1 = filter(plugins, ({asyncVerbs}) => asyncVerbs)
     for (let j = 0; j < iterable1.length; j++) {
-      var plugin = iterable1[j]
+      let plugin = iterable1[j]
       extend(this._asyncVerbs, plugin.asyncVerbs)
     }
   }
@@ -50,13 +49,13 @@ class VerbMethods {
   // Injects verb methods onto `obj`
   injectVerbMethods (path, obj) {
     if (this._promisePlugin) {
-      var {newPromise, allPromises} = this._promisePlugin.promiseCreator
+      var {newPromise} = this._promisePlugin.promiseCreator
     }
 
     if (typeof obj === 'object' || typeof obj === 'function') {
       obj.url = path // Mostly for testing
       forOwn(this._syncVerbs, (verbFunc, verbName) => {
-        return obj[verbName] = (...args) => {
+        obj[verbName] = (...args) => {
           let makeRequest = (cb, ...originalArgs) => {
             let data, method, options;
             ({method, path, data, options} = verbFunc(path, ...originalArgs))
@@ -68,7 +67,7 @@ class VerbMethods {
       )
 
       forOwn(this._asyncVerbs, (verbFunc, verbName) => {
-        return obj[verbName] = (...args) => {
+        obj[verbName] = (...args) => {
           let makeRequest = verbFunc(this._requester, path) // Curried function
           return toPromise(makeRequest, newPromise)(...args)
         }

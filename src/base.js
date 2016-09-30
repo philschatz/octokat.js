@@ -95,7 +95,7 @@ let OctokatBase = function (clientOptions = {}) {
 
   instance._parseWithContext = function (path, context, cb) {
     if (typeof cb !== 'function') { throw new Error('Callback is required') }
-    let {data, requester} = context
+    let { data } = context
     context.url = __guard__(data, x => x.url) || path
 
     let responseMiddlewareAsyncs = plus.map(plus.filter(plugins, ({responseMiddlewareAsync}) => responseMiddlewareAsync), plugin => plugin.responseMiddlewareAsync.bind(plugin)

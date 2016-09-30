@@ -68,8 +68,9 @@ let plus = {
   // Just _.extend(target, source)
   extend (target, source) {
     if (source) {
-      return Object.keys(source).map((key) =>
-        target[key] = source[key])
+      return Object.keys(source).map((key) => {
+        target[key] = source[key]
+      })
     }
   },
 

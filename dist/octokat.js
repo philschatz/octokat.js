@@ -69,7 +69,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HypermediaPlugin = __webpack_require__(18);
 
 	var ALL_PLUGINS = [__webpack_require__(19), // re-chain methods when we detect an object (issue, comment, user, etc)
-	__webpack_require__(21), __webpack_require__(25), __webpack_require__(27), __webpack_require__(29), __webpack_require__(31), __webpack_require__(12), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34),
+	__webpack_require__(21), __webpack_require__(25), __webpack_require__(27), __webpack_require__(29), __webpack_require__(31), __webpack_require__(11), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34),
 	// Run cacheHandler after PagedResults so the link headers are remembered
 	// but before hypermedia so the object is still serializable
 	__webpack_require__(35), HypermediaPlugin, __webpack_require__(36)];
@@ -126,7 +126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Use the following plugins by default (they should be neglegible additional code)
 
 
-	var SimpleVerbsPlugin = __webpack_require__(12);
+	var SimpleVerbsPlugin = __webpack_require__(11);
 	var NativePromiseOnlyPlugin = __webpack_require__(13);
 
 	var Requester = __webpack_require__(15);
@@ -240,8 +240,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof cb !== 'function') {
 	      throw new Error('Callback is required');
 	    }
-	    var data = context.data,
-	        requester = context.requester;
+	    var data = context.data;
 
 	    context.url = __guard__(data, function (x) {
 	      return x.url;
@@ -416,7 +415,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  extend: function extend(target, source) {
 	    if (source) {
 	      return Object.keys(source).map(function (key) {
-	        return target[key] = source[key];
+	        target[key] = source[key];
 	      });
 	    }
 	  },
@@ -807,11 +806,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    forOwn = _require.forOwn,
 	    extend = _require.extend;
 
-	var toQueryString = __webpack_require__(11);
-
 	// When `origFn` is not passed a callback as the last argument then return a
 	// Promise, or error if no Promise can be found (see `plugins/promise/*` for
 	// some strategies for loading a Promise implementation)
+
+
 	var toPromise = function toPromise(orig, newPromise) {
 	  return function () {
 	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
@@ -871,8 +870,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return asyncVerbs;
 	    });
 	    for (var j = 0; j < iterable1.length; j++) {
-	      var plugin = iterable1[j];
-	      extend(this._asyncVerbs, plugin.asyncVerbs);
+	      var _plugin = iterable1[j];
+	      extend(this._asyncVerbs, _plugin.asyncVerbs);
 	    }
 	  }
 
@@ -885,15 +884,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this = this;
 
 	      if (this._promisePlugin) {
-	        var _promisePlugin$promis = this._promisePlugin.promiseCreator,
-	            newPromise = _promisePlugin$promis.newPromise,
-	            allPromises = _promisePlugin$promis.allPromises;
+	        var newPromise = this._promisePlugin.promiseCreator.newPromise;
 	      }
 
 	      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') {
 	        obj.url = path; // Mostly for testing
 	        forOwn(this._syncVerbs, function (verbFunc, verbName) {
-	          return obj[verbName] = function () {
+	          obj[verbName] = function () {
 	            var makeRequest = function makeRequest(cb) {
 	              for (var _len2 = arguments.length, originalArgs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
 	                originalArgs[_key2 - 1] = arguments[_key2];
@@ -917,7 +914,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 
 	        forOwn(this._asyncVerbs, function (verbFunc, verbName) {
-	          return obj[verbName] = function () {
+	          obj[verbName] = function () {
 	            var makeRequest = verbFunc(_this._requester, path); // Curried function
 	            return toPromise(makeRequest, newPromise).apply(undefined, arguments);
 	          };
@@ -938,46 +935,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 11 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	// Converts a dictionary to a query string.
-	// Internal helper method
-	var toQueryString = function toQueryString(options, omitQuestionMark) {
-	  // Returns '' if `options` is empty so this string can always be appended to a URL
-	  if (!options || options === {}) {
-	    return '';
-	  }
-
-	  var params = [];
-	  var object = options || {};
-	  for (var key in object) {
-	    var value = object[key];
-	    if (value) {
-	      params.push(key + '=' + encodeURIComponent(value));
-	    }
-	  }
-	  if (params.length) {
-	    if (omitQuestionMark) {
-	      return '&' + params.join('&');
-	    } else {
-	      return '?' + params.join('&');
-	    }
-	  } else {
-	    return '';
-	  }
-	};
-
-	module.exports = toQueryString;
-
-/***/ },
-/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var toQueryString = __webpack_require__(11);
+	var toQueryString = __webpack_require__(12);
 
 	// new class SimpleVerbs
 	module.exports = {
@@ -1013,6 +975,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	};
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	// Converts a dictionary to a query string.
+	// Internal helper method
+	var toQueryString = function toQueryString(options, omitQuestionMark) {
+	  // Returns '' if `options` is empty so this string can always be appended to a URL
+	  if (!options || options === {}) {
+	    return '';
+	  }
+
+	  var params = [];
+	  var object = options || {};
+	  for (var key in object) {
+	    var value = object[key];
+	    if (value) {
+	      params.push(key + '=' + encodeURIComponent(value));
+	    }
+	  }
+	  if (params.length) {
+	    if (omitQuestionMark) {
+	      return '&' + params.join('&');
+	    } else {
+	      return '?' + params.join('&');
+	    }
+	  } else {
+	    return '';
+	  }
+	};
+
+	module.exports = toQueryString;
 
 /***/ },
 /* 13 */
@@ -1314,7 +1311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var toQueryString = __webpack_require__(11);
+	var toQueryString = __webpack_require__(12);
 	var deprecate = __webpack_require__(2);
 
 	module.exports = function (url) {
@@ -2001,7 +1998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var toQueryString = __webpack_require__(11);
+	var toQueryString = __webpack_require__(12);
 
 	var pushAll = function pushAll(target, source) {
 	  if (!Array.isArray(source)) {
@@ -2075,7 +2072,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var toQueryString = __webpack_require__(11);
+	var toQueryString = __webpack_require__(12);
 
 	module.exports = new (function () {
 	  function ReadBinary() {
