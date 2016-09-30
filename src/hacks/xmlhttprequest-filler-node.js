@@ -1,1 +1,1 @@
-module.exports = require('xmlhttprequest');
+module.exports = require('xmlhttprequest')

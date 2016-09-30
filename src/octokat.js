@@ -1,7 +1,7 @@
-const deprecate = require('./deprecate');
-const OctokatBase = require('./base');
+const deprecate = require('./deprecate')
+const OctokatBase = require('./base')
 
-const HypermediaPlugin = require('./plugins/hypermedia');
+const HypermediaPlugin = require('./plugins/hypermedia')
 
 let ALL_PLUGINS = [
   require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
@@ -22,21 +22,20 @@ let ALL_PLUGINS = [
 
   HypermediaPlugin,
   require('./plugins/camel-case')
-];
+]
 
-let Octokat = function(clientOptions={}) {
-
-  if (clientOptions.plugins == null) { clientOptions.plugins = ALL_PLUGINS; }
+let Octokat = function (clientOptions = {}) {
+  if (clientOptions.plugins == null) { clientOptions.plugins = ALL_PLUGINS }
 
   if (clientOptions.disableHypermedia) {
-    deprecate('Please use the clientOptions.plugins array and just do not include the hypermedia plugin');
-    clientOptions.plugins = clientOptions.plugins.filter(plugin => plugin !== HypermediaPlugin);
+    deprecate('Please use the clientOptions.plugins array and just do not include the hypermedia plugin')
+    clientOptions.plugins = clientOptions.plugins.filter(plugin => plugin !== HypermediaPlugin)
   }
 
   // the octokat instance
-  let instance = new OctokatBase(clientOptions);
-  return instance;
-};
+  let instance = new OctokatBase(clientOptions)
+  return instance
+}
 
 // module.exports = Octokat;
 module.exports = Octokat

@@ -1,8 +1,8 @@
-var x;
+var x
 if (typeof window !== 'undefined') {
-  x = window.XMLHTTPRequest;
+  x = window.XMLHTTPRequest
 } else {
-  x = require('xmlhttprequest');
+  x = require('xmlhttprequest')
 }
 
-module.exports = x;
+module.exports = x

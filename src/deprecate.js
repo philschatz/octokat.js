@@ -1,5 +1,5 @@
-module.exports = function(message) {
+module.exports = function (message) {
   if (console && console.warn) {
-    console.warn(`Octokat Deprecation: ${message}`);
+    console.warn(`Octokat Deprecation: ${message}`)
   }
-};
+}

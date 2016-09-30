@@ -77,7 +77,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Octokat = function Octokat() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-
 	  if (clientOptions.plugins == null) {
 	    clientOptions.plugins = ALL_PLUGINS;
 	  }
@@ -154,7 +153,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var OctokatBase = function OctokatBase() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
 
 	  var plugins = clientOptions.plugins || [SimpleVerbsPlugin, NativePromiseOnlyPlugin];
 
@@ -346,7 +344,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var onlyOnce = function onlyOnce(fn) {
 	  return function () {
 	    if (fn === null) {
-	      throw new Error("Callback was already called.");
+	      throw new Error('Callback was already called.');
 	    }
 	    var callFn = fn;
 	    fn = null;
@@ -947,7 +945,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Converts a dictionary to a query string.
 	// Internal helper method
 	var toQueryString = function toQueryString(options, omitQuestionMark) {
-
 	  // Returns '' if `options` is empty so this string can always be appended to a URL
 	  if (!options || options === {}) {
 	    return '';
@@ -1321,7 +1318,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var deprecate = __webpack_require__(2);
 
 	module.exports = function (url) {
-
 	  // Deprecated interface. Use an Object to specify the args in the template.
 	  // the order of fields in the template should not matter.
 	  var m = void 0;
@@ -1474,7 +1470,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: '_replaceKeyValue',
 	    value: function _replaceKeyValue(instance, acc, key, value) {
 	      if (/_url$/.test(key)) {
-
 	        if (/^upload_url$/.test(key)) {
 	          // POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
 	          var defaultFn = function defaultFn() {

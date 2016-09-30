@@ -1,9 +1,9 @@
 module.exports = new class UsePostInsteadOfPatch {
-  requestMiddlewareAsync(input, cb) {
-    let {clientOptions:{usePostInsteadOfPatch}, method} = input;
+  requestMiddlewareAsync (input, cb) {
+    let {clientOptions: {usePostInsteadOfPatch}, method} = input
     if (usePostInsteadOfPatch && method === 'PATCH') {
-      input.method = 'POST';
+      input.method = 'POST'
     }
-    return cb(null, input);
+    return cb(null, input)
   }
-};
+}()

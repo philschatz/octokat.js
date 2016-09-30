@@ -1,1 +1,1 @@
-module.exports = window.Promise;
+module.exports = window.Promise

@@ -1,10 +1,10 @@
-var path = require('path');
+var path = require('path')
 
 module.exports = {
   cache: true,
   entry: {
     octokat: [
-      './src/octokat.js',
+      './src/octokat.js'
     ]
   },
   output: {
@@ -21,8 +21,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      xmlhttprequest: path.join(__dirname, '/src/hacks/xmlhttprequest-filler.js'),
+      xmlhttprequest: path.join(__dirname, '/src/hacks/xmlhttprequest-filler.js')
     },
     extensions: ['', '.coffee']
   }
-};
+}

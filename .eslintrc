@@ -1,0 +1,10 @@
+{
+  "extends": "standard",
+  "rules": {
+    "standard/object-curly-even-spacing": 1,
+    "no-return-assign": 1,
+    "no-redeclare": 1,
+    "no-unused-vars": 1,
+    "no-unreachable": 1
+  }
+}
