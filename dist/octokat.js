@@ -408,24 +408,24 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/**
-	 * A specialized version of `_.filter` for arrays without support for callback
-	 * shorthands and `this` binding.
+	 * A specialized version of `_.filter` for arrays without support for
+	 * iteratee shorthands.
 	 *
 	 * @private
-	 * @param {Array} array The array to iterate over.
+	 * @param {Array} [array] The array to iterate over.
 	 * @param {Function} predicate The function invoked per iteration.
 	 * @returns {Array} Returns the new filtered array.
 	 */
 	function arrayFilter(array, predicate) {
 	  var index = -1,
-	      length = array.length,
-	      resIndex = -1,
+	      length = array == null ? 0 : array.length,
+	      resIndex = 0,
 	      result = [];
 
 	  while (++index < length) {
 	    var value = array[index];
 	    if (predicate(value, index, array)) {
-	      result[++resIndex] = value;
+	      result[resIndex++] = value;
 	    }
 	  }
 	  return result;
@@ -439,17 +439,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/**
-	 * A specialized version of `_.forEach` for arrays without support for callback
-	 * shorthands and `this` binding.
+	 * A specialized version of `_.forEach` for arrays without support for
+	 * iteratee shorthands.
 	 *
 	 * @private
-	 * @param {Array} array The array to iterate over.
+	 * @param {Array} [array] The array to iterate over.
 	 * @param {Function} iteratee The function invoked per iteration.
 	 * @returns {Array} Returns `array`.
 	 */
 	function arrayEach(array, iteratee) {
 	  var index = -1,
-	      length = array.length;
+	      length = array == null ? 0 : array.length;
 
 	  while (++index < length) {
 	    if (iteratee(array[index], index, array) === false) {
@@ -467,17 +467,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/**
-	 * A specialized version of `_.map` for arrays without support for callback
-	 * shorthands and `this` binding.
+	 * A specialized version of `_.map` for arrays without support for iteratee
+	 * shorthands.
 	 *
 	 * @private
-	 * @param {Array} array The array to iterate over.
+	 * @param {Array} [array] The array to iterate over.
 	 * @param {Function} iteratee The function invoked per iteration.
 	 * @returns {Array} Returns the new mapped array.
 	 */
 	function arrayMap(array, iteratee) {
 	  var index = -1,
-	      length = array.length,
+	      length = array == null ? 0 : array.length,
 	      result = Array(length);
 
 	  while (++index < length) {
@@ -1565,7 +1565,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	if ((typeof window !== "undefined" && window !== null) && !newPromise) {
 	  if (typeof console !== "undefined" && console !== null) {
 	    if (typeof console.warn === "function") {
-	      console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
+	      console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise (library-first)');
 	    }
 	  }
 	} else if ((typeof window === "undefined" || window === null) && !newPromise) {

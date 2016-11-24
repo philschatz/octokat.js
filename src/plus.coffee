@@ -1,8 +1,8 @@
 # Both of these internal methods are really small/simple and we are only
 # working with arrays anyway
-filter = require 'lodash/internal/arrayFilter'
-forEach = require 'lodash/internal/arrayEach'
-map = require 'lodash/internal/arrayMap'
+filter = require 'lodash/_arrayFilter'
+forEach = require 'lodash/_arrayEach'
+map = require 'lodash/_arrayMap'
 
 # From async
 onlyOnce = (fn) ->
