@@ -113,6 +113,7 @@ module.exports =
       'events'      : false
       'comments'    : false
       'labels'      : false
+      'assignees'   : false
     'git':
       'refs':
         'heads'     : false
