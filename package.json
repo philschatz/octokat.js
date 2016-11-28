@@ -8,7 +8,7 @@
     "build": "npm run-script lint && npm run-script dist",
     "pretest": "npm run-script build",
     "test": "npm run-script test-node && webpack --config webpack.config-browsertests.js && npm run-script test-browser",
-    "test-node": "VCR_MODE=cache ./node_modules/.bin/mocha --reporter spec --require coffee-script/register test/**/node**.coffee",
+    "test-node": "VCR_MODE=cache ./node_modules/.bin/mocha --reporter spec test/**/node**.js",
     "test-browser": "./script/run-test-browser.sh",
     "test-browser-only": "mocha-phantomjs --reporter spec --timeout 20000 http://localhost:9876/test/index.html",
     "dist": "webpack --config ./webpack.config-node.js -v --progress && webpack --config ./webpack.config-browser.js -v --progress",

@@ -1,0 +1,147 @@
+const { expect } = require('chai')
+const { client, LONG_TIMEOUT, test_repo } = require('../test-config')
+
+// NodeJS does not have a btoa
+let btoa = null
+
+if (typeof window !== 'undefined' && window !== null) {
+  btoa = window.btoa
+  // Use the `Buffer` if available (NodeJS)
+} else if (typeof global !== 'undefined' && global !== null) {
+  btoa = function base64encode(str) {
+    var buffer = new global['Buffer'](str, 'binary')
+    return buffer.toString('base64')
+  }
+} else {
+  throw new Error('Native btoa function or Buffer is missing')
+}
+
+describe('Contents', function () {
+  this.timeout(LONG_TIMEOUT)
+
+  it('returns the default readme', () =>
+    client.repos('octokit/octokit.rb').readme.read()
+    .then(function (readme) {})
+  )
+      // expect(readme.encoding).to.equal("base64")
+      // expect(readme.type).to.equal("file")
+
+  it('returns the contents of a file', () =>
+    client.repos('octokit/octokit.rb').contents('lib/octokit.rb').read()
+    .then(function (contents) {})
+  )
+      // expect(contents.encoding).to.equal("base64")
+      // expect(contents.type).to.equal("file")
+
+  // it "returns the headers of the request", ->
+  //   client.repos('octokit/octokit.rb').tarball('master').fetch()
+  //   .then(null, (err) -> console.log err)
+  //   .then (archive_link) ->
+  //     expect(archive_link).to.equal('https://codeload.github.com/octokit/octokit.rb/legacy.tar.gz/master')
+
+  return context('With a file', function () {
+    before(function (done) {
+      let removeFile = function (content) {
+        console.log('removing file')
+        let config = {
+          sha: content.sha,
+          message: 'Removing as prep for testing'
+        }
+        client.repos(test_repo).contents('test_create.txt').remove(config)
+        return done()
+      }
+
+      // If the file exists, remove it. Otherwise, done.
+      client.repos(test_repo).contents('test_create.txt').fetch()
+      .then(removeFile, err => done())
+
+      // In Mocha 3, if the returned value is a promise then it will complain that
+      // we have specified a done() callback _and_ returned a promise.
+      // So, since this test should always succeed even if there is no file (to delete)
+      // just return null so Mocha does not complain.
+      return null
+    })
+
+    it('creates repository contents at a path', () => {
+      let config = {
+        message: 'I am commit-ing',
+        content: btoa('Here be the content\n')
+      }
+      return client.repos(test_repo).contents('test_create.txt').add(config)
+      .then(null, function (err) { console.log(err); throw new Error(err) })
+      .then(response => {
+        return expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
+      })
+    })
+
+    it('updates repository contents at a path', () => {
+      // Prep work (from previous test)
+      let config = {
+        message: 'I am commit-ing',
+        content: btoa('Here be the content\n')
+      }
+      return client.repos(test_repo).contents('test_create.txt').add(config)
+      .then(null, function (err) { console.log(err); throw new Error(err) })
+      .then(response => {
+        expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
+
+        // Test Start
+        let config = {
+          sha: response.content.sha,
+          message: 'I am commit-ing',
+          content: btoa('Here be moar content')
+        }
+        return client.repos(test_repo).contents('test_create.txt').add(config)
+        .then(response2 => {
+          return expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
+        })
+
+      })
+
+    })
+
+    return it('deletes repository contents at a path', () => {
+      // Prep work (from previous test)
+      let config = {
+        message: 'I am commit-ing',
+        content: btoa('Here be the content\n')
+      }
+      return client.repos(test_repo).contents('test_create.txt').add(config)
+      .then(null, function (err) { console.log(err); throw new Error(err) })
+      .then(response => {
+        expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
+
+        // More prep work
+        let config = {
+          sha: response.content.sha,
+          message: 'I am commit-ing',
+          content: btoa('Here be moar content')
+        }
+        return client.repos(test_repo).contents('test_create.txt').add(config)
+        .then(response2 => {
+          let updated_content = response2
+          expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
+
+          let config = {
+            sha: updated_content.content.sha,
+            message: 'I am rm-ing'
+          }
+          return client.repos(test_repo).contents('test_create.txt').remove(config)
+          .then(function (response) {
+
+            // TODO: Assert that this succeeded. Maybe mocha is enough
+          })
+
+        })
+
+      })
+
+    })
+  })
+})
+        // TODO: have a non-boolean form of remove()
+        // expect(response.commit.sha).to match(/[a-z0-9]{40}/)
+
+function __guard__ (value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
+}

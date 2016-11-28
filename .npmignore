@@ -1,5 +1,6 @@
 .*
 dist/octokat.js
+dist/octokat-browsertests.js
 # src/
 test/
 bower.json

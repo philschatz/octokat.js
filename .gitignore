@@ -3,3 +3,5 @@
 /fixtures*
 /node_modules
 /tmp
+
+dist/octokat-browsertests.js

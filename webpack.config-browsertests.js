@@ -4,22 +4,21 @@ module.exports = {
   cache: true,
   entry: {
     octokat: [
-      './test/browser.coffee'
+      './test/browser.js'
     ]
   },
   output: {
     // library: 'OctokatTests',
     // libraryTarget: 'umd',
     path: 'dist',
-    filename: 'octokat-tests.js'
+    filename: 'octokat-browsertests.js'
   },
   module: {
     noParse: [
       /promise-filler/
     ],
     loaders: [
-      { test: /\.js$/, exclude: /node_modules/, loader: 'babel' },
-      { test: /\.coffee$/, loader: 'coffee-loader' }
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel' }
     ]
   },
   resolve: {
@@ -27,6 +26,6 @@ module.exports = {
       xmlhttprequest: path.join(__dirname, 'src/hacks/xmlhttprequest-filler-browser.js'),
       'es6-promise': path.join(__dirname, 'src/hacks/promise-filler-browser.js')
     },
-    extensions: ['', '.js', '.coffee']
+    extensions: ['', '.js']
   }
 }
