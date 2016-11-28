@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 const path = require('path')
 const sepia = require('sepia')
 require('./all')

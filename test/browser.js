@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 require('./all')
 
 describe('Root construction', () =>
@@ -18,7 +19,7 @@ window.sepia.fixtureDir('node_modules/octokat-fixtures/fixtures')
 window.sepia.start()
 
 if (window.mochaPhantomJS) {
-  mochaPhantomJS.run()
+  window.mochaPhantomJS.run()
 } else {
   mocha.run()
 }

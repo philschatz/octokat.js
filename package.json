@@ -4,7 +4,7 @@
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
   "scripts": {
-    "lint": "standard *.js src/**.js | snazzy && coffeelint --file ./coffeelint.json src/**/*.coffee",
+    "lint": "standard *.js src/**.js test/**.js test/ruby-specs/**.js | snazzy && coffeelint --file ./coffeelint.json src/**/*.coffee",
     "build": "npm run-script lint && npm run-script dist",
     "pretest": "npm run-script build",
     "test": "npm run-script test-node && webpack --config webpack.config-browsertests.js && npm run-script test-browser",

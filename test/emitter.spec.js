@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 const { assert, expect } = require('chai')
 const { Octokat, TOKEN, REPO_USER, REPO_NAME } = require('./test-config')
 

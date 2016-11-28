@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 const { assert, expect } = require('chai')
 const { Octokat, client, USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT } = require('./test-config')
 
@@ -8,7 +9,7 @@ if (typeof window !== 'undefined' && window !== null) {
   btoa = window.btoa
   // Use the `Buffer` if available (NodeJS)
 } else if (typeof global !== 'undefined' && global !== null) {
-  btoa = function base64encode(str) {
+  btoa = function base64encode (str) {
     var buffer = new global['Buffer'](str, 'binary')
     return buffer.toString('base64')
   }
