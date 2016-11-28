@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 const { assert, expect } = require('chai')
-const { Octokat, client, USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT } = require('./test-config')
+const { Octokat, client, USERNAME, ORG_NAME, REPO_USER, REPO_NAME, OTHER_USERNAME, LONG_TIMEOUT } = require('./test-config')
 
 // NodeJS does not have a btoa
 let btoa = null
@@ -29,30 +29,16 @@ let trapFail = function (promise) {
   return promise
 }
 
-let some = function (arr, fn) {
-  for (let entry of arr) {
-    (function (entry) {
-      if (fn(entry) === true) {
-        return true
-      }
-    })(entry)
-  }
-  return false
-}
-
-let arrayContainsKey = (arr, key, value) =>
-  some(arr, entry => entry[key] === value)
-
 const GH = 'octo'
 const REPO = 'myRepo'
 const USER = 'someUser'
 const ME = 'myUser'
-const BRANCH = 'BRANCH'
-let ANOTHER_USER = 'ANOTHER_USER'
+// const BRANCH = 'BRANCH'
+// let ANOTHER_USER = 'ANOTHER_USER'
 const ORG = 'someOrg'
 const GIST = 'someGist'
 const ISSUE = 'someIssue'
-const COMMENT = 'someComment'
+// const COMMENT = 'someComment'
 
 const STATE = {}
 
@@ -118,11 +104,11 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       }
     })
 
-    return it(`${obj}${code} (callback ver)`, function () {
+    it(`${obj}${code} (callback ver)`, function () {
       let {finalArgs, context} = constructMethod()
       return context(...finalArgs, function (err, val) {
         if (err) { return assert.fail(err) }
-        return cb(val)
+        cb(val)
       })
     })
   }
@@ -137,7 +123,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
 
   let itIsBoolean = (obj, ...args) => itIs(obj, '', args, val => expect(val === true || val === false).to.be.true)
 
-  before(() => STATE[GH] = client)
+  before(() => { STATE[GH] = client })
 
   describe('Synchronous methods', function () {
     it(`supports octo.fromUrl('https://api.github.com/repos/${REPO_USER}/${REPO_NAME}')`, () =>
@@ -145,7 +131,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       .fetch().then(val => expect(val).to.not.be.null)
     )
 
-    return it(`supports octo.fromUrl('/repos/${REPO_USER}/${REPO_NAME}')`, () =>
+    it(`supports octo.fromUrl('/repos/${REPO_USER}/${REPO_NAME}')`, () =>
       client.fromUrl(`/repos/${REPO_USER}/${REPO_NAME}`)
       .fetch().then(val => expect(val).to.not.be.null)
     )
@@ -160,7 +146,8 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         baz_url: 'http://philschatz.com'
       }
     }
-    return client.parse(json, function (err, ret) {
+    client.parse(json, function (err, ret) {
+      expect(err).to.be.null
       expect(ret.field).to.equal(json.field)
       expect(ret.url).to.equal(json.url)
       expect(ret.foo.url).to.equal(json.foo_url)
@@ -169,7 +156,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       // Make sure the obj was detected to be a repo
       expect(ret.fetch).to.not.be.null
       expect(ret.issues).to.not.be.null
-      return done()
+      done()
     })
   })
 
@@ -183,7 +170,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     // itIsOk(GH, 'markdown.create', [{text:'# Hello There'}, true])
     itIsOk(GH, 'meta.fetch')
     itIsOk(GH, 'rateLimit.fetch')
-    return itIsOk(GH, 'feeds.fetch')
+    itIsOk(GH, 'feeds.fetch')
   })
 
   itIsArray(GH, 'users.fetch')
@@ -236,13 +223,13 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         )
       )
 
-      return it(`${GH}.gists.public.fetch().then(results) -> results.lastPage()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.lastPage()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
         .then(({lastPage}) => lastPage())
       )
     })
 
-    return describe('New Notation', function () {
+    describe('New Notation', function () {
       it(`${GH}.gists.public.fetch().then(results) -> results.nextPage.fetch()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
         .then(({nextPage}) =>
@@ -276,7 +263,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         )
       )
 
-      return it(`${GH}.gists.public.fetch().then(results) -> results.lastPage.fetch()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.lastPage.fetch()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
         .then(results => results.lastPage.fetch())
       )
@@ -284,7 +271,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   })
 
   describe(`${REPO} = ${GH}.repos(OWNER, NAME)`, function () {
-    before(() => STATE[REPO] = STATE[GH].repos(REPO_USER, REPO_NAME))
+    before(() => { STATE[REPO] = STATE[GH].repos(REPO_USER, REPO_NAME) })
 
     itIsOk(REPO, 'fetch')
 
@@ -318,7 +305,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       // itIsArray(REPO, 'issues.comments', commentId, 'fetch')
 
       itIsOk(REPO, 'issues.create', {title: 'Test Issue'})
-      return itIsOk(REPO, 'issues', 1, 'fetch')
+      itIsOk(REPO, 'issues', 1, 'fetch')
     })
 
     // itIsOk(REPO, 'pages.fetch')
@@ -330,7 +317,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       itIsOk(REPO, 'stats.commitActivity.fetch')
       // itIsOk(REPO, 'stats.codeFrequency.fetch') Commented because it seems to always return 403
       itIsOk(REPO, 'stats.participation.fetch')
-      return itIsOk(REPO, 'stats.punchCard.fetch')
+      itIsOk(REPO, 'stats.punchCard.fetch')
     })
 
     describe(`${REPO}.git... (Git Data)`, function () {
@@ -367,7 +354,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         })
       )
 
-      return it('.git.blobs.create(...) and .blobs(...).readBinary()', () =>
+      it('.git.blobs.create(...) and .blobs(...).readBinary()', () =>
         STATE[REPO].git.blobs.create({content: btoa('Hello'), encoding: 'base64'})
         .then(function ({sha}) {
           expect(sha).to.be.ok
@@ -377,13 +364,13 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       )
     })
 
-            // Make sure the library does not just ignore the isBase64 flag
-            // TODO: This is commented because caching is only based on the path, not the flags (or the verb)
-            // STATE[REPO].git.blobs.one(sha)
-            // .then (v) ->
-            //   expect(v).to.not.have.string('Hello')
+    // Make sure the library does not just ignore the isBase64 flag
+    // TODO: This is commented because caching is only based on the path, not the flags (or the verb)
+    // STATE[REPO].git.blobs.one(sha)
+    // .then (v) ->
+    //   expect(v).to.not.have.string('Hello')
 
-    return describe('Collaborator changes', function () {
+    describe('Collaborator changes', function () {
       it('gets a list of collaborators', () =>
         trapFail(STATE[REPO].collaborators.fetch())
         .then(v => expect(v).to.be.an.array)
@@ -406,7 +393,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   })
 
   describe(`${USER} = ${GH}.users(USERNAME)`, function () {
-    before(() => STATE[USER] = STATE[GH].users(USERNAME))
+    before(() => { STATE[USER] = STATE[GH].users(USERNAME) })
 
     itIsOk(USER, 'fetch')
     itIsArray(USER, 'repos.fetch')
@@ -429,7 +416,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   })
 
   describe(`${ORG} = ${GH}.orgs(ORG_NAME)`, function () {
-    before(() => STATE[ORG] = STATE[GH].orgs(ORG_NAME))
+    before(() => { STATE[ORG] = STATE[GH].orgs(ORG_NAME) })
 
     itIsArray(ORG, 'fetch')
     itIsArray(ORG, 'members.fetch')
@@ -438,7 +425,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   })
 
   describe(`${ME} = ${GH}.me (the authenticated user)`, function () {
-    before(() => STATE[ME] = STATE[GH].me)
+    before(() => { STATE[ME] = STATE[GH].me })
 
     // itIsOk(ME, 'fetch')
 
@@ -457,7 +444,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     itIsArray(ME, 'starred.fetch')
     itIsBoolean(ME, 'starred.contains', 'philschatz/octokat.js')
 
-    return describe('Multistep operations', () =>
+    describe('Multistep operations', () =>
 
       it('.starred.add(OWNER, REPO), .starred.is(...), and then .starred.remove(...)', () =>
         trapFail(STATE[ME].starred(REPO_USER, REPO_NAME).add())
@@ -487,7 +474,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       }
 
       return STATE[GH].gists.create(config)
-      .then(gist => STATE[GIST] = gist)
+      .then(gist => { STATE[GIST] = gist })
     })
 
     // itIsOk(GIST, 'fetch')
@@ -502,7 +489,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   })
 
   return describe(`${ISSUE} = ${REPO}.issues(1)`, function () {
-    before(() => STATE[ISSUE] = STATE[REPO].issues(1))
+    before(() => { STATE[ISSUE] = STATE[REPO].issues(1) })
 
     itIsOk(ISSUE, 'fetch')
     itIsOk(ISSUE, 'update', {title: 'New Title', state: 'closed'})
@@ -547,7 +534,7 @@ describe('Cache Handler', () =>
         return this._cachedETags[`${method} ${path}`]
       }
       add (method, path, eTag, data, status) {
-        return this._cachedETags[`${method} ${path}`] = {eTag, data, status}
+        this._cachedETags[`${method} ${path}`] = {eTag, data, status}
       }
     }()
 

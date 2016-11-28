@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-const { assert, expect } = require('chai')
+const { expect } = require('chai')
 const { Octokat, TOKEN, REPO_USER, REPO_NAME } = require('./test-config')
 
 describe('Event Emitter', () =>
@@ -12,7 +12,8 @@ describe('Event Emitter', () =>
       expect(path).to.be.a('string')
       switch (name) {
         case 'start':
-          return emittedStart = true
+          emittedStart = true
+          return emittedStart
         case 'end':
           expect(emittedStart).to.be.true
           expect(status).to.equal(200)

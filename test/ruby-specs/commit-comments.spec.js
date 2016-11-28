@@ -23,8 +23,8 @@ describe('Commit Comments', function () {
       .then(({items}) => {
         this.commit = items[0]
         return client.repos(test_repo).commits(this.commit.sha).comments.create({body: ':metal:\n:sparkles:\n:cake:'})
-        .then(commit_comment => {
-          this.commit_comment = commit_comment
+        .then(commitComment => {
+          this.commit_comment = commitComment
         })
       }
       )
@@ -41,7 +41,7 @@ describe('Commit Comments', function () {
     it('updates a commit comment', () => {
       return this.commit_comment.update({body: ':penguin:'})
       .then(null, err => console.error(err))
-      .then(updated_comment => expect(updated_comment.body).to.equal(':penguin:'))
+      .then(updatedComment => expect(updatedComment.body).to.equal(':penguin:'))
     })
 
     return it('deletes a commit comment', () => {

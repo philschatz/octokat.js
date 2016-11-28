@@ -1,6 +1,5 @@
 /* eslint-env mocha */
-const { expect } = require('chai')
-const { client, LONG_TIMEOUT, test_repo } = require('../test-config')
+const { LONG_TIMEOUT } = require('../test-config')
 
 describe('Deployments', function () {
   return this.timeout(LONG_TIMEOUT)

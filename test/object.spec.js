@@ -1,6 +1,6 @@
 /* eslint-env mocha */
-const { assert, expect } = require('chai')
-const { Octokat, client, USERNAME, TOKEN, ORG_NAME, REPO_USER, REPO_NAME, REPO_HOMEPAGE, OTHER_HOMEPAGE, OTHER_USERNAME, DEFAULT_BRANCH, LONG_TIMEOUT, SHORT_TIMEOUT } = require('./test-config')
+const { expect } = require('chai')
+const { client, REPO_USER, REPO_NAME } = require('./test-config')
 
 describe('Returned Objects', function () {
   it('has the same methods on octo.repos(REPO_ID).fetch().then(repo) as octo.me.repos.fetch().then(repos[0])', () =>

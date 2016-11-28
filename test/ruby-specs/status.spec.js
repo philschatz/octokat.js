@@ -1,6 +1,5 @@
 /* eslint-env mocha */
-const { expect } = require('chai')
-const { client, LONG_TIMEOUT, test_repo } = require('../test-config')
+const { client, LONG_TIMEOUT } = require('../test-config')
 
 if (typeof window !== 'undefined' && window !== null) {
   it('is skipping status tests in the browser because of CORS', function () {})

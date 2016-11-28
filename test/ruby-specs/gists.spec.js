@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 const { expect } = require('chai')
-const { client, LONG_TIMEOUT, test_repo, test_github_login } = require('../test-config')
+const { client, LONG_TIMEOUT, test_github_login } = require('../test-config')
 
 describe('Gists', function () {
   this.timeout(LONG_TIMEOUT)
 
   before(function () {
-    let new_gist = {
+    let newGist = {
       description: 'A gist from Octokit',
       public: true,
       files: {
@@ -16,12 +16,12 @@ describe('Gists', function () {
       }
     }
 
-    return client.gists.create(new_gist)
+    return client.gists.create(newGist)
     .then(gist => {
       this.gist = gist
       return this.gist.comments.create({body: ':metal:'})
-      .then(gist_comment => {
-        this.gist_comment = gist_comment
+      .then(gistComment => {
+        this.gist_comment = gistComment
       })
     }
     )

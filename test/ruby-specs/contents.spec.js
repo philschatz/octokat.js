@@ -9,7 +9,7 @@ if (typeof window !== 'undefined' && window !== null) {
   btoa = window.btoa
   // Use the `Buffer` if available (NodeJS)
 } else if (typeof global !== 'undefined' && global !== null) {
-  btoa = function base64encode(str) {
+  btoa = function (str) {
     var buffer = new global['Buffer'](str, 'binary')
     return buffer.toString('base64')
   }
@@ -54,6 +54,7 @@ describe('Contents', function () {
 
       // If the file exists, remove it. Otherwise, done.
       client.repos(test_repo).contents('test_create.txt').fetch()
+      /* eslint handle-callback-err: "off" */
       .then(removeFile, err => done())
 
       // In Mocha 3, if the returned value is a promise then it will complain that
@@ -96,9 +97,7 @@ describe('Contents', function () {
         .then(response2 => {
           return expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
         })
-
       })
-
     })
 
     return it('deletes repository contents at a path', () => {
@@ -120,11 +119,11 @@ describe('Contents', function () {
         }
         return client.repos(test_repo).contents('test_create.txt').add(config)
         .then(response2 => {
-          let updated_content = response2
+          let updatedContent = response2
           expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
 
           let config = {
-            sha: updated_content.content.sha,
+            sha: updatedContent.content.sha,
             message: 'I am rm-ing'
           }
           return client.repos(test_repo).contents('test_create.txt').remove(config)
@@ -132,17 +131,11 @@ describe('Contents', function () {
 
             // TODO: Assert that this succeeded. Maybe mocha is enough
           })
-
         })
-
       })
-
     })
   })
 })
-        // TODO: have a non-boolean form of remove()
-        // expect(response.commit.sha).to match(/[a-z0-9]{40}/)
 
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
-}
+// TODO: have a non-boolean form of remove()
+// expect(response.commit.sha).to match(/[a-z0-9]{40}/)

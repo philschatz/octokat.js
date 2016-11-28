@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 const { expect } = require('chai')
-const { client, LONG_TIMEOUT, test_repo, test_github_login } = require('../test-config')
+const { client, LONG_TIMEOUT, test_repo } = require('../test-config')
 
 describe('Commits', function () {
   this.timeout(LONG_TIMEOUT)
@@ -31,9 +31,9 @@ describe('Commits', function () {
   it('creates a commit', () =>
     client.repos(test_repo).commits.fetch()
     .then(function ({items}) {
-      let last_commit = items[items.length - 1]
+      let lastCommit = items[items.length - 1]
 
-      return client.repos(test_repo).git.commits.create({message: 'My commit message', tree: last_commit.commit.tree.sha, parents: [last_commit.sha]})
+      return client.repos(test_repo).git.commits.create({message: 'My commit message', tree: lastCommit.commit.tree.sha, parents: [lastCommit.sha]})
     })
   )
 
@@ -42,8 +42,8 @@ describe('Commits', function () {
       let repo = client.repos(test_repo)
       return repo.commits.fetch()
       .then(function ({items}) {
-        let last_commit = items[items.length - 1]
-        return repo.git.refs.create({ref: 'refs/heads/branch-to-merge', sha: last_commit.sha})
+        let lastCommit = items[items.length - 1]
+        return repo.git.refs.create({ref: 'refs/heads/branch-to-merge', sha: lastCommit.sha})
         .then(function (v) {
           let head = 'master'
           let base = 'branch-to-merge'
