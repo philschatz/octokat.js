@@ -1077,11 +1077,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var _require = __webpack_require__(4);
-
-	var filter = _require.filter;
-	var map = _require.map;
-	var waterfall = _require.waterfall;
+	var _require = __webpack_require__(4),
+	    filter = _require.filter,
+	    map = _require.map,
+	    waterfall = _require.waterfall;
 
 	// Request Function
 	// ===============================
@@ -1090,6 +1089,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Handles ETag caching, authentication headers, boolean requests, and paged results
 
 	// Simple jQuery.ajax() shim that returns a promise for a xhr object
+
 
 	var ajax = function ajax(options, cb) {
 	  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
