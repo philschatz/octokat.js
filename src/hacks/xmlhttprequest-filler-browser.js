@@ -1,1 +1,1 @@
-module.exports = window.XMLHTTPRequest;
+module.exports = window.XMLHTTPRequest
