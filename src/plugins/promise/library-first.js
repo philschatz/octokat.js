@@ -9,7 +9,9 @@ if ((typeof window === 'undefined' || window === null) && !newPromise) {
 
 if ((typeof window !== 'undefined' && window !== null) && !newPromise) {
   // Otherwise, show a warning (library can still be used with just callbacks)
-  __guardFunc__(__guard__(console, x => x.warn), f => f('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise'))
+  if (window.console && window.console.warn) {
+     window.console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise')
+  }
 } else if ((typeof window === 'undefined' || window === null) && !newPromise) {
   // Running in NodeJS
   throw new Error('Could not find a promise lib for node. Seems like a bug')
@@ -18,11 +20,4 @@ if ((typeof window !== 'undefined' && window !== null) && !newPromise) {
 // new class PreferLibraryOverNativePromises
 module.exports = {
   promiseCreator: {newPromise, allPromises}
-}
-
-function __guardFunc__ (func, transform) {
-  return typeof func === 'function' ? transform(func) : undefined
-}
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
 }

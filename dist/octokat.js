@@ -132,6 +132,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Requester = __webpack_require__(15);
 	var applyHypermedia = __webpack_require__(17);
 
+	// Checks if a response is a Buffer or not
+	var isBuffer = function isBuffer(data) {
+	  if (typeof global !== 'undefined') {
+	    return global['Buffer'].isBuffer(data);
+	  } else {
+	    // If `global` is not defined then we are not running inside Node so
+	    // the object could never be a Buffer.
+	    return false;
+	  }
+	};
+
 	var uncamelizeObj = function uncamelizeObj(obj) {
 	  if (Array.isArray(obj)) {
 	    return obj.map(function (i) {
@@ -176,11 +187,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Use a slightly convoluted syntax so browserify does not include the
 	    // NodeJS Buffer in the browser version.
 	    // data is a Buffer when uploading a release asset file
-	    if (data && !__guard__(__guard__(global, function (x1) {
-	      return x1['Buffer'];
-	    }), function (x) {
-	      return x.isBuffer(data);
-	    })) {
+	    if (data && !isBuffer(data)) {
 	      data = uncamelizeObj(data);
 	    }
 
@@ -242,9 +249,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    var data = context.data;
 
-	    context.url = __guard__(data, function (x) {
-	      return x.url;
-	    }) || path;
+	    if (data) {
+	      context.url = data.url || path;
+	    }
 
 	    var responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function (_ref2) {
 	      var responseMiddlewareAsync = _ref2.responseMiddlewareAsync;
@@ -321,10 +328,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	module.exports = OctokatBase;
-
-	function __guard__(value, transform) {
-	  return typeof value !== 'undefined' && value !== null ? transform(value) : undefined;
-	}
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
@@ -1722,11 +1725,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	if (typeof window !== 'undefined' && window !== null && !newPromise) {
 	  // Otherwise, show a warning (library can still be used with just callbacks)
-	  __guardFunc__(__guard__(console, function (x) {
-	    return x.warn;
-	  }), function (f) {
-	    return f('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
-	  });
+	  if (window.console && window.console.warn) {
+	    window.console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
+	  }
 	} else if ((typeof window === 'undefined' || window === null) && !newPromise) {
 	  // Running in NodeJS
 	  throw new Error('Could not find a promise lib for node. Seems like a bug');
@@ -1736,13 +1737,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	  promiseCreator: { newPromise: newPromise, allPromises: allPromises }
 	};
-
-	function __guardFunc__(func, transform) {
-	  return typeof func === 'function' ? transform(func) : undefined;
-	}
-	function __guard__(value, transform) {
-	  return typeof value !== 'undefined' && value !== null ? transform(value) : undefined;
-	}
 
 /***/ },
 /* 22 */
@@ -1805,9 +1799,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return $q.all(promises);
 	      };
 	    });
-	  } else if (__guard__(window.jQuery, function (x) {
-	    return x.Deferred;
-	  })) {
+	  } else if (window.jQuery && window.jQuery.Deferred) {
 	    var newPromise = function newPromise(fn) {
 	      var promise = window.jQuery.Deferred();
 	      var resolve = function resolve(val) {
@@ -1840,11 +1832,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.newPromise = newPromise;
 	exports.allPromises = allPromises;
-
-
-	function __guard__(value, transform) {
-	  return typeof value !== 'undefined' && value !== null ? transform(value) : undefined;
-	}
 
 /***/ },
 /* 23 */
@@ -1972,9 +1959,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	if (typeof window !== 'undefined' && window !== null) {
 	  var base64encode = window.btoa;
 	  // Use the `Buffer` if available (NodeJS)
-	} else if (__guard__(global, function (x) {
-	  return x['Buffer'];
-	})) {
+	} else if (typeof global !== 'undefined' && global['Buffer']) {
 	  var base64encode = function base64encode(str) {
 	    var buffer = new global['Buffer'](str, 'binary');
 	    return buffer.toString('base64');
@@ -1984,10 +1969,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = base64encode;
-
-	function __guard__(value, transform) {
-	  return typeof value !== 'undefined' && value !== null ? transform(value) : undefined;
-	}
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },

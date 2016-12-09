@@ -35,7 +35,7 @@ if (typeof window !== 'undefined' && window !== null) {
       }
       return allPromises = promises => $q.all(promises)
     })
-  } else if (__guard__(window.jQuery, x => x.Deferred)) {
+  } else if (window.jQuery && window.jQuery.Deferred) {
     var newPromise = fn => {
       let promise = window.jQuery.Deferred()
       let resolve = val => promise.resolve(val)
@@ -55,7 +55,3 @@ if (typeof window !== 'undefined' && window !== null) {
 }
 
 export { newPromise, allPromises }
-
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
-}

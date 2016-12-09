@@ -6,7 +6,7 @@
 if (typeof window !== 'undefined' && window !== null) {
   var base64encode = window.btoa
 // Use the `Buffer` if available (NodeJS)
-} else if (__guard__(global, x => x['Buffer'])) {
+} else if (typeof global !== 'undefined' && global['Buffer']) {
   var base64encode = function (str) {
     let buffer = new global['Buffer'](str, 'binary')
     return buffer.toString('base64')
@@ -16,7 +16,3 @@ if (typeof window !== 'undefined' && window !== null) {
 }
 
 module.exports = base64encode
-
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
-}

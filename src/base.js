@@ -11,6 +11,17 @@ const NativePromiseOnlyPlugin = require('./plugins/promise/native-only')
 const Requester = require('./requester')
 const applyHypermedia = require('./helpers/hypermedia')
 
+// Checks if a response is a Buffer or not
+const isBuffer = (data) => {
+  if (typeof global !== 'undefined') {
+    return global['Buffer'].isBuffer(data)
+  } else {
+    // If `global` is not defined then we are not running inside Node so
+    // the object could never be a Buffer.
+    return false
+  }
+}
+
 let uncamelizeObj = function (obj) {
   if (Array.isArray(obj)) {
     return (obj.map((i) => uncamelizeObj(i)))
@@ -45,7 +56,7 @@ let OctokatBase = function (clientOptions = {}) {
     // Use a slightly convoluted syntax so browserify does not include the
     // NodeJS Buffer in the browser version.
     // data is a Buffer when uploading a release asset file
-    if (data && !__guard__(__guard__(global, x1 => x1['Buffer']), x => x.isBuffer(data))) {
+    if (data && !isBuffer(data)) {
       data = uncamelizeObj(data)
     }
 
@@ -96,7 +107,9 @@ let OctokatBase = function (clientOptions = {}) {
   instance._parseWithContext = function (path, context, cb) {
     if (typeof cb !== 'function') { throw new Error('Callback is required') }
     let { data } = context
-    context.url = __guard__(data, x => x.url) || path
+    if (data) {
+      context.url = data.url || path
+    }
 
     let responseMiddlewareAsyncs = plus.map(plus.filter(plugins, ({responseMiddlewareAsync}) => responseMiddlewareAsync), plugin => plugin.responseMiddlewareAsync.bind(plugin)
     )
@@ -153,7 +166,3 @@ let OctokatBase = function (clientOptions = {}) {
 }
 
 module.exports = OctokatBase
-
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
-}
