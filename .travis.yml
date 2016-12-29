@@ -14,4 +14,4 @@ before_script:
 
 after_success:
   # Report coverage to codecov
-  - npm run-script send-coverage
+  - ./script/send-coverage.sh
