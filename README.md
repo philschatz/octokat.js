@@ -5,6 +5,7 @@
 [![build status][travis-image]][travis-url]
 [![dependency status][dependency-image]][dependency-url]
 [![dev dependency status][dev-dependency-image]][dev-dependency-url]
+[![code coverage][coverage-image]][coverage-url]
 
 
 <a href="https://tonicdev.com/npm/octokat" target="_window">Try it out in your browser!</a> (REPL)
@@ -486,3 +487,5 @@ If you are adding tests be sure to include the updated fixtures in the Pull Requ
 [dependency-url]: https://david-dm.org/philschatz/octokat.js
 [dev-dependency-image]: https://img.shields.io/david/dev/philschatz/octokat.js.svg
 [dev-dependency-url]: https://david-dm.org/philschatz/octokat.js#info=devDependencies
+[coverage-image]: https://img.shields.io/codecov/c/github/philschatz/octokat.js.svg
+[coverage-url]: https://codecov.io/gh/philschatz/octokat.js
