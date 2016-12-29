@@ -2,12 +2,15 @@ var path = require('path')
 
 module.exports = {
   cache: true,
+  devtool: 'source-map',
   entry: {
     octokat: [
       './test/browser.js'
     ]
   },
   output: {
+    devtoolModuleFilenameTemplate: '[resourcePath]',
+    devtoolFallbackModuleFilenameTemplate: '[resourcePath]?[hash]',
     // library: 'OctokatTests',
     // libraryTarget: 'umd',
     path: 'dist',

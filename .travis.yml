@@ -11,3 +11,7 @@ before_install:
 before_script:
   - npm install -g grunt-cli
   - bower install
+
+after_success:
+  # Report coverage to codecov
+  - npm run-script send-coverage
