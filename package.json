@@ -16,7 +16,6 @@
     "dist": "webpack --config ./webpack.config-node.js -v --progress && webpack --config ./webpack.config-browser.js -v --progress",
     "update": "bower update",
     "bump": "grunt release",
-    "send-coverage": "codecov",
     "blanket": {
       "pattern": [
         "octokat.js"
