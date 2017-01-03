@@ -3,12 +3,15 @@ var path = require('path')
 
 module.exports = {
   cache: true,
+  devtool: 'source-map',
   entry: {
     octokat: [
       './src/octokat.js'
     ]
   },
   output: {
+    devtoolModuleFilenameTemplate: '[resourcePath]',
+    devtoolFallbackModuleFilenameTemplate: '[resourcePath]?[hash]',
     library: 'Octokat',
     libraryTarget: 'commonjs2',
     path: 'dist/node',

@@ -4,4 +4,8 @@
 /tmp
 /test-transpiled/
 
-dist/octokat-browsertests.js
+/dist/octokat-browsertests.js
+/dist/octokat-browsertests.js.map
+/dist/octokat.js.map
+
+/coverage/

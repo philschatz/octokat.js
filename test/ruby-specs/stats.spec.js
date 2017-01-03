@@ -4,7 +4,7 @@ const { client, LONG_TIMEOUT } = require('../test-config')
 describe('Stats', function () {
   this.timeout(LONG_TIMEOUT)
 
-  it('returns contributors and their contribution stats', () => client.repos('octokit/octokit.rb').stats.contributors.fetch())
+  // it('returns contributors and their contribution stats', () => client.repos('octokit/octokit.rb').stats.contributors.fetch())
 
   it('returns the commit activity stats', () => client.repos('octokit/octokit.rb').stats.commitActivity.fetch())
 

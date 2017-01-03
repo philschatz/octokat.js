@@ -11,41 +11,41 @@
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -62,37 +62,37 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var deprecate = __webpack_require__(2);
 	var OctokatBase = __webpack_require__(3);
-
+	
 	var HypermediaPlugin = __webpack_require__(18);
-
+	
 	var ALL_PLUGINS = [__webpack_require__(19), // re-chain methods when we detect an object (issue, comment, user, etc)
 	__webpack_require__(21), __webpack_require__(25), __webpack_require__(27), __webpack_require__(29), __webpack_require__(31), __webpack_require__(11), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34),
 	// Run cacheHandler after PagedResults so the link headers are remembered
 	// but before hypermedia so the object is still serializable
 	__webpack_require__(35), HypermediaPlugin, __webpack_require__(36)];
-
+	
 	var Octokat = function Octokat() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
+	
 	  if (clientOptions.plugins == null) {
 	    clientOptions.plugins = ALL_PLUGINS;
 	  }
-
+	
 	  if (clientOptions.disableHypermedia) {
 	    deprecate('Please use the clientOptions.plugins array and just do not include the hypermedia plugin');
 	    clientOptions.plugins = clientOptions.plugins.filter(function (plugin) {
 	      return plugin !== HypermediaPlugin;
 	    });
 	  }
-
+	
 	  // the octokat instance
 	  var instance = new OctokatBase(clientOptions);
 	  return instance;
 	};
-
+	
 	// module.exports = Octokat;
 	module.exports = Octokat;
 
@@ -101,7 +101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	"use strict";
-
+	
 	module.exports = function (message) {
 	  if (console && console.warn) {
 	    console.warn("Octokat Deprecation: " + message);
@@ -113,25 +113,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-
+	
 	var plus = __webpack_require__(4);
 	var deprecate = __webpack_require__(2);
 	var TREE_OPTIONS = __webpack_require__(8);
 	var Chainer = __webpack_require__(9);
-
+	
 	var _require = __webpack_require__(10),
 	    VerbMethods = _require.VerbMethods,
 	    toPromise = _require.toPromise;
-
+	
 	// Use the following plugins by default (they should be neglegible additional code)
-
-
+	
+	
 	var SimpleVerbsPlugin = __webpack_require__(11);
 	var NativePromiseOnlyPlugin = __webpack_require__(13);
-
+	
 	var Requester = __webpack_require__(15);
 	var applyHypermedia = __webpack_require__(17);
-
+	
 	// Checks if a response is a Buffer or not
 	var isBuffer = function isBuffer(data) {
 	  if (typeof global !== 'undefined') {
@@ -142,7 +142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return false;
 	  }
 	};
-
+	
 	var uncamelizeObj = function uncamelizeObj(obj) {
 	  if (Array.isArray(obj)) {
 	    return obj.map(function (i) {
@@ -161,39 +161,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return obj;
 	  }
 	};
-
+	
 	var OctokatBase = function OctokatBase() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
+	
 	  var plugins = clientOptions.plugins || [SimpleVerbsPlugin, NativePromiseOnlyPlugin];
-
+	
 	  // TODO remove disableHypermedia
 	  var disableHypermedia = clientOptions.disableHypermedia;
 	  // set defaults
-
+	
 	  if (typeof disableHypermedia === 'undefined' || disableHypermedia === null) {
 	    disableHypermedia = false;
 	  }
-
+	
 	  // the octokat instance
 	  var instance = {};
-
+	
 	  var request = function request(method, path, data) {
 	    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : { raw: false, isBase64: false, isBoolean: false };
 	    var cb = arguments[4];
-
+	
 	    // replacer = new Replacer(request)
-
+	
 	    // Use a slightly convoluted syntax so browserify does not include the
 	    // NodeJS Buffer in the browser version.
 	    // data is a Buffer when uploading a release asset file
 	    if (data && !isBuffer(data)) {
 	      data = uncamelizeObj(data);
 	    }
-
+	
 	    // For each request, convert the JSON into Objects
 	    var requester = new Requester(instance, clientOptions, plugins);
-
+	
 	    return requester.request(method, path, data, options, function (err, val) {
 	      if (err) {
 	        return cb(err);
@@ -201,7 +201,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (options.raw) {
 	        return cb(null, val);
 	      }
-
+	
 	      if (!disableHypermedia) {
 	        var context = {
 	          data: val,
@@ -216,13 +216,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-
+	
 	  var verbMethods = new VerbMethods(plugins, { request: request });
 	  new Chainer(verbMethods).chain('', null, TREE_OPTIONS, instance);
-
+	
 	  // Special case for `me`
 	  instance.me = instance.user;
-
+	
 	  instance.parse = function (cb, data) {
 	    // The signature of toPromise has cb as the 1st arg
 	    var context = {
@@ -234,32 +234,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    return instance._parseWithContext('', context, cb);
 	  };
-
+	
 	  // If not callback is provided then return a promise
 	  var newPromise = plugins.filter(function (_ref) {
 	    var promiseCreator = _ref.promiseCreator;
 	    return promiseCreator;
 	  })[0].promiseCreator.newPromise;
-
+	
 	  instance.parse = toPromise(instance.parse, newPromise);
-
+	
 	  instance._parseWithContext = function (path, context, cb) {
 	    if (typeof cb !== 'function') {
 	      throw new Error('Callback is required');
 	    }
 	    var data = context.data;
-
+	
 	    if (data) {
 	      context.url = data.url || path;
 	    }
-
+	
 	    var responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function (_ref2) {
 	      var responseMiddlewareAsync = _ref2.responseMiddlewareAsync;
 	      return responseMiddlewareAsync;
 	    }), function (plugin) {
 	      return plugin.responseMiddlewareAsync.bind(plugin);
 	    });
-
+	
 	    // async.waterfall requires that the 1st entry take 0 arguments
 	    responseMiddlewareAsyncs.unshift(function (cb) {
 	      return cb(null, context);
@@ -269,41 +269,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return cb(err, val);
 	      }
 	      data = val.data;
-
+	
 	      return cb(err, data);
 	    });
 	  };
-
+	
 	  // TODO remove this deprectaion too
 	  instance._fromUrlWithDefault = function (path, defaultFn) {
 	    for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
 	      args[_key - 2] = arguments[_key];
 	    }
-
+	
 	    path = applyHypermedia.apply(undefined, [path].concat(args));
 	    verbMethods.injectVerbMethods(path, defaultFn);
 	    return defaultFn;
 	  };
-
+	
 	  instance.fromUrl = function (path) {
 	    for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
 	      args[_key2 - 1] = arguments[_key2];
 	    }
-
+	
 	    var defaultFn = function defaultFn() {
 	      deprecate('call ....fetch() explicitly instead of ...()');
 	      return defaultFn.fetch.apply(defaultFn, arguments);
 	    };
-
+	
 	    return instance._fromUrlWithDefault.apply(instance, [path, defaultFn].concat(args));
 	  };
-
+	
 	  instance._fromUrlCurried = function (path, defaultFn) {
 	    var fn = function fn() {
 	      for (var _len3 = arguments.length, templateArgs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
 	        templateArgs[_key3] = arguments[_key3];
 	      }
-
+	
 	      // This conditional logic is for the deprecated .nextPage() call
 	      if (defaultFn && templateArgs.length === 0) {
 	        return defaultFn.apply(fn);
@@ -311,22 +311,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return instance.fromUrl.apply(instance, [path].concat(templateArgs));
 	      }
 	    };
-
+	
 	    if (!/\{/.test(path)) {
 	      verbMethods.injectVerbMethods(path, fn);
 	    }
 	    return fn;
 	  };
-
+	
 	  // Add the GitHub Status API https://status.github.com/api
 	  instance.status = instance.fromUrl('https://status.github.com/api/status.json');
 	  instance.status.api = instance.fromUrl('https://status.github.com/api.json');
 	  instance.status.lastMessage = instance.fromUrl('https://status.github.com/api/last-message.json');
 	  instance.status.messages = instance.fromUrl('https://status.github.com/api/messages.json');
-
+	
 	  return instance;
 	};
-
+	
 	module.exports = OctokatBase;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
@@ -335,13 +335,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	// Both of these internal methods are really small/simple and we are only
 	// working with arrays anyway
 	var filter = __webpack_require__(5);
 	var forEach = __webpack_require__(6);
 	var map = __webpack_require__(7);
-
+	
 	// From async
 	var onlyOnce = function onlyOnce(fn) {
 	  return function () {
@@ -353,7 +353,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return callFn.apply(this, arguments);
 	  };
 	};
-
+	
 	// require('underscore-plus')
 	var plus = {
 	  camelize: function camelize(string) {
@@ -378,7 +378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (!string) {
 	      return '';
 	    }
-
+	
 	    string = string[0].toLowerCase() + string.slice(1);
 	    return string.replace(/([A-Z])|(_)/g, function (m, letter) {
 	      if (letter) {
@@ -394,14 +394,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (taskIndex === tasks.length) {
 	        return cb(null, val);
 	      }
-
+	
 	      var taskCallback = onlyOnce(function (err, val) {
 	        if (err) {
 	          return cb(err, val);
 	        }
 	        return nextTask(val);
 	      });
-
+	
 	      var task = tasks[taskIndex++];
 	      if (val) {
 	        return task(val, taskCallback);
@@ -409,11 +409,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return task(taskCallback);
 	      }
 	    };
-
+	
 	    return nextTask(null); // Initial value passed to the 1st
 	  },
-
-
+	
+	
 	  // Just _.extend(target, source)
 	  extend: function extend(target, source) {
 	    if (source) {
@@ -422,21 +422,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  },
-
-
+	
+	
 	  // Just _.forOwn(obj, iterator)
 	  forOwn: function forOwn(obj, iterator) {
 	    return Object.keys(obj).map(function (key) {
 	      return iterator(obj[key], key);
 	    });
 	  },
-
-
+	
+	
 	  filter: filter,
 	  forEach: forEach,
 	  map: map
 	};
-
+	
 	module.exports = plus;
 
 /***/ },
@@ -457,7 +457,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      length = array == null ? 0 : array.length,
 	      resIndex = 0,
 	      result = [];
-
+	
 	  while (++index < length) {
 	    var value = array[index];
 	    if (predicate(value, index, array)) {
@@ -466,7 +466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return result;
 	}
-
+	
 	module.exports = arrayFilter;
 
 
@@ -486,7 +486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function arrayEach(array, iteratee) {
 	  var index = -1,
 	      length = array == null ? 0 : array.length;
-
+	
 	  while (++index < length) {
 	    if (iteratee(array[index], index, array) === false) {
 	      break;
@@ -494,7 +494,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return array;
 	}
-
+	
 	module.exports = arrayEach;
 
 
@@ -515,13 +515,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var index = -1,
 	      length = array == null ? 0 : array.length,
 	      result = Array(length);
-
+	
 	  while (++index < length) {
 	    result[index] = iteratee(array[index], index, array);
 	  }
 	  return result;
 	}
-
+	
 	module.exports = arrayMap;
 
 
@@ -530,7 +530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	module.exports = {
 	  'zen': false,
 	  'octocat': false,
@@ -591,7 +591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'site_admin': false,
 	    'suspended': false
 	  },
-
+	
 	  'search': {
 	    'repositories': false,
 	    'issues': false,
@@ -732,39 +732,39 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var plus = __webpack_require__(4);
-
+	
 	// Daisy-Chainer
 	// ===============================
 	//
 	// Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
 	// Constructs a URL for the verb methods (like `.fetch` and `.create`).
-
+	
 	module.exports = function () {
 	  function Chainer(_verbMethods) {
 	    _classCallCheck(this, Chainer);
-
+	
 	    this._verbMethods = _verbMethods;
 	  }
-
+	
 	  _createClass(Chainer, [{
 	    key: 'chain',
 	    value: function chain(path, name, contextTree, fn) {
 	      var _this = this;
-
+	
 	      if (typeof fn === 'undefined' || fn === null) {
 	        fn = function fn() {
 	          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	            args[_key] = arguments[_key];
 	          }
-
+	
 	          if (!args.length) {
 	            throw new Error('BUG! must be called with at least one argument');
 	          }
@@ -776,15 +776,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return _this.chain(path + '/' + args.join(separator), name, contextTree);
 	        };
 	      }
-
+	
 	      this._verbMethods.injectVerbMethods(path, fn);
-
+	
 	      if (typeof fn === 'function' || (typeof fn === 'undefined' ? 'undefined' : _typeof(fn)) === 'object') {
 	        for (name in contextTree || {}) {
 	          (function (name) {
 	            // Delete the key if it already exists
 	            delete fn[plus.camelize(name)];
-
+	
 	            return Object.defineProperty(fn, plus.camelize(name), {
 	              configurable: true,
 	              enumerable: true,
@@ -795,11 +795,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          })(name);
 	        }
 	      }
-
+	
 	      return fn;
 	    }
 	  }]);
-
+	
 	  return Chainer;
 	}();
 
@@ -808,33 +808,33 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
+	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var _require = __webpack_require__(4),
 	    filter = _require.filter,
 	    forOwn = _require.forOwn,
 	    extend = _require.extend;
-
+	
 	// When `origFn` is not passed a callback as the last argument then return a
 	// Promise, or error if no Promise can be found (see `plugins/promise/*` for
 	// some strategies for loading a Promise implementation)
-
-
+	
+	
 	var toPromise = function toPromise(orig, newPromise) {
 	  return function () {
 	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	      args[_key] = arguments[_key];
 	    }
-
+	
 	    var last = args[args.length - 1];
 	    if (typeof last === 'function') {
 	      // The last arg is a callback function
@@ -855,16 +855,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 	};
-
+	
 	var VerbMethods = function () {
 	  function VerbMethods(plugins, _requester) {
 	    _classCallCheck(this, VerbMethods);
-
+	
 	    this._requester = _requester;
 	    if (!this._requester) {
 	      throw new Error('Octokat BUG: request is required');
 	    }
-
+	
 	    var promisePlugins = filter(plugins, function (_ref) {
 	      var promiseCreator = _ref.promiseCreator;
 	      return promiseCreator;
@@ -872,7 +872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (promisePlugins) {
 	      this._promisePlugin = promisePlugins[0];
 	    }
-
+	
 	    this._syncVerbs = {};
 	    var iterable = filter(plugins, function (_ref2) {
 	      var verbs = _ref2.verbs;
@@ -892,19 +892,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	      extend(this._asyncVerbs, _plugin.asyncVerbs);
 	    }
 	  }
-
+	
 	  // Injects verb methods onto `obj`
-
-
+	
+	
 	  _createClass(VerbMethods, [{
 	    key: 'injectVerbMethods',
 	    value: function injectVerbMethods(path, obj) {
 	      var _this = this;
-
+	
 	      if (this._promisePlugin) {
 	        var newPromise = this._promisePlugin.promiseCreator.newPromise;
 	      }
-
+	
 	      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') {
 	        obj.url = path; // Mostly for testing
 	        forOwn(this._syncVerbs, function (verbFunc, verbName) {
@@ -913,24 +913,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	              for (var _len2 = arguments.length, originalArgs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
 	                originalArgs[_key2 - 1] = arguments[_key2];
 	              }
-
+	
 	              var data = void 0,
 	                  method = void 0,
 	                  options = void 0;
-
+	
 	              var _verbFunc = verbFunc.apply(undefined, [path].concat(originalArgs));
-
+	
 	              method = _verbFunc.method;
 	              path = _verbFunc.path;
 	              data = _verbFunc.data;
 	              options = _verbFunc.options;
-
+	
 	              return _this._requester.request(method, path, data, options, cb);
 	            };
 	            return toPromise(makeRequest, newPromise).apply(undefined, arguments);
 	          };
 	        });
-
+	
 	        forOwn(this._asyncVerbs, function (verbFunc, verbName) {
 	          obj[verbName] = function () {
 	            var makeRequest = verbFunc(_this._requester, path); // Curried function
@@ -940,14 +940,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } else {
 	        // console.warn('BUG: Attempted to injectVerbMethods on a ' + (typeof obj));
 	      }
-
+	
 	      return obj;
 	    }
 	  }]);
-
+	
 	  return VerbMethods;
 	}();
-
+	
 	exports.VerbMethods = VerbMethods;
 	exports.toPromise = toPromise;
 
@@ -956,9 +956,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var toQueryString = __webpack_require__(12);
-
+	
 	// new class SimpleVerbs
 	module.exports = {
 	  verbs: {
@@ -988,7 +988,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 	        args[_key - 1] = arguments[_key];
 	      }
-
+	
 	      return { method: 'GET', path: path + '/' + args.join('/'), options: { isBoolean: true } };
 	    }
 	  }
@@ -999,7 +999,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	// Converts a dictionary to a query string.
 	// Internal helper method
 	var toQueryString = function toQueryString(options, omitQuestionMark) {
@@ -1007,7 +1007,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (!options || options === {}) {
 	    return '';
 	  }
-
+	
 	  var params = [];
 	  var object = options || {};
 	  for (var key in object) {
@@ -1026,7 +1026,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return '';
 	  }
 	};
-
+	
 	module.exports = toQueryString;
 
 /***/ },
@@ -1034,7 +1034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	// new class UseNativePromises
 	module.exports = {
 	  promiseCreator: __webpack_require__(14)
@@ -1045,7 +1045,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -1061,12 +1061,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  };
-
+	
 	  var allPromises = function allPromises(promises) {
 	    return Promise.all(promises);
 	  };
 	}
-
+	
 	exports.newPromise = newPromise;
 	exports.allPromises = allPromises;
 
@@ -1075,25 +1075,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var _require = __webpack_require__(4),
 	    filter = _require.filter,
 	    map = _require.map,
 	    waterfall = _require.waterfall;
-
+	
 	// Request Function
 	// ===============================
 	//
 	// Generates the actual HTTP requests to GitHub.
 	// Handles ETag caching, authentication headers, boolean requests, and paged results
-
+	
 	// Simple jQuery.ajax() shim that returns a promise for a xhr object
-
-
+	
+	
 	var ajax = function ajax(options, cb) {
 	  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
 	  // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
@@ -1103,28 +1103,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    XMLHttpRequest = _window.XMLHttpRequest;
 	  } else {
 	    var req = require;
-
+	
 	    var _req = __webpack_require__(16);
-
+	
 	    XMLHttpRequest = _req.XMLHttpRequest;
 	  }
-
+	
 	  var xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
 	  __guardFunc__(xhr.overrideMimeType, function (f) {
 	    return f(options.mimeType);
 	  });
 	  xhr.open(options.type, options.url);
-
+	
 	  if (options.data && options.type !== 'GET') {
 	    xhr.setRequestHeader('Content-Type', options.contentType);
 	  }
-
+	
 	  for (var name in options.headers) {
 	    var value = options.headers[name];
 	    xhr.setRequestHeader(name, value);
 	  }
-
+	
 	  xhr.onreadystatechange = function () {
 	    if (xhr.readyState === 4) {
 	      __guardFunc__(__guard__(options.statusCode, function (x) {
@@ -1132,7 +1132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }), function (f1) {
 	        return f1();
 	      });
-
+	
 	      // When disconnected, pass if the status is 0 so the cacheHandler has a chance to return the cached version
 	      if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304 || xhr.status === 302 || xhr.status === 0) {
 	        return cb(null, xhr);
@@ -1143,20 +1143,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	  return xhr.send(options.data);
 	};
-
+	
 	// # Construct the request function.
 	// It contains all the auth credentials passed in to the client constructor
-
+	
 	var eventId = 0; // counter for the emitter so it is easier to match up requests
-
+	
 	module.exports = function () {
 	  function Requester(_instance) {
 	    var _clientOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
+	
 	    var plugins = arguments[2];
-
+	
 	    _classCallCheck(this, Requester);
-
+	
 	    // Provide an option to override the default URL
 	    this._instance = _instance;
 	    this._clientOptions = _clientOptions;
@@ -1169,12 +1169,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this._clientOptions.usePostInsteadOfPatch == null) {
 	      this._clientOptions.usePostInsteadOfPatch = false;
 	    }
-
+	
 	    // These are updated whenever a request is made (optional)
 	    if (typeof this._clientOptions.emitter === 'function') {
 	      this._emit = this._clientOptions.emitter;
 	    }
-
+	
 	    this._pluginMiddlewareAsync = map(filter(plugins, function (_ref) {
 	      var requestMiddlewareAsync = _ref.requestMiddlewareAsync;
 	      return requestMiddlewareAsync;
@@ -1183,20 +1183,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    this._plugins = plugins;
 	  }
-
+	
 	  // HTTP Request Abstraction
 	  // =======
 	  //
-
-
+	
+	
 	  _createClass(Requester, [{
 	    key: 'request',
 	    value: function request(method, path, data) {
 	      var _this = this;
-
+	
 	      var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : { isRaw: false, isBase64: false, isBoolean: false, contentType: 'application/json' };
 	      var cb = arguments[4];
-
+	
 	      if (typeof options === 'undefined' || options === null) {
 	        options = {};
 	      }
@@ -1212,49 +1212,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (options.contentType == null) {
 	        options.contentType = 'application/json';
 	      }
-
+	
 	      // console.log method, path, data, options, typeof cb
-
+	
 	      // Only prefix the path when it does not begin with http.
 	      // This is so pagination works (which provides absolute URLs).
 	      if (!/^http/.test(path)) {
 	        path = '' + this._clientOptions.rootURL + path;
 	      }
-
+	
 	      var headers = { 'Accept': this._clientOptions.acceptHeader || 'application/json' };
-
+	
 	      if (typeof window === 'undefined' || window === null) {
 	        // Set the `User-Agent` because it is required and NodeJS
 	        // does not send one by default.
 	        // See http://developer.github.com/v3/#user-agent-required
 	        headers['User-Agent'] = 'octokat.js';
 	      }
-
+	
 	      var acc = { method: method, path: path, headers: headers, options: options, clientOptions: this._clientOptions };
-
+	
 	      // To use async.waterfall we need to pass in the initial data (`acc`)
 	      // so we create an initial function that just takes a callback
 	      var initial = function initial(cb) {
 	        return cb(null, acc);
 	      };
 	      var pluginsPlusInitial = [initial].concat(this._pluginMiddlewareAsync);
-
+	
 	      return waterfall(pluginsPlusInitial, function (err, acc) {
 	        var mimeType = void 0;
 	        if (err) {
 	          return cb(err, acc);
 	        }
-
+	
 	        var _acc = acc;
 	        method = _acc.method;
 	        headers = _acc.headers;
 	        mimeType = _acc.mimeType;
-
-
+	
+	
 	        if (options.isRaw) {
 	          headers['Accept'] = 'application/vnd.github.raw';
 	        }
-
+	
 	        var ajaxConfig = {
 	          // Be sure to **not** blow the cache with a random number
 	          // (GitHub will respond with 5xx or CORS errors)
@@ -1263,12 +1263,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          contentType: options.contentType,
 	          mimeType: mimeType,
 	          headers: headers,
-
+	
 	          processData: false, // Don't convert to QueryString
 	          data: !options.isRaw && data && JSON.stringify(data) || data,
 	          dataType: !options.isRaw ? 'json' : undefined
 	        };
-
+	
 	        // If the request is a boolean yes/no question GitHub will indicate
 	        // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
 	        if (options.isBoolean) {
@@ -1281,15 +1281,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          };
 	        }
-
+	
 	        eventId++;
 	        __guardFunc__(_this._emit, function (f) {
 	          return f('start', eventId, { method: method, path: path, data: data, options: options });
 	        });
-
+	
 	        return ajax(ajaxConfig, function (err, val) {
 	          var jqXHR = err || val;
-
+	
 	          // Fire listeners when the request completes or fails
 	          if (_this._emit) {
 	            if (jqXHR.getResponseHeader('X-RateLimit-Limit')) {
@@ -1299,23 +1299,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	              // Reset time is in seconds, not milliseconds
 	              // if rateLimitReset
 	              //   rateLimitReset = new Date(rateLimitReset * 1000)
-
+	
 	              var emitterRate = {
 	                remaining: rateLimitRemaining,
 	                limit: rateLimit,
 	                reset: rateLimitReset
 	              };
-
+	
 	              if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
 	                emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ');
 	              }
 	            }
 	            _this._emit('end', eventId, { method: method, path: path, data: data, options: options }, jqXHR.status, emitterRate);
 	          }
-
+	
 	          if (!err) {
 	            // Return the result and Base64 encode it if `options.isBase64` flag is set.
-
+	
 	            // Respond with the redirect URL (for archive links)
 	            // TODO: implement a `followRedirects` plugin
 	            if (jqXHR.status === 302) {
@@ -1327,7 +1327,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              } else {
 	                data = jqXHR.responseText;
 	              }
-
+	
 	              acc = {
 	                clientOptions: _this._clientOptions,
 	                plugins: _this._plugins,
@@ -1348,7 +1348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          } else {
 	            // Parse the error if one occurs
-
+	
 	            // If the request was for a Boolean then a 404 should be treated as a "false"
 	            if (!options.isBoolean || jqXHR.status !== 404) {
 	              err = new Error(jqXHR.responseText);
@@ -1374,10 +1374,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }]);
-
+	
 	  return Requester;
 	}();
-
+	
 	function __guardFunc__(func, transform) {
 	  return typeof func === 'function' ? transform(func) : undefined;
 	}
@@ -1390,7 +1390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	"use strict";
-
+	
 	module.exports = window.XMLHTTPRequest;
 
 /***/ },
@@ -1398,10 +1398,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var toQueryString = __webpack_require__(12);
 	var deprecate = __webpack_require__(2);
-
+	
 	module.exports = function (url) {
 	  // Deprecated interface. Use an Object to specify the args in the template.
 	  // the order of fields in the template should not matter.
@@ -1412,10 +1412,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if ((arguments.length <= 1 ? 0 : arguments.length - 1) > 1) {
 	      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args');
 	    }
-
+	
 	    var templateParams = arguments.length <= 1 ? undefined : arguments[1];
 	  }
-
+	
 	  // url can contain {name} or {/name} in the URL.
 	  // for every arg passed in, replace {...} with that arg
 	  // and remove the rest (they may or may not be optional)
@@ -1468,7 +1468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        param = toQueryString(optionalParams, true); // true means omitQuestionMark
 	        break;
-
+	
 	      default:
 	        // This is a required field. ie `{repoName}`
 	        fieldName = match.slice(1, match.length - 1); // omit the braces
@@ -1478,11 +1478,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          throw new Error('Octokat Error: Required parameter is missing: ' + fieldName);
 	        }
 	    }
-
+	
 	    url = url.replace(match, param);
 	    i++;
 	  }
-
+	
 	  return url;
 	};
 
@@ -1491,18 +1491,18 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var deprecate = __webpack_require__(2);
-
+	
 	module.exports = new (function () {
 	  function HyperMedia() {
 	    _classCallCheck(this, HyperMedia);
 	  }
-
+	
 	  _createClass(HyperMedia, [{
 	    key: 'replace',
 	    value: function replace(instance, data) {
@@ -1528,14 +1528,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var value = orig[key];
 	        this._replaceKeyValue(instance, acc, key, value);
 	      }
-
+	
 	      return acc;
 	    }
 	  }, {
 	    key: '_replaceArray',
 	    value: function _replaceArray(instance, orig) {
 	      var _this = this;
-
+	
 	      var arr = orig.map(function (item) {
 	        return _this.replace(instance, item);
 	      });
@@ -1548,9 +1548,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      return arr;
 	    }
-
+	
 	    // Convert things that end in `_url` to methods which return a Promise
-
+	
 	  }, {
 	    key: '_replaceKeyValue',
 	    value: function _replaceKeyValue(instance, acc, key, value) {
@@ -1562,12 +1562,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');
 	            return defaultFn.create.apply(defaultFn, arguments);
 	          };
-
+	
 	          var fn = function fn() {
 	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	              args[_key] = arguments[_key];
 	            }
-
+	
 	            return instance._fromUrlWithDefault.apply(instance, [value, defaultFn].concat(args))();
 	          };
 	        } else {
@@ -1577,7 +1577,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          };
 	          var fn = instance._fromUrlCurried(value, defaultFn);
 	        }
-
+	
 	        var newKey = key.substring(0, key.length - '_url'.length);
 	        acc[newKey] = fn;
 	        // add a camelCase URL field for retrieving non-templated URLs
@@ -1597,13 +1597,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function responseMiddlewareAsync(input, cb) {
 	      var instance = input.instance,
 	          data = input.data;
-
+	
 	      data = this.replace(instance, data);
 	      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return HyperMedia;
 	}())();
 
@@ -1612,24 +1612,24 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var OBJECT_MATCHER = __webpack_require__(20);
 	var TREE_OPTIONS = __webpack_require__(8);
-
+	
 	var _require = __webpack_require__(10),
 	    VerbMethods = _require.VerbMethods;
-
+	
 	var Chainer = __webpack_require__(9);
-
+	
 	module.exports = new (function () {
 	  function ObjectChainer() {
 	    _classCallCheck(this, ObjectChainer);
 	  }
-
+	
 	  _createClass(ObjectChainer, [{
 	    key: 'chainChildren',
 	    value: function chainChildren(chainer, url, obj) {
@@ -1661,7 +1661,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          url = input.url;
 	      // unless data
 	      //    throw new Error('BUG! Expected JSON data to exist')
-
+	
 	      var verbMethods = new VerbMethods(plugins, requester);
 	      var chainer = new Chainer(verbMethods);
 	      if (url) {
@@ -1677,11 +1677,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 	      }
-
+	
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return ObjectChainer;
 	}())();
 
@@ -1705,24 +1705,24 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _require = __webpack_require__(22),
 	    newPromise = _require.newPromise,
 	    allPromises = _require.allPromises;
-
+	
 	if (!newPromise || !allPromises) {
 	  var _require2 = __webpack_require__(14);
-
+	
 	  newPromise = _require2.newPromise;
 	  allPromises = _require2.allPromises;
 	}
 	if ((typeof window === 'undefined' || window === null) && !newPromise) {
 	  var _require3 = __webpack_require__(23);
-
+	
 	  newPromise = _require3.newPromise;
 	  allPromises = _require3.allPromises;
 	}
-
+	
 	if (typeof window !== 'undefined' && window !== null && !newPromise) {
 	  // Otherwise, show a warning (library can still be used with just callbacks)
 	  if (window.console && window.console.warn) {
@@ -1732,7 +1732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Running in NodeJS
 	  throw new Error('Could not find a promise lib for node. Seems like a bug');
 	}
-
+	
 	// new class PreferLibraryOverNativePromises
 	module.exports = {
 	  promiseCreator: { newPromise: newPromise, allPromises: allPromises }
@@ -1743,16 +1743,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
+	
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
+	
 	if (typeof window !== 'undefined' && window !== null) {
 	  // Running in a browser
-
+	
 	  // Determine the correct Promise factory.
 	  // Try to use libraries before native Promises since most Promise users
 	  // are already using a library.
@@ -1780,7 +1780,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else if (window.angular) {
 	    var newPromise = null;
 	    var allPromises = null;
-
+	
 	    // Details on Angular Promises: http://docs.angularjs.org/api/ng/service/$q
 	    var injector = angular.injector(['ng']);
 	    injector.invoke(function ($q) {
@@ -1813,7 +1813,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    var allPromises = function allPromises(promises) {
 	      var _window$jQuery;
-
+	
 	      // `jQuery.when` is a little odd.
 	      // - It accepts each promise as an argument (instead of an array of promises)
 	      // - Each resolved value is an argument (instead of an array of values)
@@ -1823,13 +1823,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _len = arguments.length, promises = Array(_len), _key = 0; _key < _len; _key++) {
 	          promises[_key] = arguments[_key];
 	        }
-
+	
 	        return promises;
 	      });
 	    };
 	  }
 	}
-
+	
 	exports.newPromise = newPromise;
 	exports.allPromises = allPromises;
 
@@ -1838,7 +1838,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var require;'use strict';
-
+	
 	(function (root) {
 	  var req = require; // Hack so requireJS does not try to load `es6-promise` in the browser
 	  // Use native promises if Harmony is on
@@ -1849,7 +1849,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var allPromises = function allPromises(promises) {
 	    return Promise.all(promises);
 	  };
-
+	
 	  module.exports = { newPromise: newPromise, allPromises: allPromises };
 	})(undefined);
 
@@ -1858,7 +1858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	"use strict";
-
+	
 	module.exports = window.Promise;
 
 /***/ },
@@ -1866,23 +1866,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var URL_VALIDATOR = __webpack_require__(26);
-
+	
 	module.exports = new (function () {
 	  function PathValidator() {
 	    _classCallCheck(this, PathValidator);
 	  }
-
+	
 	  _createClass(PathValidator, [{
 	    key: 'requestMiddlewareAsync',
 	    value: function requestMiddlewareAsync(input, cb) {
 	      var path = input.path;
-
+	
 	      if (!URL_VALIDATOR.test(path)) {
 	        var err = 'Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=' + path;
 	        console.warn(err);
@@ -1890,7 +1890,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return PathValidator;
 	}())();
 
@@ -1906,18 +1906,18 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var base64encode = __webpack_require__(28);
-
+	
 	module.exports = new (function () {
 	  function Authorization() {
 	    _classCallCheck(this, Authorization);
 	  }
-
+	
 	  _createClass(Authorization, [{
 	    key: 'requestMiddlewareAsync',
 	    value: function requestMiddlewareAsync(input, cb) {
@@ -1929,7 +1929,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          token = _input$clientOptions.token,
 	          username = _input$clientOptions.username,
 	          password = _input$clientOptions.password;
-
+	
 	      if (token || username && password) {
 	        if (token) {
 	          var auth = 'token ' + token;
@@ -1941,7 +1941,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return Authorization;
 	}())();
 
@@ -1950,12 +1950,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
-
+	
 	// Base64 Encoder
 	// ===============================
 	//
 	// Used for sending binary files and encoding the auth username/password
-
+	
 	if (typeof window !== 'undefined' && window !== null) {
 	  var base64encode = window.btoa;
 	  // Use the `Buffer` if available (NodeJS)
@@ -1967,7 +1967,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	} else {
 	  throw new Error('Native btoa function or Buffer is missing');
 	}
-
+	
 	module.exports = base64encode;
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
@@ -1976,13 +1976,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var PREVIEW_HEADERS = __webpack_require__(30);
-
+	
 	var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
 	  for (var key in PREVIEW_HEADERS) {
 	    var val = PREVIEW_HEADERS[key];
@@ -1991,27 +1991,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	};
-
+	
 	// Use the preview API header if one of the routes match the preview APIs
 	module.exports = new (function () {
 	  function PreviewApis() {
 	    _classCallCheck(this, PreviewApis);
 	  }
-
+	
 	  _createClass(PreviewApis, [{
 	    key: 'requestMiddlewareAsync',
 	    value: function requestMiddlewareAsync(input, cb) {
 	      var path = input.path;
-
+	
 	      var acceptHeader = DEFAULT_HEADER(path);
 	      if (acceptHeader) {
 	        input.headers['Accept'] = acceptHeader;
 	      }
-
+	
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return PreviewApis;
 	}())();
 
@@ -2030,29 +2030,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	module.exports = new (function () {
 	  function UsePostInsteadOfPatch() {
 	    _classCallCheck(this, UsePostInsteadOfPatch);
 	  }
-
+	
 	  _createClass(UsePostInsteadOfPatch, [{
 	    key: 'requestMiddlewareAsync',
 	    value: function requestMiddlewareAsync(input, cb) {
 	      var usePostInsteadOfPatch = input.clientOptions.usePostInsteadOfPatch,
 	          method = input.method;
-
+	
 	      if (usePostInsteadOfPatch && method === 'PATCH') {
 	        input.method = 'POST';
 	      }
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return UsePostInsteadOfPatch;
 	}())();
 
@@ -2061,16 +2061,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var toQueryString = __webpack_require__(12);
-
+	
 	var pushAll = function pushAll(target, source) {
 	  if (!Array.isArray(source)) {
 	    throw new Error('Octokat Error: Calling fetchAll on a request that does not yield an array');
 	  }
 	  return target.push.apply(target, source);
 	};
-
+	
 	var getMore = function getMore(fetchable, requester, acc, cb) {
 	  var doStuff = function doStuff(err, results) {
 	    if (err) {
@@ -2079,12 +2079,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    pushAll(acc, results.items);
 	    return getMore(results, requester, acc, cb);
 	  };
-
+	
 	  if (!fetchNextPage(fetchable, requester, doStuff)) {
 	    return cb(null, acc);
 	  }
 	};
-
+	
 	// TODO: HACK to handle camelCase and hypermedia plugins
 	var fetchNextPage = function fetchNextPage(obj, requester, cb) {
 	  if (typeof obj.next_page_url === 'string') {
@@ -2103,7 +2103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return false;
 	  }
 	};
-
+	
 	// new class FetchAll
 	module.exports = {
 	  asyncVerbs: {
@@ -2131,32 +2131,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var toQueryString = __webpack_require__(12);
-
+	
 	module.exports = new (function () {
 	  function ReadBinary() {
 	    _classCallCheck(this, ReadBinary);
-
+	
 	    this.verbs = {
 	      readBinary: function readBinary(path, query) {
 	        return { method: 'GET', path: '' + path + toQueryString(query), options: { isRaw: true, isBase64: true } };
 	      }
 	    };
 	  }
-
+	
 	  _createClass(ReadBinary, [{
 	    key: 'requestMiddlewareAsync',
 	    value: function requestMiddlewareAsync(input, cb) {
 	      var options = input.options;
-
+	
 	      if (options) {
 	        var isBase64 = options.isBase64;
-
+	
 	        if (isBase64) {
 	          input.headers['Accept'] = 'application/vnd.github.raw';
 	          input.mimeType = 'text/plain; charset=x-user-defined';
@@ -2169,11 +2169,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function responseMiddlewareAsync(input, cb) {
 	      var options = input.options,
 	          data = input.data;
-
+	
 	      if (options) {
 	        var isBase64 = options.isBase64;
 	        // Convert the response to a Base64 encoded string
-
+	
 	        if (isBase64) {
 	          // Convert raw data to binary chopping off the higher-order bytes in each char.
 	          // Useful for Base64 encoding.
@@ -2183,17 +2183,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var i = iterable[j];
 	            converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
 	          }
-
+	
 	          input.data = converted; // or throw new Error('BUG! Expected JSON data to exist')
 	        }
 	      }
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return ReadBinary;
 	}())();
-
+	
 	function __range__(left, right, inclusive) {
 	  var range = [];
 	  var ascending = left < right;
@@ -2209,34 +2209,34 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	module.exports = new (function () {
 	  function Pagination() {
 	    _classCallCheck(this, Pagination);
 	  }
-
+	
 	  _createClass(Pagination, [{
 	    key: 'responseMiddlewareAsync',
 	    value: function responseMiddlewareAsync(input, cb) {
 	      var jqXHR = input.jqXHR,
 	          data = input.data;
-
+	
 	      if (!jqXHR) {
 	        return cb(null, input);
 	      } // The plugins are all used in `octo.parse()` which does not have a jqXHR
-
+	
 	      // Only JSON responses have next/prev/first/last link headers
 	      // Add them to data so the resolved value is iterable
-
+	
 	      if (Array.isArray(data)) {
 	        data = { items: data.slice() }; // Convert to object so we can add the next/prev/first/last link headers
-
+	
 	        // Parse the Link headers
 	        // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
 	        var linksHeader = jqXHR.getResponseHeader('Link');
@@ -2249,8 +2249,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                rel = _part$match2[2];
 	            // Add the pagination functions on the JSON since Promises resolve one value
 	            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-
-
+	
+	
 	            data[rel + '_page_url'] = href;
 	          });
 	        }
@@ -2259,7 +2259,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return cb(null, input);
 	    }
 	  }]);
-
+	
 	  return Pagination;
 	}())();
 
@@ -2268,21 +2268,21 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	module.exports = new (function () {
 	  function CacheHandler() {
 	    _classCallCheck(this, CacheHandler);
-
+	
 	    this._cachedETags = {};
 	  }
-
+	
 	  // Default cacheHandler methods
-
-
+	
+	
 	  _createClass(CacheHandler, [{
 	    key: 'get',
 	    value: function get(method, path) {
@@ -2299,7 +2299,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var clientOptions = input.clientOptions,
 	          method = input.method,
 	          path = input.path;
-
+	
 	      if (input.headers == null) {
 	        input.headers = {};
 	      }
@@ -2315,7 +2315,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // a URL is requested.
 	        input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
 	      }
-
+	
 	      return cb(null, input);
 	    }
 	  }, {
@@ -2326,22 +2326,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	          status = input.status,
 	          jqXHR = input.jqXHR,
 	          data = input.data;
-
+	
 	      if (!jqXHR) {
 	        return cb(null, input);
 	      } // The plugins are all used in `octo.parse()` which does not have a jqXHR
-
+	
 	      // Since this can be called via `octo.parse`, skpi caching when there is no jqXHR
 	      if (jqXHR) {
 	        var method = request.method,
 	            path = request.path; // This is also not defined when octo.parse is called
-
+	
 	        var cacheHandler = clientOptions.cacheHandler || this;
 	        if (status === 304 || status === 0) {
 	          var ref = cacheHandler.get(method, path);
 	          if (ref) {
 	            var eTag;
-
+	
 	            // Set a flag on the object so users know this is a cached response
 	            data = ref.data;
 	            status = ref.status;
@@ -2357,14 +2357,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            cacheHandler.add(method, path, eTag, data, jqXHR.status);
 	          }
 	        }
-
+	
 	        input.data = data;
 	        input.status = status;
 	        return cb(null, input);
 	      }
 	    }
 	  }]);
-
+	
 	  return CacheHandler;
 	}())();
 
@@ -2373,23 +2373,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var plus = __webpack_require__(4);
-
+	
 	module.exports = new (function () {
 	  function CamelCase() {
 	    _classCallCheck(this, CamelCase);
 	  }
-
+	
 	  _createClass(CamelCase, [{
 	    key: 'responseMiddlewareAsync',
 	    value: function responseMiddlewareAsync(input, cb) {
 	      var data = input.data;
-
+	
 	      data = this.replace(data);
 	      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
 	      return cb(null, input);
@@ -2419,14 +2419,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var value = orig[key];
 	        this._replaceKeyValue(acc, key, value);
 	      }
-
+	
 	      return acc;
 	    }
 	  }, {
 	    key: '_replaceArray',
 	    value: function _replaceArray(orig) {
 	      var _this = this;
-
+	
 	      var arr = orig.map(function (item) {
 	        return _this.replace(item);
 	      });
@@ -2439,16 +2439,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      return arr;
 	    }
-
+	
 	    // Convert things that end in `_url` to methods which return a Promise
-
+	
 	  }, {
 	    key: '_replaceKeyValue',
 	    value: function _replaceKeyValue(acc, key, value) {
 	      return acc[plus.camelize(key)] = this.replace(value);
 	    }
 	  }]);
-
+	
 	  return CamelCase;
 	}())();
 
@@ -2456,3 +2456,4 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
+//# sourceMappingURL=octokat.js.map
