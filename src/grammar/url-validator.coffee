@@ -176,6 +176,14 @@ module.exports = /// ^
             | participation
             | punch_card
           )
+        | traffic/ (
+            popular/ (
+                referrers
+              | paths
+            )
+          | views
+          | clones
+        )
       )
 
     # These (licenses, authorizations, applications) are matched again below

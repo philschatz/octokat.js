@@ -148,6 +148,14 @@ module.exports = {
       'code_frequency': false,
       'participation': false,
       'punch_card': false
+    },
+    'traffic': {
+      'popular': {
+        'referrers': false,
+        'paths': false
+      },
+      'views': false,
+      'clones': false
     }
   },
   'licenses': false,
