@@ -14,6 +14,26 @@ module.exports =
     $
   ///
 
+  # https://developer.github.com/changes/2017-01-05-commit-search-api/
+  'application/vnd.github.cloak-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
+    /search/commits
+    $
+  ///
+
+  # https://developer.github.com/changes/2016-12-14-reviews-api/
+  'application/vnd.github.black-cat-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
+    /repos (/[^/]+){2} /pulls/ [0-9]+ / (
+      | requested_reviewers
+      | reviews (/[0-9]+)?
+      | reviews (/[0-9]+) / (
+          comments
+        | events
+        | dismissals
+        )
+      )
+    $
+  ///
+
   # # https://developer.github.com/v3/oauth_authorizations/
   # 'application/vnd.github.mirage-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
   #   (

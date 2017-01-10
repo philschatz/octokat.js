@@ -61,6 +61,7 @@ module.exports = {
 
   'search': {
     'repositories': false,
+    'commits': false,
     'issues': false,
     'users': false,
     'code': false
@@ -114,7 +115,13 @@ module.exports = {
       'commits': false,
       'files': false,
       'events': false,
-      'labels': false
+      'labels': false,
+      'requested_reviewers': false,
+      'reviews': {
+        'comments': false,
+        'events': false,
+        'dismissals': false
+      }
     },
     'pages': {
       'builds': {
