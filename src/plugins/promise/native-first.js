@@ -3,7 +3,7 @@ if (!newPromise || !allPromises) {
   ({newPromise, allPromises} = require('../../helpers/promise-find-library'))
 }
 if ((typeof window === 'undefined' || window === null) && !newPromise) {
-  ({newPromise, allPromises} = require('../../helpers/promise-node'))
+  ({newPromise, allPromises} = require('../../adapters/promise'))
 }
 
 if ((typeof window !== 'undefined' && window !== null) && !newPromise) {
@@ -18,5 +18,7 @@ if ((typeof window !== 'undefined' && window !== null) && !newPromise) {
 }
 
 module.exports = new class PreferNativeOverLibraryPromises {
-  promiseCreator = {newPromise, allPromises}
+  constructor() {
+    this.promiseCreator = {newPromise, allPromises}
+  }
 }

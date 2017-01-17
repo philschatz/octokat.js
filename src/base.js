@@ -13,7 +13,7 @@ const applyHypermedia = require('./helpers/hypermedia')
 
 // Checks if a response is a Buffer or not
 const isBuffer = (data) => {
-  if (typeof global !== 'undefined') {
+  if (typeof global['Buffer'] !== 'undefined') {
     return global['Buffer'].isBuffer(data)
   } else {
     // If `global` is not defined then we are not running inside Node so

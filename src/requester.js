@@ -10,14 +10,7 @@ const { filter, map, waterfall } = require('./plus')
 let ajax = function (options, cb) {
   // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
   // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-  let XMLHttpRequest = null
-  if (typeof window !== 'undefined' && window !== null) {
-    ({ XMLHttpRequest } = window)
-  } else {
-    let req = require;
-    ({ XMLHttpRequest } = req('xmlhttprequest'))
-  }
-
+  const XMLHttpRequest = require('./adapters/xhr')
   let xhr = new XMLHttpRequest()
   xhr.dataType = options.dataType
   __guardFunc__(xhr.overrideMimeType, f => f(options.mimeType))

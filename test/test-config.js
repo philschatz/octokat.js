@@ -1,4 +1,9 @@
-const Octokat = require('../index')
+let Octokat
+if (typeof process === 'undefined') {
+  Octokat = require('../src/octokat')
+} else {
+  Octokat = require('../index')
+}
 
 let config = {
   USERNAME: 'octokit-test',

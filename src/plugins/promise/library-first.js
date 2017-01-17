@@ -4,7 +4,7 @@ if (!newPromise || !allPromises) {
   ({newPromise, allPromises} = require('../../helpers/promise-find-native'))
 }
 if ((typeof window === 'undefined' || window === null) && !newPromise) {
-  ({newPromise, allPromises} = require('../../helpers/promise-node'))
+  ({newPromise, allPromises} = require('../../adapters/promise'))
 }
 
 if ((typeof window !== 'undefined' && window !== null) && !newPromise) {
