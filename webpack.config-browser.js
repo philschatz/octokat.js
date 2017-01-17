@@ -3,7 +3,7 @@ module.exports = {
   devtool: 'source-map',
   entry: {
     octokat: [
-      './src/octokat.js'
+      './dist/node/octokat.js'
     ]
   },
   output: {
