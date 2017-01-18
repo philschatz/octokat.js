@@ -55,7 +55,7 @@
     "remap-istanbul": "^0.8.4",
     "sepia": "~2.0.2",
     "sepia-js": "git://github.com/philschatz/sepia.js",
-    "snazzy": "^5.0.0",
+    "snazzy": "^6.0.0",
     "standard": "^8.3.0",
     "webpack": "^1.14.0"
   },
