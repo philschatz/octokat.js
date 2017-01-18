@@ -66,13 +66,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var deprecate = __webpack_require__(2);
 	var OctokatBase = __webpack_require__(3);
 	
-	var HypermediaPlugin = __webpack_require__(18);
+	var HypermediaPlugin = __webpack_require__(20);
 	
-	var ALL_PLUGINS = [__webpack_require__(19), // re-chain methods when we detect an object (issue, comment, user, etc)
-	__webpack_require__(21), __webpack_require__(25), __webpack_require__(27), __webpack_require__(29), __webpack_require__(31), __webpack_require__(11), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34),
+	var ALL_PLUGINS = [__webpack_require__(21), // re-chain methods when we detect an object (issue, comment, user, etc)
+	__webpack_require__(23), __webpack_require__(27), __webpack_require__(29), __webpack_require__(32), __webpack_require__(34), __webpack_require__(11), __webpack_require__(35), __webpack_require__(36), __webpack_require__(37),
 	// Run cacheHandler after PagedResults so the link headers are remembered
 	// but before hypermedia so the object is still serializable
-	__webpack_require__(35), HypermediaPlugin, __webpack_require__(36)];
+	__webpack_require__(38), HypermediaPlugin, __webpack_require__(39)];
 	
 	var Octokat = function Octokat() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -95,6 +95,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// module.exports = Octokat;
 	module.exports = Octokat;
+	//# sourceMappingURL=octokat.js.map
 
 /***/ },
 /* 2 */
@@ -107,6 +108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    console.warn("Octokat Deprecation: " + message);
 	  }
 	};
+	//# sourceMappingURL=deprecate.js.map
 
 /***/ },
 /* 3 */
@@ -130,11 +132,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var NativePromiseOnlyPlugin = __webpack_require__(13);
 	
 	var Requester = __webpack_require__(15);
-	var applyHypermedia = __webpack_require__(17);
+	var applyHypermedia = __webpack_require__(19);
 	
 	// Checks if a response is a Buffer or not
 	var isBuffer = function isBuffer(data) {
-	  if (typeof global !== 'undefined') {
+	  if (typeof global['Buffer'] !== 'undefined') {
 	    return global['Buffer'].isBuffer(data);
 	  } else {
 	    // If `global` is not defined then we are not running inside Node so
@@ -328,6 +330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	module.exports = OctokatBase;
+	//# sourceMappingURL=base.js.map
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
@@ -338,6 +341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// Both of these internal methods are really small/simple and we are only
 	// working with arrays anyway
+	
 	var filter = __webpack_require__(5);
 	var forEach = __webpack_require__(6);
 	var map = __webpack_require__(7);
@@ -413,7 +417,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return nextTask(null); // Initial value passed to the 1st
 	  },
 	
-	
 	  // Just _.extend(target, source)
 	  extend: function extend(target, source) {
 	    if (source) {
@@ -423,7 +426,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 	
-	
 	  // Just _.forOwn(obj, iterator)
 	  forOwn: function forOwn(obj, iterator) {
 	    return Object.keys(obj).map(function (key) {
@@ -431,13 +433,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  },
 	
-	
 	  filter: filter,
 	  forEach: forEach,
 	  map: map
 	};
 	
 	module.exports = plus;
+	//# sourceMappingURL=plus.js.map
 
 /***/ },
 /* 5 */
@@ -726,6 +728,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	};
+	//# sourceMappingURL=tree-options.js.map
 
 /***/ },
 /* 9 */
@@ -733,11 +736,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
+	  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+	} : function (obj) {
+	  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+	};
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
+	
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	var plus = __webpack_require__(4);
 	
@@ -802,6 +823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return Chainer;
 	}();
+	//# sourceMappingURL=chainer.js.map
 
 /***/ },
 /* 10 */
@@ -809,15 +831,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
+	var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
+	  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+	} : function (obj) {
+	  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
+	};
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	var _require = __webpack_require__(4),
 	    filter = _require.filter,
@@ -950,6 +990,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.VerbMethods = VerbMethods;
 	exports.toPromise = toPromise;
+	//# sourceMappingURL=verb-methods.js.map
 
 /***/ },
 /* 11 */
@@ -993,6 +1034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	};
+	//# sourceMappingURL=simple-verbs.js.map
 
 /***/ },
 /* 12 */
@@ -1002,6 +1044,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// Converts a dictionary to a query string.
 	// Internal helper method
+	
 	var toQueryString = function toQueryString(options, omitQuestionMark) {
 	  // Returns '' if `options` is empty so this string can always be appended to a URL
 	  if (!options || options === {}) {
@@ -1028,6 +1071,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	module.exports = toQueryString;
+	//# sourceMappingURL=querystring.js.map
 
 /***/ },
 /* 13 */
@@ -1036,9 +1080,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 	
 	// new class UseNativePromises
+	
 	module.exports = {
 	  promiseCreator: __webpack_require__(14)
 	};
+	//# sourceMappingURL=native-only.js.map
 
 /***/ },
 /* 14 */
@@ -1069,16 +1115,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.newPromise = newPromise;
 	exports.allPromises = allPromises;
+	//# sourceMappingURL=promise-find-native.js.map
 
 /***/ },
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var require;'use strict';
+	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	var _require = __webpack_require__(4),
 	    filter = _require.filter,
@@ -1097,18 +1156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ajax = function ajax(options, cb) {
 	  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
 	  // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-	  var XMLHttpRequest = null;
-	  if (typeof window !== 'undefined' && window !== null) {
-	    var _window = window;
-	    XMLHttpRequest = _window.XMLHttpRequest;
-	  } else {
-	    var req = require;
-	
-	    var _req = __webpack_require__(16);
-	
-	    XMLHttpRequest = _req.XMLHttpRequest;
-	  }
-	
+	  var XMLHttpRequest = __webpack_require__(16);
 	  var xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
 	  __guardFunc__(xhr.overrideMimeType, function (f) {
@@ -1250,7 +1298,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        headers = _acc.headers;
 	        mimeType = _acc.mimeType;
 	
-	
 	        if (options.isRaw) {
 	          headers['Accept'] = 'application/vnd.github.raw';
 	        }
@@ -1384,17 +1431,226 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __guard__(value, transform) {
 	  return typeof value !== 'undefined' && value !== null ? transform(value) : undefined;
 	}
+	//# sourceMappingURL=requester.js.map
 
 /***/ },
 /* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	
+	var XHR = void 0;
+	if (typeof XMLHttpRequest !== 'undefined') {
+	  // For browsers use XHR adapter
+	  XHR = __webpack_require__(18);
+	} else if (typeof process !== 'undefined') {
+	  // For node use HTTP adapter
+	  XHR = __webpack_require__(18);
+	} else {
+	  throw new Error('Could not find XMLHttpRequest');
+	}
+	
+	module.exports = XHR;
+	//# sourceMappingURL=xhr.js.map
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+	var process = module.exports = {};
+	
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+	
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+	
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
+	(function () {
+	    try {
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
+	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
+	    }
+	    try {
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
+	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
+	    }
+	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+	
+	
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+	
+	
+	
+	}
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+	
+	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+	
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = runTimeout(cleanUpNextTick);
+	    draining = true;
+	
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    runClearTimeout(timeout);
+	}
+	
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        runTimeout(drainQueue);
+	    }
+	};
+	
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+	
+	function noop() {}
+	
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+	
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+	
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 18 */
 /***/ function(module, exports) {
 
 	"use strict";
 	
-	module.exports = window.XMLHTTPRequest;
+	module.exports = XMLHttpRequest;
+	//# sourceMappingURL=xhr-browser.js.map
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1485,16 +1741,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return url;
 	};
+	//# sourceMappingURL=hypermedia.js.map
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	var deprecate = __webpack_require__(2);
 	
@@ -1606,18 +1875,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return HyperMedia;
 	}())();
+	//# sourceMappingURL=hypermedia.js.map
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
-	var OBJECT_MATCHER = __webpack_require__(20);
+	var OBJECT_MATCHER = __webpack_require__(22);
 	var TREE_OPTIONS = __webpack_require__(8);
 	
 	var _require = __webpack_require__(10),
@@ -1684,29 +1966,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return ObjectChainer;
 	}())();
+	//# sourceMappingURL=object-chainer.js.map
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
-	module.exports = {
-	  'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
-	  'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
-	  'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)\/[^\/]+$/,
-	  'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
-	  'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
-	  'teams': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/teams\/[^\/]+$/,
-	  'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
-	};
-
+	'use strict';
+	
+	// Generated by CoffeeScript 1.12.1
+	
+	(function () {
+	  module.exports = {
+	    'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
+	    'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
+	    'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/(issues|pulls)\/[^\/]+$/,
+	    'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
+	    'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
+	    'teams': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/teams\/[^\/]+$/,
+	    'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
+	  };
+	}).call(undefined);
+	
+	//# sourceMappingURL=object-matcher.js.map
+	//# sourceMappingURL=object-matcher.js.map
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _require = __webpack_require__(22),
+	var _require = __webpack_require__(24),
 	    newPromise = _require.newPromise,
 	    allPromises = _require.allPromises;
 	
@@ -1717,7 +2008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  allPromises = _require2.allPromises;
 	}
 	if ((typeof window === 'undefined' || window === null) && !newPromise) {
-	  var _require3 = __webpack_require__(23);
+	  var _require3 = __webpack_require__(25);
 	
 	  newPromise = _require3.newPromise;
 	  allPromises = _require3.allPromises;
@@ -1737,9 +2028,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 	  promiseCreator: { newPromise: newPromise, allPromises: allPromises }
 	};
+	//# sourceMappingURL=library-first.js.map
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1748,7 +2040,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	function _toConsumableArray(arr) {
+	  if (Array.isArray(arr)) {
+	    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+	      arr2[i] = arr[i];
+	    }return arr2;
+	  } else {
+	    return Array.from(arr);
+	  }
+	}
 	
 	if (typeof window !== 'undefined' && window !== null) {
 	  // Running in a browser
@@ -1832,34 +2132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.newPromise = newPromise;
 	exports.allPromises = allPromises;
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;'use strict';
-	
-	(function (root) {
-	  var req = require; // Hack so requireJS does not try to load `es6-promise` in the browser
-	  // Use native promises if Harmony is on
-	  var Promise = this.Promise || __webpack_require__(24).Promise;
-	  var newPromise = function newPromise(fn) {
-	    return new Promise(fn);
-	  };
-	  var allPromises = function allPromises(promises) {
-	    return Promise.all(promises);
-	  };
-	
-	  module.exports = { newPromise: newPromise, allPromises: allPromises };
-	})(undefined);
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	module.exports = window.Promise;
+	//# sourceMappingURL=promise-find-library.js.map
 
 /***/ },
 /* 25 */
@@ -1867,11 +2140,51 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	// Use native promises if Harmony is on
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	var Promise = undefined.Promise || __webpack_require__(26);
+	var newPromise = function newPromise(fn) {
+	  return new Promise(fn);
+	};
+	var allPromises = function allPromises(promises) {
+	  return Promise.all(promises);
+	};
 	
-	var URL_VALIDATOR = __webpack_require__(26);
+	module.exports = { newPromise: newPromise, allPromises: allPromises };
+	//# sourceMappingURL=promise.js.map
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	module.exports = Promise;
+	//# sourceMappingURL=promise-browser.js.map
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
+	
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
+	
+	var URL_VALIDATOR = __webpack_require__(28);
 	
 	module.exports = new (function () {
 	  function PathValidator() {
@@ -1893,25 +2206,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return PathValidator;
 	}())();
+	//# sourceMappingURL=path-validator.js.map
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports) {
 
-	module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20,32}|[0-9]+)|([a-f0-9]{20,32}|[0-9]+)\/forks|([a-f0-9]{20,32}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20,32}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
-
+	"use strict";
+	
+	// Generated by CoffeeScript 1.12.1
+	
+	(function () {
+	  module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|issues|users|code)|gists\/(public|starred|([a-f0-9]{20,32}|[0-9]+)|([a-f0-9]{20,32}|[0-9]+)\/forks|([a-f0-9]{20,32}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20,32}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge)|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
+	}).call(undefined);
+	
+	//# sourceMappingURL=url-validator.js.map
+	//# sourceMappingURL=url-validator.js.map
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
-	var base64encode = __webpack_require__(28);
+	var base64encode = __webpack_require__(30);
 	
 	module.exports = new (function () {
 	  function Authorization() {
@@ -1944,44 +2278,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return Authorization;
 	}())();
+	//# sourceMappingURL=authorization.js.map
 
 /***/ },
-/* 28 */
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+	
+	if (typeof btoa !== 'undefined') {
+	  // For browsers use the native btoa
+	  module.exports = __webpack_require__(31);
+	} else if (typeof process !== 'undefined') {
+	  // For node use HTTP adapter
+	  module.exports = __webpack_require__(31);
+	} else {
+	  throw new Error('Could not find base64 encode function');
+	}
+	//# sourceMappingURL=base64.js.map
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+
+/***/ },
+/* 31 */
 /***/ function(module, exports) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
+	"use strict";
 	
-	// Base64 Encoder
-	// ===============================
-	//
-	// Used for sending binary files and encoding the auth username/password
-	
-	if (typeof window !== 'undefined' && window !== null) {
-	  var base64encode = window.btoa;
-	  // Use the `Buffer` if available (NodeJS)
-	} else if (typeof global !== 'undefined' && global['Buffer']) {
-	  var base64encode = function base64encode(str) {
-	    var buffer = new global['Buffer'](str, 'binary');
-	    return buffer.toString('base64');
-	  };
-	} else {
-	  throw new Error('Native btoa function or Buffer is missing');
-	}
-	
-	module.exports = base64encode;
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+	module.exports = btoa;
+	//# sourceMappingURL=base64-browser.js.map
 
 /***/ },
-/* 29 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
-	var PREVIEW_HEADERS = __webpack_require__(30);
+	var PREVIEW_HEADERS = __webpack_require__(33);
 	
 	var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
 	  for (var key in PREVIEW_HEADERS) {
@@ -2014,26 +2362,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return PreviewApis;
 	}())();
+	//# sourceMappingURL=preview-apis.js.map
 
 /***/ },
-/* 30 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
-	  'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/
-	};
-
-
-/***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	// Generated by CoffeeScript 1.12.1
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	(function () {
+	  module.exports = {
+	    'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
+	    'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/
+	  };
+	}).call(undefined);
+	
+	//# sourceMappingURL=preview-headers.js.map
+	//# sourceMappingURL=preview-headers.js.map
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
+	
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	module.exports = new (function () {
 	  function UsePostInsteadOfPatch() {
@@ -2055,9 +2424,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return UsePostInsteadOfPatch;
 	}())();
+	//# sourceMappingURL=use-post-instead-of-patch.js.map
 
 /***/ },
-/* 32 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2125,16 +2495,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 	};
+	//# sourceMappingURL=fetch-all.js.map
 
 /***/ },
-/* 33 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	var toQueryString = __webpack_require__(12);
 	
@@ -2203,18 +2586,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return range;
 	}
+	//# sourceMappingURL=read-binary.js.map
 
 /***/ },
-/* 34 */
+/* 37 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	var _slicedToArray = function () {
+	  function sliceIterator(arr, i) {
+	    var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+	      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+	        _arr.push(_s.value);if (i && _arr.length === i) break;
+	      }
+	    } catch (err) {
+	      _d = true;_e = err;
+	    } finally {
+	      try {
+	        if (!_n && _i["return"]) _i["return"]();
+	      } finally {
+	        if (_d) throw _e;
+	      }
+	    }return _arr;
+	  }return function (arr, i) {
+	    if (Array.isArray(arr)) {
+	      return arr;
+	    } else if (Symbol.iterator in Object(arr)) {
+	      return sliceIterator(arr, i);
+	    } else {
+	      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+	    }
+	  };
+	}();
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	module.exports = new (function () {
 	  function Pagination() {
@@ -2262,16 +2682,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return Pagination;
 	}())();
+	//# sourceMappingURL=pagination.js.map
 
 /***/ },
-/* 35 */
+/* 38 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	module.exports = new (function () {
 	  function CacheHandler() {
@@ -2367,16 +2800,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return CacheHandler;
 	}())();
+	//# sourceMappingURL=cache-handler.js.map
 
 /***/ },
-/* 36 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	var _createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	  };
+	}();
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
 	
 	var plus = __webpack_require__(4);
 	
@@ -2451,6 +2897,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  return CamelCase;
 	}())();
+	//# sourceMappingURL=camel-case.js.map
 
 /***/ }
 /******/ ])

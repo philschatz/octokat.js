@@ -1,6 +1,6 @@
 #!/bin/sh
 
-npm run test-browser-only
+npm run-script test-browser:only
 
 # So that parallelshell exits on success, send a non-zero exit status
 if [ $? -eq 0 ]
