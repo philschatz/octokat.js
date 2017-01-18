@@ -1159,9 +1159,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var XMLHttpRequest = __webpack_require__(16);
 	  var xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
-	  __guardFunc__(xhr.overrideMimeType, function (f) {
-	    return f(options.mimeType);
-	  });
+	  if (options.mimeType) {
+	    __guardFunc__(xhr.overrideMimeType, function (f) {
+	      return f(options.mimeType);
+	    });
+	  }
 	  xhr.open(options.type, options.url);
 	
 	  if (options.data && options.type !== 'GET') {

@@ -13,7 +13,9 @@ let ajax = function (options, cb) {
   const XMLHttpRequest = require('./adapters/xhr')
   let xhr = new XMLHttpRequest()
   xhr.dataType = options.dataType
-  __guardFunc__(xhr.overrideMimeType, f => f(options.mimeType))
+  if (options.mimeType) {
+    __guardFunc__(xhr.overrideMimeType, f => f(options.mimeType))
+  }
   xhr.open(options.type, options.url)
 
   if (options.data && options.type !== 'GET') {
