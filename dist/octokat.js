@@ -66,13 +66,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var deprecate = __webpack_require__(2);
 	var OctokatBase = __webpack_require__(3);
 	
-	var HypermediaPlugin = __webpack_require__(20);
+	var HypermediaPlugin = __webpack_require__(18);
 	
-	var ALL_PLUGINS = [__webpack_require__(21), // re-chain methods when we detect an object (issue, comment, user, etc)
-	__webpack_require__(23), __webpack_require__(25), __webpack_require__(28), __webpack_require__(30), __webpack_require__(11), __webpack_require__(31), __webpack_require__(32), __webpack_require__(33),
+	var ALL_PLUGINS = [__webpack_require__(19), // re-chain methods when we detect an object (issue, comment, user, etc)
+	__webpack_require__(21), __webpack_require__(23), __webpack_require__(26), __webpack_require__(28), __webpack_require__(11), __webpack_require__(29), __webpack_require__(30), __webpack_require__(31),
 	// Run cacheHandler after PagedResults so the link headers are remembered
 	// but before hypermedia so the object is still serializable
-	__webpack_require__(34), HypermediaPlugin, __webpack_require__(35)];
+	__webpack_require__(32), HypermediaPlugin, __webpack_require__(33)];
 	
 	var Octokat = function Octokat() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -129,10 +129,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	var SimpleVerbsPlugin = __webpack_require__(11);
-	var NativePromiseOnlyPlugin = __webpack_require__(13);
 	
-	var Requester = __webpack_require__(15);
-	var applyHypermedia = __webpack_require__(19);
+	var Requester = __webpack_require__(13);
+	var applyHypermedia = __webpack_require__(17);
 	
 	// Checks if a response is a Buffer or not
 	var isBuffer = function isBuffer(data) {
@@ -167,7 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var OctokatBase = function OctokatBase() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
-	  var plugins = clientOptions.plugins || [SimpleVerbsPlugin, NativePromiseOnlyPlugin];
+	  var plugins = clientOptions.plugins || [SimpleVerbsPlugin];
 	
 	  // TODO remove disableHypermedia
 	  var disableHypermedia = clientOptions.disableHypermedia;
@@ -1050,49 +1049,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	// new class UseNativePromises
-	module.exports = {
-	  promiseCreator: __webpack_require__(14)
-	};
-	//# sourceMappingURL=native-only.js.map
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	if (typeof Promise !== 'undefined' && Promise !== null) {
-	  var newPromise = function newPromise(fn) {
-	    return new Promise(function (resolve, reject) {
-	      // Some browsers (like node-webkit 0.8.6) contain an older implementation
-	      // of Promises that provide 1 argument (a `PromiseResolver`).
-	      if (resolve.fulfill) {
-	        return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
-	      } else {
-	        return fn.apply(undefined, arguments);
-	      }
-	    });
-	  };
-	
-	  var allPromises = function allPromises(promises) {
-	    return Promise.all(promises);
-	  };
-	}
-	
-	exports.newPromise = newPromise;
-	exports.allPromises = allPromises;
-	//# sourceMappingURL=promise-find-native.js.map
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1114,7 +1070,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ajax = function ajax(options, cb) {
 	  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
 	  // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-	  var XMLHttpRequest = __webpack_require__(16);
+	  var XMLHttpRequest = __webpack_require__(14);
 	  var xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
 	  if (options.mimeType) {
@@ -1395,7 +1351,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=requester.js.map
 
 /***/ },
-/* 16 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -1403,20 +1359,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	var XHR = void 0;
 	if (typeof XMLHttpRequest !== 'undefined') {
 	  // For browsers use XHR adapter
-	  XHR = __webpack_require__(18);
+	  XHR = __webpack_require__(16);
 	} else if (typeof process !== 'undefined') {
 	  // For node use HTTP adapter
-	  XHR = __webpack_require__(18);
+	  XHR = __webpack_require__(16);
 	} else {
 	  throw new Error('Could not find XMLHttpRequest');
 	}
 	
 	module.exports = XHR;
 	//# sourceMappingURL=xhr.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)))
 
 /***/ },
-/* 17 */
+/* 15 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -1602,7 +1558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 16 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1611,7 +1567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=xhr-browser.js.map
 
 /***/ },
-/* 19 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1705,7 +1661,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=hypermedia.js.map
 
 /***/ },
-/* 20 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1827,7 +1783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=hypermedia.js.map
 
 /***/ },
-/* 21 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1836,7 +1792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var OBJECT_MATCHER = __webpack_require__(22);
+	var OBJECT_MATCHER = __webpack_require__(20);
 	var TREE_OPTIONS = __webpack_require__(8);
 	
 	var _require = __webpack_require__(10),
@@ -1906,7 +1862,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=object-chainer.js.map
 
 /***/ },
-/* 22 */
+/* 20 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1928,7 +1884,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=object-matcher.js.map
 
 /***/ },
-/* 23 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1937,7 +1893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var URL_VALIDATOR = __webpack_require__(24);
+	var URL_VALIDATOR = __webpack_require__(22);
 	
 	module.exports = new (function () {
 	  function PathValidator() {
@@ -1962,7 +1918,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=path-validator.js.map
 
 /***/ },
-/* 24 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1976,7 +1932,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=url-validator.js.map
 
 /***/ },
-/* 25 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1985,7 +1941,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var base64encode = __webpack_require__(26);
+	var base64encode = __webpack_require__(24);
 	
 	module.exports = new (function () {
 	  function Authorization() {
@@ -2021,25 +1977,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=authorization.js.map
 
 /***/ },
-/* 26 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
 	if (typeof btoa !== 'undefined') {
 	  // For browsers use the native btoa
-	  module.exports = __webpack_require__(27);
+	  module.exports = __webpack_require__(25);
 	} else if (typeof process !== 'undefined') {
 	  // For node use HTTP adapter
-	  module.exports = __webpack_require__(27);
+	  module.exports = __webpack_require__(25);
 	} else {
 	  throw new Error('Could not find base64 encode function');
 	}
 	//# sourceMappingURL=base64.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)))
 
 /***/ },
-/* 27 */
+/* 25 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2048,7 +2004,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=base64-browser.js.map
 
 /***/ },
-/* 28 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2057,7 +2013,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var PREVIEW_HEADERS = __webpack_require__(29);
+	var PREVIEW_HEADERS = __webpack_require__(27);
 	
 	var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
 	  for (var key in PREVIEW_HEADERS) {
@@ -2093,7 +2049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=preview-apis.js.map
 
 /***/ },
-/* 29 */
+/* 27 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2112,7 +2068,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=preview-headers.js.map
 
 /***/ },
-/* 30 */
+/* 28 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2144,7 +2100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=use-post-instead-of-patch.js.map
 
 /***/ },
-/* 31 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2215,7 +2171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=fetch-all.js.map
 
 /***/ },
-/* 32 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2294,7 +2250,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=read-binary.js.map
 
 /***/ },
-/* 33 */
+/* 31 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2354,7 +2310,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=pagination.js.map
 
 /***/ },
-/* 34 */
+/* 32 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2460,7 +2416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=cache-handler.js.map
 
 /***/ },
-/* 35 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

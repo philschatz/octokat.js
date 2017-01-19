@@ -6,7 +6,6 @@ const { VerbMethods, toPromise } = require('./verb-methods')
 
 // Use the following plugins by default (they should be neglegible additional code)
 const SimpleVerbsPlugin = require('./plugins/simple-verbs')
-const NativePromiseOnlyPlugin = require('./plugins/promise/native-only')
 
 const Requester = require('./requester')
 const applyHypermedia = require('./helpers/hypermedia')
@@ -40,7 +39,7 @@ let uncamelizeObj = function (obj) {
 }
 
 let OctokatBase = function (clientOptions = {}) {
-  let plugins = clientOptions.plugins || [SimpleVerbsPlugin, NativePromiseOnlyPlugin]
+  let plugins = clientOptions.plugins || [SimpleVerbsPlugin]
 
   // TODO remove disableHypermedia
   let {disableHypermedia} = clientOptions
