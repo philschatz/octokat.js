@@ -96,6 +96,17 @@ octo.users(USER).received_events.fetch()
 octo.users(USER).received_events.public.fetch()
 ```
 
+# Traffic
+
+```js
+repo = octo.repos('philschatz/octokat.js')
+
+repo.traffic.popular.referrers.fetch().then(console.log)
+repo.traffic.popular.paths.fetch().then(console.log)
+repo.traffic.views.fetch().then(console.log)
+repo.traffic.clones.fetch().then(console.log)
+```
+
 # Misc
 
 ```coffee
