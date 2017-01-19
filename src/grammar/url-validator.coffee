@@ -79,6 +79,7 @@ module.exports = /// ^
 
     | search/ (
           repositories
+        | commits
         | issues
         | users
         | code
@@ -157,6 +158,13 @@ module.exports = /// ^
               files
             | commits
             | merge
+            | requested_reviewers
+            | reviews (/[0-9]+)?
+            | reviews (/[0-9]+) / (
+                comments
+              | events
+              | dismissals
+              )
             )
         | git/ (
               refs

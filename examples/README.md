@@ -107,6 +107,19 @@ repo.traffic.views.fetch().then(console.log)
 repo.traffic.clones.fetch().then(console.log)
 ```
 
+# Pull Request Reviews
+
+```js
+pull = octo.repos('philschatz/octokat').pulls(128)
+
+pull.requestedReviewers.fetch().then(console.log)
+pull.reviews.fetch().then(console.log)
+pull.reviews(1).fetch().then(console.log)
+pull.reviews(1).comments.fetch().then(console.log)
+pull.reviews(1).events.fetch().then(console.log)
+pull.reviews(1).dismissals.fetch().then(console.log)
+```
+
 # Misc
 
 ```coffee
