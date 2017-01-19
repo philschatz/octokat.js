@@ -65,7 +65,7 @@ let OctokatBase = function (clientOptions = {}) {
 
     return requester.request(method, path, data, options, function (err, val) {
       if (err) { return cb(err) }
-      if (options.raw) { return cb(null, val) }
+      if ((options || {}).raw) { return cb(null, val) }
 
       if (!disableHypermedia) {
         let context = {
