@@ -69,10 +69,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HypermediaPlugin = __webpack_require__(20);
 	
 	var ALL_PLUGINS = [__webpack_require__(21), // re-chain methods when we detect an object (issue, comment, user, etc)
-	__webpack_require__(23), __webpack_require__(27), __webpack_require__(29), __webpack_require__(32), __webpack_require__(34), __webpack_require__(11), __webpack_require__(35), __webpack_require__(36), __webpack_require__(37),
+	__webpack_require__(23), __webpack_require__(25), __webpack_require__(28), __webpack_require__(30), __webpack_require__(11), __webpack_require__(31), __webpack_require__(32), __webpack_require__(33),
 	// Run cacheHandler after PagedResults so the link headers are remembered
 	// but before hypermedia so the object is still serializable
-	__webpack_require__(38), HypermediaPlugin, __webpack_require__(39)];
+	__webpack_require__(34), HypermediaPlugin, __webpack_require__(35)];
 	
 	var Octokat = function Octokat() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -238,12 +238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	
 	  // If not callback is provided then return a promise
-	  var newPromise = plugins.filter(function (_ref) {
-	    var promiseCreator = _ref.promiseCreator;
-	    return promiseCreator;
-	  })[0].promiseCreator.newPromise;
-	
-	  instance.parse = toPromise(instance.parse, newPromise);
+	  instance.parse = toPromise(instance.parse);
 	
 	  instance._parseWithContext = function (path, context, cb) {
 	    if (typeof cb !== 'function') {
@@ -255,8 +250,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      context.url = data.url || path;
 	    }
 	
-	    var responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function (_ref2) {
-	      var responseMiddlewareAsync = _ref2.responseMiddlewareAsync;
+	    var responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function (_ref) {
+	      var responseMiddlewareAsync = _ref.responseMiddlewareAsync;
 	      return responseMiddlewareAsync;
 	    }), function (plugin) {
 	      return plugin.responseMiddlewareAsync.bind(plugin);
@@ -884,7 +879,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// some strategies for loading a Promise implementation)
 	
 	
-	var toPromise = function toPromise(orig, newPromise) {
+	var toPromise = function toPromise(orig) {
 	  return function () {
 	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	      args[_key] = arguments[_key];
@@ -895,8 +890,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // The last arg is a callback function
 	      args.pop();
 	      return orig.apply(undefined, [last].concat(args));
-	    } else if (newPromise) {
-	      return newPromise(function (resolve, reject) {
+	    } else if (typeof Promise !== 'undefined') {
+	      return new Promise(function (resolve, reject) {
 	        var cb = function cb(err, val) {
 	          if (err) {
 	            return reject(err);
@@ -956,10 +951,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function injectVerbMethods(path, obj) {
 	      var _this = this;
 	
-	      if (this._promisePlugin) {
-	        var newPromise = this._promisePlugin.promiseCreator.newPromise;
-	      }
-	
 	      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') {
 	        obj.url = path; // Mostly for testing
 	        forOwn(this._syncVerbs, function (verbFunc, verbName) {
@@ -982,14 +973,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              return _this._requester.request(method, path, data, options, cb);
 	            };
-	            return toPromise(makeRequest, newPromise).apply(undefined, arguments);
+	            return toPromise(makeRequest).apply(undefined, arguments);
 	          };
 	        });
 	
 	        forOwn(this._asyncVerbs, function (verbFunc, verbName) {
 	          obj[verbName] = function () {
 	            var makeRequest = verbFunc(_this._requester, path); // Curried function
-	            return toPromise(makeRequest, newPromise).apply(undefined, arguments);
+	            return toPromise(makeRequest).apply(undefined, arguments);
 	          };
 	        });
 	      } else {
@@ -2014,177 +2005,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var _require = __webpack_require__(24),
-	    newPromise = _require.newPromise,
-	    allPromises = _require.allPromises;
-	
-	if (!newPromise || !allPromises) {
-	  var _require2 = __webpack_require__(14);
-	
-	  newPromise = _require2.newPromise;
-	  allPromises = _require2.allPromises;
-	}
-	if ((typeof window === 'undefined' || window === null) && !newPromise) {
-	  var _require3 = __webpack_require__(25);
-	
-	  newPromise = _require3.newPromise;
-	  allPromises = _require3.allPromises;
-	}
-	
-	if (typeof window !== 'undefined' && window !== null && !newPromise) {
-	  // Otherwise, show a warning (library can still be used with just callbacks)
-	  if (window.console && window.console.warn) {
-	    window.console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
-	  }
-	} else if ((typeof window === 'undefined' || window === null) && !newPromise) {
-	  // Running in NodeJS
-	  throw new Error('Could not find a promise lib for node. Seems like a bug');
-	}
-	
-	// new class PreferLibraryOverNativePromises
-	module.exports = {
-	  promiseCreator: { newPromise: newPromise, allPromises: allPromises }
-	};
-	//# sourceMappingURL=library-first.js.map
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	function _toConsumableArray(arr) {
-	  if (Array.isArray(arr)) {
-	    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-	      arr2[i] = arr[i];
-	    }return arr2;
-	  } else {
-	    return Array.from(arr);
-	  }
-	}
-	
-	if (typeof window !== 'undefined' && window !== null) {
-	  // Running in a browser
-	
-	  // Determine the correct Promise factory.
-	  // Try to use libraries before native Promises since most Promise users
-	  // are already using a library.
-	  //
-	  // Try in the following order:
-	  // - Q Promise
-	  // - angularjs Promise
-	  // - jQuery Promise
-	  // - native Promise or a polyfill
-	  if (window.Q) {
-	    var newPromise = function newPromise(fn) {
-	      var deferred = window.Q.defer();
-	      var resolve = function resolve(val) {
-	        return deferred.resolve(val);
-	      };
-	      var reject = function reject(err) {
-	        return deferred.reject(err);
-	      };
-	      fn(resolve, reject);
-	      return deferred.promise;
-	    };
-	    var allPromises = function allPromises(promises) {
-	      return window.Q.all(promises);
-	    };
-	  } else if (window.angular) {
-	    var newPromise = null;
-	    var allPromises = null;
-	
-	    // Details on Angular Promises: http://docs.angularjs.org/api/ng/service/$q
-	    var injector = angular.injector(['ng']);
-	    injector.invoke(function ($q) {
-	      exports.newPromise = newPromise = function newPromise(fn) {
-	        var deferred = $q.defer();
-	        var resolve = function resolve(val) {
-	          return deferred.resolve(val);
-	        };
-	        var reject = function reject(err) {
-	          return deferred.reject(err);
-	        };
-	        fn(resolve, reject);
-	        return deferred.promise;
-	      };
-	      return exports.allPromises = allPromises = function allPromises(promises) {
-	        return $q.all(promises);
-	      };
-	    });
-	  } else if (window.jQuery && window.jQuery.Deferred) {
-	    var newPromise = function newPromise(fn) {
-	      var promise = window.jQuery.Deferred();
-	      var resolve = function resolve(val) {
-	        return promise.resolve(val);
-	      };
-	      var reject = function reject(val) {
-	        return promise.reject(val);
-	      };
-	      fn(resolve, reject);
-	      return promise.promise();
-	    };
-	    var allPromises = function allPromises(promises) {
-	      var _window$jQuery;
-	
-	      // `jQuery.when` is a little odd.
-	      // - It accepts each promise as an argument (instead of an array of promises)
-	      // - Each resolved value is an argument (instead of an array of values)
-	      //
-	      // So, convert the array of promises to args and then the resolved args to an array
-	      return (_window$jQuery = window.jQuery).when.apply(_window$jQuery, _toConsumableArray(promises)).then(function () {
-	        for (var _len = arguments.length, promises = Array(_len), _key = 0; _key < _len; _key++) {
-	          promises[_key] = arguments[_key];
-	        }
-	
-	        return promises;
-	      });
-	    };
-	  }
-	}
-	
-	exports.newPromise = newPromise;
-	exports.allPromises = allPromises;
-	//# sourceMappingURL=promise-find-library.js.map
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	// Use native promises if Harmony is on
-	
-	var Promise = undefined.Promise || __webpack_require__(26);
-	var newPromise = function newPromise(fn) {
-	  return new Promise(fn);
-	};
-	var allPromises = function allPromises(promises) {
-	  return Promise.all(promises);
-	};
-	
-	module.exports = { newPromise: newPromise, allPromises: allPromises };
-	//# sourceMappingURL=promise.js.map
-
-/***/ },
-/* 26 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	module.exports = Promise;
-	//# sourceMappingURL=promise-browser.js.map
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
 	var _createClass = function () {
 	  function defineProperties(target, props) {
 	    for (var i = 0; i < props.length; i++) {
@@ -2201,7 +2021,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 	
-	var URL_VALIDATOR = __webpack_require__(28);
+	var URL_VALIDATOR = __webpack_require__(24);
 	
 	module.exports = new (function () {
 	  function PathValidator() {
@@ -2226,7 +2046,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=path-validator.js.map
 
 /***/ },
-/* 28 */
+/* 24 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2241,7 +2061,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=url-validator.js.map
 
 /***/ },
-/* 29 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2262,7 +2082,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 	
-	var base64encode = __webpack_require__(30);
+	var base64encode = __webpack_require__(26);
 	
 	module.exports = new (function () {
 	  function Authorization() {
@@ -2298,17 +2118,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=authorization.js.map
 
 /***/ },
-/* 30 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
 	if (typeof btoa !== 'undefined') {
 	  // For browsers use the native btoa
-	  module.exports = __webpack_require__(31);
+	  module.exports = __webpack_require__(27);
 	} else if (typeof process !== 'undefined') {
 	  // For node use HTTP adapter
-	  module.exports = __webpack_require__(31);
+	  module.exports = __webpack_require__(27);
 	} else {
 	  throw new Error('Could not find base64 encode function');
 	}
@@ -2316,7 +2136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ },
-/* 31 */
+/* 27 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2325,7 +2145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=base64-browser.js.map
 
 /***/ },
-/* 32 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2346,7 +2166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 	
-	var PREVIEW_HEADERS = __webpack_require__(33);
+	var PREVIEW_HEADERS = __webpack_require__(29);
 	
 	var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
 	  for (var key in PREVIEW_HEADERS) {
@@ -2382,7 +2202,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=preview-apis.js.map
 
 /***/ },
-/* 33 */
+/* 29 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2402,7 +2222,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=preview-headers.js.map
 
 /***/ },
-/* 34 */
+/* 30 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2446,7 +2266,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=use-post-instead-of-patch.js.map
 
 /***/ },
-/* 35 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2517,7 +2337,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=fetch-all.js.map
 
 /***/ },
-/* 36 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2608,7 +2428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=read-binary.js.map
 
 /***/ },
-/* 37 */
+/* 33 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2704,7 +2524,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=pagination.js.map
 
 /***/ },
-/* 38 */
+/* 34 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2822,7 +2642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=cache-handler.js.map
 
 /***/ },
-/* 39 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

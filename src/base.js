@@ -101,8 +101,7 @@ let OctokatBase = function (clientOptions = {}) {
   }
 
   // If not callback is provided then return a promise
-  let {newPromise} = plugins.filter(({promiseCreator}) => promiseCreator)[0].promiseCreator
-  instance.parse = toPromise(instance.parse, newPromise)
+  instance.parse = toPromise(instance.parse)
 
   instance._parseWithContext = function (path, context, cb) {
     if (typeof cb !== 'function') { throw new Error('Callback is required') }

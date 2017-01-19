@@ -3,14 +3,14 @@ const { filter, forOwn, extend } = require('./plus')
 // When `origFn` is not passed a callback as the last argument then return a
 // Promise, or error if no Promise can be found (see `plugins/promise/*` for
 // some strategies for loading a Promise implementation)
-let toPromise = (orig, newPromise) =>
+let toPromise = (orig) =>
   function (...args) {
     let last = args[args.length - 1]
     if (typeof last === 'function') { // The last arg is a callback function
       args.pop()
       return orig(last, ...args)
-    } else if (newPromise) {
-      return newPromise(function (resolve, reject) {
+    } else if (typeof Promise !== 'undefined') {
+      return new Promise(function (resolve, reject) {
         let cb = function (err, val) {
           if (err) { return reject(err) }
           return resolve(val)
@@ -48,10 +48,6 @@ class VerbMethods {
 
   // Injects verb methods onto `obj`
   injectVerbMethods (path, obj) {
-    if (this._promisePlugin) {
-      var {newPromise} = this._promisePlugin.promiseCreator
-    }
-
     if (typeof obj === 'object' || typeof obj === 'function') {
       obj.url = path // Mostly for testing
       forOwn(this._syncVerbs, (verbFunc, verbName) => {
@@ -61,7 +57,7 @@ class VerbMethods {
             ({method, path, data, options} = verbFunc(path, ...originalArgs))
             return this._requester.request(method, path, data, options, cb)
           }
-          return toPromise(makeRequest, newPromise)(...args)
+          return toPromise(makeRequest)(...args)
         }
       }
       )
@@ -69,7 +65,7 @@ class VerbMethods {
       forOwn(this._asyncVerbs, (verbFunc, verbName) => {
         obj[verbName] = (...args) => {
           let makeRequest = verbFunc(this._requester, path) // Curried function
-          return toPromise(makeRequest, newPromise)(...args)
+          return toPromise(makeRequest)(...args)
         }
       }
       )
