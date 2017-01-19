@@ -8,13 +8,13 @@
 [![code coverage][coverage-image]][coverage-url]
 
 
-<a href="https://tonicdev.com/npm/octokat" target="_window">Try it out in your browser!</a> (REPL)
+[Try it out in your browser!](https://tonicdev.com/npm/octokat)
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
 It is being developed in the context of an [EPUB3 Textbook editor for GitHub](https://github.com/oerpub/github-bookeditor)
  and a [simple serverless kanban board](https://github.com/philschatz/gh-board) ([demo](http://philschatz.com/gh-board)).
 
-This package can be used in `nodejs` **or** in the browser as an AMD module or using browserify.
+This package can be used in `nodejs` **or** in the browser as an AMD module or using webpack/browserify.
 
 # Table of Contents
 
@@ -43,7 +43,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
 
 # Key Features
 
-- Works in `nodejs`, an AMD module in the browser, and as a [bower](https://github.com/bower/bower) library
+- Works in `nodejs`, an in browsers using webpack/browserify
 - Handles text _and_ binary files
 - Exposes everything available via the GitHub API (repos, teams, events, hooks, emojis, etc.)
 - Supports `ETag` caching
@@ -289,29 +289,6 @@ octo.me.starred('philschatz', 'octokat.js').add(cb); // Star a repo
 octo.me.starred('philschatz', 'octokat.js').remove(cb); // Un-Star a repo
 ```
 
-## Using bower
-
-This file can be included using the bower package manager:
-
-```sh
-bower install octokat --save
-```
-
-## Setup
-
-This is all you need to get up and running:
-
-```html
-<script src="../dist/octokat.js"></script>
-<script>
-  var octo = new Octokat();
-  octo.zen.read(function(err, message) {
-    if (err) { throw new Error(err); }
-    alert(message);
-  });
-</script>
-```
-
 ## Promises (Optional)
 
 `octokat.js` has the following **optional** dependencies when used in a browser:
@@ -472,7 +449,7 @@ If you are adding tests be sure to include the updated fixtures in the Pull Requ
 
 ## Todo
 - Add Option for Two factor authentication
-- Add option to pass header as cahce control: no cache
+- Add option to pass header as cache control: no cache
 
 
 [kanban-image]: https://img.shields.io/github/issues/philschatz/octokat.js.svg?label=kanban%20board%20%28gh-board%29

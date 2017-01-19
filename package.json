@@ -14,14 +14,7 @@
     "test-browser": "./script/run-test-browser.sh",
     "test-browser:only": "mocha-phantomjs --reporter spec --timeout 20000 http://localhost:9876/test/index.html",
     "predist": "coffee --map --compile ./src/grammar/*.coffee",
-    "dist": "babel --source-maps true --out-dir ./dist/node/ ./src/ && webpack --config ./webpack.config-browser.js -v --progress",
-    "update": "bower update",
-    "bump": "grunt release",
-    "blanket": {
-      "pattern": [
-        "octokat.js"
-      ]
-    }
+    "dist": "babel --source-maps true --out-dir ./dist/node/ ./src/"
   },
   "dependencies": {
     "es6-promise": "4.0.5",
