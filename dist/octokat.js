@@ -200,7 +200,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (err) {
 	        return cb(err);
 	      }
-	      if (options.raw) {
+	      if ((options || {}).raw) {
 	        return cb(null, val);
 	      }
 	
