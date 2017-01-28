@@ -66,13 +66,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var deprecate = __webpack_require__(2);
 	var OctokatBase = __webpack_require__(3);
 	
-	var HypermediaPlugin = __webpack_require__(20);
+	var HypermediaPlugin = __webpack_require__(18);
 	
-	var ALL_PLUGINS = [__webpack_require__(21), // re-chain methods when we detect an object (issue, comment, user, etc)
-	__webpack_require__(23), __webpack_require__(27), __webpack_require__(29), __webpack_require__(32), __webpack_require__(34), __webpack_require__(11), __webpack_require__(35), __webpack_require__(36), __webpack_require__(37),
+	var ALL_PLUGINS = [__webpack_require__(19), // re-chain methods when we detect an object (issue, comment, user, etc)
+	__webpack_require__(21), __webpack_require__(23), __webpack_require__(26), __webpack_require__(28), __webpack_require__(11), __webpack_require__(29), __webpack_require__(30), __webpack_require__(31),
 	// Run cacheHandler after PagedResults so the link headers are remembered
 	// but before hypermedia so the object is still serializable
-	__webpack_require__(38), HypermediaPlugin, __webpack_require__(39)];
+	__webpack_require__(32), HypermediaPlugin, __webpack_require__(33)];
 	
 	var Octokat = function Octokat() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -129,10 +129,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	var SimpleVerbsPlugin = __webpack_require__(11);
-	var NativePromiseOnlyPlugin = __webpack_require__(13);
 	
-	var Requester = __webpack_require__(15);
-	var applyHypermedia = __webpack_require__(19);
+	var Requester = __webpack_require__(13);
+	var applyHypermedia = __webpack_require__(17);
 	
 	// Checks if a response is a Buffer or not
 	var isBuffer = function isBuffer(data) {
@@ -167,7 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var OctokatBase = function OctokatBase() {
 	  var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
-	  var plugins = clientOptions.plugins || [SimpleVerbsPlugin, NativePromiseOnlyPlugin];
+	  var plugins = clientOptions.plugins || [SimpleVerbsPlugin];
 	
 	  // TODO remove disableHypermedia
 	  var disableHypermedia = clientOptions.disableHypermedia;
@@ -238,12 +237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	
 	  // If not callback is provided then return a promise
-	  var newPromise = plugins.filter(function (_ref) {
-	    var promiseCreator = _ref.promiseCreator;
-	    return promiseCreator;
-	  })[0].promiseCreator.newPromise;
-	
-	  instance.parse = toPromise(instance.parse, newPromise);
+	  instance.parse = toPromise(instance.parse);
 	
 	  instance._parseWithContext = function (path, context, cb) {
 	    if (typeof cb !== 'function') {
@@ -255,8 +249,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      context.url = data.url || path;
 	    }
 	
-	    var responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function (_ref2) {
-	      var responseMiddlewareAsync = _ref2.responseMiddlewareAsync;
+	    var responseMiddlewareAsyncs = plus.map(plus.filter(plugins, function (_ref) {
+	      var responseMiddlewareAsync = _ref.responseMiddlewareAsync;
 	      return responseMiddlewareAsync;
 	    }), function (plugin) {
 	      return plugin.responseMiddlewareAsync.bind(plugin);
@@ -341,7 +335,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// Both of these internal methods are really small/simple and we are only
 	// working with arrays anyway
-	
 	var filter = __webpack_require__(5);
 	var forEach = __webpack_require__(6);
 	var map = __webpack_require__(7);
@@ -417,6 +410,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return nextTask(null); // Initial value passed to the 1st
 	  },
 	
+	
 	  // Just _.extend(target, source)
 	  extend: function extend(target, source) {
 	    if (source) {
@@ -426,12 +420,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 	
+	
 	  // Just _.forOwn(obj, iterator)
 	  forOwn: function forOwn(obj, iterator) {
 	    return Object.keys(obj).map(function (key) {
 	      return iterator(obj[key], key);
 	    });
 	  },
+	
 	
 	  filter: filter,
 	  forEach: forEach,
@@ -751,29 +747,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
-	var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
-	  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
-	} : function (obj) {
-	  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
-	};
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
-	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var plus = __webpack_require__(4);
 	
@@ -846,33 +824,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
-	  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
-	} : function (obj) {
-	  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
-	};
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var _require = __webpack_require__(4),
 	    filter = _require.filter,
@@ -884,7 +844,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// some strategies for loading a Promise implementation)
 	
 	
-	var toPromise = function toPromise(orig, newPromise) {
+	var toPromise = function toPromise(orig) {
 	  return function () {
 	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	      args[_key] = arguments[_key];
@@ -895,8 +855,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // The last arg is a callback function
 	      args.pop();
 	      return orig.apply(undefined, [last].concat(args));
-	    } else if (newPromise) {
-	      return newPromise(function (resolve, reject) {
+	    } else if (typeof Promise !== 'undefined') {
+	      return new Promise(function (resolve, reject) {
 	        var cb = function cb(err, val) {
 	          if (err) {
 	            return reject(err);
@@ -956,10 +916,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function injectVerbMethods(path, obj) {
 	      var _this = this;
 	
-	      if (this._promisePlugin) {
-	        var newPromise = this._promisePlugin.promiseCreator.newPromise;
-	      }
-	
 	      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') {
 	        obj.url = path; // Mostly for testing
 	        forOwn(this._syncVerbs, function (verbFunc, verbName) {
@@ -982,14 +938,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	              return _this._requester.request(method, path, data, options, cb);
 	            };
-	            return toPromise(makeRequest, newPromise).apply(undefined, arguments);
+	            return toPromise(makeRequest).apply(undefined, arguments);
 	          };
 	        });
 	
 	        forOwn(this._asyncVerbs, function (verbFunc, verbName) {
 	          obj[verbName] = function () {
 	            var makeRequest = verbFunc(_this._requester, path); // Curried function
-	            return toPromise(makeRequest, newPromise).apply(undefined, arguments);
+	            return toPromise(makeRequest).apply(undefined, arguments);
 	          };
 	        });
 	      } else {
@@ -1059,7 +1015,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// Converts a dictionary to a query string.
 	// Internal helper method
-	
 	var toQueryString = function toQueryString(options, omitQuestionMark) {
 	  // Returns '' if `options` is empty so this string can always be appended to a URL
 	  if (!options || options === {}) {
@@ -1094,65 +1049,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	// new class UseNativePromises
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	module.exports = {
-	  promiseCreator: __webpack_require__(14)
-	};
-	//# sourceMappingURL=native-only.js.map
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	if (typeof Promise !== 'undefined' && Promise !== null) {
-	  var newPromise = function newPromise(fn) {
-	    return new Promise(function (resolve, reject) {
-	      // Some browsers (like node-webkit 0.8.6) contain an older implementation
-	      // of Promises that provide 1 argument (a `PromiseResolver`).
-	      if (resolve.fulfill) {
-	        return fn(resolve.resolve.bind(resolve), resolve.reject.bind(resolve));
-	      } else {
-	        return fn.apply(undefined, arguments);
-	      }
-	    });
-	  };
-	
-	  var allPromises = function allPromises(promises) {
-	    return Promise.all(promises);
-	  };
-	}
-	
-	exports.newPromise = newPromise;
-	exports.allPromises = allPromises;
-	//# sourceMappingURL=promise-find-native.js.map
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
-	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var _require = __webpack_require__(4),
 	    filter = _require.filter,
@@ -1171,7 +1070,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ajax = function ajax(options, cb) {
 	  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
 	  // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-	  var XMLHttpRequest = __webpack_require__(16);
+	  var XMLHttpRequest = __webpack_require__(14);
 	  var xhr = new XMLHttpRequest();
 	  xhr.dataType = options.dataType;
 	  if (options.mimeType) {
@@ -1315,6 +1214,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        headers = _acc.headers;
 	        mimeType = _acc.mimeType;
 	
+	
 	        if (options.isRaw) {
 	          headers['Accept'] = 'application/vnd.github.raw';
 	        }
@@ -1451,7 +1351,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=requester.js.map
 
 /***/ },
-/* 16 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -1459,20 +1359,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	var XHR = void 0;
 	if (typeof XMLHttpRequest !== 'undefined') {
 	  // For browsers use XHR adapter
-	  XHR = __webpack_require__(18);
+	  XHR = __webpack_require__(16);
 	} else if (typeof process !== 'undefined') {
 	  // For node use HTTP adapter
-	  XHR = __webpack_require__(18);
+	  XHR = __webpack_require__(16);
 	} else {
 	  throw new Error('Could not find XMLHttpRequest');
 	}
 	
 	module.exports = XHR;
 	//# sourceMappingURL=xhr.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)))
 
 /***/ },
-/* 17 */
+/* 15 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -1658,7 +1558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 16 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1667,7 +1567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=xhr-browser.js.map
 
 /***/ },
-/* 19 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1761,26 +1661,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=hypermedia.js.map
 
 /***/ },
-/* 20 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var deprecate = __webpack_require__(2);
 	
@@ -1895,28 +1783,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=hypermedia.js.map
 
 /***/ },
-/* 21 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var OBJECT_MATCHER = __webpack_require__(22);
+	var OBJECT_MATCHER = __webpack_require__(20);
 	var TREE_OPTIONS = __webpack_require__(8);
 	
 	var _require = __webpack_require__(10),
@@ -1986,13 +1862,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=object-chainer.js.map
 
 /***/ },
-/* 22 */
+/* 20 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
 	// Generated by CoffeeScript 1.12.2
-	
 	(function () {
 	  module.exports = {
 	    'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+$/,
@@ -2009,199 +1884,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=object-matcher.js.map
 
 /***/ },
-/* 23 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _require = __webpack_require__(24),
-	    newPromise = _require.newPromise,
-	    allPromises = _require.allPromises;
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	if (!newPromise || !allPromises) {
-	  var _require2 = __webpack_require__(14);
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	  newPromise = _require2.newPromise;
-	  allPromises = _require2.allPromises;
-	}
-	if ((typeof window === 'undefined' || window === null) && !newPromise) {
-	  var _require3 = __webpack_require__(25);
-	
-	  newPromise = _require3.newPromise;
-	  allPromises = _require3.allPromises;
-	}
-	
-	if (typeof window !== 'undefined' && window !== null && !newPromise) {
-	  // Otherwise, show a warning (library can still be used with just callbacks)
-	  if (window.console && window.console.warn) {
-	    window.console.warn('Octokat: A Promise API was not found. Supported libraries that have Promises are jQuery, angularjs, and es6-promise');
-	  }
-	} else if ((typeof window === 'undefined' || window === null) && !newPromise) {
-	  // Running in NodeJS
-	  throw new Error('Could not find a promise lib for node. Seems like a bug');
-	}
-	
-	// new class PreferLibraryOverNativePromises
-	module.exports = {
-	  promiseCreator: { newPromise: newPromise, allPromises: allPromises }
-	};
-	//# sourceMappingURL=library-first.js.map
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	function _toConsumableArray(arr) {
-	  if (Array.isArray(arr)) {
-	    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-	      arr2[i] = arr[i];
-	    }return arr2;
-	  } else {
-	    return Array.from(arr);
-	  }
-	}
-	
-	if (typeof window !== 'undefined' && window !== null) {
-	  // Running in a browser
-	
-	  // Determine the correct Promise factory.
-	  // Try to use libraries before native Promises since most Promise users
-	  // are already using a library.
-	  //
-	  // Try in the following order:
-	  // - Q Promise
-	  // - angularjs Promise
-	  // - jQuery Promise
-	  // - native Promise or a polyfill
-	  if (window.Q) {
-	    var newPromise = function newPromise(fn) {
-	      var deferred = window.Q.defer();
-	      var resolve = function resolve(val) {
-	        return deferred.resolve(val);
-	      };
-	      var reject = function reject(err) {
-	        return deferred.reject(err);
-	      };
-	      fn(resolve, reject);
-	      return deferred.promise;
-	    };
-	    var allPromises = function allPromises(promises) {
-	      return window.Q.all(promises);
-	    };
-	  } else if (window.angular) {
-	    var newPromise = null;
-	    var allPromises = null;
-	
-	    // Details on Angular Promises: http://docs.angularjs.org/api/ng/service/$q
-	    var injector = angular.injector(['ng']);
-	    injector.invoke(function ($q) {
-	      exports.newPromise = newPromise = function newPromise(fn) {
-	        var deferred = $q.defer();
-	        var resolve = function resolve(val) {
-	          return deferred.resolve(val);
-	        };
-	        var reject = function reject(err) {
-	          return deferred.reject(err);
-	        };
-	        fn(resolve, reject);
-	        return deferred.promise;
-	      };
-	      return exports.allPromises = allPromises = function allPromises(promises) {
-	        return $q.all(promises);
-	      };
-	    });
-	  } else if (window.jQuery && window.jQuery.Deferred) {
-	    var newPromise = function newPromise(fn) {
-	      var promise = window.jQuery.Deferred();
-	      var resolve = function resolve(val) {
-	        return promise.resolve(val);
-	      };
-	      var reject = function reject(val) {
-	        return promise.reject(val);
-	      };
-	      fn(resolve, reject);
-	      return promise.promise();
-	    };
-	    var allPromises = function allPromises(promises) {
-	      var _window$jQuery;
-	
-	      // `jQuery.when` is a little odd.
-	      // - It accepts each promise as an argument (instead of an array of promises)
-	      // - Each resolved value is an argument (instead of an array of values)
-	      //
-	      // So, convert the array of promises to args and then the resolved args to an array
-	      return (_window$jQuery = window.jQuery).when.apply(_window$jQuery, _toConsumableArray(promises)).then(function () {
-	        for (var _len = arguments.length, promises = Array(_len), _key = 0; _key < _len; _key++) {
-	          promises[_key] = arguments[_key];
-	        }
-	
-	        return promises;
-	      });
-	    };
-	  }
-	}
-	
-	exports.newPromise = newPromise;
-	exports.allPromises = allPromises;
-	//# sourceMappingURL=promise-find-library.js.map
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	// Use native promises if Harmony is on
-	
-	var Promise = undefined.Promise || __webpack_require__(26);
-	var newPromise = function newPromise(fn) {
-	  return new Promise(fn);
-	};
-	var allPromises = function allPromises(promises) {
-	  return Promise.all(promises);
-	};
-	
-	module.exports = { newPromise: newPromise, allPromises: allPromises };
-	//# sourceMappingURL=promise.js.map
-
-/***/ },
-/* 26 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	module.exports = Promise;
-	//# sourceMappingURL=promise-browser.js.map
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
-	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
-	
-	var URL_VALIDATOR = __webpack_require__(28);
+	var URL_VALIDATOR = __webpack_require__(22);
 	
 	module.exports = new (function () {
 	  function PathValidator() {
@@ -2226,13 +1918,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=path-validator.js.map
 
 /***/ },
-/* 28 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
 	
 	// Generated by CoffeeScript 1.12.2
-	
 	(function () {
 	  module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams)|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|commits|issues|users|code)|gists\/(public|starred|([a-f0-9]{20,32}|[0-9]+)|([a-f0-9]{20,32}|[0-9]+)\/forks|([a-f0-9]{20,32}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20,32}|[0-9]+)\/star)|repos(\/[^\/]+){2}|repos(\/[^\/]+){2}\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge|requested_reviewers|reviews(\/[0-9]+)?|reviews(\/[0-9]+)\/(comments|events|dismissals))|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card)|traffic\/(popular\/(referrers|paths)|views|clones))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
 	}).call(undefined);
@@ -2241,28 +1932,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=url-validator.js.map
 
 /***/ },
-/* 29 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var base64encode = __webpack_require__(30);
+	var base64encode = __webpack_require__(24);
 	
 	module.exports = new (function () {
 	  function Authorization() {
@@ -2298,25 +1977,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=authorization.js.map
 
 /***/ },
-/* 30 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
 	if (typeof btoa !== 'undefined') {
 	  // For browsers use the native btoa
-	  module.exports = __webpack_require__(31);
+	  module.exports = __webpack_require__(25);
 	} else if (typeof process !== 'undefined') {
 	  // For node use HTTP adapter
-	  module.exports = __webpack_require__(31);
+	  module.exports = __webpack_require__(25);
 	} else {
 	  throw new Error('Could not find base64 encode function');
 	}
 	//# sourceMappingURL=base64.js.map
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(15)))
 
 /***/ },
-/* 31 */
+/* 25 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2325,28 +2004,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=base64-browser.js.map
 
 /***/ },
-/* 32 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var PREVIEW_HEADERS = __webpack_require__(33);
+	var PREVIEW_HEADERS = __webpack_require__(27);
 	
 	var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
 	  for (var key in PREVIEW_HEADERS) {
@@ -2382,13 +2049,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=preview-apis.js.map
 
 /***/ },
-/* 33 */
+/* 27 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
 	// Generated by CoffeeScript 1.12.2
-	
 	(function () {
 	  module.exports = {
 	    'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
@@ -2402,26 +2068,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=preview-headers.js.map
 
 /***/ },
-/* 34 */
+/* 28 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	module.exports = new (function () {
 	  function UsePostInsteadOfPatch() {
@@ -2446,7 +2100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=use-post-instead-of-patch.js.map
 
 /***/ },
-/* 35 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2517,26 +2171,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=fetch-all.js.map
 
 /***/ },
-/* 36 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var toQueryString = __webpack_require__(12);
 	
@@ -2608,52 +2250,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=read-binary.js.map
 
 /***/ },
-/* 37 */
+/* 31 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
-	var _slicedToArray = function () {
-	  function sliceIterator(arr, i) {
-	    var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
-	      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-	        _arr.push(_s.value);if (i && _arr.length === i) break;
-	      }
-	    } catch (err) {
-	      _d = true;_e = err;
-	    } finally {
-	      try {
-	        if (!_n && _i["return"]) _i["return"]();
-	      } finally {
-	        if (_d) throw _e;
-	      }
-	    }return _arr;
-	  }return function (arr, i) {
-	    if (Array.isArray(arr)) {
-	      return arr;
-	    } else if (Symbol.iterator in Object(arr)) {
-	      return sliceIterator(arr, i);
-	    } else {
-	      throw new TypeError("Invalid attempt to destructure non-iterable instance");
-	    }
-	  };
-	}();
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	module.exports = new (function () {
 	  function Pagination() {
@@ -2704,26 +2310,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=pagination.js.map
 
 /***/ },
-/* 38 */
+/* 32 */
 /***/ function(module, exports) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	module.exports = new (function () {
 	  function CacheHandler() {
@@ -2822,26 +2416,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//# sourceMappingURL=cache-handler.js.map
 
 /***/ },
-/* 39 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-	    }
-	  }return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-	  };
-	}();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _classCallCheck(instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var plus = __webpack_require__(4);
 	

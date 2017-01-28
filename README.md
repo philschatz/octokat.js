@@ -56,7 +56,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
   - Listeners for rate limit changes
   - Public Keys
   - Hooks (commit, comment, etc.)
-  - Uses Angular, jQuery, or native promises if available
+  - Uses native Promises if available
   - Markdown generation
   - Preview APIs (Deployments, Teams, Licenses, etc)
   - Enterprise APIs
@@ -310,23 +310,6 @@ This is all you need to get up and running:
     alert(message);
   });
 </script>
-```
-
-## Promises (Optional)
-
-`octokat.js` has the following **optional** dependencies when used in a browser:
-
-- A Promise API (supports jQuery, AngularJS, or a Promise polyfill)
-
-If you are already using [jQuery](https://api.jquery.com/jQuery.Deferred/)
-or [AngularJS](https://docs.angularjs.org/api/ng/service/$q) in your project just be sure to include them before Octokat
-and it will use their Promise API.
-
-Otherwise, you can include a Promise polyfill like [jakearchibald/es6-promise](https://github.com/jakearchibald/es6-promise):
-
-```html
-<script src="./node_modules/es6-promise/dist/es6-promise.js"></script>
-<script src="./octokat.js"></script>
 ```
 
 
