@@ -38,7 +38,7 @@
     "coffeelint": "^1.15.7",
     "es6-promise": "4.0.5",
     "eslint": "^3.7.0",
-    "eslint-config-standard": "^6.2.0",
+    "eslint-config-standard": "^7.0.0",
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1",
     "glob": "^7.1.1",
@@ -49,12 +49,12 @@
     "octokat-fixtures": "git://github.com/philschatz/octokat-fixtures",
     "parallelshell": "^2.0.0",
     "phantomjs-prebuilt": "^2.1.14",
-    "remap-istanbul": "^0.8.4",
+    "remap-istanbul": "^0.9.0",
     "sepia": "~2.0.2",
     "sepia-js": "git://github.com/philschatz/sepia.js",
     "snazzy": "^6.0.0",
     "standard": "^9.0.0",
-    "webpack": "^1.14.0"
+    "webpack": "^2.2.1"
   },
   "repository": {
     "type": "git",
