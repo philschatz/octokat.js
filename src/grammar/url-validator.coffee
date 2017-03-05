@@ -28,6 +28,7 @@ module.exports = /// ^
     | rate_limit
     | feeds
     | events
+    | repositories
     | notifications
     | notifications / threads (/[^/]+)
     | notifications / threads (/[^/]+) / subscription

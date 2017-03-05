@@ -9,6 +9,7 @@ module.exports = {
   'rate_limit': false,
   'feeds': false,
   'events': false,
+  'repositories': false,
   'notifications': {
     'threads': {
       'subscription': false
