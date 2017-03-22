@@ -35,7 +35,7 @@ module.exports = new class CacheHandler {
     let {clientOptions, request, status, jqXHR, data} = input
     if (!jqXHR) { return cb(null, input) } // The plugins are all used in `octo.parse()` which does not have a jqXHR
 
-    // Since this can be called via `octo.parse`, skpi caching when there is no jqXHR
+    // Since this can be called via `octo.parse`, skip caching when there is no jqXHR
     if (jqXHR) {
       let {method, path} = request // This is also not defined when octo.parse is called
 
@@ -48,7 +48,7 @@ module.exports = new class CacheHandler {
           // Set a flag on the object so users know this is a cached response
           data.__IS_CACHED = eTag || true
         } else {
-          throw new Error('ERROR: Bug in Octokat cacheHandler. It had an eTag but not the cached response')
+          throw new Error(`ERROR: Bug in Octokat cacheHandler for path '${method} ${path}'. It had an eTag but not the cached response.`)
         }
       } else {
         // Cache the response to reuse later
