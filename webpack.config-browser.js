@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = {
   cache: true,
   devtool: 'source-map',
@@ -11,7 +13,7 @@ module.exports = {
     devtoolFallbackModuleFilenameTemplate: '[resourcePath]?[hash]',
     library: 'Octokat',
     libraryTarget: 'umd',
-    path: 'dist',
+    path: path.join(__dirname, '/dist/'),
     filename: '[name].js'
   },
   resolve: {
