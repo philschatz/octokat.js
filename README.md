@@ -344,6 +344,12 @@ octo.repos('philschatz', 'octokat.js').commits.fetch()
   .then (moreCommits) ->
     console.log('2nd page of results', moreCommits)
 ```
+As standard with the Github API, passing a `per_page` parameter allows you to control the number of results per page. For example:
+
+```js
+octo.repos('philschatz', 'octokat.js').issues.fetch({per_page: 100})
+  .then(...)
+```
 
 ## Preview new APIs
 
