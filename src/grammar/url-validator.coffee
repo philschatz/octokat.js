@@ -96,7 +96,7 @@ module.exports = /// ^
       )
 
     | repos (/[^/]+){2}
-    | repos (/[^/]+){2} / (
+    | (repos (/[^/]+){2} | repositories / ([0-9]+)) / (  # Support both syntaxes for getting a repo (because paged results)
           readme
         | tarball (/[^/]+)?
         | zipball (/[^/]+)?

@@ -2,7 +2,7 @@ module.exports =
   'repos': /// ^
     (https?://[^/]+)? # Optional protocol, host, and port
     (/api/v3)?        # Optional API root for enterprise GitHub users
-    /repos/ [^/]+ / [^/]+
+    / (repos (/[^/]+){2} | repositories / ([0-9]+))
     $
   ///
   'gists': /// ^ (https?://[^/]+)? (/api/v3)?
@@ -10,7 +10,7 @@ module.exports =
     $
   ///
   'issues': /// ^ (https?://[^/]+)? (/api/v3)?
-    /repos/ [^/]+ / [^/]+
+    / (repos (/[^/]+){2} | repositories / ([0-9]+))
     /(issues|pulls)/ [^/]+
     $
   ///
