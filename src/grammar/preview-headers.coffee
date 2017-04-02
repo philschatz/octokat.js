@@ -34,6 +34,25 @@ module.exports =
     $
   ///
 
+  # https://developer.github.com/changes/2017-01-05-commit-search-api/
+  'application/vnd.github.inertia-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
+    (
+        /repos (/[^/]+){2} /projects
+      | /orgs/ ([^/]+) /projects
+      | /projects/ (
+          [0-9]+
+        | [0-9]+ /columns
+        | columns
+        | columns/ [0-9]+
+        | columns/ [0-9]+ /moves
+        | columns/ [0-9]+ /cards
+        | columns/cards/ [0-9]+
+        | columns/cards/ [0-9]+ /moves
+      )
+    )
+    $
+  ///
+
   # # https://developer.github.com/v3/oauth_authorizations/
   # 'application/vnd.github.mirage-preview+json': /// ^ (https?://[^/]+)? (/api/v3)?
   #   (
