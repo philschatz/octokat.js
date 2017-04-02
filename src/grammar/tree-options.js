@@ -62,7 +62,9 @@ const REPO_FIELDS = {
     'statuses': false
   },
   'contents': false,
-  'collaborators': false,
+  'collaborators': {
+    'permission': false
+  },
   'issues': {
     'events': false,
     'comments': false,
