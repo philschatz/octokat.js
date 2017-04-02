@@ -1,3 +1,99 @@
+// Reuse these fields because there are 2 URL structures for accessing repositores:
+// - `/repos/philschatz/octokat.js/...`
+// - `/repositories/20044005/...`
+const REPO_FIELDS = {
+  'readme': false,
+  'tarball': false,
+  'zipball': false,
+  'compare': false,
+  'deployments': {
+    'statuses': false
+  },
+  'hooks': {
+    'tests': false
+  },
+  'assignees': false,
+  'languages': false,
+  'teams': false,
+  'tags': false,
+  'branches': false,
+  'contributors': false,
+  'subscribers': false,
+  'subscription': false,
+  'stargazers': false,
+  'comments': false,
+  'downloads': false,
+  'forks': false,
+  'milestones': {
+    'labels': false
+  },
+  'labels': false,
+  'releases': {
+    'assets': false,
+    'latest': false,
+    'tags': false
+  },
+  'events': false,
+  'notifications': false,
+  'merges': false,
+  'statuses': false,
+  'pulls': {
+    'merge': false,
+    'comments': false,
+    'commits': false,
+    'files': false,
+    'events': false,
+    'labels': false,
+    'requested_reviewers': false,
+    'reviews': {
+      'comments': false,
+      'events': false,
+      'dismissals': false
+    }
+  },
+  'pages': {
+    'builds': {
+      'latest': false
+    }
+  },
+  'commits': {
+    'comments': false,
+    'status': false,
+    'statuses': false
+  },
+  'contents': false,
+  'collaborators': false,
+  'issues': {
+    'events': false,
+    'comments': false,
+    'labels': false
+  },
+  'git': {
+    'refs': {
+      'heads': false,
+      'tags': false
+    },
+    'trees': false,
+    'blobs': false,
+    'commits': false
+  },
+  'stats': {
+    'contributors': false,
+    'commit_activity': false,
+    'code_frequency': false,
+    'participation': false,
+    'punch_card': false
+  },
+  'traffic': {
+    'popular': {
+      'referrers': false,
+      'paths': false
+    },
+    'views': false,
+    'clones': false
+  }
+}
+
 module.exports = {
   'zen': false,
   'octocat': false,
@@ -74,98 +170,8 @@ module.exports = {
     'comments': false,
     'forks': false
   },
-  'repos': {
-    'readme': false,
-    'tarball': false,
-    'zipball': false,
-    'compare': false,
-    'deployments': {
-      'statuses': false
-    },
-    'hooks': {
-      'tests': false
-    },
-    'assignees': false,
-    'languages': false,
-    'teams': false,
-    'tags': false,
-    'branches': false,
-    'contributors': false,
-    'subscribers': false,
-    'subscription': false,
-    'stargazers': false,
-    'comments': false,
-    'downloads': false,
-    'forks': false,
-    'milestones': {
-      'labels': false
-    },
-    'labels': false,
-    'releases': {
-      'assets': false,
-      'latest': false,
-      'tags': false
-    },
-    'events': false,
-    'notifications': false,
-    'merges': false,
-    'statuses': false,
-    'pulls': {
-      'merge': false,
-      'comments': false,
-      'commits': false,
-      'files': false,
-      'events': false,
-      'labels': false,
-      'requested_reviewers': false,
-      'reviews': {
-        'comments': false,
-        'events': false,
-        'dismissals': false
-      }
-    },
-    'pages': {
-      'builds': {
-        'latest': false
-      }
-    },
-    'commits': {
-      'comments': false,
-      'status': false,
-      'statuses': false
-    },
-    'contents': false,
-    'collaborators': false,
-    'issues': {
-      'events': false,
-      'comments': false,
-      'labels': false
-    },
-    'git': {
-      'refs': {
-        'heads': false,
-        'tags': false
-      },
-      'trees': false,
-      'blobs': false,
-      'commits': false
-    },
-    'stats': {
-      'contributors': false,
-      'commit_activity': false,
-      'code_frequency': false,
-      'participation': false,
-      'punch_card': false
-    },
-    'traffic': {
-      'popular': {
-        'referrers': false,
-        'paths': false
-      },
-      'views': false,
-      'clones': false
-    }
-  },
+  'repos': REPO_FIELDS,
+  'repositories': REPO_FIELDS,
   'licenses': false,
   'authorizations': {
     'clients': false
