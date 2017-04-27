@@ -2,7 +2,7 @@
 const { expect } = require('chai')
 const { Octokat, TOKEN, REPO_USER, REPO_NAME } = require('./test-config')
 
-describe('Event Emitter', () =>
+describe('Event Emitter', () => {
 
   it('emits when a request begins and when it completes', function (done) {
     let emittedStart = false
@@ -32,4 +32,24 @@ describe('Event Emitter', () =>
     // Mocha 3 does not like it when a promise is returned _and_ a done callback is expected
     return null
   })
-)
+
+  it('emits unique end event IDs that were also emitted in a start event', function (done) {
+    let ids = { start: [], end: [] }
+    let emitter = function (name, id) {
+      ids[name].push(id)
+      if (ids.end.length === 3) {
+        expect(ids.start[0]).to.not.equal(ids.start[1])
+        expect(ids.start[0]).to.not.equal(ids.start[2])
+        expect(ids.start[1]).to.not.equal(ids.start[2])
+        expect(ids.end).to.include(ids.start[0])
+        expect(ids.end).to.include(ids.start[1])
+        expect(ids.end).to.include(ids.start[2])
+        done()
+      }
+    }
+    let client = new Octokat({token: TOKEN, emitter})
+    client.repos(REPO_USER, REPO_NAME).fetch()
+    client.repos(REPO_USER, REPO_NAME).fetch()
+    client.repos(REPO_USER, REPO_NAME).fetch()
+  })
+})
