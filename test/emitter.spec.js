@@ -37,10 +37,16 @@ describe('Event Emitter', () => {
     let ids = { start: [], end: [] }
     let emitter = function (name, id) {
       ids[name].push(id)
+      if (name === 'end') {
+        // Make sure it previously appeared in a `start` event.
+        expect(ids.start).to.include(id)
+      }
       if (ids.end.length === 3) {
+        // Make sure each `start` ID is unique.
         expect(ids.start[0]).to.not.equal(ids.start[1])
         expect(ids.start[0]).to.not.equal(ids.start[2])
         expect(ids.start[1]).to.not.equal(ids.start[2])
+        // Make sure each ID from a `start` event also had an `end` event.
         expect(ids.end).to.include(ids.start[0])
         expect(ids.end).to.include(ids.start[1])
         expect(ids.end).to.include(ids.start[2])
@@ -48,6 +54,7 @@ describe('Event Emitter', () => {
       }
     }
     let client = new Octokat({token: TOKEN, emitter})
+    // Fire multiple concurrent requests to check their IDs
     client.repos(REPO_USER, REPO_NAME).fetch()
     client.repos(REPO_USER, REPO_NAME).fetch()
     client.repos(REPO_USER, REPO_NAME).fetch()
