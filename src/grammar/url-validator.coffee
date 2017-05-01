@@ -145,6 +145,7 @@ module.exports = /// ^
         | contents /         # Allow an empty path
         | contents (/[^/]+)* # The path is allowed in the URL
         | collaborators (/[^/]+)?
+        | collaborators / ([^/]+) / permission
         | (issues|pulls)
         | (issues|pulls) / (
               events
