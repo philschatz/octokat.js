@@ -45,7 +45,7 @@ let ajax = function (options, cb) {
 // # Construct the request function.
 // It contains all the auth credentials passed in to the client constructor
 
-let eventId = 0 // counter for the emitter so it is easier to match up requests
+let EVENT_ID = 0 // counter for the emitter so it is easier to match up requests
 
 module.exports = class Requester {
   constructor (_instance, _clientOptions = {}, plugins) {
@@ -130,7 +130,7 @@ module.exports = class Requester {
         }
       }
 
-      eventId++
+      let eventId = ++EVENT_ID
       __guardFunc__(this._emit, f => f('start', eventId, {method, path, data, options}))
 
       return ajax(ajaxConfig, (err, val) => {
