@@ -36,7 +36,6 @@
     "codecov": "^2.0.1",
     "coffee-script": "^1.12.1",
     "coffeelint": "^1.15.7",
-    "es6-promise": "4.1.0",
     "eslint": "^3.7.0",
     "eslint-config-standard": "^8.0.0",
     "eslint-plugin-promise": "^3.4.0",
@@ -76,7 +75,6 @@
     "test": "test"
   },
   "browser": {
-    "./dist/node/adapters/promise-node.js": "./dist/node/adapters/promise-browser.js",
     "./dist/node/adapters/xhr-node.js": "./dist/node/adapters/xhr-browser.js",
     "./dist/node/adapters/base64-node.js": "./dist/node/adapters/base64-browser.js"
   },

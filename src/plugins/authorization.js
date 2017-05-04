@@ -1,4 +1,4 @@
-const base64encode = require('../adapters/base64')
+const base64encode = require('../adapters/base64-node')
 
 module.exports = new class Authorization {
   requestMiddlewareAsync (input, cb) {
