@@ -124,6 +124,7 @@ module.exports = {
     'following': false,
     'emails': false,
     'issues': false,
+    'public_emails': false,
     'starred': false,
     'teams': false
   },
