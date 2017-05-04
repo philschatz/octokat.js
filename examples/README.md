@@ -88,6 +88,8 @@ gist.comments(COMMENT_ID).update({"body":":heart:"})
 ```coffee
 octo.user.repos.fetch()
 octo.user.starred('philschatz', 'octokat.js').add()
+octo.user.emails.fetch()
+octo.user.public_emails.fetch()
 
 octo.users.fetch()
 octo.users(USER).events.fetch()
