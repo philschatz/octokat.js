@@ -42,6 +42,7 @@ module.exports = /// ^
       | following (/[^/]+)?
       | emails    (/[^/]+)? # TODO: Are these additional args valid?
       | issues
+      | public_emails
       | starred
       | starred   (/[^/]+){2}
       | teams
