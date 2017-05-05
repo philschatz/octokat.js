@@ -55,6 +55,14 @@ module.exports = class Requester {
     if (this._clientOptions.rootURL == null) { this._clientOptions.rootURL = 'https://api.github.com' }
     if (this._clientOptions.useETags == null) { this._clientOptions.useETags = true }
     if (this._clientOptions.usePostInsteadOfPatch == null) { this._clientOptions.usePostInsteadOfPatch = false }
+    if (this._clientOptions.userAgent == null) {
+      if (typeof window === 'undefined' || window === null) {
+        // Set the `User-Agent` because it is required and NodeJS
+        // does not send one by default.
+        // See http://developer.github.com/v3/#user-agent-required
+        this._clientOptions.userAgent = 'octokat.js'
+      }
+    }
 
     // These are updated whenever a request is made (optional)
     if (typeof this._clientOptions.emitter === 'function') {
@@ -84,12 +92,9 @@ module.exports = class Requester {
 
     let headers =
       {'Accept': this._clientOptions.acceptHeader || 'application/json'}
-
-    if (typeof window === 'undefined' || window === null) {
-      // Set the `User-Agent` because it is required and NodeJS
-      // does not send one by default.
-      // See http://developer.github.com/v3/#user-agent-required
-      headers['User-Agent'] = 'octokat.js'
+    
+    if (this._clientOptions.userAgent) {
+      headers['User-Agent'] = this._clientOptions.userAgent
     }
 
     let acc = {method, path, headers, options, clientOptions: this._clientOptions}
