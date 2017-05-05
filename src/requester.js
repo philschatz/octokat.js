@@ -92,7 +92,7 @@ module.exports = class Requester {
 
     let headers =
       {'Accept': this._clientOptions.acceptHeader || 'application/json'}
-    
+
     if (this._clientOptions.userAgent) {
       headers['User-Agent'] = this._clientOptions.userAgent
     }
