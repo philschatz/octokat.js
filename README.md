@@ -18,6 +18,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
 
 # Table of Contents
 
+- [Install](#install)
 - [Key Features](#key-features)
 - [Overview](#overview)
 - [Examples](#examples)
@@ -40,6 +41,13 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
   - [Using URLs Directly](#using-urls-directly)
   - [Development](#development)
 
+# Install
+
+Octokat uses [node](https://nodejs.org) and [npm](https://npmjs.com).
+
+```sh
+npm install --save octokat
+```
 
 # Key Features
 
