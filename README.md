@@ -43,7 +43,7 @@ This package can be used in `nodejs` **or** in the browser as an AMD module or u
 
 # Install
 
-Octokat uses [node](https://nodejs.org) and [npm](https://npmjs.com).
+Octokat runs in [node](https://nodejs.org) or a browser and is available in [npm](https://npmjs.com/package/octokat).
 
 ```sh
 npm install --save octokat
