@@ -1,5 +1,6 @@
 /* eslint-env mocha */
-require('./all')
+
+// require('./all')
 
 describe('Root construction', () => {
   it('can be instantiated via window.Octokat', () => {

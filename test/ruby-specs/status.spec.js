@@ -11,6 +11,6 @@ if (typeof window !== 'undefined' && window !== null) {
 
     it('returns the last human message', () => client.status.lastMessage())
 
-    return it('returns the most recent status messages', () => client.status.messages())
+    it('returns the most recent status messages', () => client.status.messages())
   })
 }

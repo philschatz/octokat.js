@@ -1,4 +1,5 @@
 const { filter, map, waterfall } = require('./plus')
+const fetch = require('./adapters/fetch-node')
 
 // Request Function
 // ===============================
@@ -8,38 +9,34 @@ const { filter, map, waterfall } = require('./plus')
 
 // Simple jQuery.ajax() shim that returns a promise for a xhr object
 let ajax = function (options, cb) {
-  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
-  // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-  const XMLHttpRequest = require('./adapters/xhr')
-  let xhr = new XMLHttpRequest()
-  xhr.dataType = options.dataType
-  if (options.mimeType) {
-    __guardFunc__(xhr.overrideMimeType, f => f(options.mimeType))
+  const fetchArgs = {
+    method: options.type,
+    headers: options.headers
   }
-  xhr.open(options.type, options.url)
-
-  if (options.data && options.type !== 'GET') {
-    xhr.setRequestHeader('Content-Type', options.contentType)
+  if (options.data) {
+    fetchArgs.body = options.data
   }
-
-  for (let name in options.headers) {
-    let value = options.headers[name]
-    xhr.setRequestHeader(name, value)
-  }
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      __guardFunc__(__guard__(options.statusCode, x => x[xhr.status]), f1 => f1())
-
-      // When disconnected, pass if the status is 0 so the cacheHandler has a chance to return the cached version
-      if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304 || xhr.status === 302 || xhr.status === 0) {
-        return cb(null, xhr)
-      } else {
-        return cb(xhr)
-      }
+  return fetch(options.url, fetchArgs)
+  .then((response) => {
+    // for boolean responses
+    if (options.statusCode && options.statusCode[response.status]) {
+      return options.statusCode[response.status]()
+    } else if ((response.status >= 200 && response.status < 300) || response.status === 304 || response.status === 302 || response.status === 0) {
+      // Explicitly check the status code because for some reason 422 Unprocessable Entry is not an Error
+      // for all other responses
+      return cb(null, response)
+    } else {
+      return cb(response)
     }
-  }
-  return xhr.send(options.data)
+  })
+  .catch((err) => {
+    if (options.statusCode && options.statusCode[err.status]) {
+      return options.statusCode[err.status]()
+    } else {
+      // for all other responses
+      return cb(err)
+    }
+  })
 }
 
 // # Construct the request function.
@@ -135,13 +132,20 @@ module.exports = class Requester {
 
       return ajax(ajaxConfig, (err, val) => {
         let jqXHR = err || val
+        let response = jqXHR
+
+        if (err instanceof Error) {
+          // There was a bug in the code (likely syntax error or null pointer)
+          // so rethrow the error
+          throw err
+        }
 
         // Fire listeners when the request completes or fails
-        if (this._emit) {
-          if (jqXHR.getResponseHeader('X-RateLimit-Limit')) {
-            let rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
-            let rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
-            let rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
+        if (this._emit && response) {
+          if (response.headers.get('X-RateLimit-Limit')) {
+            let rateLimit = parseFloat(response.headers.get('X-RateLimit-Limit'))
+            let rateLimitRemaining = parseFloat(response.headers.get('X-RateLimit-Remaining'))
+            let rateLimitReset = parseFloat(response.headers.get('X-RateLimit-Reset'))
             // Reset time is in seconds, not milliseconds
             // if rateLimitReset
             //   rateLimitReset = new Date(rateLimitReset * 1000)
@@ -152,11 +156,11 @@ module.exports = class Requester {
               reset: rateLimitReset
             }
 
-            if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
-              emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
+            if (response.headers.get('X-OAuth-Scopes')) {
+              emitterRate.scopes = response.headers.get('X-OAuth-Scopes').split(', ')
             }
           }
-          this._emit('end', eventId, {method, path, data, options}, jqXHR.status, emitterRate)
+          this._emit('end', eventId, {method, path, data, options}, response.status, emitterRate)
         }
 
         if (!err) {
@@ -164,55 +168,59 @@ module.exports = class Requester {
 
           // Respond with the redirect URL (for archive links)
           // TODO: implement a `followRedirects` plugin
-          if (jqXHR.status === 302) {
-            return cb(null, jqXHR.getResponseHeader('Location'))
-          // If it was a boolean question and the server responded with 204 ignore.
-          } else if (jqXHR.status !== 204 || !options.isBoolean) {
-            if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
-              data = JSON.parse(jqXHR.responseText)
+          if (response.status === 302) {
+            return cb(null, response.headers.get('Location'))
+          } else if (response.status !== 204 || !options.isBoolean) {
+            // If it was a boolean question and the server responded with 204 ignore.
+            let dataPromise
+
+            // If the status was 304 then let the cache handler pick it up. leave data blank
+            if (response.status === 304) {
+              dataPromise = Promise.resolve(null)
             } else {
-              data = jqXHR.responseText
+              // Convert to JSON if we are expecting JSON
+              // TODO: use a blob if we are expecting a binary
+              if (ajaxConfig.dataType === 'json') {
+                dataPromise = response.json()
+              } else {
+                dataPromise = response.text()
+              }
             }
 
-            acc = {
-              clientOptions: this._clientOptions,
-              plugins: this._plugins,
-              data,
-              options,
-              jqXHR, // for cacheHandler
-              status: jqXHR.status, // cacheHandler changes this
-              request: acc, // Include the request data for plugins like cacheHandler
-              requester: this, // for Hypermedia to generate verb methods
-              instance: this._instance // for Hypermedia to be able to call `.fromUrl`
-            }
-            return this._instance._parseWithContext('', acc, function (err, val) {
-              if (err) { return cb(err, val) }
-              return cb(null, val, jqXHR.status, jqXHR)
-            }
-            )
+            return dataPromise.then((data) => {
+              acc = {
+                clientOptions: this._clientOptions,
+                plugins: this._plugins,
+                data,
+                options,
+                jqXHR, // for cacheHandler
+                status: response.status, // cacheHandler changes this
+                request: acc, // Include the request data for plugins like cacheHandler
+                requester: this, // for Hypermedia to generate verb methods
+                instance: this._instance // for Hypermedia to be able to call `.fromUrl`
+              }
+              return this._instance._parseWithContext('', acc, function (err, val) {
+                if (err) { return cb(err, val) }
+                return cb(null, val, response.status, jqXHR)
+              })
+            })
           }
         } else {
           // Parse the error if one occurs
 
           // If the request was for a Boolean then a 404 should be treated as a "false"
-          if (!options.isBoolean || jqXHR.status !== 404) {
-            err = new Error(jqXHR.responseText)
-            err.status = jqXHR.status
-            if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
-              let json = ''
-              if (jqXHR.responseText) {
-                try {
-                  json = JSON.parse(jqXHR.responseText)
-                } catch (error) {
-                  cb({message: 'Error Parsing Response'})
-                }
-              } else {
-                // In the case of 404 errors, `responseText` is an empty string
-                json = ''
-              }
-              err.json = json
-            }
-            return cb(err)
+          if (!options.isBoolean || response.status !== 404) {
+            const errorTextPromise = response.text()
+            errorTextPromise
+            .then((errorText) => {
+              err = new Error(errorText)
+              err.status = response.status
+              // if (response.headers.get('Content-Type') === 'application/json; charset=utf-8') {
+              //   cb(new Error(response.text()))
+              // }
+              return cb(err)
+            })
+            .catch((err) => cb(err))
           }
         }
       }
@@ -224,7 +232,4 @@ module.exports = class Requester {
 
 function __guardFunc__ (func, transform) {
   return typeof func === 'function' ? transform(func) : undefined
-}
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
 }

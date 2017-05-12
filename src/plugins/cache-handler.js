@@ -52,8 +52,8 @@ module.exports = new class CacheHandler {
         }
       } else {
         // Cache the response to reuse later
-        if (method === 'GET' && jqXHR.getResponseHeader('ETag')) {
-          var eTag = jqXHR.getResponseHeader('ETag')
+        if (method === 'GET' && jqXHR.headers.get('ETag')) {
+          var eTag = jqXHR.headers.get('ETag')
           cacheHandler.add(method, path, eTag, data, jqXHR.status)
         }
       }

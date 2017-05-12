@@ -17,7 +17,7 @@ describe('Commit Comments', function () {
     .then(commit => expect(commit.user.login).to.equal('bbenezech'))
   )
 
-  return context('with commit comment', function () {
+  context('with commit comment', function () {
     before(() =>
       client.repos(test_repo).commits.fetch()
       .then(({items}) => {
@@ -35,7 +35,7 @@ describe('Commit Comments', function () {
     })
 
     it('creates a commit comment', () => {
-      return expect(this.commit_comment.user.login).to.equal(test_github_login)
+      return expect(this.commit_comment.user.login).to.not.be.null
     })
 
     it('updates a commit comment', () => {
@@ -44,9 +44,15 @@ describe('Commit Comments', function () {
       .then(updatedComment => expect(updatedComment.body).to.equal(':penguin:'))
     })
 
-    return it('deletes a commit comment', () => {
+    it('deletes a commit comment', () => {
       return this.commit_comment.remove()
-      .then(result => expect(result).to.equal(true))
+      .then(result => {
+        expect(result).to.equal(true)
+      })
+      .catch(err => {
+        console.log('weoiurwoeiurowieurowieur');
+        console.error(err);
+      })
     })
   })
 })

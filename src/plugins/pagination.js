@@ -11,7 +11,7 @@ module.exports = new class Pagination {
 
       // Parse the Link headers
       // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-      let linksHeader = jqXHR.getResponseHeader('Link')
+      let linksHeader = jqXHR.headers.get('Link')
       if (linksHeader) {
         linksHeader.split(',').forEach((part) => {
           let [unusedField, href, rel] = part.match(/<([^>]+)>; rel="([^"]+)"/)

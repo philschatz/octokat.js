@@ -45,7 +45,7 @@ describe('URL Hypermedia Patterns', function () {
     return expect(url).to.equal(expected)
   })
 
-  return it('throws error if a required field is missing', function () {
+  it('throws error if a required field is missing', function () {
     let template = 'https://api.github.com/search/code?q={query}{&page,per_page,sort,order}'
     let params =
       // query: 'octokat'
@@ -67,7 +67,7 @@ describe('Hypermedia type conversion', function () {
     })
   })
 
-  return it('converts date strings to dates (fetch)', () =>
+  it('converts date strings to dates (fetch)', () =>
     client.repos(REPO_USER, REPO_NAME).fetch().then(info => expect(info.createdAt).to.be.an.instanceof(Date))
   )
 })
