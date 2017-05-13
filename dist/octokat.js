@@ -754,10 +754,10 @@ var OctokatBase = __webpack_require__(10);
 var HypermediaPlugin = __webpack_require__(19);
 
 var ALL_PLUGINS = [__webpack_require__(20), // re-chain methods when we detect an object (issue, comment, user, etc)
-__webpack_require__(22), __webpack_require__(15), __webpack_require__(23), __webpack_require__(25), __webpack_require__(5), __webpack_require__(18), __webpack_require__(24), __webpack_require__(21),
+__webpack_require__(22), __webpack_require__(15), __webpack_require__(23), __webpack_require__(25), __webpack_require__(5), __webpack_require__(18), __webpack_require__(21),
 // Run cacheHandler after PagedResults so the link headers are remembered
 // but before hypermedia so the object is still serializable
-__webpack_require__(16), HypermediaPlugin, __webpack_require__(17)];
+__webpack_require__(16), __webpack_require__(24), HypermediaPlugin, __webpack_require__(17)];
 
 var Octokat = function Octokat() {
   var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -1310,10 +1310,12 @@ module.exports = new (function () {
             var eTag;
 
             // Set a flag on the object so users know this is a cached response
+            // if (typeof data !== 'string') {
+            //   data.__IS_CACHED = eTag || true
+            // }
             data = ref.data;
             status = ref.status;
             eTag = ref.eTag;
-            data.__IS_CACHED = eTag || true;
           } else {
             throw new Error('ERROR: Bug in Octokat cacheHandler for path \'' + method + ' ' + path + '\'. It had an eTag but not the cached response.');
           }

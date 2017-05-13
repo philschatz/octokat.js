@@ -2,3 +2,4 @@
 const path = require('path')
 
 require('./all')
+debugger

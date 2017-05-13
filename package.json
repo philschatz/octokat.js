@@ -12,7 +12,7 @@
     "pretest-node-with-coverage": "npm run-script predebug-node",
     "test-node-with-coverage": "VCR_MODE=cache istanbul cover --report json _mocha -- --reporter spec ./test-transpiled/**/node**.js",
     "predebug-node": "babel --source-maps true --source-root ./index.js ./test/ -d ./test-transpiled/",
-    "debug-node": "mocha --inspect --debug-brk --reporter spec ./test-transpiled/**/node**.js",
+    "debug-node": "VCR_MODE=cache mocha --inspect --debug-brk --reporter spec ./test-transpiled/**/node**.js",
     "pretest-browser": "webpack --config ./webpack.config-browsertests.js",
     "test-browser": "./script/run-test-browser.sh",
     "test-browser:only": "phantomjs ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js http://localhost:9876/test/index.html spec '{\"timeout\": 20000 }'",
@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "fetch-vcr": "^0.2.0",
+    "fetch-vcr": "^0.3.1",
     "lodash": "^4.16.4",
     "node-fetch": "^1.6.3",
     "xmlhttprequest": "~1.8.0"

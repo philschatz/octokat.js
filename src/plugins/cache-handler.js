@@ -46,7 +46,9 @@ module.exports = new class CacheHandler {
           var eTag;
           ({data, status, eTag} = ref)
           // Set a flag on the object so users know this is a cached response
-          data.__IS_CACHED = eTag || true
+          // if (typeof data !== 'string') {
+          //   data.__IS_CACHED = eTag || true
+          // }
         } else {
           throw new Error(`ERROR: Bug in Octokat cacheHandler for path '${method} ${path}'. It had an eTag but not the cached response.`)
         }

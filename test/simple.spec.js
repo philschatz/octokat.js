@@ -354,14 +354,14 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         })
       )
 
-      it('.git.blobs.create(...) and .blobs(...).readBinary()', () =>
-        STATE[REPO].git.blobs.create({content: btoa('Hello'), encoding: 'base64'})
+      it('.git.blobs.create(...) and .blobs(...).readBinary()', () => {
+        return STATE[REPO].git.blobs.create({content: btoa('Hello'), encoding: 'base64'})
         .then(function ({sha}) {
           expect(sha).to.be.ok
           return STATE[REPO].git.blobs(sha).readBinary()
           .then(v => expect(v).to.have.string('Hello'))
         })
-      )
+      })
     })
 
     // Make sure the library does not just ignore the isBase64 flag
@@ -543,8 +543,9 @@ describe('Cache Handler', () =>
     .then(repo1 =>
       client2.repos(REPO_USER, REPO_NAME).fetch()
       .then(function (repo2) {
-        expect(JSON.stringify(repo1) === JSON.stringify(repo2)).to.be.true
-        return expect(retreivedFromCache).to.be.true
+        expect(JSON.stringify(repo1)).to.equal(JSON.stringify(repo2))
+        expect(retreivedFromCache).to.be.true
+        return 'doneee'
       })
     )
   })
