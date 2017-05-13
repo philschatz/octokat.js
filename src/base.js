@@ -1,3 +1,4 @@
+const fetch = require('./adapters/fetch-node')
 const plus = require('./plus')
 const deprecate = require('./deprecate')
 const TREE_OPTIONS = require('./grammar/tree-options')
@@ -49,6 +50,8 @@ let OctokatBase = function (clientOptions = {}) {
   // the octokat instance
   let instance = {}
 
+  let fetchImpl = OctokatBase.Fetch || fetch
+
   let request = function (method, path, data, options = {raw: false, isBase64: false, isBoolean: false}, cb) {
     // replacer = new Replacer(request)
 
@@ -60,7 +63,7 @@ let OctokatBase = function (clientOptions = {}) {
     }
 
     // For each request, convert the JSON into Objects
-    let requester = new Requester(instance, clientOptions, plugins)
+    let requester = new Requester(instance, clientOptions, plugins, fetchImpl)
 
     return requester.request(method, path, data, options, function (err, val) {
       if (err) { return cb(err) }

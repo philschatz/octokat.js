@@ -773,6 +773,10 @@ var Octokat = function Octokat() {
     });
   }
 
+  // HACK to propagate the Fetch implementation
+  if (Octokat.Fetch) {
+    OctokatBase.Fetch = Octokat.Fetch;
+  }
   // the octokat instance
   var instance = new OctokatBase(clientOptions);
   return instance;
@@ -811,6 +815,7 @@ module.exports = window.fetch;
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
+var fetch = __webpack_require__(9);
 var plus = __webpack_require__(0);
 var deprecate = __webpack_require__(1);
 var TREE_OPTIONS = __webpack_require__(4);
@@ -874,6 +879,8 @@ var OctokatBase = function OctokatBase() {
   // the octokat instance
   var instance = {};
 
+  var fetchImpl = OctokatBase.Fetch || fetch;
+
   var request = function request(method, path, data) {
     var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : { raw: false, isBase64: false, isBoolean: false };
     var cb = arguments[4];
@@ -888,7 +895,7 @@ var OctokatBase = function OctokatBase() {
     }
 
     // For each request, convert the JSON into Objects
-    var requester = new Requester(instance, clientOptions, plugins);
+    var requester = new Requester(instance, clientOptions, plugins, fetchImpl);
 
     return requester.request(method, path, data, options, function (err, val) {
       if (err) {
@@ -1961,8 +1968,6 @@ var _require = __webpack_require__(0),
     map = _require.map,
     waterfall = _require.waterfall;
 
-var fetch = __webpack_require__(9);
-
 // Request Function
 // ===============================
 //
@@ -1970,7 +1975,9 @@ var fetch = __webpack_require__(9);
 // Handles ETag caching, authentication headers, boolean requests, and paged results
 
 // Simple jQuery.ajax() shim that returns a promise for a xhr object
-var ajax = function ajax(options, cb) {
+
+
+var ajax = function ajax(fetchImpl, options, cb) {
   var fetchArgs = {
     method: options.type,
     headers: options.headers
@@ -1978,7 +1985,7 @@ var ajax = function ajax(options, cb) {
   if (options.data) {
     fetchArgs.body = options.data;
   }
-  return fetch(options.url, fetchArgs).then(function (response) {
+  return fetchImpl(options.url, fetchArgs).then(function (response) {
     // for boolean responses
     if (options.statusCode && options.statusCode[response.status]) {
       return options.statusCode[response.status]();
@@ -2009,6 +2016,7 @@ module.exports = function () {
     var _clientOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     var plugins = arguments[2];
+    var fetchImpl = arguments[3];
 
     _classCallCheck(this, Requester);
 
@@ -2037,6 +2045,7 @@ module.exports = function () {
       return plugin.requestMiddlewareAsync.bind(plugin);
     });
     this._plugins = plugins;
+    this._fetchImpl = fetchImpl;
   }
 
   // HTTP Request Abstraction
@@ -2142,7 +2151,7 @@ module.exports = function () {
           return f('start', eventId, { method: method, path: path, data: data, options: options });
         });
 
-        return ajax(ajaxConfig, function (err, val) {
+        return ajax(_this._fetchImpl, ajaxConfig, function (err, val) {
           var jqXHR = err || val;
           var response = jqXHR;
 

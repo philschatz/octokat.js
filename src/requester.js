@@ -1,5 +1,4 @@
 const { filter, map, waterfall } = require('./plus')
-const fetch = require('./adapters/fetch-node')
 
 // Request Function
 // ===============================
@@ -8,7 +7,7 @@ const fetch = require('./adapters/fetch-node')
 // Handles ETag caching, authentication headers, boolean requests, and paged results
 
 // Simple jQuery.ajax() shim that returns a promise for a xhr object
-let ajax = function (options, cb) {
+let ajax = function (fetchImpl, options, cb) {
   const fetchArgs = {
     method: options.type,
     headers: options.headers
@@ -16,7 +15,7 @@ let ajax = function (options, cb) {
   if (options.data) {
     fetchArgs.body = options.data
   }
-  return fetch(options.url, fetchArgs)
+  return fetchImpl(options.url, fetchArgs)
   .then((response) => {
     // for boolean responses
     if (options.statusCode && options.statusCode[response.status]) {
@@ -45,7 +44,7 @@ let ajax = function (options, cb) {
 let EVENT_ID = 0 // counter for the emitter so it is easier to match up requests
 
 module.exports = class Requester {
-  constructor (_instance, _clientOptions = {}, plugins) {
+  constructor (_instance, _clientOptions = {}, plugins, fetchImpl) {
     // Provide an option to override the default URL
     this._instance = _instance
     this._clientOptions = _clientOptions
@@ -61,6 +60,7 @@ module.exports = class Requester {
     this._pluginMiddlewareAsync = map(filter(plugins, ({requestMiddlewareAsync}) => requestMiddlewareAsync), plugin => plugin.requestMiddlewareAsync.bind(plugin)
     )
     this._plugins = plugins
+    this._fetchImpl = fetchImpl
   }
 
   // HTTP Request Abstraction
@@ -130,7 +130,7 @@ module.exports = class Requester {
       let eventId = ++EVENT_ID
       __guardFunc__(this._emit, f => f('start', eventId, {method, path, data, options}))
 
-      return ajax(ajaxConfig, (err, val) => {
+      return ajax(this._fetchImpl, ajaxConfig, (err, val) => {
         let jqXHR = err || val
         let response = jqXHR
 

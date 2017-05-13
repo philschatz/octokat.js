@@ -31,6 +31,10 @@ let Octokat = function (clientOptions = {}) {
     clientOptions.plugins = clientOptions.plugins.filter(plugin => plugin !== HypermediaPlugin)
   }
 
+  // HACK to propagate the Fetch implementation
+  if (Octokat.Fetch) {
+    OctokatBase.Fetch = Octokat.Fetch
+  }
   // the octokat instance
   let instance = new OctokatBase(clientOptions)
   return instance

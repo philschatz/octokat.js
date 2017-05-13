@@ -5,7 +5,12 @@ const { client, LONG_TIMEOUT, test_repo, test_github_login } = require('../test-
 describe('Commit Comments', function () {
   this.timeout(LONG_TIMEOUT)
 
-  it('returns a list of all commit comments', () => client.repos('sferik/rails_admin').comments.fetch())
+  it('returns a list of all commit comments', () => {
+    return client.repos('sferik/rails_admin').comments.fetch()
+    .then(() => {
+      return true
+    })
+  })
 
   it('returns a list of comments for a specific commit', () =>
     client.repos('sferik/rails_admin').commits('629e9fd9d4df25528e84d31afdc8ebeb0f56fbb3').comments.fetch()
