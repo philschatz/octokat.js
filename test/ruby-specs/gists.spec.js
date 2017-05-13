@@ -6,7 +6,7 @@ describe('Gists', function () {
   this.timeout(LONG_TIMEOUT)
 
 
-  describe.skip('Authenticated Gists', function () {
+  describe('Authenticated Gists', function () {
     before(function () {
       let newGist = {
         description: 'A gist from Octokit',

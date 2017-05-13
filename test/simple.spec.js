@@ -460,7 +460,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     )
   })
 
-  describe.skip(`${GIST} = ${GH}.gist(GIST_ID)`, function () {
+  describe(`${GIST} = ${GH}.gist(GIST_ID)`, function () {
     before(function () {
       // Create a Test Gist for all the tests
       let config = {
