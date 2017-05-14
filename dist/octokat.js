@@ -1976,38 +1976,6 @@ var _require = __webpack_require__(0),
 // Generates the actual HTTP requests to GitHub.
 // Handles ETag caching, authentication headers, boolean requests, and paged results
 
-// Simple jQuery.ajax() shim that returns a promise for a xhr object
-
-
-var ajax = function ajax(fetchImpl, options, cb) {
-  var fetchArgs = {
-    method: options.type,
-    headers: options.headers
-  };
-  if (options.data) {
-    fetchArgs.body = options.data;
-  }
-  return fetchImpl(options.url, fetchArgs).then(function (response) {
-    // for boolean responses
-    if (options.statusCode && options.statusCode[response.status]) {
-      return options.statusCode[response.status]();
-    } else if (response.status >= 200 && response.status < 300 || response.status === 304 || response.status === 302 || response.status === 0) {
-      // Explicitly check the status code because for some reason 422 Unprocessable Entry is not an Error
-      // for all other responses
-      return cb(null, response);
-    } else {
-      return cb(response);
-    }
-  }).catch(function (err) {
-    if (options.statusCode && options.statusCode[err.status]) {
-      return options.statusCode[err.status]();
-    } else {
-      // for all other responses
-      return cb(err);
-    }
-  });
-};
-
 // # Construct the request function.
 // It contains all the auth credentials passed in to the client constructor
 
@@ -2110,7 +2078,6 @@ module.exports = function () {
       var pluginsPlusInitial = [initial].concat(this._pluginMiddlewareAsync);
 
       return waterfall(pluginsPlusInitial, function (err, acc) {
-        var mimeType = void 0;
         if (err) {
           return cb(err, acc);
         }
@@ -2118,57 +2085,30 @@ module.exports = function () {
         var _acc = acc;
         method = _acc.method;
         headers = _acc.headers;
-        mimeType = _acc.mimeType;
 
 
         if (options.isRaw) {
           headers['Accept'] = 'application/vnd.github.raw';
         }
 
-        var ajaxConfig = {
+        var fetchArgs = {
           // Be sure to **not** blow the cache with a random number
           // (GitHub will respond with 5xx or CORS errors)
-          url: path,
-          type: method,
-          contentType: options.contentType,
-          mimeType: mimeType,
+          method: method,
           headers: headers,
-
-          processData: false, // Don't convert to QueryString
-          data: !options.isRaw && data && JSON.stringify(data) || data,
-          dataType: !options.isRaw ? 'json' : undefined
+          body: !options.isRaw && data && JSON.stringify(data) || data
         };
-
-        // If the request is a boolean yes/no question GitHub will indicate
-        // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-        if (options.isBoolean) {
-          ajaxConfig.statusCode = {
-            204: function _() {
-              return cb(null, true);
-            },
-            404: function _() {
-              return cb(null, false);
-            }
-          };
-        }
 
         var eventId = ++EVENT_ID;
         __guardFunc__(_this._emit, function (f) {
           return f('start', eventId, { method: method, path: path, data: data, options: options });
         });
 
-        return ajax(_this._fetchImpl, ajaxConfig, function (err, val) {
-          var jqXHR = err || val;
-          var response = jqXHR;
-
-          if (err instanceof Error) {
-            // There was a bug in the code (likely syntax error or null pointer)
-            // so rethrow the error
-            throw err;
-          }
+        return _this._fetchImpl(path, fetchArgs).then(function (response) {
+          var jqXHR = response;
 
           // Fire listeners when the request completes or fails
-          if (_this._emit && response) {
+          if (_this._emit) {
             if (response.headers.get('X-RateLimit-Limit')) {
               var rateLimit = parseFloat(response.headers.get('X-RateLimit-Limit'));
               var rateLimitRemaining = parseFloat(response.headers.get('X-RateLimit-Remaining'));
@@ -2197,6 +2137,12 @@ module.exports = function () {
             // TODO: implement a `followRedirects` plugin
             if (response.status === 302) {
               return cb(null, response.headers.get('Location'));
+            } else if (options.isBoolean && response.status === 204) {
+              // If the request is a boolean yes/no question GitHub will indicate
+              // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+              cb(null, true);
+            } else if (options.isBoolean && response.status === 404) {
+              cb(null, false);
             } else if (response.status !== 204 || !options.isBoolean) {
               // If it was a boolean question and the server responded with 204 ignore.
               var dataPromise = void 0;
@@ -2207,7 +2153,7 @@ module.exports = function () {
               } else {
                 // Convert to JSON if we are expecting JSON
                 // TODO: use a blob if we are expecting a binary
-                if (ajaxConfig.dataType === 'json') {
+                if (!options.isRaw) {
                   dataPromise = response.json();
                 } else {
                   dataPromise = response.text();
