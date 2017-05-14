@@ -5,13 +5,6 @@ node_js:
   - 5
   - 6
 
-before_install:
-  - npm install -g bower
-
-before_script:
-  - npm install -g grunt-cli
-  - bower install
-
 after_success:
   # Report coverage to codecov
   - ./script/send-coverage.sh

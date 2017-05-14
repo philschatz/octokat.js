@@ -10,7 +10,7 @@
     "test": "npm run-script test-node-with-coverage && npm run-script test-browser",
     "posttest": "npm run-script lint",
     "pretest-node-with-coverage": "npm run-script predebug-node",
-    "test-node-with-coverage": "VCR_MODE=cache istanbul cover --report json _mocha -- --reporter spec ./test-transpiled/**/node**.js",
+    "test-node-with-coverage": "VCR_MODE=playback istanbul cover --report json _mocha -- --reporter spec ./test-transpiled/**/node**.js",
     "predebug-node": "babel --source-maps true --source-root ./index.js ./test/ -d ./test-transpiled/",
     "debug-node": "VCR_MODE=cache mocha --inspect --debug-brk --reporter spec ./test-transpiled/**/node**.js",
     "pretest-browser": "webpack --config ./webpack.config-browsertests.js",
