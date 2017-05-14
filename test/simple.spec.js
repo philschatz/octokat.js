@@ -178,10 +178,10 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   // itIsArray(GH, 'global.events')
   // itIsArray(GH, 'global.notifications')
 
-  itIsArray(GH, 'search.repositories.fetch', {q: 'github'})
+  itIsArray(GH, 'search.repositories.fetch', {q: 'octokat'}) // {q: 'github'}
   // itIsArray(GH, 'search.code.fetch', {q:'github'})
-  itIsArray(GH, 'search.issues.fetch', {q: 'github'})
-  itIsArray(GH, 'search.users.fetch', {q: 'github'})
+  itIsArray(GH, 'search.issues.fetch', {q: 'octokat'})
+  itIsArray(GH, 'search.users.fetch', {q: 'octokat'})
 
   itIsOk(GH, 'users', REPO_USER, 'fetch')
   itIsOk(GH, 'orgs', ORG_NAME, 'fetch')

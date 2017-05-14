@@ -79,14 +79,9 @@ module.exports = class Requester {
     // This is so pagination works (which provides absolute URLs).
     if (!/^http/.test(path)) { path = `${this._clientOptions.rootURL}${path}` }
 
-    let headers =
-      {'Accept': this._clientOptions.acceptHeader || 'application/json'}
-
-    if (typeof window === 'undefined' || window === null) {
-      // Set the `User-Agent` because it is required and NodeJS
-      // does not send one by default.
-      // See http://developer.github.com/v3/#user-agent-required
-      headers['User-Agent'] = 'octokat.js'
+    let headers = {
+      'Accept': this._clientOptions.acceptHeader || 'application/json',
+      'User-Agent': 'octokat.js'
     }
 
     let acc = {method, path, headers, options, clientOptions: this._clientOptions}

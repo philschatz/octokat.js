@@ -54,10 +54,6 @@ describe('Commit Comments', function () {
       .then(result => {
         expect(result).to.equal(true)
       })
-      .catch(err => {
-        console.log('weoiurwoeiurowieurowieur');
-        console.error(err);
-      })
     })
   })
 })

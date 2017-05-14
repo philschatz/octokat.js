@@ -2087,14 +2087,10 @@ module.exports = function () {
         path = '' + this._clientOptions.rootURL + path;
       }
 
-      var headers = { 'Accept': this._clientOptions.acceptHeader || 'application/json' };
-
-      if (typeof window === 'undefined' || window === null) {
-        // Set the `User-Agent` because it is required and NodeJS
-        // does not send one by default.
-        // See http://developer.github.com/v3/#user-agent-required
-        headers['User-Agent'] = 'octokat.js';
-      }
+      var headers = {
+        'Accept': this._clientOptions.acceptHeader || 'application/json',
+        'User-Agent': 'octokat.js'
+      };
 
       var acc = { method: method, path: path, headers: headers, options: options, clientOptions: this._clientOptions };
 
@@ -2204,7 +2200,35 @@ module.exports = function () {
                 // Convert to JSON if we are expecting JSON
                 // TODO: use a blob if we are expecting a binary
                 if (ajaxConfig.dataType === 'json') {
-                  dataPromise = response.json();
+                  // dataPromise = response.json()
+                  // There is an odd thing that happens for api.github.com/search/repositories?q=github
+                  // Extra text is at the end of the JSON when it is saved to the fixture.
+                  // TODO: remove this hack by fixing it in fetch-vcr
+                  dataPromise = response.text().then(function (text) {
+                    if (text === '[object Object]') {
+                      console.log('---------------------------------');
+                      console.log('BUG: text was the string [object Object]. Using HACK');
+                      console.log(ajaxConfig.url + ' ' + ajaxConfig.type);
+                      console.log('---------------------------------');
+                      debugger;
+                      return Promise.resolve('CACHED_RESPONSE_SO_NOT_MODIFIED'); // TODO: Send something like "CACHED_RESPONSE_SO_NOT_MODIFIED"
+                    }
+                    try {
+                      return JSON.parse(text);
+                    } catch (e) {
+                      // JSON occasionally has extra stuff at the end. not sure why
+                      // Sample message: "Unexpected number in JSON at position 146432"
+                      var tokens = e.message.split(' ');
+                      var num = parseInt(tokens[tokens.length - 1]);
+                      console.log('---------------------------------');
+                      console.log('BUG: could not parse json. Using HACK');
+                      console.log(ajaxConfig.url + ' ' + ajaxConfig.type);
+                      console.log('---------------------------------');
+                      debugger;
+                      var json = JSON.parse(text.substring(0, num));
+                      return json;
+                    }
+                  });
                 } else {
                   dataPromise = response.text();
                 }

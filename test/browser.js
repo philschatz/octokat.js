@@ -1,6 +1,10 @@
 /* eslint-env mocha */
+require('fetch-vcr').configure({
+  fixturePath: '../node_modules/octokat-fixtures/_fixtures',
+  // headerBlacklist: ['authorization', 'user-agent']
+})
 
-// require('./all')
+require('./all')
 
 describe('Root construction', () => {
   it('can be instantiated via window.Octokat', () => {

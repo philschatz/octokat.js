@@ -3,7 +3,6 @@ const Octokat = require('../index')
 
 // Configure the fetch-vcr
 Octokat.Fetch = fetch
-fetch.configure({fixturePath: './node_modules/octokat-fixtures/_fixtures'})
 
 let config = {
   USERNAME: 'octokit-test',
