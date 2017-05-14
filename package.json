@@ -28,7 +28,7 @@
     }
   },
   "dependencies": {
-    "fetch-vcr": "^0.4.6",
+    "fetch-vcr": "^0.5.1",
     "lodash": "^4.16.4",
     "node-fetch": "^1.6.3",
     "xmlhttprequest": "~1.8.0"
