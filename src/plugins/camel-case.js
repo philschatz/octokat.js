@@ -2,11 +2,12 @@ const plus = require('../plus')
 
 module.exports = new class CamelCase {
 
-  responseMiddlewareAsync (input, cb) {
+  responseMiddlewareAsync (input) {
+    debugger
     let {data} = input
     data = this.replace(data)
     input.data = data // or throw new Error('BUG! Expected JSON data to exist')
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 
   replace (data) {

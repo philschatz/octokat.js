@@ -12,7 +12,7 @@ module.exports = new class CacheHandler {
     return this._cachedETags[`${method} ${path}`] = {eTag, data, status}
   }
 
-  requestMiddlewareAsync (input, cb) {
+  requestMiddlewareAsync (input) {
     let {clientOptions, method, path} = input
     if (input.headers == null) { input.headers = {} }
     let cacheHandler = clientOptions.cacheHandler || this
@@ -28,12 +28,12 @@ module.exports = new class CacheHandler {
       input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
     }
 
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 
   responseMiddlewareAsync (input, cb) {
     let {clientOptions, request, status, jqXHR, data} = input
-    if (!jqXHR) { return cb(null, input) } // The plugins are all used in `octo.parse()` which does not have a jqXHR
+    if (!jqXHR) { return Promise.resolve(input) } // The plugins are all used in `octo.parse()` which does not have a jqXHR
 
     // Since this can be called via `octo.parse`, skip caching when there is no jqXHR
     if (jqXHR) {
@@ -62,7 +62,7 @@ module.exports = new class CacheHandler {
 
       input.data = data
       input.status = status
-      return cb(null, input)
+      return Promise.resolve(input)
     }
   }
 }()

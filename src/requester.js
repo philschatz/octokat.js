@@ -1,4 +1,4 @@
-const { filter, map, waterfall } = require('./plus')
+const { filter, map } = require('./plus')
 
 // Request Function
 // ===============================
@@ -64,12 +64,13 @@ module.exports = class Requester {
 
     // To use async.waterfall we need to pass in the initial data (`acc`)
     // so we create an initial function that just takes a callback
-    let initial = cb => cb(null, acc)
-    let pluginsPlusInitial = [initial].concat(this._pluginMiddlewareAsync)
+    let initial = Promise.resolve(acc)
 
-    return waterfall(pluginsPlusInitial, (err, acc) => {
-      if (err) { return cb(err, acc) }
-
+    let prev = initial
+    this._pluginMiddlewareAsync.forEach((p) => {
+      prev = prev.then(p)
+    })
+    return prev.then((acc) => {
       ({method, headers} = acc)
 
       if (options.isRaw) { headers['Accept'] = 'application/vnd.github.raw' }
@@ -112,75 +113,69 @@ module.exports = class Requester {
           this._emit('end', eventId, {method, path, data, options}, response.status, emitterRate)
         }
 
-        if (!err) {
-          // Return the result and Base64 encode it if `options.isBase64` flag is set.
+        // Return the result and Base64 encode it if `options.isBase64` flag is set.
 
-          // Respond with the redirect URL (for archive links)
-          // TODO: implement a `followRedirects` plugin
-          if (response.status === 302) {
-            return cb(null, response.headers.get('Location'))
-          } else if (options.isBoolean && response.status === 204) {
-            // If the request is a boolean yes/no question GitHub will indicate
-            // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-            cb(null, true)
-          } else if (options.isBoolean && response.status === 404) {
-            cb(null, false)
-          } else if (response.status !== 204 || !options.isBoolean) {
-            // If it was a boolean question and the server responded with 204 ignore.
-            let dataPromise
+        // Respond with the redirect URL (for archive links)
+        // TODO: implement a `followRedirects` plugin
+        if (response.status === 302) {
+          return response.headers.get('Location')
+        } else if (options.isBoolean && response.status === 204) {
+          // If the request is a boolean yes/no question GitHub will indicate
+          // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+          return true
+        } else if (options.isBoolean && response.status === 404) {
+          return false
+        } else if (response.status !== 204 || !options.isBoolean) {
+          // If it was a boolean question and the server responded with 204 ignore.
+          let dataPromise
 
-            // If the status was 304 then let the cache handler pick it up. leave data blank
-            if (response.status === 304) {
-              dataPromise = Promise.resolve(null)
+          // If the status was 304 then let the cache handler pick it up. leave data blank
+          if (response.status === 304) {
+            dataPromise = Promise.resolve(null)
+          } else {
+            // Convert to JSON if we are expecting JSON
+            // TODO: use a blob if we are expecting a binary
+            if (!options.isRaw) {
+              dataPromise = response.json()
             } else {
-              // Convert to JSON if we are expecting JSON
-              // TODO: use a blob if we are expecting a binary
-              if (!options.isRaw) {
-                dataPromise = response.json()
-              } else {
-                dataPromise = response.text()
-              }
+              dataPromise = response.text()
             }
-
-            return dataPromise.then((data) => {
-              acc = {
-                clientOptions: this._clientOptions,
-                plugins: this._plugins,
-                data,
-                options,
-                jqXHR, // for cacheHandler
-                status: response.status, // cacheHandler changes this
-                request: acc, // Include the request data for plugins like cacheHandler
-                requester: this, // for Hypermedia to generate verb methods
-                instance: this._instance // for Hypermedia to be able to call `.fromUrl`
-              }
-              return this._instance._parseWithContext('', acc, function (err, val) {
-                if (err) { return cb(err, val) }
-                return cb(null, val, response.status, jqXHR)
-              })
-            })
           }
-        } else {
-          // Parse the error if one occurs
 
-          // If the request was for a Boolean then a 404 should be treated as a "false"
-          if (!options.isBoolean || response.status !== 404) {
-            const errorTextPromise = response.text()
-            errorTextPromise
-            .then((errorText) => {
-              err = new Error(errorText)
-              err.status = response.status
-              // if (response.headers.get('Content-Type') === 'application/json; charset=utf-8') {
-              //   cb(new Error(response.text()))
-              // }
-              return cb(err)
-            })
-            .catch((err) => cb(err))
-          }
+          return dataPromise.then((data) => {
+            acc = {
+              clientOptions: this._clientOptions,
+              plugins: this._plugins,
+              data,
+              options,
+              jqXHR, // for cacheHandler
+              status: response.status, // cacheHandler changes this
+              request: acc, // Include the request data for plugins like cacheHandler
+              requester: this, // for Hypermedia to generate verb methods
+              instance: this._instance // for Hypermedia to be able to call `.fromUrl`
+            }
+            return this._instance._parseWithContextPromise('', acc)
+          })
         }
+          // // Parse the error if one occurs
+          //
+          // // If the request was for a Boolean then a 404 should be treated as a "false"
+          // if (!options.isBoolean || response.status !== 404) {
+          //   const errorTextPromise = response.text()
+          //   errorTextPromise
+          //   .then((errorText) => {
+          //     err = new Error(errorText)
+          //     err.status = response.status
+          //     // if (response.headers.get('Content-Type') === 'application/json; charset=utf-8') {
+          //     //   cb(new Error(response.text()))
+          //     // }
+          //     return cb(err)
+          //   })
+          //   .catch((err) => cb(err))
+          // }
+          //
       })
-    }
-    )
+    })
   }
 }
 

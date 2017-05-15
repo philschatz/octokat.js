@@ -1,7 +1,7 @@
 const base64encode = require('../adapters/base64-node')
 
 module.exports = new class Authorization {
-  requestMiddlewareAsync (input, cb) {
+  requestMiddlewareAsync (input) {
     if (input.headers == null) { input.headers = {} }
     let {headers, clientOptions: {token, username, password}} = input
     if (token || (username && password)) {
@@ -12,6 +12,6 @@ module.exports = new class Authorization {
       }
       input.headers['Authorization'] = auth
     }
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()

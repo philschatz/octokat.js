@@ -9,13 +9,13 @@ let DEFAULT_HEADER = function (url) {
 
 // Use the preview API header if one of the routes match the preview APIs
 module.exports = new class PreviewApis {
-  requestMiddlewareAsync (input, cb) {
+  requestMiddlewareAsync (input) {
     let {path} = input
     let acceptHeader = DEFAULT_HEADER(path)
     if (acceptHeader) {
       input.headers['Accept'] = acceptHeader
     }
 
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()

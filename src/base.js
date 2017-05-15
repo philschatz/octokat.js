@@ -65,9 +65,8 @@ let OctokatBase = function (clientOptions = {}) {
     // For each request, convert the JSON into Objects
     let requester = new Requester(instance, clientOptions, plugins, fetchImpl)
 
-    return requester.request(method, path, data, options, function (err, val) {
-      if (err) { return cb(err) }
-      if ((options || {}).raw) { return cb(null, val) }
+    return requester.request(method, path, data, options).then((val) => {
+      if ((options || {}).raw) { return val }
 
       if (!disableHypermedia) {
         let context = {
@@ -77,12 +76,11 @@ let OctokatBase = function (clientOptions = {}) {
           instance,
           clientOptions
         }
-        return instance._parseWithContext(path, context, cb)
+        return instance._parseWithContextPromise(path, context)
       } else {
-        return cb(null, val)
+        return val
       }
-    }
-    )
+    })
   }
 
   let verbMethods = new VerbMethods(plugins, {request});
@@ -91,7 +89,7 @@ let OctokatBase = function (clientOptions = {}) {
   // Special case for `me`
   instance.me = instance.user
 
-  instance.parse = function (cb, data) { // The signature of toPromise has cb as the 1st arg
+  instance.parse = function (data) { // The signature of toPromise has cb as the 1st arg
     let context = {
       requester: {request},
       plugins,
@@ -99,14 +97,13 @@ let OctokatBase = function (clientOptions = {}) {
       instance,
       clientOptions
     }
-    return instance._parseWithContext('', context, cb)
+    return instance._parseWithContextPromise('', context)
   }
 
   // If not callback is provided then return a promise
   instance.parse = toPromise(instance.parse)
 
-  instance._parseWithContext = function (path, context, cb) {
-    if (typeof cb !== 'function') { throw new Error('Callback is required') }
+  instance._parseWithContextPromise = function (path, context) {
     let { data } = context
     if (data) {
       context.url = data.url || path
@@ -115,14 +112,13 @@ let OctokatBase = function (clientOptions = {}) {
     let responseMiddlewareAsyncs = plus.map(plus.filter(plugins, ({responseMiddlewareAsync}) => responseMiddlewareAsync), plugin => plugin.responseMiddlewareAsync.bind(plugin)
     )
 
-    // async.waterfall requires that the 1st entry take 0 arguments
-    responseMiddlewareAsyncs.unshift(cb => cb(null, context))
-    return plus.waterfall(responseMiddlewareAsyncs, function (err, val) {
-      if (err) { return cb(err, val) }
-      ({data} = val)
-      return cb(err, data)
-    }
-    )
+    let prev = Promise.resolve(context)
+    responseMiddlewareAsyncs.forEach((p) => {
+      prev = prev.then(p)
+    })
+    return prev.then((val) => {
+      return val.data
+    })
   }
 
   // TODO remove this deprectaion too

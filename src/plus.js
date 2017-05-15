@@ -4,15 +4,6 @@ const filter = require('lodash/_arrayFilter')
 const forEach = require('lodash/_arrayEach')
 const map = require('lodash/_arrayMap')
 
-// From async
-let onlyOnce = fn =>
-  function () {
-    if (fn === null) { throw new Error('Callback was already called.') }
-    let callFn = fn
-    fn = null
-    return callFn.apply(this, arguments)
-  }
-
 // require('underscore-plus')
 let plus = {
   camelize (string) {
@@ -40,29 +31,6 @@ let plus = {
       }
     }
     )
-  },
-
-  waterfall (tasks, cb) {
-    let taskIndex = 0
-    let nextTask = function (val) {
-      if (taskIndex === tasks.length) {
-        return cb(null, val)
-      }
-
-      let taskCallback = onlyOnce(function (err, val) {
-        if (err) { return cb(err, val) }
-        return nextTask(val)
-      })
-
-      let task = tasks[taskIndex++]
-      if (val) {
-        return task(val, taskCallback)
-      } else {
-        return task(taskCallback)
-      }
-    }
-
-    return nextTask(null) // Initial value passed to the 1st
   },
 
   // Just _.extend(target, source)

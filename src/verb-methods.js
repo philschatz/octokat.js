@@ -8,15 +8,11 @@ let toPromise = (orig) =>
     let last = args[args.length - 1]
     if (typeof last === 'function') { // The last arg is a callback function
       args.pop()
-      return orig(last, ...args)
+      return orig(...args)
+      .then((v) => { last(null, v) })
+      .catch((err) => { last(err) })
     } else if (typeof Promise !== 'undefined') {
-      return new Promise(function (resolve, reject) {
-        let cb = function (err, val) {
-          if (err) { return reject(err) }
-          return resolve(val)
-        }
-        return orig(cb, ...args)
-      })
+      return orig(...args)
     } else {
       throw new Error('You must specify a callback or have a promise library loaded')
     }
@@ -52,15 +48,14 @@ class VerbMethods {
       obj.url = path // Mostly for testing
       forOwn(this._syncVerbs, (verbFunc, verbName) => {
         obj[verbName] = (...args) => {
-          let makeRequest = (cb, ...originalArgs) => {
+          let makeRequest = (...originalArgs) => {
             let data, method, options;
             ({method, path, data, options} = verbFunc(path, ...originalArgs))
-            return this._requester.request(method, path, data, options, cb)
+            return this._requester.request(method, path, data, options)
           }
           return toPromise(makeRequest)(...args)
         }
-      }
-      )
+      })
 
       forOwn(this._asyncVerbs, (verbFunc, verbName) => {
         obj[verbName] = (...args) => {

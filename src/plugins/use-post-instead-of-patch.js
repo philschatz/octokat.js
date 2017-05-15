@@ -4,6 +4,6 @@ module.exports = new class UsePostInsteadOfPatch {
     if (usePostInsteadOfPatch && method === 'PATCH') {
       input.method = 'POST'
     }
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()

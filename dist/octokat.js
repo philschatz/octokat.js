@@ -89,18 +89,6 @@ var filter = __webpack_require__(28);
 var forEach = __webpack_require__(27);
 var map = __webpack_require__(29);
 
-// From async
-var onlyOnce = function onlyOnce(fn) {
-  return function () {
-    if (fn === null) {
-      throw new Error('Callback was already called.');
-    }
-    var callFn = fn;
-    fn = null;
-    return callFn.apply(this, arguments);
-  };
-};
-
 // require('underscore-plus')
 var plus = {
   camelize: function camelize(string) {
@@ -134,30 +122,6 @@ var plus = {
         return '-';
       }
     });
-  },
-  waterfall: function waterfall(tasks, cb) {
-    var taskIndex = 0;
-    var nextTask = function nextTask(val) {
-      if (taskIndex === tasks.length) {
-        return cb(null, val);
-      }
-
-      var taskCallback = onlyOnce(function (err, val) {
-        if (err) {
-          return cb(err, val);
-        }
-        return nextTask(val);
-      });
-
-      var task = tasks[taskIndex++];
-      if (val) {
-        return task(val, taskCallback);
-      } else {
-        return task(taskCallback);
-      }
-    };
-
-    return nextTask(null); // Initial value passed to the 1st
   },
 
 
@@ -632,17 +596,13 @@ var toPromise = function toPromise(orig) {
     if (typeof last === 'function') {
       // The last arg is a callback function
       args.pop();
-      return orig.apply(undefined, [last].concat(args));
-    } else if (typeof Promise !== 'undefined') {
-      return new Promise(function (resolve, reject) {
-        var cb = function cb(err, val) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(val);
-        };
-        return orig.apply(undefined, [cb].concat(args));
+      return orig.apply(undefined, args).then(function (v) {
+        last(null, v);
+      }).catch(function (err) {
+        last(err);
       });
+    } else if (typeof Promise !== 'undefined') {
+      return orig.apply(undefined, args);
     } else {
       throw new Error('You must specify a callback or have a promise library loaded');
     }
@@ -698,9 +658,9 @@ var VerbMethods = function () {
         obj.url = path; // Mostly for testing
         forOwn(this._syncVerbs, function (verbFunc, verbName) {
           obj[verbName] = function () {
-            var makeRequest = function makeRequest(cb) {
-              for (var _len2 = arguments.length, originalArgs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                originalArgs[_key2 - 1] = arguments[_key2];
+            var makeRequest = function makeRequest() {
+              for (var _len2 = arguments.length, originalArgs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                originalArgs[_key2] = arguments[_key2];
               }
 
               var data = void 0,
@@ -714,7 +674,7 @@ var VerbMethods = function () {
               data = _verbFunc.data;
               options = _verbFunc.options;
 
-              return _this._requester.request(method, path, data, options, cb);
+              return _this._requester.request(method, path, data, options);
             };
             return toPromise(makeRequest).apply(undefined, arguments);
           };
@@ -897,12 +857,9 @@ var OctokatBase = function OctokatBase() {
     // For each request, convert the JSON into Objects
     var requester = new Requester(instance, clientOptions, plugins, fetchImpl);
 
-    return requester.request(method, path, data, options, function (err, val) {
-      if (err) {
-        return cb(err);
-      }
+    return requester.request(method, path, data, options).then(function (val) {
       if ((options || {}).raw) {
-        return cb(null, val);
+        return val;
       }
 
       if (!disableHypermedia) {
@@ -913,9 +870,9 @@ var OctokatBase = function OctokatBase() {
           instance: instance,
           clientOptions: clientOptions
         };
-        return instance._parseWithContext(path, context, cb);
+        return instance._parseWithContextPromise(path, context);
       } else {
-        return cb(null, val);
+        return val;
       }
     });
   };
@@ -926,7 +883,7 @@ var OctokatBase = function OctokatBase() {
   // Special case for `me`
   instance.me = instance.user;
 
-  instance.parse = function (cb, data) {
+  instance.parse = function (data) {
     // The signature of toPromise has cb as the 1st arg
     var context = {
       requester: { request: request },
@@ -935,16 +892,13 @@ var OctokatBase = function OctokatBase() {
       instance: instance,
       clientOptions: clientOptions
     };
-    return instance._parseWithContext('', context, cb);
+    return instance._parseWithContextPromise('', context);
   };
 
   // If not callback is provided then return a promise
   instance.parse = toPromise(instance.parse);
 
-  instance._parseWithContext = function (path, context, cb) {
-    if (typeof cb !== 'function') {
-      throw new Error('Callback is required');
-    }
+  instance._parseWithContextPromise = function (path, context) {
     var data = context.data;
 
     if (data) {
@@ -958,17 +912,12 @@ var OctokatBase = function OctokatBase() {
       return plugin.responseMiddlewareAsync.bind(plugin);
     });
 
-    // async.waterfall requires that the 1st entry take 0 arguments
-    responseMiddlewareAsyncs.unshift(function (cb) {
-      return cb(null, context);
+    var prev = Promise.resolve(context);
+    responseMiddlewareAsyncs.forEach(function (p) {
+      prev = prev.then(p);
     });
-    return plus.waterfall(responseMiddlewareAsyncs, function (err, val) {
-      if (err) {
-        return cb(err, val);
-      }
-      data = val.data;
-
-      return cb(err, data);
+    return prev.then(function (val) {
+      return val.data;
     });
   };
 
@@ -1203,7 +1152,7 @@ module.exports = new (function () {
 
   _createClass(Authorization, [{
     key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input, cb) {
+    value: function requestMiddlewareAsync(input) {
       if (input.headers == null) {
         input.headers = {};
       }
@@ -1221,7 +1170,7 @@ module.exports = new (function () {
         }
         input.headers['Authorization'] = auth;
       }
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1262,7 +1211,7 @@ module.exports = new (function () {
     }
   }, {
     key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input, cb) {
+    value: function requestMiddlewareAsync(input) {
       var clientOptions = input.clientOptions,
           method = input.method,
           path = input.path;
@@ -1283,7 +1232,7 @@ module.exports = new (function () {
         input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
       }
 
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }, {
     key: 'responseMiddlewareAsync',
@@ -1295,7 +1244,7 @@ module.exports = new (function () {
           data = input.data;
 
       if (!jqXHR) {
-        return cb(null, input);
+        return Promise.resolve(input);
       } // The plugins are all used in `octo.parse()` which does not have a jqXHR
 
       // Since this can be called via `octo.parse`, skip caching when there is no jqXHR
@@ -1329,7 +1278,7 @@ module.exports = new (function () {
 
         input.data = data;
         input.status = status;
-        return cb(null, input);
+        return Promise.resolve(input);
       }
     }
   }]);
@@ -1358,12 +1307,13 @@ module.exports = new (function () {
 
   _createClass(CamelCase, [{
     key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input, cb) {
+    value: function responseMiddlewareAsync(input) {
+      debugger;
       var data = input.data;
 
       data = this.replace(data);
       input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }, {
     key: 'replace',
@@ -1605,13 +1555,13 @@ module.exports = new (function () {
     }
   }, {
     key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input, cb) {
+    value: function responseMiddlewareAsync(input) {
       var instance = input.instance,
           data = input.data;
 
       data = this.replace(instance, data);
       input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1667,7 +1617,8 @@ module.exports = new (function () {
     }
   }, {
     key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input, cb) {
+    value: function responseMiddlewareAsync(input) {
+      debugger;
       var plugins = input.plugins,
           requester = input.requester,
           data = input.data,
@@ -1691,7 +1642,7 @@ module.exports = new (function () {
         }
       }
 
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1719,12 +1670,13 @@ module.exports = new (function () {
 
   _createClass(Pagination, [{
     key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input, cb) {
+    value: function responseMiddlewareAsync(input) {
+      debugger;
       var jqXHR = input.jqXHR,
           data = input.data;
 
       if (!jqXHR) {
-        return cb(null, input);
+        return Promise.resolve(input);
       } // The plugins are all used in `octo.parse()` which does not have a jqXHR
 
       // Only JSON responses have next/prev/first/last link headers
@@ -1752,7 +1704,7 @@ module.exports = new (function () {
         }
         input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
       }
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1780,14 +1732,14 @@ module.exports = new (function () {
 
   _createClass(PathValidator, [{
     key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input, cb) {
+    value: function requestMiddlewareAsync(input) {
       var path = input.path;
 
       if (!URL_VALIDATOR.test(path)) {
         var err = 'Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=' + path;
         console.warn(err);
       }
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1825,7 +1777,7 @@ module.exports = new (function () {
 
   _createClass(PreviewApis, [{
     key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input, cb) {
+    value: function requestMiddlewareAsync(input) {
       var path = input.path;
 
       var acceptHeader = DEFAULT_HEADER(path);
@@ -1833,7 +1785,7 @@ module.exports = new (function () {
         input.headers['Accept'] = acceptHeader;
       }
 
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1867,7 +1819,7 @@ module.exports = new (function () {
 
   _createClass(ReadBinary, [{
     key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input, cb) {
+    value: function requestMiddlewareAsync(input) {
       var options = input.options;
 
       if (options) {
@@ -1878,11 +1830,11 @@ module.exports = new (function () {
           input.mimeType = 'text/plain; charset=x-user-defined';
         }
       }
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }, {
     key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input, cb) {
+    value: function responseMiddlewareAsync(input) {
       var options = input.options,
           data = input.data;
 
@@ -1903,7 +1855,7 @@ module.exports = new (function () {
           input.data = converted; // or throw new Error('BUG! Expected JSON data to exist')
         }
       }
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1946,7 +1898,7 @@ module.exports = new (function () {
       if (usePostInsteadOfPatch && method === 'PATCH') {
         input.method = 'POST';
       }
-      return cb(null, input);
+      return Promise.resolve(input);
     }
   }]);
 
@@ -1967,8 +1919,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var _require = __webpack_require__(0),
     filter = _require.filter,
-    map = _require.map,
-    waterfall = _require.waterfall;
+    map = _require.map;
 
 // Request Function
 // ===============================
@@ -2072,16 +2023,13 @@ module.exports = function () {
 
       // To use async.waterfall we need to pass in the initial data (`acc`)
       // so we create an initial function that just takes a callback
-      var initial = function initial(cb) {
-        return cb(null, acc);
-      };
-      var pluginsPlusInitial = [initial].concat(this._pluginMiddlewareAsync);
+      var initial = Promise.resolve(acc);
 
-      return waterfall(pluginsPlusInitial, function (err, acc) {
-        if (err) {
-          return cb(err, acc);
-        }
-
+      var prev = initial;
+      this._pluginMiddlewareAsync.forEach(function (p) {
+        prev = prev.then(p);
+      });
+      return prev.then(function (acc) {
         var _acc = acc;
         method = _acc.method;
         headers = _acc.headers;
@@ -2130,74 +2078,67 @@ module.exports = function () {
             _this._emit('end', eventId, { method: method, path: path, data: data, options: options }, response.status, emitterRate);
           }
 
-          if (!err) {
-            // Return the result and Base64 encode it if `options.isBase64` flag is set.
+          // Return the result and Base64 encode it if `options.isBase64` flag is set.
 
-            // Respond with the redirect URL (for archive links)
-            // TODO: implement a `followRedirects` plugin
-            if (response.status === 302) {
-              return cb(null, response.headers.get('Location'));
-            } else if (options.isBoolean && response.status === 204) {
-              // If the request is a boolean yes/no question GitHub will indicate
-              // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-              cb(null, true);
-            } else if (options.isBoolean && response.status === 404) {
-              cb(null, false);
-            } else if (response.status !== 204 || !options.isBoolean) {
-              // If it was a boolean question and the server responded with 204 ignore.
-              var dataPromise = void 0;
+          // Respond with the redirect URL (for archive links)
+          // TODO: implement a `followRedirects` plugin
+          if (response.status === 302) {
+            return response.headers.get('Location');
+          } else if (options.isBoolean && response.status === 204) {
+            // If the request is a boolean yes/no question GitHub will indicate
+            // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+            return true;
+          } else if (options.isBoolean && response.status === 404) {
+            return false;
+          } else if (response.status !== 204 || !options.isBoolean) {
+            // If it was a boolean question and the server responded with 204 ignore.
+            var dataPromise = void 0;
 
-              // If the status was 304 then let the cache handler pick it up. leave data blank
-              if (response.status === 304) {
-                dataPromise = Promise.resolve(null);
+            // If the status was 304 then let the cache handler pick it up. leave data blank
+            if (response.status === 304) {
+              dataPromise = Promise.resolve(null);
+            } else {
+              // Convert to JSON if we are expecting JSON
+              // TODO: use a blob if we are expecting a binary
+              if (!options.isRaw) {
+                dataPromise = response.json();
               } else {
-                // Convert to JSON if we are expecting JSON
-                // TODO: use a blob if we are expecting a binary
-                if (!options.isRaw) {
-                  dataPromise = response.json();
-                } else {
-                  dataPromise = response.text();
-                }
+                dataPromise = response.text();
               }
-
-              return dataPromise.then(function (data) {
-                acc = {
-                  clientOptions: _this._clientOptions,
-                  plugins: _this._plugins,
-                  data: data,
-                  options: options,
-                  jqXHR: jqXHR, // for cacheHandler
-                  status: response.status, // cacheHandler changes this
-                  request: acc, // Include the request data for plugins like cacheHandler
-                  requester: _this, // for Hypermedia to generate verb methods
-                  instance: _this._instance // for Hypermedia to be able to call `.fromUrl`
-                };
-                return _this._instance._parseWithContext('', acc, function (err, val) {
-                  if (err) {
-                    return cb(err, val);
-                  }
-                  return cb(null, val, response.status, jqXHR);
-                });
-              });
             }
-          } else {
-            // Parse the error if one occurs
 
-            // If the request was for a Boolean then a 404 should be treated as a "false"
-            if (!options.isBoolean || response.status !== 404) {
-              var errorTextPromise = response.text();
-              errorTextPromise.then(function (errorText) {
-                err = new Error(errorText);
-                err.status = response.status;
-                // if (response.headers.get('Content-Type') === 'application/json; charset=utf-8') {
-                //   cb(new Error(response.text()))
-                // }
-                return cb(err);
-              }).catch(function (err) {
-                return cb(err);
-              });
-            }
+            return dataPromise.then(function (data) {
+              acc = {
+                clientOptions: _this._clientOptions,
+                plugins: _this._plugins,
+                data: data,
+                options: options,
+                jqXHR: jqXHR, // for cacheHandler
+                status: response.status, // cacheHandler changes this
+                request: acc, // Include the request data for plugins like cacheHandler
+                requester: _this, // for Hypermedia to generate verb methods
+                instance: _this._instance // for Hypermedia to be able to call `.fromUrl`
+              };
+              return _this._instance._parseWithContextPromise('', acc);
+            });
           }
+          // // Parse the error if one occurs
+          //
+          // // If the request was for a Boolean then a 404 should be treated as a "false"
+          // if (!options.isBoolean || response.status !== 404) {
+          //   const errorTextPromise = response.text()
+          //   errorTextPromise
+          //   .then((errorText) => {
+          //     err = new Error(errorText)
+          //     err.status = response.status
+          //     // if (response.headers.get('Content-Type') === 'application/json; charset=utf-8') {
+          //     //   cb(new Error(response.text()))
+          //     // }
+          //     return cb(err)
+          //   })
+          //   .catch((err) => cb(err))
+          // }
+          //
         });
       });
     }
