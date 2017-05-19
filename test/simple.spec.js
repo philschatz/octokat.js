@@ -330,7 +330,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
 
       // itIsOk(REPO, 'git.tags.create', {tag:'test-tag', message:'Test tag for units', ...})
       // itIsOk(REPO, 'git.tags.one', 'test-tag')
-      itIsOk(REPO, 'git.trees', 'c18ba7dc333132c035a980153eb520db6e813d57', 'fetch')
+      itIsOk(REPO, 'git.trees', '8a916cc3af923653680ce59592f88b31a6a5afba', 'fetch')
       // itIsOk(REPO, 'git.trees.create', {tree: [sha], base_tree: sha})
 
       it('.git.refs.tags.fetch()', () =>
@@ -501,15 +501,15 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       itIsArray(ISSUE, 'comments.fetch')
       itIsOk(ISSUE, 'comments.create', {body: 'Test comment'})
       // NOTE: Comment updating is awkward because it's on the repo, not a specific issue.
-      // itIsOk(REPO, 'issues.comments.update', 43218269, {body: 'Test comment updated'})
-      return itIsOk(REPO, 'issues.comments', 43218269, 'fetch')
+      // itIsOk(REPO, 'issues.comments.update', 302601077, {body: 'Test comment updated'})
+      return itIsOk(REPO, 'issues.comments', 302601077, 'fetch')
     })
   })
 })
 
       // Deprecated. Now provides only `issueUrl`
       // it 'comment.issue()', ->
-      //   trapFail STATE[REPO].issues.comments(43218269).fetch()
+      //   trapFail STATE[REPO].issues.comments(302601077).fetch()
       //   .then (comment) ->
       //     comment.issue()
 

@@ -125,7 +125,9 @@ module.exports = class Requester {
           return true
         } else if (options.isBoolean && response.status === 404) {
           return false
-        } else if (response.status !== 204 || !options.isBoolean) {
+        // } else if (options.isBoolean) {
+        //   throw new Error(`Octokat Bug? got a response to a boolean question that was not 204 or 404.  ${fetchArgs.method} ${path} Status: ${response.status}`)
+        } else if ((response.status >= 200 && response.status < 300) || response.status === 304 || response.status === 302 || response.status === 0) {
           // If it was a boolean question and the server responded with 204 ignore.
           let dataPromise
 
@@ -156,24 +158,11 @@ module.exports = class Requester {
             }
             return this._instance._parseWithContextPromise('', acc)
           })
+        } else {
+          return response.text().then((text) => {
+            return Promise.reject(new Error(`${text} ${fetchArgs.method} ${path} Status: ${response.status}`))
+          })
         }
-          // // Parse the error if one occurs
-          //
-          // // If the request was for a Boolean then a 404 should be treated as a "false"
-          // if (!options.isBoolean || response.status !== 404) {
-          //   const errorTextPromise = response.text()
-          //   errorTextPromise
-          //   .then((errorText) => {
-          //     err = new Error(errorText)
-          //     err.status = response.status
-          //     // if (response.headers.get('Content-Type') === 'application/json; charset=utf-8') {
-          //     //   cb(new Error(response.text()))
-          //     // }
-          //     return cb(err)
-          //   })
-          //   .catch((err) => cb(err))
-          // }
-          //
       })
     })
   }
