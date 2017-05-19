@@ -1393,7 +1393,6 @@ var getMore = function getMore(fetchable, requester, acc) {
   var nextPagePromise = fetchNextPage(fetchable, requester);
   if (nextPagePromise) {
     return nextPagePromise.then(function (results) {
-      var acc = [];
       pushAll(acc, results.items);
       // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
       return getMore(results, requester, acc);

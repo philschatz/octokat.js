@@ -11,7 +11,6 @@ let getMore = function (fetchable, requester, acc) {
   const nextPagePromise = fetchNextPage(fetchable, requester)
   if (nextPagePromise) {
     return nextPagePromise.then((results) => {
-      let acc = []
       pushAll(acc, results.items)
       // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
       return getMore(results, requester, acc)
