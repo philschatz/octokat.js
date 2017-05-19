@@ -1,6 +1,5 @@
 module.exports = new class Pagination {
   responseMiddlewareAsync (input) {
-    debugger
     let {jqXHR, data} = input
     if (!jqXHR) { return Promise.resolve(input) } // The plugins are all used in `octo.parse()` which does not have a jqXHR
 

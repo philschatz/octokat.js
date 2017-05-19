@@ -27,7 +27,6 @@ module.exports = new class ObjectChainer {
   }
 
   responseMiddlewareAsync (input) {
-    debugger
     let {plugins, requester, data, url} = input
     // unless data
     //    throw new Error('BUG! Expected JSON data to exist')

@@ -1308,7 +1308,6 @@ module.exports = new (function () {
   _createClass(CamelCase, [{
     key: 'responseMiddlewareAsync',
     value: function responseMiddlewareAsync(input) {
-      debugger;
       var data = input.data;
 
       data = this.replace(data);
@@ -1390,34 +1389,30 @@ var pushAll = function pushAll(target, source) {
   return target.push.apply(target, source);
 };
 
-var getMore = function getMore(fetchable, requester, acc, cb) {
-  var doStuff = function doStuff(err, results) {
-    if (err) {
-      return cb(err);
-    }
-    pushAll(acc, results.items);
-    return getMore(results, requester, acc, cb);
-  };
-
-  if (!fetchNextPage(fetchable, requester, doStuff)) {
-    return cb(null, acc);
+var getMore = function getMore(fetchable, requester, acc) {
+  var nextPagePromise = fetchNextPage(fetchable, requester);
+  if (nextPagePromise) {
+    return nextPagePromise.then(function (results) {
+      var acc = [];
+      pushAll(acc, results.items);
+      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+      return getMore(results, requester, acc);
+    });
+  } else {
+    return acc;
   }
 };
 
 // TODO: HACK to handle camelCase and hypermedia plugins
-var fetchNextPage = function fetchNextPage(obj, requester, cb) {
+var fetchNextPage = function fetchNextPage(obj, requester) {
   if (typeof obj.next_page_url === 'string') {
-    requester.request('GET', obj.next_page, null, null, cb);
-    return true;
+    return requester.request('GET', obj.next_page, null, null);
   } else if (obj.next_page) {
-    obj.next_page.fetch(cb);
-    return true;
+    return obj.next_page.fetch();
   } else if (typeof obj.nextPageUrl === 'string') {
-    requester.request('GET', obj.nextPageUrl, null, null, cb);
-    return true;
+    return requester.request('GET', obj.nextPageUrl, null, null);
   } else if (obj.nextPage) {
-    obj.nextPage.fetch(cb);
-    return true;
+    return obj.nextPage.fetch();
   } else {
     return false;
   }
@@ -1427,19 +1422,14 @@ var fetchNextPage = function fetchNextPage(obj, requester, cb) {
 module.exports = {
   asyncVerbs: {
     fetchAll: function fetchAll(requester, path) {
-      return function (cb, query) {
-        return (
-          // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
-          requester.request('GET', '' + path + toQueryString(query), null, null, function (err, results) {
-            if (err) {
-              return cb(err);
-            }
-            var acc = [];
-            pushAll(acc, results.items);
-            // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-            return getMore(results, requester, acc, cb);
-          })
-        );
+      return function (query) {
+        // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
+        return requester.request('GET', '' + path + toQueryString(query), null, null).then(function (results) {
+          var acc = [];
+          pushAll(acc, results.items);
+          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+          return getMore(results, requester, acc);
+        });
       };
     }
   }
@@ -1618,7 +1608,6 @@ module.exports = new (function () {
   }, {
     key: 'responseMiddlewareAsync',
     value: function responseMiddlewareAsync(input) {
-      debugger;
       var plugins = input.plugins,
           requester = input.requester,
           data = input.data,
@@ -1671,7 +1660,6 @@ module.exports = new (function () {
   _createClass(Pagination, [{
     key: 'responseMiddlewareAsync',
     value: function responseMiddlewareAsync(input) {
-      debugger;
       var jqXHR = input.jqXHR,
           data = input.data;
 

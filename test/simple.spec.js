@@ -294,6 +294,9 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     itIsArray(REPO, 'stargazers.fetch')
     itIsArray(REPO, 'forks.fetch')
 
+    itIsArray(REPO, 'releases.fetchAll')
+    itIsArray(REPO, 'issues.fetchAll')
+
     it(`camelCases URL fields that are not templated (ie ${REPO}.htmlUrl)`, () =>
       STATE[REPO].fetch().then(repo => expect(repo.htmlUrl).to.be.a('string'))
     )
