@@ -1,7 +1,7 @@
 module.exports = new class Pagination {
-  responseMiddlewareAsync (input, cb) {
+  responseMiddlewareAsync (input) {
     let {jqXHR, data} = input
-    if (!jqXHR) { return cb(null, input) } // The plugins are all used in `octo.parse()` which does not have a jqXHR
+    if (!jqXHR) { return Promise.resolve(input) } // The plugins are all used in `octo.parse()` which does not have a jqXHR
 
     // Only JSON responses have next/prev/first/last link headers
     // Add them to data so the resolved value is iterable
@@ -11,7 +11,7 @@ module.exports = new class Pagination {
 
       // Parse the Link headers
       // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-      let linksHeader = jqXHR.getResponseHeader('Link')
+      let linksHeader = jqXHR.headers.get('Link')
       if (linksHeader) {
         linksHeader.split(',').forEach((part) => {
           let [unusedField, href, rel] = part.match(/<([^>]+)>; rel="([^"]+)"/)
@@ -22,6 +22,6 @@ module.exports = new class Pagination {
       }
       input.data = data // or throw new Error('BUG! Expected JSON data to exist')
     }
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()

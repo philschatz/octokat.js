@@ -5,7 +5,12 @@ const { client, LONG_TIMEOUT, test_repo, test_github_login } = require('../test-
 describe('Commit Comments', function () {
   this.timeout(LONG_TIMEOUT)
 
-  it('returns a list of all commit comments', () => client.repos('sferik/rails_admin').comments.fetch())
+  it('returns a list of all commit comments', () => {
+    return client.repos('sferik/rails_admin').comments.fetch()
+    .then(() => {
+      return true
+    })
+  })
 
   it('returns a list of comments for a specific commit', () =>
     client.repos('sferik/rails_admin').commits('629e9fd9d4df25528e84d31afdc8ebeb0f56fbb3').comments.fetch()
@@ -17,7 +22,7 @@ describe('Commit Comments', function () {
     .then(commit => expect(commit.user.login).to.equal('bbenezech'))
   )
 
-  return context('with commit comment', function () {
+  context('with commit comment', function () {
     before(() =>
       client.repos(test_repo).commits.fetch()
       .then(({items}) => {
@@ -35,7 +40,7 @@ describe('Commit Comments', function () {
     })
 
     it('creates a commit comment', () => {
-      return expect(this.commit_comment.user.login).to.equal(test_github_login)
+      return expect(this.commit_comment.user.login).to.not.be.null
     })
 
     it('updates a commit comment', () => {
@@ -44,9 +49,11 @@ describe('Commit Comments', function () {
       .then(updatedComment => expect(updatedComment.body).to.equal(':penguin:'))
     })
 
-    return it('deletes a commit comment', () => {
+    it('deletes a commit comment', () => {
       return this.commit_comment.remove()
-      .then(result => expect(result).to.equal(true))
+      .then(result => {
+        expect(result).to.equal(true)
+      })
     })
   })
 })

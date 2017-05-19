@@ -27,7 +27,7 @@ describe('Returned Objects', function () {
     })
   )
 
-  return it('has does not add the root context to returned objects', () =>
+  it('has does not add the root context to returned objects', () =>
     client.repos(REPO_USER, REPO_NAME).issues(1).fetch().then(function (issue) {
       expect(issue.user.avatar.url).to.not.be.null
       return expect(issue.user.avatar.url).to.be.a.string

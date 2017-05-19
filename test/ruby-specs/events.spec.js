@@ -52,7 +52,7 @@ describe('Events', function () {
     .then(events => expect(events).to.be.an.Array)
   )
 
-  return it('lists issue events for a repository', () =>
+  it('lists issue events for a repository', () =>
     client.repos('octokit/octokit.rb').issues.events(37786228).fetch()
     .then(events => expect(events).to.be.an.Array)
   )

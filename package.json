@@ -5,16 +5,20 @@
   "main": "index.js",
   "scripts": {
     "lint": "standard *.js src/**.js | snazzy && coffeelint --file ./coffeelint.json src/**/*.coffee",
-    "build": "npm run-script lint && npm run-script dist",
+    "build": "npm run-script dist",
     "pretest": "npm run-script build",
-    "test": "npm run-script test-node && npm run-script test-browser",
-    "pretest-node": "babel --source-maps true --source-root ./index.js ./test/ -d ./test-transpiled/",
-    "test-node": "VCR_MODE=cache istanbul cover --report json _mocha -- --reporter spec ./test-transpiled/**/node**.js",
+    "test": "npm run-script test-node-with-coverage && npm run-script test-browser",
+    "posttest": "npm run-script lint",
+    "pretest-node-with-coverage": "npm run-script predebug-node",
+    "test-node-with-coverage": "VCR_MODE=$(echo ${VCR_MODE} || cache) istanbul cover --report json _mocha -- --reporter spec ./test-transpiled/**/node**.js",
+    "predebug-node": "babel --source-maps true --source-root ./index.js ./test/ -d ./test-transpiled/",
+    "debug-node": "VCR_MODE=$(echo ${VCR_MODE} || cache) mocha --inspect --debug-brk --reporter spec ./test-transpiled/**/node**.js",
     "pretest-browser": "webpack --config ./webpack.config-browsertests.js",
     "test-browser": "./script/run-test-browser.sh",
     "test-browser:only": "phantomjs ./node_modules/mocha-phantomjs-core/mocha-phantomjs-core.js http://localhost:9876/test/index.html spec '{\"timeout\": 20000 }'",
     "predist": "coffee --map --compile ./src/grammar/*.coffee",
-    "dist": "babel --source-maps true --out-dir ./dist/node/ ./src/ && webpack --config ./webpack.config-browser.js -v --progress",
+    "dist": "babel --source-maps true --out-dir ./dist/node/ ./src/",
+    "postdist": "webpack --config ./webpack.config-browser.js --progress",
     "update": "bower update",
     "bump": "grunt release",
     "blanket": {
@@ -24,7 +28,9 @@
     }
   },
   "dependencies": {
+    "fetch-vcr": "^0.5.1",
     "lodash": "^4.16.4",
+    "node-fetch": "^1.6.3",
     "xmlhttprequest": "~1.8.0"
   },
   "devDependencies": {
@@ -50,11 +56,10 @@
     "parallelshell": "^2.0.0",
     "phantomjs-prebuilt": "^2.1.14",
     "remap-istanbul": "^0.9.0",
-    "sepia": "~2.0.2",
-    "sepia-js": "git://github.com/philschatz/sepia.js",
     "snazzy": "^6.0.0",
     "standard": "^9.0.0",
-    "webpack": "^2.3.1"
+    "webpack": "^2.3.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "repository": {
     "type": "git",
@@ -76,7 +81,7 @@
     "test": "test"
   },
   "browser": {
-    "./dist/node/adapters/promise-node.js": "./dist/node/adapters/promise-browser.js",
+    "./dist/node/adapters/fetch-node.js": "./dist/node/adapters/fetch-browser.js",
     "./dist/node/adapters/xhr-node.js": "./dist/node/adapters/xhr-browser.js",
     "./dist/node/adapters/base64-node.js": "./dist/node/adapters/base64-browser.js"
   },

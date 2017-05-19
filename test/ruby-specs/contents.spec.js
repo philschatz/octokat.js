@@ -40,16 +40,14 @@ describe('Contents', function () {
   //   .then (archive_link) ->
   //     expect(archive_link).to.equal('https://codeload.github.com/octokit/octokit.rb/legacy.tar.gz/master')
 
-  return context('With a file', function () {
-    before(function (done) {
+  context('With a file', function () {
+    beforeEach(function (done) {
       let removeFile = function (content) {
-        console.log('removing file')
         let config = {
           sha: content.sha,
           message: 'Removing as prep for testing'
         }
-        client.repos(test_repo).contents('test_create.txt').remove(config)
-        return done()
+        return client.repos(test_repo).contents('test_create.txt').remove(config).then(() => done())
       }
 
       // If the file exists, remove it. Otherwise, done.
@@ -65,71 +63,73 @@ describe('Contents', function () {
     })
 
     it('creates repository contents at a path', () => {
-      let config = {
-        message: 'I am commit-ing',
-        content: btoa('Here be the content\n')
-      }
-      return client.repos(test_repo).contents('test_create.txt').add(config)
-      .then(null, function (err) { console.log(err); throw new Error(err) })
-      .then(response => {
-        return expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
+      const repo = client.repos(test_repo)
+      return repo.fetch().then(({defaultBranch}) => {
+        return repo.branches(defaultBranch).fetch().then(({commit}) => {
+          let config = {
+            message: 'I am commit-ing',
+            content: btoa('Here be the content\n')
+          }
+          return repo.contents('test_create.txt').add(config)
+          .then(null, function (err) { console.log(err); throw new Error(err) })
+          .then(response => {
+            return expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
+          })
+        })
       })
     })
 
     it('updates repository contents at a path', () => {
       // Prep work (from previous test)
-      let config = {
-        message: 'I am commit-ing',
-        content: btoa('Here be the content\n')
-      }
-      return client.repos(test_repo).contents('test_create.txt').add(config)
-      .then(null, function (err) { console.log(err); throw new Error(err) })
-      .then(response => {
-        expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
+      const repo = client.repos(test_repo)
+      return repo.fetch().then(({defaultBranch}) => {
+        return repo.branches(defaultBranch).fetch().then(({commit}) => {
+          let config = {
+            message: 'I am commit-ing',
+            content: btoa('Here be the content\n')
+          }
+          return repo.contents('test_create.txt').add(config)
+          .then(null, function (err) { console.log(err); throw new Error(err) })
+          .then(response => {
 
-        // Test Start
-        let config = {
-          sha: response.content.sha,
-          message: 'I am commit-ing',
-          content: btoa('Here be moar content')
-        }
-        return client.repos(test_repo).contents('test_create.txt').add(config)
-        .then(response2 => {
-          return expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
+            // Test Start
+            let config = {
+              sha: response.content.sha,
+              message: 'I am commit-ing',
+              content: btoa('Here be moar content')
+            }
+            return client.repos(test_repo).contents('test_create.txt').add(config)
+            .then(response2 => {
+              return expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
+            })
+          })
         })
       })
     })
 
-    return it('deletes repository contents at a path', () => {
+    it('deletes repository contents at a path', () => {
       // Prep work (from previous test)
-      let config = {
-        message: 'I am commit-ing',
-        content: btoa('Here be the content\n')
-      }
-      return client.repos(test_repo).contents('test_create.txt').add(config)
-      .then(null, function (err) { console.log(err); throw new Error(err) })
-      .then(response => {
-        expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
-
-        // More prep work
-        let config = {
-          sha: response.content.sha,
-          message: 'I am commit-ing',
-          content: btoa('Here be moar content')
-        }
-        return client.repos(test_repo).contents('test_create.txt').add(config)
-        .then(response2 => {
-          let updatedContent = response2
-          expect(response2.commit.sha).to.match(/[a-z0-9]{40}/)
-
+      const repo = client.repos(test_repo)
+      return repo.fetch().then(({defaultBranch}) => {
+        return repo.branches(defaultBranch).fetch().then(({commit}) => {
           let config = {
-            sha: updatedContent.content.sha,
-            message: 'I am rm-ing'
+            message: 'I am commit-ing',
+            content: btoa('Here be the content\n')
           }
-          return client.repos(test_repo).contents('test_create.txt').remove(config)
-          .then(function (response) {
+          return repo.contents('test_create.txt').add(config)
+          .then(null, function (err) { console.log(err); throw new Error(err) })
+          .then(response => {
+            expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
 
-            // TODO: Assert that this succeeded. Maybe mocha is enough
+            // Test Start
+            let config = {
+              sha: response.content.sha,
+              message: 'I am rm-ing'
+            }
+            return client.repos(test_repo).contents('test_create.txt').remove(config)
+            .then(function (response) {
+              expect(response.url).is.a('string')
+            })
           })
         })
       })

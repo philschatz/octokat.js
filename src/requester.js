@@ -1,4 +1,4 @@
-const { filter, map, waterfall } = require('./plus')
+const { filter, map } = require('./plus')
 
 // Request Function
 // ===============================
@@ -6,49 +6,13 @@ const { filter, map, waterfall } = require('./plus')
 // Generates the actual HTTP requests to GitHub.
 // Handles ETag caching, authentication headers, boolean requests, and paged results
 
-// Simple jQuery.ajax() shim that returns a promise for a xhr object
-let ajax = function (options, cb) {
-  // Use the browser XMLHttpRequest if it exists. If not, then this is NodeJS
-  // Pull this in for every request so sepia.js has a chance to override `window.XMLHTTPRequest`
-  const XMLHttpRequest = require('./adapters/xhr')
-  let xhr = new XMLHttpRequest()
-  xhr.dataType = options.dataType
-  if (options.mimeType) {
-    __guardFunc__(xhr.overrideMimeType, f => f(options.mimeType))
-  }
-  xhr.open(options.type, options.url)
-
-  if (options.data && options.type !== 'GET') {
-    xhr.setRequestHeader('Content-Type', options.contentType)
-  }
-
-  for (let name in options.headers) {
-    let value = options.headers[name]
-    xhr.setRequestHeader(name, value)
-  }
-
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      __guardFunc__(__guard__(options.statusCode, x => x[xhr.status]), f1 => f1())
-
-      // When disconnected, pass if the status is 0 so the cacheHandler has a chance to return the cached version
-      if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304 || xhr.status === 302 || xhr.status === 0) {
-        return cb(null, xhr)
-      } else {
-        return cb(xhr)
-      }
-    }
-  }
-  return xhr.send(options.data)
-}
-
 // # Construct the request function.
 // It contains all the auth credentials passed in to the client constructor
 
 let EVENT_ID = 0 // counter for the emitter so it is easier to match up requests
 
 module.exports = class Requester {
-  constructor (_instance, _clientOptions = {}, plugins) {
+  constructor (_instance, _clientOptions = {}, plugins, fetchImpl) {
     // Provide an option to override the default URL
     this._instance = _instance
     this._clientOptions = _clientOptions
@@ -72,6 +36,7 @@ module.exports = class Requester {
     this._pluginMiddlewareAsync = map(filter(plugins, ({requestMiddlewareAsync}) => requestMiddlewareAsync), plugin => plugin.requestMiddlewareAsync.bind(plugin)
     )
     this._plugins = plugins
+    this._fetchImpl = fetchImpl
   }
 
   // HTTP Request Abstraction
@@ -90,63 +55,47 @@ module.exports = class Requester {
     // This is so pagination works (which provides absolute URLs).
     if (!/^http/.test(path)) { path = `${this._clientOptions.rootURL}${path}` }
 
-    let headers =
-      {'Accept': this._clientOptions.acceptHeader || 'application/json'}
-
-    if (this._clientOptions.userAgent) {
-      headers['User-Agent'] = this._clientOptions.userAgent
+    let headers = {
+      'Accept': this._clientOptions.acceptHeader || 'application/json',
+      'User-Agent': this._clientOptions.userAgent || 'octokat.js'
     }
 
     let acc = {method, path, headers, options, clientOptions: this._clientOptions}
 
     // To use async.waterfall we need to pass in the initial data (`acc`)
     // so we create an initial function that just takes a callback
-    let initial = cb => cb(null, acc)
-    let pluginsPlusInitial = [initial].concat(this._pluginMiddlewareAsync)
+    let initial = Promise.resolve(acc)
 
-    return waterfall(pluginsPlusInitial, (err, acc) => {
-      let mimeType
-      if (err) { return cb(err, acc) }
-
-      ({method, headers, mimeType} = acc)
+    let prev = initial
+    this._pluginMiddlewareAsync.forEach((p) => {
+      prev = prev.then(p)
+    })
+    return prev.then((acc) => {
+      ({method, headers} = acc)
 
       if (options.isRaw) { headers['Accept'] = 'application/vnd.github.raw' }
 
-      let ajaxConfig = {
+      let fetchArgs = {
         // Be sure to **not** blow the cache with a random number
         // (GitHub will respond with 5xx or CORS errors)
-        url: path,
-        type: method,
-        contentType: options.contentType,
-        mimeType,
+        method,
         headers,
-
-        processData: false, // Don't convert to QueryString
-        data: (!options.isRaw && data && JSON.stringify(data)) || data,
-        dataType: !options.isRaw ? 'json' : undefined
-      }
-
-      // If the request is a boolean yes/no question GitHub will indicate
-      // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
-      if (options.isBoolean) {
-        ajaxConfig.statusCode = {
-          204: () => cb(null, true),
-          404: () => cb(null, false)
-        }
+        body: (!options.isRaw && data && JSON.stringify(data)) || data
       }
 
       let eventId = ++EVENT_ID
       __guardFunc__(this._emit, f => f('start', eventId, {method, path, data, options}))
 
-      return ajax(ajaxConfig, (err, val) => {
-        let jqXHR = err || val
+      return this._fetchImpl(path, fetchArgs)
+      .then((response) => {
+        let jqXHR = response
 
         // Fire listeners when the request completes or fails
         if (this._emit) {
-          if (jqXHR.getResponseHeader('X-RateLimit-Limit')) {
-            let rateLimit = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Limit'))
-            let rateLimitRemaining = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Remaining'))
-            let rateLimitReset = parseFloat(jqXHR.getResponseHeader('X-RateLimit-Reset'))
+          if (response.headers.get('X-RateLimit-Limit')) {
+            let rateLimit = parseFloat(response.headers.get('X-RateLimit-Limit'))
+            let rateLimitRemaining = parseFloat(response.headers.get('X-RateLimit-Remaining'))
+            let rateLimitReset = parseFloat(response.headers.get('X-RateLimit-Reset'))
             // Reset time is in seconds, not milliseconds
             // if rateLimitReset
             //   rateLimitReset = new Date(rateLimitReset * 1000)
@@ -157,79 +106,68 @@ module.exports = class Requester {
               reset: rateLimitReset
             }
 
-            if (jqXHR.getResponseHeader('X-OAuth-Scopes')) {
-              emitterRate.scopes = jqXHR.getResponseHeader('X-OAuth-Scopes').split(', ')
+            if (response.headers.get('X-OAuth-Scopes')) {
+              emitterRate.scopes = response.headers.get('X-OAuth-Scopes').split(', ')
             }
           }
-          this._emit('end', eventId, {method, path, data, options}, jqXHR.status, emitterRate)
+          this._emit('end', eventId, {method, path, data, options}, response.status, emitterRate)
         }
 
-        if (!err) {
-          // Return the result and Base64 encode it if `options.isBase64` flag is set.
+        // Return the result and Base64 encode it if `options.isBase64` flag is set.
 
-          // Respond with the redirect URL (for archive links)
-          // TODO: implement a `followRedirects` plugin
-          if (jqXHR.status === 302) {
-            return cb(null, jqXHR.getResponseHeader('Location'))
+        // Respond with the redirect URL (for archive links)
+        // TODO: implement a `followRedirects` plugin
+        if (response.status === 302) {
+          return response.headers.get('Location')
+        } else if (options.isBoolean && response.status === 204) {
+          // If the request is a boolean yes/no question GitHub will indicate
+          // via the HTTP Status of 204 (No Content) or 404 instead of a 200.
+          return true
+        } else if (options.isBoolean && response.status === 404) {
+          return false
+        // } else if (options.isBoolean) {
+        //   throw new Error(`Octokat Bug? got a response to a boolean question that was not 204 or 404.  ${fetchArgs.method} ${path} Status: ${response.status}`)
+        } else if ((response.status >= 200 && response.status < 300) || response.status === 304 || response.status === 302 || response.status === 0) {
           // If it was a boolean question and the server responded with 204 ignore.
-          } else if (jqXHR.status !== 204 || !options.isBoolean) {
-            if (jqXHR.responseText && ajaxConfig.dataType === 'json') {
-              data = JSON.parse(jqXHR.responseText)
-            } else {
-              data = jqXHR.responseText
-            }
+          let dataPromise
 
+          // If the status was 304 then let the cache handler pick it up. leave data blank
+          if (response.status === 304) {
+            dataPromise = Promise.resolve(null)
+          } else {
+            // Convert to JSON if we are expecting JSON
+            // TODO: use a blob if we are expecting a binary
+            if (!options.isRaw) {
+              dataPromise = response.json()
+            } else {
+              dataPromise = response.text()
+            }
+          }
+
+          return dataPromise.then((data) => {
             acc = {
               clientOptions: this._clientOptions,
               plugins: this._plugins,
               data,
               options,
               jqXHR, // for cacheHandler
-              status: jqXHR.status, // cacheHandler changes this
+              status: response.status, // cacheHandler changes this
               request: acc, // Include the request data for plugins like cacheHandler
               requester: this, // for Hypermedia to generate verb methods
               instance: this._instance // for Hypermedia to be able to call `.fromUrl`
             }
-            return this._instance._parseWithContext('', acc, function (err, val) {
-              if (err) { return cb(err, val) }
-              return cb(null, val, jqXHR.status, jqXHR)
-            }
-            )
-          }
+            return this._instance._parseWithContextPromise('', acc)
+          })
         } else {
-          // Parse the error if one occurs
-
-          // If the request was for a Boolean then a 404 should be treated as a "false"
-          if (!options.isBoolean || jqXHR.status !== 404) {
-            err = new Error(jqXHR.responseText)
-            err.status = jqXHR.status
-            if (jqXHR.getResponseHeader('Content-Type') === 'application/json; charset=utf-8') {
-              let json = ''
-              if (jqXHR.responseText) {
-                try {
-                  json = JSON.parse(jqXHR.responseText)
-                } catch (error) {
-                  cb({message: 'Error Parsing Response'})
-                }
-              } else {
-                // In the case of 404 errors, `responseText` is an empty string
-                json = ''
-              }
-              err.json = json
-            }
-            return cb(err)
-          }
+          return response.text().then((text) => {
+            return Promise.reject(new Error(`${text} ${fetchArgs.method} ${path} Status: ${response.status}`))
+          })
         }
-      }
-      )
-    }
-    )
+      })
+    })
   }
 }
 
 function __guardFunc__ (func, transform) {
   return typeof func === 'function' ? transform(func) : undefined
-}
-function __guard__ (value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined
 }

@@ -26,7 +26,7 @@ module.exports = new class ObjectChainer {
     })()
   }
 
-  responseMiddlewareAsync (input, cb) {
+  responseMiddlewareAsync (input) {
     let {plugins, requester, data, url} = input
     // unless data
     //    throw new Error('BUG! Expected JSON data to exist')
@@ -46,6 +46,6 @@ module.exports = new class ObjectChainer {
       }
     }
 
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()

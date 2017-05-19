@@ -57,7 +57,7 @@ describe('Commits', function () {
     .then(afterRemove, afterRemove)
   })
 
-  return it('returns a comparison', () =>
+  it('returns a comparison', () =>
     client.repos('gvaughn/octokit').compare('0e0d7ae299514da692eb1cab741562c253d44188', 'b7b37f75a80b8e84061cd45b246232ad958158f5').fetch()
     .then(function (comparison) {
       expect(comparison.baseCommit.sha).to.equal('0e0d7ae299514da692eb1cab741562c253d44188')

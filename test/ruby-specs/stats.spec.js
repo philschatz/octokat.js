@@ -15,7 +15,7 @@ describe('Stats', function () {
 
   it('returns the owner and contributor participation stats', () => client.repos('octokit/octokit.rb').stats.participation.fetch())
 
-  return it('returns commit count by hour punch card stats', () => client.repos('octokit/octokit.rb').stats.punchCard.fetch())
+  it('returns commit count by hour punch card stats', () => client.repos('octokit/octokit.rb').stats.punchCard.fetch())
 })
 
   // TODO: There is a duplicate test here for pengwynn/pingwynn (and a few others)

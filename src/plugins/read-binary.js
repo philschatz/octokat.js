@@ -6,7 +6,7 @@ module.exports = new class ReadBinary {
       {readBinary (path, query) { return {method: 'GET', path: `${path}${toQueryString(query)}`, options: {isRaw: true, isBase64: true}} }}
   }
 
-  requestMiddlewareAsync (input, cb) {
+  requestMiddlewareAsync (input) {
     let {options} = input
     if (options) {
       let {isBase64} = options
@@ -15,10 +15,10 @@ module.exports = new class ReadBinary {
         input.mimeType = 'text/plain; charset=x-user-defined'
       }
     }
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 
-  responseMiddlewareAsync (input, cb) {
+  responseMiddlewareAsync (input) {
     let {options, data} = input
     if (options) {
       let {isBase64} = options
@@ -36,7 +36,7 @@ module.exports = new class ReadBinary {
         input.data = converted // or throw new Error('BUG! Expected JSON data to exist')
       }
     }
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()
 

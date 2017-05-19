@@ -7,32 +7,29 @@ let pushAll = function (target, source) {
   return target.push.apply(target, source)
 }
 
-let getMore = function (fetchable, requester, acc, cb) {
-  let doStuff = function (err, results) {
-    if (err) { return cb(err) }
-    pushAll(acc, results.items)
-    return getMore(results, requester, acc, cb)
-  }
-
-  if (!fetchNextPage(fetchable, requester, doStuff)) {
-    return cb(null, acc)
+let getMore = function (fetchable, requester, acc) {
+  const nextPagePromise = fetchNextPage(fetchable, requester)
+  if (nextPagePromise) {
+    return nextPagePromise.then((results) => {
+      pushAll(acc, results.items)
+      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+      return getMore(results, requester, acc)
+    })
+  } else {
+    return acc
   }
 }
 
 // TODO: HACK to handle camelCase and hypermedia plugins
-var fetchNextPage = function (obj, requester, cb) {
+var fetchNextPage = function (obj, requester) {
   if (typeof obj.next_page_url === 'string') {
-    requester.request('GET', obj.next_page, null, null, cb)
-    return true
+    return requester.request('GET', obj.next_page, null, null)
   } else if (obj.next_page) {
-    obj.next_page.fetch(cb)
-    return true
+    return obj.next_page.fetch()
   } else if (typeof obj.nextPageUrl === 'string') {
-    requester.request('GET', obj.nextPageUrl, null, null, cb)
-    return true
+    return requester.request('GET', obj.nextPageUrl, null, null)
   } else if (obj.nextPage) {
-    obj.nextPage.fetch(cb)
-    return true
+    return obj.nextPage.fetch()
   } else {
     return false
   }
@@ -41,16 +38,17 @@ var fetchNextPage = function (obj, requester, cb) {
 // new class FetchAll
 module.exports = {
   asyncVerbs: {
-    fetchAll (requester, path) { return (cb, query) =>
-      // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
-      requester.request('GET', `${path}${toQueryString(query)}`, null, null, function (err, results) {
-        if (err) { return cb(err) }
-        let acc = []
-        pushAll(acc, results.items)
-        // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-        return getMore(results, requester, acc, cb)
+    fetchAll (requester, path) {
+      return (query) => {
+        // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
+        return requester.request('GET', `${path}${toQueryString(query)}`, null, null)
+        .then((results) => {
+          let acc = []
+          pushAll(acc, results.items)
+          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+          return getMore(results, requester, acc)
+        })
       }
-      )
     }
   }
 }

@@ -75,10 +75,10 @@ module.exports = new class HyperMedia {
     }
   }
 
-  responseMiddlewareAsync (input, cb) {
+  responseMiddlewareAsync (input) {
     let {instance, data} = input
     data = this.replace(instance, data)
     input.data = data // or throw new Error('BUG! Expected JSON data to exist')
-    return cb(null, input)
+    return Promise.resolve(input)
   }
 }()

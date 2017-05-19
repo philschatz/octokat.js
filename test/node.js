@@ -1,7 +1,8 @@
 /* eslint-env mocha */
-const path = require('path')
-const sepia = require('sepia')
-require('./all')
+require('fetch-vcr').configure({
+  fixturePath: './node_modules/octokat-fixtures/_fixtures',
+  // headerBlacklist: ['authorization', 'user-agent']
+})
 
-sepia.fixtureDir(path.join(__dirname, '..', 'node_modules', 'octokat-fixtures', 'fixtures'))
-sepia.configure({includeHeaderNames: false})
+require('./all')
+debugger
