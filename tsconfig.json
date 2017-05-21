@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "./src/builder/dist/",
+        "sourceMap": true,
+        "strictNullChecks": true,
+        "module": "es6",
+        "jsx": "react",
+        "target": "es6",
+        "allowJs": false
+    },
+    "include": [
+        "./src/builder/out"
+    ]
+}
