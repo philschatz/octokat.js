@@ -17,3 +17,6 @@ src/grammar/preview-headers.js
 src/grammar/preview-headers.js.map
 src/grammar/url-validator.js
 src/grammar/url-validator.js.map
+
+
+/builder/generated-js/

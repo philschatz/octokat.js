@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "./src/builder/dist/",
+        "outDir": "./builder/generated-js/",
         "sourceMap": true,
         "strictNullChecks": true,
         "module": "es6",
@@ -9,6 +9,6 @@
         "allowJs": false
     },
     "include": [
-        "./src/builder/out"
+        "./builder/generated-ts/"
     ]
 }

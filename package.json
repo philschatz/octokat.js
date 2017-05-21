@@ -4,6 +4,7 @@
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
   "scripts": {
+    "typescript": "node builder/builder.js && $(npm bin)/tsc",
     "lint": "standard *.js src/**.js | snazzy && coffeelint --file ./coffeelint.json src/**/*.coffee",
     "build": "npm run-script dist",
     "pretest": "npm run-script build",
