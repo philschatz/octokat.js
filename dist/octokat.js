@@ -2087,9 +2087,12 @@ module.exports = function () {
             if (response.status === 304) {
               dataPromise = Promise.resolve(null);
             } else {
-              // Convert to JSON if we are expecting JSON
               // TODO: use a blob if we are expecting a binary
-              if (!options.isRaw) {
+
+              var contentType = response.headers.get('content-type') || '';
+              var jsonReceived = contentType.startsWith('application/json');
+
+              if (!options.isRaw && jsonReceived) {
                 dataPromise = response.json();
               } else {
                 dataPromise = response.text();
