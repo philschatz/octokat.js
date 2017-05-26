@@ -470,8 +470,7 @@ octo.fromUrl('https://uploads.github.com/repos/{owner}/{repo}/releases{/id}/asse
 The unit tests are named to illustrate examples of using the API.
 See [Travis tests](https://travis-ci.org/philschatz/octokat.js) or run `npm test` to see them.
 
-[linkedin/sepia](https://github.com/linkedin/sepia) is used to generate recorded HTTP fixtures from GitHub
-and [philschatz/sepia.js](https://github.com/philschatz/sepia.js) uses them in the browser.
+[fetch-vcr](https://github.com/philschatz/fetch-vcr) is used to generate recorded HTTP fixtures from GitHub.
 If you are adding tests be sure to include the updated fixtures in the Pull Request.
 
 
