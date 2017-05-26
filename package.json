@@ -30,8 +30,7 @@
   "dependencies": {
     "fetch-vcr": "^0.5.1",
     "lodash": "^4.16.4",
-    "node-fetch": "^1.6.3",
-    "xmlhttprequest": "~1.8.0"
+    "node-fetch": "^1.6.3"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -82,7 +81,6 @@
   },
   "browser": {
     "./dist/node/adapters/fetch-node.js": "./dist/node/adapters/fetch-browser.js",
-    "./dist/node/adapters/xhr-node.js": "./dist/node/adapters/xhr-browser.js",
     "./dist/node/adapters/base64-node.js": "./dist/node/adapters/base64-browser.js"
   },
   "tonicExampleFilename": "examples/tonic-example.js",
