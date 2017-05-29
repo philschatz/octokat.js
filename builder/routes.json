@@ -456,7 +456,7 @@
                 "/search/commits"
             ],
             "application/vnd.github.black-panther-preview+json": [
-                "/repositories/:repo_id/community/profile"
+                "/repositories/:id/community/profile"
             ],
             "application/vnd.github.ant-man-preview+json": [
                 "/repos/:owner/:repo/deployments",
@@ -520,10 +520,10 @@
                 "/repos/:owner/:repo/projects",
                 "/orgs/:org/projects",
                 "/projects/:id",
-                "/projects/columns/:column_id/cards",
+                "/projects/columns/:id/cards",
                 "/projects/columns/cards/:id",
                 "/projects/columns/cards/:id/moves",
-                "/projects/:project_id/columns",
+                "/projects/:id/columns",
                 "/projects/columns/:id",
                 "/projects/columns/:id/moves"
             ],
@@ -1306,46 +1306,46 @@
             "description": "Delete a gist"
         },
         "get-comments": {
-            "url": "/gists/:gist_id/comments",
+            "url": "/gists/:id/comments",
             "method": "GET",
             "params": {
-                "$gist_id": null
+                "$id": null
             },
             "description": "List comments on a gist"
         },
         "get-comment": {
-            "url": "/gists/:gist_id/comments/:id",
+            "url": "/gists/:id/comments/:id",
             "method": "GET",
             "params": {
-                "$gist_id": null,
+                "$id": null,
                 "$id": null
             },
             "description": "Get a single comment"
         },
         "create-comment": {
-            "url": "/gists/:gist_id/comments",
+            "url": "/gists/:id/comments",
             "method": "POST",
             "params": {
-                "$gist_id": null,
+                "$id": null,
                 "$body": null
             },
             "description": "Create a comment"
         },
         "edit-comment": {
-            "url": "/gists/:gist_id/comments/:id",
+            "url": "/gists/:id/comments/:id",
             "method": "PATCH",
             "params": {
-                "$gist_id": null,
+                "$id": null,
                 "$id": null,
                 "$body": null
             },
             "description": "Edit a comment"
         },
         "delete-comment": {
-            "url": "/gists/:gist_id/comments/:id",
+            "url": "/gists/:id/comments/:id",
             "method": "DELETE",
             "params": {
-                "$gist_id": null,
+                "$id": null,
                 "$id": null
             },
             "description": "Delete a comment"
@@ -2223,12 +2223,12 @@
             "description": "Delete a comment"
         },
         "get-events": {
-            "url": "/repos/:owner/:repo/issues/:issue_number/events",
+            "url": "/repos/:owner/:repo/issues/:number/events",
             "method": "GET",
             "params": {
                 "$owner": null,
                 "$repo": null,
-                "$issue_number": null,
+                "$number": null,
                 "$page": null,
                 "$per_page": null
             },
@@ -2288,18 +2288,11 @@
             "description": "Create a label"
         },
         "update-label": {
-            "url": "/repos/:owner/:repo/labels/:oldname",
+            "url": "/repos/:owner/:repo/labels/:name",
             "method": "PATCH",
             "params": {
                 "$owner": null,
                 "$repo": null,
-                "oldname": {
-                    "type": "String",
-                    "required": true,
-                    "validation": "",
-                    "invalidmsg": "",
-                    "description": "The old name of the label."
-                },
                 "name": {
                     "type": "String",
                     "required": true,
@@ -2512,12 +2505,12 @@
             "description": "Delete a milestone"
         },
         "get-events-timeline": {
-            "url": "/repos/:owner/:repo/issues/:issue_number/timeline",
+            "url": "/repos/:owner/:repo/issues/:number/timeline",
             "method": "GET",
             "params": {
                 "$owner": null,
                 "$repo": null,
-                "$issue_number": null,
+                "$number": null,
                 "$page": null,
                 "$per_page": null
             },
@@ -3321,7 +3314,7 @@
             "description": "Check if a team manages a repository"
         },
         "add-team-repo": {
-            "url": "/teams/:id/repos/:org/:repo",
+            "url": "/teams/:id/repos/:owner/:repo",
             "method": "PUT",
             "params": {
                 "$id": null,
@@ -3579,7 +3572,7 @@
             "description": "Delete a project. (In preview period. See README.)"
         },
         "get-project-cards": {
-            "url": "/projects/columns/:column_id/cards",
+            "url": "/projects/columns/:id/cards",
             "method": "GET",
             "params": {
                 "$column_id": null
@@ -3595,7 +3588,7 @@
             "description": "Get project card. (In preview period. See README.)"
         },
         "create-project-card": {
-            "url": "/projects/columns/:column_id/cards",
+            "url": "/projects/columns/:id/cards",
             "method": "POST",
             "params": {
                 "$column_id": null,
@@ -3669,10 +3662,10 @@
             "description": "Move a project card. (In preview period. See README.)"
         },
         "get-project-columns": {
-            "url": "/projects/:project_id/columns",
+            "url": "/projects/:id/columns",
             "method": "GET",
             "params": {
-                "$project_id": null
+                "$id": null
             },
             "description": "List project columns. (In preview period. See README.)"
         },
@@ -3685,10 +3678,10 @@
             "description": "Get a project column. (In preview period. See README.)"
         },
         "create-project-column": {
-            "url": "/projects/:project_id/columns",
+            "url": "/projects/:id/columns",
             "method": "POST",
             "params": {
-                "$project_id": null,
+                "$id": null,
                 "$name": null
             },
             "description": "Create a project column. (In preview period. See README.)"
@@ -5378,10 +5371,10 @@
             "description": "Delete a commit comment."
         },
         "get-community-health-metrics": {
-            "url": "/repositories/:repo_id/community/profile",
+            "url": "/repositories/:id/community/profile",
             "method": "GET",
             "params": {
-                "$repo_id": null
+                "$id": null
             },
             "description": "Retrieve community health metrics."
         },
@@ -5629,24 +5622,12 @@
             },
             "description": "Delete a file."
         },
-        "get-archive-link": {
-            "url": "/repos/:owner/:repo/:archive_format/:ref",
+        "get-tarball-link": {
+            "url": "/repos/:owner/:repo/tarball/:ref",
             "method": "GET",
             "params": {
                 "$owner": null,
                 "$repo": null,
-                "archive_format": {
-                    "type": "String",
-                    "required": true,
-                    "validation": "^(tarball|zipball)$",
-                    "invalidmsg": "Either tarball or zipball, Default: tarball.",
-                    "description": "Either tarball or zipball, Deafult: tarball.",
-                    "enum": [
-                        "tarball",
-                        "zipball"
-                    ],
-                    "default": "tarball"
-                },
                 "ref": {
                     "type": "String",
                     "required": false,
@@ -5655,7 +5636,23 @@
                     "description": "A valid Git reference. Default: the repository’s default branch (usually master)."
                 }
             },
-            "description": "Get archive link."
+            "description": "Get archive tarball link."
+        },
+        "get-zipball-link": {
+            "url": "/repos/:owner/:repo/zipball/:ref",
+            "method": "GET",
+            "params": {
+                "$owner": null,
+                "$repo": null,
+                "ref": {
+                    "type": "String",
+                    "required": false,
+                    "validation": "",
+                    "invalidmsg": "",
+                    "description": "A valid Git reference. Default: the repository’s default branch (usually master)."
+                }
+            },
+            "description": "Get archive zipball link."
         },
         "get-keys": {
             "url": "/repos/:owner/:repo/keys",
@@ -5966,27 +5963,27 @@
             "description": "Create a fork."
         },
         "get-invites": {
-            "url": "/repositories/:repo_id/invitations",
+            "url": "/repositories/:id/invitations",
             "method": "GET",
             "params": {
-                "$repo_id": null
+                "$id": null
             },
             "description": "List invitations for a repository. (In preview period. See README.)"
         },
         "delete-invite": {
-            "url": "/repositories/:repo_id/invitations/:invitation_id",
+            "url": "/repositories/:id/invitations/:invitation_id",
             "method": "DELETE",
             "params": {
-                "$repo_id": null,
+                "$id": null,
                 "$invitation_id": null
             },
             "description": "Delete a repository invitation. (In preview period. See README.)"
         },
         "update-invite": {
-            "url": "/repositories/:repo_id/invitations/:invitation_id",
+            "url": "/repositories/:id/invitations/:invitation_id",
             "method": "PATCH",
             "params": {
-                "$repo_id": null,
+                "$id": null,
                 "$invitation_id": null,
                 "permission": {
                     "type": "String",

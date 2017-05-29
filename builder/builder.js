@@ -1,6 +1,115 @@
 const fs = require('fs')
 const types = require('./types')
 
+const routes = require('./routes.json')
+const _ = require('lodash')
+const plus = require('../src/plus')
+
+// Map of URL -> Method -> Params
+const converted = {}
+
+// Extract the info we need from routes.json
+Object.keys(routes).forEach((key1) => {
+  Object.keys(routes[key1]).forEach((key2) => {
+
+    const {url, method, params} = routes[key1][key2]
+
+    if (url) {
+      converted[url] = converted[url] || {}
+      converted[url][method] = _.omitBy(params, (value, keyName) => keyName.startsWith('$'))
+    }
+  })
+})
+
+
+// Construct the tree we will need
+const convertedTree = {/*childrenWithoutArgs: {}, childrenWithArgs: {}*/}
+
+// It will have a format similar to:
+// {
+//   'repos': {
+//     childrenWithArgs: {
+//       ':owner/:name': CHILD_NODE
+//     }
+//     childrenWithoutArgs: {
+//       'issues': CHILD_NODE
+//     },
+//     methods: {
+//       'get': PARAMS
+//     }
+//   },
+// }
+
+Object.keys(converted).forEach((route) => {
+  // const {GET, POST, DELETE, PATCH, PUT} = converted[route]
+
+  if (route === "/repos/:owner/:repo/hooks") {
+    debugger
+  }
+
+  function addArgsSegment(treeNode, argsSegment) {
+    treeNode.childrenWithArgs = treeNode.childrenWithArgs || {}
+    const childNode = treeNode.childrenWithArgs[argsSegment] || {/*childrenWithArgs: {}, childrenWithoutArgs: {}, methods: {}*/}
+    treeNode.childrenWithArgs[argsSegment] = childNode // add if does not exist yet
+
+    if (Object.keys(treeNode.childrenWithArgs).length > 1) {
+      // woah, multiple functions. Let's check if they have the same number of args
+      console.log('Duplicates for', segments.slice(1, segmentIndex).join('/'), Object.keys(treeNode.childrenWithArgs));
+    }
+    return childNode
+  }
+
+  function addSegment(treeNode, segment) {
+    treeNode.childrenWithoutArgs = treeNode.childrenWithoutArgs || {}
+    const childNode = treeNode.childrenWithoutArgs[segment] || {/*childrenWithArgs: {}, childrenWithoutArgs: {}, methods: {}*/}
+    treeNode.childrenWithoutArgs[segment] = childNode // add if does not exist yet
+    return childNode
+  }
+
+
+  const segments = route.split('/')
+  let treeNode = convertedTree
+  let segmentIndex = 1 // because each route begins with a '/'
+  let args = [] // these get added on and then cleared as we walk through the route
+  while (segments[segmentIndex]) {
+    const segment = segments[segmentIndex]
+    if (segment[0] === ':') {
+      // it is an argument
+      args.push(segment)
+    } else {
+      if (args.length > 0) {
+        const argsSegment = args.join('/')
+
+        treeNode = addArgsSegment(treeNode, argsSegment)
+        args = []
+
+      }
+
+      treeNode = addSegment(treeNode, segment)
+      args = []
+    }
+    segmentIndex++
+  }
+
+  // Copy/pasta from above
+  if (args.length > 0) {
+    const argsSegment = args.join('/')
+
+    treeNode = addArgsSegment(treeNode, argsSegment)
+    args = []
+  }
+
+
+  // Attach the methods to the node
+  treeNode._route = route
+  treeNode.methods = converted[route]
+})
+
+console.log(JSON.stringify(convertedTree));
+
+
+
+
 types.forEach((type) => {
   // typeName: 'InputRepo'
   // fnArgs: null
