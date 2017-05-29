@@ -509,9 +509,9 @@
                 "/repos/:owner/:repo/pages/builds/:id"
             ],
             "application/vnd.github.eye-scream-preview": [
-                "/admin/pre-receive-environments/:id",
+                "/admin/pre_receive_environments/:id",
                 "/admin/pre_receive_environments",
-                "/admin/pre-receive-environments/:id/downloads/latest",
+                "/admin/pre_receive_environments/:id/downloads/latest",
                 "/admin/pre_receive_environments/:id/downloads",
                 "/admin/pre-receive-hooks/:id",
                 "/admin/pre-receive-hooks"
@@ -7270,14 +7270,14 @@
             "description": "Get license information"
         },
         "get-pre-receive-environment": {
-            "url": "/admin/pre-receive-environments/:id",
+            "url": "/admin/pre_receive_environments/:id",
             "method": "GET",
             "params": {
                 "$id": null
             },
             "description": "Get a single pre-receive environment. (In preview period. See README.)"
         },
-        "get-pre-receive-environments": {
+        "get-pre_receive_environments": {
             "url": "/admin/pre_receive_environments",
             "method": "GET",
             "params": {},
@@ -7335,7 +7335,7 @@
             "description": "Delete a pre-receive environment. (In preview period. See README.)"
         },
         "get-pre-receive-environment-download-status": {
-            "url": "/admin/pre-receive-environments/:id/downloads/latest",
+            "url": "/admin/pre_receive_environments/:id/downloads/latest",
             "method": "GET",
             "params": {
                 "$id": null

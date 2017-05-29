@@ -22,6 +22,7 @@ const octo = pretendOctoInstance
 export class App {
   private async getMyRepo() {
     // Just showing the types of each object
+
     const _1: IInputRepos       = octo.repos
     const _2: IInputRepo        = octo.repos('philschatz', 'octokat.js')
     const _3: IInputRepoIssues  = octo.repos('philschatz', 'octokat.js').issues
