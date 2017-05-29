@@ -1409,7 +1409,7 @@ var getMore = function getMore(fetchable, requester, acc) {
 // TODO: HACK to handle camelCase and hypermedia plugins
 var fetchNextPage = function fetchNextPage(obj, requester) {
   if (typeof obj.next_page_url === 'string') {
-    return requester.request('GET', obj.next_page, null, null);
+    return requester.request('GET', obj.next_page_url, null, null);
   } else if (obj.next_page) {
     return obj.next_page.fetch();
   } else if (typeof obj.nextPageUrl === 'string') {
