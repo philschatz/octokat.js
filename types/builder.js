@@ -15,9 +15,9 @@ Object.keys(routes).forEach((key1) => {
 
     if (url) {
       converted[url] = converted[url] || {}
-      converted[url][method] = _.omitBy(params, (value, keyName) => keyName.startsWith('$'))
+      converted[url][method] = params // _.omitBy(params, (value, keyName) => keyName.startsWith('$'))
       if (yields) {
-        converted[url][method].$yields = yields
+        converted[url][method]._yields = yields
       }
     }
   })
@@ -122,12 +122,17 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
 
   function addDeclaration(methodName) {
     let method = treeNode.methods[methodName]
-    method = _.omit(method, '$yields')
+    method = _.omit(method, '_yields')
     if (Object.keys(method).length > 0) {
       const typeName = plus.camelize(`${pathSoFar}_${methodName.toLowerCase()}_Params`)
 
       let isEverythingOptional = true
-      const params = Object.keys(method).map((key) => {
+      const extendsTypes = Object.keys(method).filter((key) => {
+        return key[0] === `$` && treeNode._route.indexOf(`:${key.substring(1)}`) < 0
+      }).map((key) => {
+        return `& ${plus.camelize(`Param_${key.substring(1)}`)}`
+      })
+      const params = Object.keys(method).filter((key) => key[0] !== `$`).map((key) => {
         let {type, required} = method[key]
         // Rewrite types like Array and Json into something for typescript
         if (type === 'Array') {
@@ -140,8 +145,12 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
         }
         return `${key}${required? '' : '?'}: ${type};`
       })
-      declarations.push(`export type ${typeName} = { ${params.join('\n')} }`)
-      return `params${isEverythingOptional ? `?` : ``}: ${typeName}`
+      if (extendsTypes.length > 0 || params.length > 0) {
+        declarations.push(`export type ${typeName} = ${extendsTypes.join('\n')} & { ${params.join('\n')} }`)
+        return `params${isEverythingOptional ? `?` : ``}: ${typeName}`
+      } else {
+        return `` // There are no args when calling .fetch() (or whatever verb it is)
+      }
     } else {
       return `` // There are no args when calling .fetch() (or whatever verb it is)
     }
@@ -149,7 +158,7 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
   if (treeNode.methods) {
     if (treeNode.methods['GET']) {
       const paramsName = addDeclaration('GET')
-      const yields = treeNode.methods['GET'].$yields || 'any'
+      const yields = treeNode.methods['GET']._yields || 'any'
       ret.push(`fetch(${paramsName}): Promise<${yields}>`)
       if (yields.startsWith('SearchResult<')) {
         // Replace SearchResult<Foo> with Foo[]
@@ -160,22 +169,22 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
     }
     if (treeNode.methods['POST']) {
       const paramsName = addDeclaration('POST')
-      const yields = treeNode.methods['POST'].$yields || 'any'
+      const yields = treeNode.methods['POST']._yields || 'any'
       ret.push(`create(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['PATCH']) {
       const paramsName = addDeclaration('PATCH')
-      const yields = treeNode.methods['PATCH'].$yields || 'any'
+      const yields = treeNode.methods['PATCH']._yields || 'any'
       ret.push(`update(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['PUT']) {
       const paramsName = addDeclaration('PUT')
-      const yields = treeNode.methods['PUT'].$yields || 'any'
+      const yields = treeNode.methods['PUT']._yields || 'any'
       ret.push(`add(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['DELETE']) {
       const paramsName = addDeclaration('DELETE')
-      const yields = treeNode.methods['DELETE'].$yields || 'any'
+      const yields = treeNode.methods['DELETE']._yields || 'any'
       ret.push(`remove(${paramsName}): Promise<${yields}>`)
     }
   } else {
@@ -239,9 +248,45 @@ ${verbMethods.join('\n')}
 
 const rootDeclarations = []
 const rootChildren = recBuildType(rootDeclarations, convertedTree, 'BUG_IF_YOU_SEE_ME', 'Octokat')
+const rootTypes = Object.keys(routes.defines.params).map((paramName) => {
+  const param = routes.defines.params[paramName]
+  // const {required, type, enum} = param
+  const required = param.required
+  const type = param.type
+  const enum2 = param.enum
+  let paramType
+  if (enum2) {
+    paramType = enum2.map((item) => `"${item}"`).join('|')
+  } else {
+    switch (type) {
+      case 'String':
+      case 'Number':
+      case 'Boolean':
+        paramType = type
+        break;
+      case 'Json':
+        paramType = 'Object'
+        break
+      case 'Date':
+        paramType = 'String'
+        break
+      case 'Array':
+        paramType = 'string[]'
+        break
+      default:
+        throw new Error(`BUG: unsupported type ${type}`)
+    }
+  }
+  return `export interface ${plus.camelize(`Param_${paramName}`)} { ${paramName}${required? '' : '?'}: ${paramType} }`
+})
+
 source = `
 
 declare module 'octokat' {
+
+  // Base types
+  ${rootTypes.join('\n')}
+
   // Response Types
   ${fs.readFileSync(__dirname + `/../response-types/_all.d.ts`)}
 

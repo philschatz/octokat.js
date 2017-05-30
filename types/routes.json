@@ -4673,22 +4673,9 @@
             "params": {
                 "$org": null,
                 "$name": null,
-                "name": {
-                  "type": "String",
-                  "required": true
-                },
-                "$__TODO: Look these up via the $description lookup logic": true,
-                "description": {
-                  "type": "String",
-                  "required": false
-                },
                 "$description": null,
                 "$homepage": null,
                 "$private": null,
-                "private": {
-                  "type": "Boolean",
-                  "required": false
-                },
                 "$has_issues": null,
                 "$has_wiki": null,
                 "$has_downloads": null,

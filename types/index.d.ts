@@ -1,6 +1,63 @@
 
 
 declare module 'octokat' {
+  // Base types
+  export interface ParamFiles { files: Object }
+export interface ParamOwner { owner: String }
+export interface ParamUsername { username: String }
+export interface ParamOrg { org: String }
+export interface ParamRepo { repo: String }
+export interface ParamBranch { branch: String }
+export interface ParamSha { sha: String }
+export interface ParamDescription { description?: String }
+export interface ParamId { id: String }
+export interface ParamGistId { gist_id: String }
+export interface ParamInstallationId { installation_id: String }
+export interface ParamRepositoryId { repository_id: String }
+export interface ParamCommitId { commit_id: String }
+export interface ParamClientId { client_id?: String }
+export interface ParamColumnId { column_id: String }
+export interface ParamProjectId { project_id: String }
+export interface ParamRepoId { repo_id: String }
+export interface ParamInvitationId { invitation_id: String }
+export interface ParamRef { ref: String }
+export interface ParamNumber { number: Number }
+export interface ParamIssueNumber { issue_number: Number }
+export interface ParamName { name: String }
+export interface ParamDirection { direction?: "asc"|"desc" }
+export interface ParamSince { since?: String }
+export interface ParamUntil { until?: String }
+export interface ParamState { state?: "open"|"closed"|"all" }
+export interface ParamColor { color: String }
+export interface ParamBase { base: String }
+export interface ParamHead { head: String }
+export interface ParamPath { path: String }
+export interface ParamPosition { position: Number }
+export interface ParamBody { body: String }
+export interface ParamHomepage { homepage?: String }
+export interface ParamPrivate { private?: Boolean }
+export interface ParamHasIssues { has_issues?: Boolean }
+export interface ParamHasWiki { has_wiki?: Boolean }
+export interface ParamHasDownloads { has_downloads?: Boolean }
+export interface ParamDefaultBranch { default_branch?: String }
+export interface ParamTitle { title: String }
+export interface ParamKey { key: String }
+export interface ParamPage { page?: Number }
+export interface ParamPerPage { per_page?: Number }
+export interface ParamScopes { scopes?: string[] }
+export interface ParamNote { note?: String }
+export interface ParamNoteUrl { note_url?: String }
+export interface ParamAutoInit { auto_init?: Boolean }
+export interface ParamGitignoreTemplate { gitignore_template?: String }
+export interface ParamLicenseTemplate { license_template?: String }
+export interface ParamOrder { order?: "asc"|"desc" }
+export interface ParamQ { q: String }
+export interface ParamData { data: String }
+export interface ParamPrivacy { privacy?: "secret"|"closed" }
+export interface ParamFingerprint { fingerprint?: String }
+export interface ParamAccessToken { access_token: String }
+export interface ParamAssignees { assignees?: string[] }
+
   // Response Types
   export type UserEmail = { readonly 'email': string;
 readonly 'verified': boolean;
@@ -1888,160 +1945,281 @@ readonly 'date': string; };
 
 
   // Input Param Types
-  export type OctokatAuthorizationsFnPatchParams = { add_scopes?: String[];
+  export type OctokatApplicationsGrantsFnGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatApplicationsGrantsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatAuthorizationsFnPatchParams = & ParamScopes
+& ParamNote
+& ParamNoteUrl
+& ParamFingerprint & { add_scopes?: String[];
 remove_scopes?: String[]; }
-export type OctokatAuthorizationsClientsPutParams = { client_secret: String; }
-export type OctokatAuthorizationsPostParams = { client_secret?: String; }
-export type OctokatReposIssuesFnAssigneesPostParams = { assignees: String[]; }
-export type OctokatReposIssuesFnLabelsFnDeleteParams = { name: String; }
-export type OctokatReposIssuesFnLabelsPostParams = { labels: String[]; }
-export type OctokatReposIssuesFnLabelsPutParams = { labels: String[]; }
-export type OctokatReposIssuesFnReactionsGetParams = { content?: String; }
-export type OctokatReposIssuesFnReactionsPostParams = { content: String; }
-export type OctokatReposIssuesFnPatchParams = { title?: String;
+export type OctokatAuthorizationsClientsPutParams = & ParamScopes
+& ParamNote
+& ParamNoteUrl
+& ParamFingerprint & { client_secret: String; }
+export type OctokatAuthorizationsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatAuthorizationsPostParams = & ParamScopes
+& ParamNote
+& ParamNoteUrl
+& ParamClientId
+& ParamFingerprint & { client_secret?: String; }
+export type OctokatEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposIssuesFnAssigneesPostParams =  & { assignees: String[]; }
+export type OctokatReposIssuesFnAssigneesDeleteParams = & ParamAssignees & {  }
+export type OctokatReposIssuesFnCommentsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposIssuesFnCommentsPostParams = & ParamBody & {  }
+export type OctokatReposIssuesFnEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposIssuesFnLabelsFnDeleteParams =  & { name: String; }
+export type OctokatReposIssuesFnLabelsPostParams =  & { labels: String[]; }
+export type OctokatReposIssuesFnLabelsPutParams =  & { labels: String[]; }
+export type OctokatReposIssuesFnTimelineGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposIssuesFnReactionsGetParams =  & { content?: String; }
+export type OctokatReposIssuesFnReactionsPostParams =  & { content: String; }
+export type OctokatReposIssuesFnPatchParams = & ParamAssignees & { title?: String;
 body?: String;
 assignee?: String;
 state?: String;
 milestone?: Number;
 labels?: String[]; }
-export type OctokatReposIssuesCommentsFnReactionsGetParams = { content?: String; }
-export type OctokatReposIssuesCommentsFnReactionsPostParams = { content: String; }
-export type OctokatReposIssuesCommentsGetParams = { sort?: String; }
-export type OctokatReposIssuesGetParams = { milestone?: String;
+export type OctokatReposIssuesEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposIssuesCommentsFnReactionsGetParams =  & { content?: String; }
+export type OctokatReposIssuesCommentsFnReactionsPostParams =  & { content: String; }
+export type OctokatReposIssuesCommentsFnPatchParams = & ParamBody & {  }
+export type OctokatReposIssuesCommentsGetParams = & ParamDirection
+& ParamSince
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatReposIssuesGetParams = & ParamDirection
+& ParamSince
+& ParamPage
+& ParamPerPage & { milestone?: String;
 state?: String;
 assignee?: String;
 creator?: String;
 mentioned?: String;
 labels?: String;
 sort?: String; }
-export type OctokatReposIssuesPostParams = { title: String;
+export type OctokatReposIssuesPostParams = & ParamAssignees & { title: String;
 body?: String;
 assignee?: String;
 milestone?: Number;
 labels?: String[]; }
-export type OctokatReposNotificationsGetParams = { all?: Boolean;
+export type OctokatReposNotificationsGetParams = & ParamSince & { all?: Boolean;
 participating?: Boolean;
 before?: String; }
-export type OctokatReposNotificationsPutParams = { last_read_at?: String; }
-export type OctokatReposSubscriptionPutParams = { subscribed?: Boolean;
+export type OctokatReposNotificationsPutParams =  & { last_read_at?: String; }
+export type OctokatReposStargazersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposSubscribersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposSubscriptionGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposSubscriptionPutParams =  & { subscribed?: Boolean;
 ignored?: Boolean; }
-export type OctokatReposGitBlobsPostParams = { content: String;
+export type OctokatReposGitBlobsFnGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposGitBlobsPostParams =  & { content: String;
 encoding: String; }
-export type OctokatReposGitCommitsPostParams = { message: String;
+export type OctokatReposGitCommitsPostParams =  & { message: String;
 tree: String;
 parents: String[];
 author?: Object;
 committer?: Object; }
-export type OctokatReposGitRefsFnPatchParams = { force?: Boolean; }
-export type OctokatReposGitRefsPostParams = { ref: String; }
-export type OctokatReposGitTagsPostParams = { tag: String;
+export type OctokatReposGitRefsFnPatchParams = & ParamSha & { force?: Boolean; }
+export type OctokatReposGitRefsTagsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposGitRefsPostParams = & ParamSha & { ref: String; }
+export type OctokatReposGitTagsPostParams =  & { tag: String;
 message: String;
 object: String;
 type: String;
 tagger: Object; }
-export type OctokatReposGitTreesFnGetParams = { recursive?: Boolean; }
-export type OctokatReposGitTreesPostParams = { tree: Object;
+export type OctokatReposGitTreesFnGetParams =  & { recursive?: Boolean; }
+export type OctokatReposGitTreesPostParams =  & { tree: Object;
 base_tree?: String; }
-export type OctokatReposAssigneesFnGetParams = { assignee: String; }
-export type OctokatReposLabelsFnPatchParams = { name: String; }
-export type OctokatReposMilestonesFnPatchParams = { title: String;
+export type OctokatReposAssigneesFnGetParams =  & { assignee: String; }
+export type OctokatReposLabelsFnPatchParams = & ParamColor & { name: String; }
+export type OctokatReposLabelsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposLabelsPostParams = & ParamName
+& ParamColor & {  }
+export type OctokatReposMilestonesFnPatchParams = & ParamState
+& ParamDescription & { title: String;
 due_on?: Date; }
-export type OctokatReposMilestonesGetParams = { sort?: String;
+export type OctokatReposMilestonesGetParams = & ParamState
+& ParamPage
+& ParamPerPage & { sort?: String;
 direction?: String; }
-export type OctokatReposMilestonesPostParams = { title: String;
+export type OctokatReposMilestonesPostParams = & ParamState
+& ParamDescription & { title: String;
 due_on?: Date; }
-export type OctokatReposImportAuthorsFnPatchParams = { author_id: String;
+export type OctokatReposImportAuthorsFnPatchParams =  & { author_id: String;
 email?: String;
 name?: String; }
-export type OctokatReposImportAuthorsGetParams = { since?: String; }
-export type OctokatReposImportPutParams = { vcs_url: String;
+export type OctokatReposImportAuthorsGetParams =  & { since?: String; }
+export type OctokatReposImportPutParams =  & { vcs_url: String;
 vcs?: String;
 vcs_username?: String;
 vcs_password?: String;
 tfvc_project?: String; }
-export type OctokatReposProjectsPostParams = { body?: String; }
-export type OctokatReposPullsFnMergePutParams = { commit_title?: String;
+export type OctokatReposProjectsPostParams = & ParamName & { body?: String; }
+export type OctokatReposPullsFnCommitsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnFilesGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnMergeGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnMergePutParams =  & { commit_title?: String;
 commit_message?: String;
 sha?: String;
 merge_method?: String; }
-export type OctokatReposPullsFnReviewsFnEventsPostParams = { body?: String;
+export type OctokatReposPullsFnReviewsFnCommentsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnReviewsFnEventsPostParams =  & { body?: String;
 event?: String; }
-export type OctokatReposPullsFnReviewsFnDismissalsPutParams = { message?: String; }
-export type OctokatReposPullsFnReviewsPostParams = { body?: String;
+export type OctokatReposPullsFnReviewsFnDismissalsPutParams = & ParamPage
+& ParamPerPage & { message?: String; }
+export type OctokatReposPullsFnReviewsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnReviewsPostParams =  & { body?: String;
 event?: String;
 comments?: String[];
 path?: String;
 position?: Number; }
-export type OctokatReposPullsFnCommentsPostParams = { in_reply_to: Number; }
-export type OctokatReposPullsFnRequestedReviewersPostParams = { reviewers?: String[]; }
-export type OctokatReposPullsFnRequestedReviewersDeleteParams = { reviewers?: String[]; }
-export type OctokatReposPullsFnPatchParams = { title?: String;
+export type OctokatReposPullsFnCommentsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnCommentsPostParams = & ParamBody & { in_reply_to: Number; }
+export type OctokatReposPullsFnRequestedReviewersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPullsFnRequestedReviewersPostParams =  & { reviewers?: String[]; }
+export type OctokatReposPullsFnRequestedReviewersDeleteParams =  & { reviewers?: String[]; }
+export type OctokatReposPullsFnPatchParams = & ParamState & { title?: String;
 body?: String;
 base?: String; }
-export type OctokatReposPullsCommentsFnReactionsGetParams = { content?: String; }
-export type OctokatReposPullsCommentsFnReactionsPostParams = { content: String; }
-export type OctokatReposPullsCommentsGetParams = { sort?: String; }
-export type OctokatReposPullsGetParams = { state?: String;
+export type OctokatReposPullsCommentsFnReactionsGetParams =  & { content?: String; }
+export type OctokatReposPullsCommentsFnReactionsPostParams =  & { content: String; }
+export type OctokatReposPullsCommentsFnPatchParams = & ParamBody & {  }
+export type OctokatReposPullsCommentsGetParams = & ParamDirection
+& ParamSince
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatReposPullsGetParams = & ParamDirection
+& ParamPage
+& ParamPerPage & { state?: String;
 head?: String;
 base?: String;
 sort?: String; }
-export type OctokatReposPullsPostParams = { issue: Number; }
-export type OctokatReposCommentsFnReactionsGetParams = { content?: String; }
-export type OctokatReposCommentsFnReactionsPostParams = { content: String; }
-export type OctokatReposContributorsGetParams = { anon?: Boolean; }
-export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsPostParams = { contexts: String[]; }
-export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsPutParams = { contexts: String[]; }
-export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsDeleteParams = { contexts: String[]; }
-export type OctokatReposBranchesFnProtectionRequiredStatusChecksPatchParams = { include_admins?: Boolean;
+export type OctokatReposPullsPostParams = & ParamHead
+& ParamBase & { issue: Number; }
+export type OctokatReposCommentsFnReactionsGetParams =  & { content?: String; }
+export type OctokatReposCommentsFnReactionsPostParams =  & { content: String; }
+export type OctokatReposCommentsFnPatchParams = & ParamBody & {  }
+export type OctokatReposCommentsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposContributorsGetParams = & ParamPage
+& ParamPerPage & { anon?: Boolean; }
+export type OctokatReposLanguagesGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposTeamsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposTagsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsPostParams =  & { contexts: String[]; }
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsPutParams =  & { contexts: String[]; }
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksContextsDeleteParams =  & { contexts: String[]; }
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksPatchParams = & ParamPage
+& ParamPerPage & { include_admins?: Boolean;
 strict?: Boolean;
 contexts?: String[]; }
-export type OctokatReposBranchesFnProtectionRequiredPullRequestReviewsPatchParams = { include_admins?: Boolean; }
-export type OctokatReposBranchesFnProtectionRestrictionsTeamsPostParams = { teams: String[]; }
-export type OctokatReposBranchesFnProtectionRestrictionsTeamsPutParams = { teams: String[]; }
-export type OctokatReposBranchesFnProtectionRestrictionsTeamsDeleteParams = { teams: String[]; }
-export type OctokatReposBranchesFnProtectionRestrictionsUsersPostParams = { users: String[]; }
-export type OctokatReposBranchesFnProtectionRestrictionsUsersPutParams = { users: String[]; }
-export type OctokatReposBranchesFnProtectionRestrictionsUsersDeleteParams = { users: String[]; }
-export type OctokatReposBranchesFnProtectionPutParams = { required_status_checks: Object;
+export type OctokatReposBranchesFnProtectionRequiredStatusChecksDeleteParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRequiredPullRequestReviewsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRequiredPullRequestReviewsPatchParams =  & { include_admins?: Boolean; }
+export type OctokatReposBranchesFnProtectionRestrictionsTeamsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRestrictionsTeamsPostParams =  & { teams: String[]; }
+export type OctokatReposBranchesFnProtectionRestrictionsTeamsPutParams =  & { teams: String[]; }
+export type OctokatReposBranchesFnProtectionRestrictionsTeamsDeleteParams =  & { teams: String[]; }
+export type OctokatReposBranchesFnProtectionRestrictionsUsersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionRestrictionsUsersPostParams =  & { users: String[]; }
+export type OctokatReposBranchesFnProtectionRestrictionsUsersPutParams =  & { users: String[]; }
+export type OctokatReposBranchesFnProtectionRestrictionsUsersDeleteParams =  & { users: String[]; }
+export type OctokatReposBranchesFnProtectionRestrictionsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnProtectionPutParams = & ParamPage
+& ParamPerPage & { required_status_checks: Object;
 required_pull_request_reviews: Object;
 restrictions: Object; }
-export type OctokatReposBranchesGetParams = { protected?: Boolean; }
-export type OctokatReposCollaboratorsFnPutParams = { permission?: String; }
-export type OctokatReposCollaboratorsGetParams = { affiliation?: String; }
-export type OctokatReposCommitsFnCommentsGetParams = { ref: String; }
-export type OctokatReposCommitsFnStatusesGetParams = { ref: String; }
-export type OctokatReposCommitsFnStatusGetParams = { ref: String; }
-export type OctokatReposCommitsGetParams = { sha?: String;
+export type OctokatReposBranchesFnProtectionDeleteParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesFnGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposBranchesGetParams = & ParamPage
+& ParamPerPage & { protected?: Boolean; }
+export type OctokatReposCollaboratorsFnPutParams =  & { permission?: String; }
+export type OctokatReposCollaboratorsGetParams = & ParamPage
+& ParamPerPage & { affiliation?: String; }
+export type OctokatReposCommitsFnCommentsGetParams = & ParamPage
+& ParamPerPage & { ref: String; }
+export type OctokatReposCommitsFnStatusesGetParams = & ParamPage
+& ParamPerPage & { ref: String; }
+export type OctokatReposCommitsFnStatusGetParams = & ParamPage
+& ParamPerPage & { ref: String; }
+export type OctokatReposCommitsGetParams = & ParamSince
+& ParamUntil
+& ParamPage
+& ParamPerPage & { sha?: String;
 path?: String;
 author?: String; }
-export type OctokatReposReadmeGetParams = { ref?: String; }
-export type OctokatReposContentsGetParams = { path: String;
+export type OctokatReposReadmeGetParams =  & { ref?: String; }
+export type OctokatReposContentsGetParams =  & { path: String;
 ref?: String; }
-export type OctokatReposContentsPutParams = { path: String;
+export type OctokatReposContentsPutParams =  & { path: String;
 message: String;
 content: String;
 sha: String;
 branch?: String;
 committer?: Object; }
-export type OctokatReposContentsDeleteParams = { path: String;
+export type OctokatReposContentsDeleteParams =  & { path: String;
 message: String;
 sha: String;
 branch?: String;
 committer?: Object; }
-export type OctokatReposTarballGetParams = { ref?: String; }
-export type OctokatReposZipballGetParams = { ref?: String; }
-export type OctokatReposKeysPostParams = { read_only?: Boolean; }
-export type OctokatReposDeploymentsFnStatusesPostParams = { state?: String;
+export type OctokatReposTarballGetParams =  & { ref?: String; }
+export type OctokatReposZipballGetParams =  & { ref?: String; }
+export type OctokatReposKeysGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposKeysPostParams = & ParamTitle
+& ParamKey & { read_only?: Boolean; }
+export type OctokatReposDeploymentsFnStatusesPostParams =  & { state?: String;
 target_url?: String;
 log_url?: String;
 description?: String;
 environment_url?: String;
 auto_inactive?: Boolean; }
-export type OctokatReposDeploymentsGetParams = { sha?: String;
+export type OctokatReposDeploymentsGetParams = & ParamPage
+& ParamPerPage & { sha?: String;
 ref?: String;
 task?: String;
 environment?: String; }
-export type OctokatReposDeploymentsPostParams = { ref: String;
+export type OctokatReposDeploymentsPostParams =  & { ref: String;
 task?: String;
 auto_merge?: Boolean;
 required_contexts?: String[];
@@ -2050,72 +2228,127 @@ environment?: String;
 description?: String;
 transient_environment?: Boolean;
 production_environment?: Boolean; }
-export type OctokatReposForksGetParams = { sort?: String; }
-export type OctokatReposForksPostParams = { organization?: String; }
-export type OctokatReposMergesPostParams = { commit_message?: String; }
-export type OctokatReposReleasesFnAssetsPostParams = { filePath: String;
+export type OctokatReposDownloadsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposForksGetParams = & ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatReposForksPostParams =  & { organization?: String; }
+export type OctokatReposMergesPostParams = & ParamBase
+& ParamHead & { commit_message?: String; }
+export type OctokatReposPagesBuildsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposPagesGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposReleasesFnAssetsPostParams =  & { filePath: String;
 name: String;
 label?: String; }
-export type OctokatReposReleasesFnPatchParams = { tag_name: String;
+export type OctokatReposReleasesFnPatchParams =  & { tag_name: String;
 target_commitish?: String;
 name?: String;
 body?: String;
 draft?: Boolean;
 prerelease?: Boolean; }
-export type OctokatReposReleasesTagsGetParams = { tag: String; }
-export type OctokatReposReleasesAssetsPatchParams = { label?: String; }
-export type OctokatReposReleasesPostParams = { tag_name: String;
+export type OctokatReposReleasesTagsGetParams =  & { tag: String; }
+export type OctokatReposReleasesAssetsPatchParams = & ParamName & { label?: String; }
+export type OctokatReposReleasesGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposReleasesPostParams =  & { tag_name: String;
 target_commitish?: String;
 name?: String;
 body?: String;
 draft?: Boolean;
 prerelease?: Boolean; }
-export type OctokatReposStatusesPostParams = { state: String;
+export type OctokatReposStatusesPostParams =  & { state: String;
 target_url?: String;
 description?: String;
 context?: String; }
-export type OctokatReposHooksFnPatchParams = { config: Object;
+export type OctokatReposTrafficPopularReferrersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposTrafficPopularPathsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposTrafficViewsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposTrafficClonesGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposHooksFnPatchParams = & ParamName & { config: Object;
 events?: String[];
 add_events?: String[];
 remove_events?: String[];
 active?: Boolean; }
-export type OctokatReposHooksPostParams = { config: Object;
+export type OctokatReposHooksGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposHooksPostParams = & ParamName & { config: Object;
 events?: String[];
 active?: Boolean; }
-export type OctokatReposPatchParams = { allow_squash_merge?: Boolean;
+export type OctokatReposPatchParams = & ParamName
+& ParamDescription
+& ParamHomepage
+& ParamPrivate
+& ParamHasIssues
+& ParamHasWiki
+& ParamHasDownloads
+& ParamDefaultBranch & { allow_squash_merge?: Boolean;
 allow_merge_commit?: Boolean;
 allow_rebase_merge?: Boolean; }
-export type OctokatOrgsIssuesGetParams = { filter?: String;
+export type OctokatNetworksEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsIssuesGetParams = & ParamDirection
+& ParamSince
+& ParamPage
+& ParamPerPage & { filter?: String;
 state?: String;
 labels?: String;
 sort?: String; }
-export type OctokatOrgsMigrationsFnReposLockDeleteParams = { repo_name: String; }
-export type OctokatOrgsMigrationsPostParams = { repositories: String[];
+export type OctokatOrgsMigrationsFnReposLockDeleteParams =  & { repo_name: String; }
+export type OctokatOrgsMigrationsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsMigrationsPostParams =  & { repositories: String[];
 lock_repositories?: Boolean;
 exclude_attachments?: Boolean; }
-export type OctokatOrgsMembersGetParams = { filter?: String;
+export type OctokatOrgsMembersGetParams = & ParamPage
+& ParamPerPage & { filter?: String;
 role?: String; }
-export type OctokatOrgsMembershipsPutParams = { role: String; }
-export type OctokatOrgsTeamsPostParams = { description?: String;
+export type OctokatOrgsMembershipsPutParams =  & { role: String; }
+export type OctokatOrgsOutsideCollaboratorsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsTeamsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsTeamsPostParams = & ParamName
+& ParamPrivacy & { description?: String;
 maintainers?: String[];
 repo_names?: String[]; }
-export type OctokatOrgsHooksFnPatchParams = { config: Object;
+export type OctokatOrgsHooksFnPatchParams =  & { config: Object;
 events?: String[];
 active?: Boolean; }
-export type OctokatOrgsHooksPostParams = { name: String;
+export type OctokatOrgsHooksGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsHooksPostParams =  & { name: String;
 config: Object;
 events?: String[];
 active?: Boolean; }
-export type OctokatOrgsProjectsPostParams = { body?: String; }
-export type OctokatOrgsReposGetParams = { type?: String; }
-export type OctokatOrgsReposPostParams = { name: String;
-description?: String;
-private?: Boolean;
-team_id?: Number;
+export type OctokatOrgsBlocksGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsProjectsPostParams = & ParamName & { body?: String; }
+export type OctokatOrgsReposGetParams = & ParamPage
+& ParamPerPage & { type?: String; }
+export type OctokatOrgsReposPostParams = & ParamName
+& ParamDescription
+& ParamHomepage
+& ParamPrivate
+& ParamHasIssues
+& ParamHasWiki
+& ParamHasDownloads
+& ParamAutoInit
+& ParamGitignoreTemplate
+& ParamLicenseTemplate & { team_id?: Number;
 allow_squash_merge?: Boolean;
 allow_merge_commit?: Boolean;
 allow_rebase_merge?: Boolean; }
-export type OctokatOrgsPatchParams = { billing_email?: String;
+export type OctokatOrgsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatOrgsPatchParams =  & { billing_email?: String;
 company?: String;
 email?: String;
 location?: String;
@@ -2123,99 +2356,206 @@ name?: String;
 description?: String;
 default_repository_permission?: String;
 members_can_create_repositories?: Boolean; }
-export type OctokatUsersFnStarredGetParams = { sort?: String; }
-export type OctokatUsersFnReposGetParams = { type?: String;
+export type OctokatUsersFnReceivedEventsPublicGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnReceivedEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnEventsPublicGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnEventsOrgsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnEventsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnStarredGetParams = & ParamDirection
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatUsersFnSubscriptionsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnGistsGetParams = & ParamSince
+& ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnOrgsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnReposGetParams = & ParamDirection
+& ParamPage
+& ParamPerPage & { type?: String;
 sort?: String; }
-export type OctokatUsersFnFollowingFnGetParams = { target_user: String; }
-export type OctokatUsersGetParams = { since?: Number; }
-export type OctokatNotificationsThreadsSubscriptionPutParams = { subscribed?: Boolean;
+export type OctokatUsersFnFollowersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnFollowingFnGetParams =  & { target_user: String; }
+export type OctokatUsersFnFollowingGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersFnKeysGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUsersGetParams =  & { since?: Number; }
+export type OctokatNotificationsThreadsSubscriptionPutParams =  & { subscribed?: Boolean;
 ignored?: Boolean; }
-export type OctokatNotificationsGetParams = { all?: Boolean;
+export type OctokatNotificationsGetParams = & ParamSince & { all?: Boolean;
 participating?: Boolean;
 before?: String; }
-export type OctokatNotificationsPutParams = { last_read_at?: String; }
-export type OctokatUserStarredGetParams = { sort?: String; }
-export type OctokatUserIssuesGetParams = { filter?: String;
+export type OctokatNotificationsPutParams =  & { last_read_at?: String; }
+export type OctokatUserStarredFnGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserStarredGetParams = & ParamDirection
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatUserSubscriptionsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserIssuesGetParams = & ParamDirection
+& ParamSince
+& ParamPage
+& ParamPerPage & { filter?: String;
 state?: String;
 labels?: String;
 sort?: String; }
-export type OctokatUserReposGetParams = { visibility?: String;
+export type OctokatUserReposGetParams = & ParamDirection
+& ParamPage
+& ParamPerPage & { visibility?: String;
 affiliation?: String;
 type?: String;
 sort?: String; }
-export type OctokatUserReposPostParams = { team_id?: Number;
+export type OctokatUserReposPostParams = & ParamName
+& ParamDescription
+& ParamHomepage
+& ParamPrivate
+& ParamHasIssues
+& ParamHasWiki
+& ParamHasDownloads
+& ParamAutoInit
+& ParamGitignoreTemplate
+& ParamLicenseTemplate & { team_id?: Number;
 allow_squash_merge?: Boolean;
 allow_merge_commit?: Boolean;
 allow_rebase_merge?: Boolean; }
-export type OctokatUserMembershipsOrgsFnPatchParams = { state: String; }
-export type OctokatUserMembershipsOrgsGetParams = { state?: String; }
-export type OctokatUserEmailsPostParams = { emails: String[]; }
-export type OctokatUserEmailsDeleteParams = { emails: String[]; }
-export type OctokatUserGpgKeysPostParams = { armored_public_key: String; }
-export type OctokatUserPatchParams = { name?: String;
+export type OctokatUserOrgsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserMembershipsOrgsFnPatchParams =  & { state: String; }
+export type OctokatUserMembershipsOrgsGetParams =  & { state?: String; }
+export type OctokatUserTeamsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserPublicEmailsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserEmailsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserEmailsPostParams =  & { emails: String[]; }
+export type OctokatUserEmailsDeleteParams =  & { emails: String[]; }
+export type OctokatUserFollowersGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserFollowingGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserKeysGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserKeysPostParams = & ParamTitle
+& ParamKey & {  }
+export type OctokatUserGpgKeysGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatUserGpgKeysPostParams =  & { armored_public_key: String; }
+export type OctokatUserPatchParams =  & { name?: String;
 email?: String;
 blog?: String;
 company?: String;
 location?: String;
 hireable?: Boolean;
 bio?: String; }
-export type OctokatGistsFnPatchParams = { content?: String;
+export type OctokatGistsFnForksGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatGistsFnCommentsFnPatchParams = & ParamBody & {  }
+export type OctokatGistsFnCommentsPostParams = & ParamBody & {  }
+export type OctokatGistsFnPatchParams = & ParamDescription
+& ParamFiles & { content?: String;
 filename?: String; }
-export type OctokatGistsPostParams = { public: Boolean; }
-export type OctokatIntegrationIdentityUserPostParams = { nonce?: String; }
-export type OctokatInstallationsAccessTokensPostParams = { user_id?: String; }
-export type OctokatInstallationRepositoriesGetParams = { user_id?: String; }
-export type OctokatIssuesGetParams = { filter?: String;
+export type OctokatGistsPublicGetParams = & ParamSince & {  }
+export type OctokatGistsStarredGetParams = & ParamSince & {  }
+export type OctokatGistsGetParams = & ParamSince
+& ParamPage
+& ParamPerPage & {  }
+export type OctokatGistsPostParams = & ParamFiles
+& ParamDescription & { public: Boolean; }
+export type OctokatIntegrationInstallationsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatIntegrationIdentityUserPostParams =  & { nonce?: String; }
+export type OctokatInstallationsAccessTokensPostParams =  & { user_id?: String; }
+export type OctokatInstallationRepositoriesGetParams =  & { user_id?: String; }
+export type OctokatIssuesGetParams = & ParamDirection
+& ParamSince
+& ParamPage
+& ParamPerPage & { filter?: String;
 state?: String;
 labels?: String;
 sort?: String; }
-export type OctokatGitignoreTemplatesFnGetParams = { name: String; }
-export type OctokatLicensesFnGetParams = { license: String; }
-export type OctokatMarkdownPostParams = { text: String;
+export type OctokatGitignoreTemplatesFnGetParams =  & { name: String; }
+export type OctokatLicensesFnGetParams =  & { license: String; }
+export type OctokatMarkdownRawPostParams = & ParamData & {  }
+export type OctokatMarkdownPostParams =  & { text: String;
 mode?: String;
 context?: String; }
-export type OctokatOrganizationsGetParams = { since?: String; }
-export type OctokatTeamsMembersGetParams = { role?: String; }
-export type OctokatTeamsMembershipsPutParams = { role?: String; }
-export type OctokatTeamsReposFnPutParams = { permission?: String; }
-export type OctokatTeamsPatchParams = { description?: String; }
-export type OctokatProjectsFnPatchParams = { body?: String; }
-export type OctokatProjectsColumnsFnCardsPostParams = { note?: String;
+export type OctokatOrganizationsGetParams = & ParamPage
+& ParamPerPage & { since?: String; }
+export type OctokatTeamsMembersGetParams = & ParamPage
+& ParamPerPage & { role?: String; }
+export type OctokatTeamsMembershipsPutParams =  & { role?: String; }
+export type OctokatTeamsReposFnPutParams = & ParamOrg & { permission?: String; }
+export type OctokatTeamsReposGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatTeamsInvitationsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatTeamsPatchParams = & ParamName
+& ParamPrivacy & { description?: String; }
+export type OctokatProjectsFnColumnsPostParams = & ParamName & {  }
+export type OctokatProjectsFnPatchParams = & ParamName & { body?: String; }
+export type OctokatProjectsColumnsFnCardsGetParams = & ParamColumnId & {  }
+export type OctokatProjectsColumnsFnCardsPostParams = & ParamColumnId & { note?: String;
 content_id?: String;
 content_type?: String; }
-export type OctokatProjectsColumnsFnMovesPostParams = { position: String; }
-export type OctokatProjectsColumnsCardsMovesPostParams = { position: String;
+export type OctokatProjectsColumnsFnMovesPostParams =  & { position: String; }
+export type OctokatProjectsColumnsFnPatchParams = & ParamName & {  }
+export type OctokatProjectsColumnsCardsMovesPostParams =  & { position: String;
 column_id?: String; }
-export type OctokatProjectsColumnsCardsPatchParams = { note?: String; }
-export type OctokatRepositoriesFnInvitationsFnPatchParams = { permission?: String; }
-export type OctokatRepositoriesGetParams = { since?: String; }
-export type OctokatSearchRepositoriesGetParams = { sort?: String; }
-export type OctokatSearchCodeGetParams = { sort?: String; }
-export type OctokatSearchCommitsGetParams = { sort?: String; }
-export type OctokatSearchIssuesGetParams = { sort?: String; }
-export type OctokatSearchUsersGetParams = { q: String;
+export type OctokatProjectsColumnsCardsPatchParams =  & { note?: String; }
+export type OctokatRepositoriesFnInvitationsFnPatchParams =  & { permission?: String; }
+export type OctokatRepositoriesGetParams =  & { since?: String; }
+export type OctokatSearchRepositoriesGetParams = & ParamQ
+& ParamOrder
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatSearchCodeGetParams = & ParamQ
+& ParamOrder
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatSearchCommitsGetParams = & ParamQ
+& ParamOrder
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatSearchIssuesGetParams = & ParamQ
+& ParamOrder
+& ParamPage
+& ParamPerPage & { sort?: String; }
+export type OctokatSearchUsersGetParams = & ParamQ
+& ParamOrder
+& ParamPage
+& ParamPerPage & { q: String;
 sort?: String; }
-export type OctokatLegacyUserEmailGetParams = { email: String; }
-export type OctokatEnterpriseStatsGetParams = { type: String; }
-export type OctokatAdminLdapUsersMappingPatchParams = { ldap_dn: String; }
-export type OctokatAdminLdapTeamsMappingPatchParams = { team_id: Number;
+export type OctokatLegacyUserEmailGetParams =  & { email: String; }
+export type OctokatEnterpriseStatsGetParams =  & { type: String; }
+export type OctokatAdminLdapUsersMappingPatchParams =  & { ldap_dn: String; }
+export type OctokatAdminLdapTeamsMappingPatchParams =  & { team_id: Number;
 ldap_dn: String; }
-export type OctokatAdminLdapTeamsSyncPostParams = { team_id: Number; }
-export type OctokatAdminPreReceiveEnvironmentsFnPatchParams = { name: String;
+export type OctokatAdminLdapTeamsSyncPostParams =  & { team_id: Number; }
+export type OctokatAdminPreReceiveEnvironmentsFnPatchParams =  & { name: String;
 image_url: String; }
-export type OctokatAdminPreReceiveEnvironmentsPostParams = { name: String;
+export type OctokatAdminPreReceiveEnvironmentsPostParams =  & { name: String;
 image_url: String; }
-export type OctokatAdminPreReceiveHooksFnPatchParams = { hook: Object; }
-export type OctokatAdminPreReceiveHooksPostParams = { name: String;
+export type OctokatAdminPreReceiveHooksFnPatchParams =  & { hook: Object; }
+export type OctokatAdminPreReceiveHooksPostParams =  & { name: String;
 script: String;
 script_repository: Object;
 environment: Object;
 enforcement?: String;
 allow_downstream_configuration?: Boolean; }
-export type OctokatAdminOrganizationsPostParams = { login: String;
+export type OctokatAdminOrganizationsPostParams =  & { login: String;
 admin: String;
 profile_name?: String; }
-export type OctokatStaffIndexingJobsPostParams = { target: String; }
+export type OctokatStaffIndexingJobsPostParams =  & { target: String; }
 
   export default class Octokat {
     constructor(options?: Object)
@@ -2242,15 +2582,15 @@ grants: {
 (id: any): { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatApplicationsGrantsFnGetParams): Promise<any>
+read(params?: OctokatApplicationsGrantsFnGetParams): Promise<String>
+readBinary(params?: OctokatApplicationsGrantsFnGetParams): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatApplicationsGrantsGetParams): Promise<any>
+read(params?: OctokatApplicationsGrantsGetParams): Promise<String>
+readBinary(params?: OctokatApplicationsGrantsGetParams): Promise<any>
  }
 
  }
@@ -2272,17 +2612,17 @@ clients(client_id: any): {
 add(params: OctokatAuthorizationsClientsPutParams): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatAuthorizationsGetParams): Promise<any>
+read(params?: OctokatAuthorizationsGetParams): Promise<String>
+readBinary(params?: OctokatAuthorizationsGetParams): Promise<any>
 create(params?: OctokatAuthorizationsPostParams): Promise<any>
  }
 events: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatEventsGetParams): Promise<any>
+read(params?: OctokatEventsGetParams): Promise<String>
+readBinary(params?: OctokatEventsGetParams): Promise<any>
  }
 
 // Syntactic shortcut used here
@@ -2291,9 +2631,9 @@ repos(owner: any, repo: any): {
 events: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposEventsGetParams): Promise<any>
+read(params?: OctokatReposEventsGetParams): Promise<String>
+readBinary(params?: OctokatReposEventsGetParams): Promise<any>
  }
 issues: { 
 (number: any): { 
@@ -2308,23 +2648,23 @@ assignees: {
 
 
 create(params: OctokatReposIssuesFnAssigneesPostParams): Promise<any>
-remove(): Promise<void>
+remove(params?: OctokatReposIssuesFnAssigneesDeleteParams): Promise<void>
  }
 comments: { 
 
 
-fetch(): Promise<SearchResult<IssueComment>>
-fetchAll(): Promise<IssueComment[]>
-read(): Promise<String>
-readBinary(): Promise<any>
-create(): Promise<IssueComment>
+fetch(params?: OctokatReposIssuesFnCommentsGetParams): Promise<SearchResult<IssueComment>>
+fetchAll(params?: OctokatReposIssuesFnCommentsGetParams): Promise<IssueComment[]>
+read(params?: OctokatReposIssuesFnCommentsGetParams): Promise<String>
+readBinary(params?: OctokatReposIssuesFnCommentsGetParams): Promise<any>
+create(params?: OctokatReposIssuesFnCommentsPostParams): Promise<IssueComment>
  }
 events: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposIssuesFnEventsGetParams): Promise<any>
+read(params?: OctokatReposIssuesFnEventsGetParams): Promise<String>
+readBinary(params?: OctokatReposIssuesFnEventsGetParams): Promise<any>
  }
 labels: { 
 (name: any): { 
@@ -2344,9 +2684,9 @@ remove(): Promise<any>
 timeline: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposIssuesFnTimelineGetParams): Promise<any>
+read(params?: OctokatReposIssuesFnTimelineGetParams): Promise<String>
+readBinary(params?: OctokatReposIssuesFnTimelineGetParams): Promise<any>
  }
 reactions: { 
 
@@ -2370,9 +2710,9 @@ read(): Promise<String>
 readBinary(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposIssuesEventsGetParams): Promise<any>
+read(params?: OctokatReposIssuesEventsGetParams): Promise<String>
+readBinary(params?: OctokatReposIssuesEventsGetParams): Promise<any>
  }
 comments: { 
 (id: any): { 
@@ -2388,7 +2728,7 @@ create(params: OctokatReposIssuesCommentsFnReactionsPostParams): Promise<any>
 fetch(): Promise<IssueComment>
 read(): Promise<String>
 readBinary(): Promise<any>
-update(): Promise<IssueComment>
+update(params?: OctokatReposIssuesCommentsFnPatchParams): Promise<IssueComment>
 remove(): Promise<void>
  }
 
@@ -2413,23 +2753,23 @@ add(params?: OctokatReposNotificationsPutParams): Promise<any>
 stargazers: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposStargazersGetParams): Promise<any>
+read(params?: OctokatReposStargazersGetParams): Promise<String>
+readBinary(params?: OctokatReposStargazersGetParams): Promise<any>
  }
 subscribers: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposSubscribersGetParams): Promise<any>
+read(params?: OctokatReposSubscribersGetParams): Promise<String>
+readBinary(params?: OctokatReposSubscribersGetParams): Promise<any>
  }
 subscription: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposSubscriptionGetParams): Promise<any>
+read(params?: OctokatReposSubscriptionGetParams): Promise<String>
+readBinary(params?: OctokatReposSubscriptionGetParams): Promise<any>
 add(params?: OctokatReposSubscriptionPutParams): Promise<any>
 remove(): Promise<any>
  }
@@ -2439,9 +2779,9 @@ blobs: {
 (sha: any): { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposGitBlobsFnGetParams): Promise<any>
+read(params?: OctokatReposGitBlobsFnGetParams): Promise<String>
+readBinary(params?: OctokatReposGitBlobsFnGetParams): Promise<any>
  }
 
 create(params: OctokatReposGitBlobsPostParams): Promise<any>
@@ -2470,9 +2810,9 @@ remove(): Promise<any>
 tags: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposGitRefsTagsGetParams): Promise<any>
+read(params?: OctokatReposGitRefsTagsGetParams): Promise<String>
+readBinary(params?: OctokatReposGitRefsTagsGetParams): Promise<any>
  }
 create(params: OctokatReposGitRefsPostParams): Promise<any>
  }
@@ -2525,11 +2865,11 @@ update(params: OctokatReposLabelsFnPatchParams): Promise<IssueLabel>
 remove(): Promise<void>
  }
 
-fetch(): Promise<SearchResult<IssueLabel>>
-fetchAll(): Promise<IssueLabel[]>
-read(): Promise<String>
-readBinary(): Promise<any>
-create(): Promise<IssueLabel>
+fetch(params?: OctokatReposLabelsGetParams): Promise<SearchResult<IssueLabel>>
+fetchAll(params?: OctokatReposLabelsGetParams): Promise<IssueLabel[]>
+read(params?: OctokatReposLabelsGetParams): Promise<String>
+readBinary(params?: OctokatReposLabelsGetParams): Promise<any>
+create(params?: OctokatReposLabelsPostParams): Promise<IssueLabel>
  }
 milestones: { 
 (number: any): { 
@@ -2594,23 +2934,23 @@ pulls: {
 commits: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnCommitsGetParams): Promise<any>
+read(params?: OctokatReposPullsFnCommitsGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnCommitsGetParams): Promise<any>
  }
 files: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnFilesGetParams): Promise<any>
+read(params?: OctokatReposPullsFnFilesGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnFilesGetParams): Promise<any>
  }
 merge: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnMergeGetParams): Promise<any>
+read(params?: OctokatReposPullsFnMergeGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnMergeGetParams): Promise<any>
 add(params?: OctokatReposPullsFnMergePutParams): Promise<any>
  }
 reviews: { 
@@ -2619,9 +2959,9 @@ reviews: {
 comments: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnReviewsFnCommentsGetParams): Promise<any>
+read(params?: OctokatReposPullsFnReviewsFnCommentsGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnReviewsFnCommentsGetParams): Promise<any>
  }
 events: { 
 
@@ -2638,25 +2978,25 @@ read(): Promise<String>
 readBinary(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnReviewsGetParams): Promise<any>
+read(params?: OctokatReposPullsFnReviewsGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnReviewsGetParams): Promise<any>
 create(params?: OctokatReposPullsFnReviewsPostParams): Promise<any>
  }
 comments: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnCommentsGetParams): Promise<any>
+read(params?: OctokatReposPullsFnCommentsGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnCommentsGetParams): Promise<any>
 create(params: OctokatReposPullsFnCommentsPostParams): Promise<any>
  }
 requestedReviewers: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPullsFnRequestedReviewersGetParams): Promise<any>
+read(params?: OctokatReposPullsFnRequestedReviewersGetParams): Promise<String>
+readBinary(params?: OctokatReposPullsFnRequestedReviewersGetParams): Promise<any>
 create(params?: OctokatReposPullsFnRequestedReviewersPostParams): Promise<any>
 remove(params?: OctokatReposPullsFnRequestedReviewersDeleteParams): Promise<any>
  }
@@ -2679,7 +3019,7 @@ create(params: OctokatReposPullsCommentsFnReactionsPostParams): Promise<any>
 fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
-update(): Promise<any>
+update(params?: OctokatReposPullsCommentsFnPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
@@ -2706,13 +3046,13 @@ create(params: OctokatReposCommentsFnReactionsPostParams): Promise<any>
 fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
-update(): Promise<any>
+update(params?: OctokatReposCommentsFnPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposCommentsGetParams): Promise<any>
+read(params?: OctokatReposCommentsGetParams): Promise<String>
+readBinary(params?: OctokatReposCommentsGetParams): Promise<any>
  }
 contributors: { 
 
@@ -2724,23 +3064,23 @@ readBinary(params?: OctokatReposContributorsGetParams): Promise<any>
 languages: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposLanguagesGetParams): Promise<any>
+read(params?: OctokatReposLanguagesGetParams): Promise<String>
+readBinary(params?: OctokatReposLanguagesGetParams): Promise<any>
  }
 teams: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposTeamsGetParams): Promise<any>
+read(params?: OctokatReposTeamsGetParams): Promise<String>
+readBinary(params?: OctokatReposTeamsGetParams): Promise<any>
  }
 tags: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposTagsGetParams): Promise<any>
+read(params?: OctokatReposTagsGetParams): Promise<String>
+readBinary(params?: OctokatReposTagsGetParams): Promise<any>
  }
 branches: { 
 (branch: any): { 
@@ -2752,25 +3092,25 @@ requiredStatusChecks: {
 contexts: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsGetParams): Promise<any>
 create(params: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsPostParams): Promise<any>
 add(params: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsPutParams): Promise<any>
 remove(params: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsDeleteParams): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksGetParams): Promise<any>
 update(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksPatchParams): Promise<any>
-remove(): Promise<any>
+remove(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksDeleteParams): Promise<any>
  }
 requiredPullRequestReviews: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsGetParams): Promise<any>
 update(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsPatchParams): Promise<any>
 remove(): Promise<any>
  }
@@ -2779,9 +3119,9 @@ restrictions: {
 teams: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionRestrictionsTeamsGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionRestrictionsTeamsGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionRestrictionsTeamsGetParams): Promise<any>
 create(params: OctokatReposBranchesFnProtectionRestrictionsTeamsPostParams): Promise<any>
 add(params: OctokatReposBranchesFnProtectionRestrictionsTeamsPutParams): Promise<any>
 remove(params: OctokatReposBranchesFnProtectionRestrictionsTeamsDeleteParams): Promise<any>
@@ -2789,27 +3129,27 @@ remove(params: OctokatReposBranchesFnProtectionRestrictionsTeamsDeleteParams): P
 users: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionRestrictionsUsersGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionRestrictionsUsersGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionRestrictionsUsersGetParams): Promise<any>
 create(params: OctokatReposBranchesFnProtectionRestrictionsUsersPostParams): Promise<any>
 add(params: OctokatReposBranchesFnProtectionRestrictionsUsersPutParams): Promise<any>
 remove(params: OctokatReposBranchesFnProtectionRestrictionsUsersDeleteParams): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionRestrictionsGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionRestrictionsGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionRestrictionsGetParams): Promise<any>
 remove(): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnProtectionGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnProtectionGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnProtectionGetParams): Promise<any>
 add(params: OctokatReposBranchesFnProtectionPutParams): Promise<any>
-remove(): Promise<any>
+remove(params?: OctokatReposBranchesFnProtectionDeleteParams): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposBranchesFnGetParams): Promise<any>
+read(params?: OctokatReposBranchesFnGetParams): Promise<String>
+readBinary(params?: OctokatReposBranchesFnGetParams): Promise<any>
  }
 
 fetch(params?: OctokatReposBranchesGetParams): Promise<any>
@@ -2929,9 +3269,9 @@ readBinary(): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposKeysGetParams): Promise<any>
+read(params?: OctokatReposKeysGetParams): Promise<String>
+readBinary(params?: OctokatReposKeysGetParams): Promise<any>
 create(params?: OctokatReposKeysPostParams): Promise<any>
  }
 deployments: { 
@@ -2963,9 +3303,9 @@ readBinary(): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposDownloadsGetParams): Promise<any>
+read(params?: OctokatReposDownloadsGetParams): Promise<String>
+readBinary(params?: OctokatReposDownloadsGetParams): Promise<any>
  }
 forks: { 
 
@@ -2997,14 +3337,14 @@ fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPagesBuildsGetParams): Promise<any>
+read(params?: OctokatReposPagesBuildsGetParams): Promise<String>
+readBinary(params?: OctokatReposPagesBuildsGetParams): Promise<any>
 create(): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposPagesGetParams): Promise<any>
+read(params?: OctokatReposPagesGetParams): Promise<String>
+readBinary(params?: OctokatReposPagesGetParams): Promise<any>
  }
 releases: { 
 (id: any): { 
@@ -3052,9 +3392,9 @@ update(params?: OctokatReposReleasesAssetsPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposReleasesGetParams): Promise<any>
+read(params?: OctokatReposReleasesGetParams): Promise<String>
+readBinary(params?: OctokatReposReleasesGetParams): Promise<any>
 create(params: OctokatReposReleasesPostParams): Promise<any>
  }
 stats: { 
@@ -3111,32 +3451,32 @@ popular: {
 referrers: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposTrafficPopularReferrersGetParams): Promise<any>
+read(params?: OctokatReposTrafficPopularReferrersGetParams): Promise<String>
+readBinary(params?: OctokatReposTrafficPopularReferrersGetParams): Promise<any>
  }
 paths: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposTrafficPopularPathsGetParams): Promise<any>
+read(params?: OctokatReposTrafficPopularPathsGetParams): Promise<String>
+readBinary(params?: OctokatReposTrafficPopularPathsGetParams): Promise<any>
  }
 
  }
 views: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposTrafficViewsGetParams): Promise<any>
+read(params?: OctokatReposTrafficViewsGetParams): Promise<String>
+readBinary(params?: OctokatReposTrafficViewsGetParams): Promise<any>
  }
 clones: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposTrafficClonesGetParams): Promise<any>
+read(params?: OctokatReposTrafficClonesGetParams): Promise<String>
+readBinary(params?: OctokatReposTrafficClonesGetParams): Promise<any>
  }
 
  }
@@ -3160,9 +3500,9 @@ update(params: OctokatReposHooksFnPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatReposHooksGetParams): Promise<any>
+read(params?: OctokatReposHooksGetParams): Promise<String>
+readBinary(params?: OctokatReposHooksGetParams): Promise<any>
 create(params: OctokatReposHooksPostParams): Promise<any>
  }
 fetch(): Promise<any>
@@ -3179,9 +3519,9 @@ networks(owner: any, repo: any): {
 events: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatNetworksEventsGetParams): Promise<any>
+read(params?: OctokatNetworksEventsGetParams): Promise<String>
+readBinary(params?: OctokatNetworksEventsGetParams): Promise<any>
  }
 
  }
@@ -3193,9 +3533,9 @@ orgs(org: any): {
 events: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsEventsGetParams): Promise<any>
+read(params?: OctokatOrgsEventsGetParams): Promise<String>
+readBinary(params?: OctokatOrgsEventsGetParams): Promise<any>
  }
 issues: { 
 
@@ -3232,9 +3572,9 @@ read(): Promise<String>
 readBinary(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsMigrationsGetParams): Promise<any>
+read(params?: OctokatOrgsMigrationsGetParams): Promise<String>
+readBinary(params?: OctokatOrgsMigrationsGetParams): Promise<any>
 create(params: OctokatOrgsMigrationsPostParams): Promise<any>
  }
 members: { 
@@ -3288,9 +3628,9 @@ readBinary(): Promise<any>
 outsideCollaborators: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsOutsideCollaboratorsGetParams): Promise<any>
+read(params?: OctokatOrgsOutsideCollaboratorsGetParams): Promise<String>
+readBinary(params?: OctokatOrgsOutsideCollaboratorsGetParams): Promise<any>
  }
 
 // Syntactic shortcut used here
@@ -3304,9 +3644,9 @@ remove(): Promise<any>
 teams: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsTeamsGetParams): Promise<any>
+read(params?: OctokatOrgsTeamsGetParams): Promise<String>
+readBinary(params?: OctokatOrgsTeamsGetParams): Promise<any>
 create(params?: OctokatOrgsTeamsPostParams): Promise<any>
  }
 hooks: { 
@@ -3324,9 +3664,9 @@ update(params: OctokatOrgsHooksFnPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsHooksGetParams): Promise<any>
+read(params?: OctokatOrgsHooksGetParams): Promise<String>
+readBinary(params?: OctokatOrgsHooksGetParams): Promise<any>
 create(params: OctokatOrgsHooksPostParams): Promise<any>
  }
 blocks: { 
@@ -3340,9 +3680,9 @@ add(): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsBlocksGetParams): Promise<any>
+read(params?: OctokatOrgsBlocksGetParams): Promise<String>
+readBinary(params?: OctokatOrgsBlocksGetParams): Promise<any>
  }
 projects: { 
 
@@ -3358,11 +3698,11 @@ repos: {
 fetch(params?: OctokatOrgsReposGetParams): Promise<any>
 read(params?: OctokatOrgsReposGetParams): Promise<String>
 readBinary(params?: OctokatOrgsReposGetParams): Promise<any>
-create(params: OctokatOrgsReposPostParams): Promise<any>
+create(params?: OctokatOrgsReposPostParams): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatOrgsGetParams): Promise<any>
+read(params?: OctokatOrgsGetParams): Promise<String>
+readBinary(params?: OctokatOrgsGetParams): Promise<any>
 update(params?: OctokatOrgsPatchParams): Promise<any>
  }
 
@@ -3374,36 +3714,36 @@ receivedEvents: {
 public: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnReceivedEventsPublicGetParams): Promise<any>
+read(params?: OctokatUsersFnReceivedEventsPublicGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnReceivedEventsPublicGetParams): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnReceivedEventsGetParams): Promise<any>
+read(params?: OctokatUsersFnReceivedEventsGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnReceivedEventsGetParams): Promise<any>
  }
 events: { 
 
 public: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnEventsPublicGetParams): Promise<any>
+read(params?: OctokatUsersFnEventsPublicGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnEventsPublicGetParams): Promise<any>
  }
 
 // Syntactic shortcut used here
 orgs(org: any): { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnEventsOrgsGetParams): Promise<any>
+read(params?: OctokatUsersFnEventsOrgsGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnEventsOrgsGetParams): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnEventsGetParams): Promise<any>
+read(params?: OctokatUsersFnEventsGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnEventsGetParams): Promise<any>
  }
 starred: { 
 
@@ -3415,23 +3755,23 @@ readBinary(params?: OctokatUsersFnStarredGetParams): Promise<any>
 subscriptions: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnSubscriptionsGetParams): Promise<any>
+read(params?: OctokatUsersFnSubscriptionsGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnSubscriptionsGetParams): Promise<any>
  }
 gists: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnGistsGetParams): Promise<any>
+read(params?: OctokatUsersFnGistsGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnGistsGetParams): Promise<any>
  }
 orgs: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnOrgsGetParams): Promise<any>
+read(params?: OctokatUsersFnOrgsGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnOrgsGetParams): Promise<any>
  }
 repos: { 
 
@@ -3443,9 +3783,9 @@ readBinary(params?: OctokatUsersFnReposGetParams): Promise<any>
 followers: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnFollowersGetParams): Promise<any>
+read(params?: OctokatUsersFnFollowersGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnFollowersGetParams): Promise<any>
  }
 following: { 
 (target_user: any): { 
@@ -3456,16 +3796,16 @@ read(params: OctokatUsersFnFollowingFnGetParams): Promise<String>
 readBinary(params: OctokatUsersFnFollowingFnGetParams): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnFollowingGetParams): Promise<any>
+read(params?: OctokatUsersFnFollowingGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnFollowingGetParams): Promise<any>
  }
 keys: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUsersFnKeysGetParams): Promise<any>
+read(params?: OctokatUsersFnKeysGetParams): Promise<String>
+readBinary(params?: OctokatUsersFnKeysGetParams): Promise<any>
  }
 siteAdmin: { 
 
@@ -3533,9 +3873,9 @@ starred: {
 (owner: any, repo: any): { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserStarredFnGetParams): Promise<any>
+read(params?: OctokatUserStarredFnGetParams): Promise<String>
+readBinary(params?: OctokatUserStarredFnGetParams): Promise<any>
 add(): Promise<any>
 remove(): Promise<any>
  }
@@ -3547,9 +3887,9 @@ readBinary(params?: OctokatUserStarredGetParams): Promise<any>
 subscriptions: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserSubscriptionsGetParams): Promise<any>
+read(params?: OctokatUserSubscriptionsGetParams): Promise<String>
+readBinary(params?: OctokatUserSubscriptionsGetParams): Promise<any>
  }
 issues: { 
 
@@ -3569,9 +3909,9 @@ create(params?: OctokatUserReposPostParams): Promise<any>
 orgs: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserOrgsGetParams): Promise<any>
+read(params?: OctokatUserOrgsGetParams): Promise<String>
+readBinary(params?: OctokatUserOrgsGetParams): Promise<any>
  }
 memberships: { 
 
@@ -3594,34 +3934,34 @@ readBinary(params?: OctokatUserMembershipsOrgsGetParams): Promise<any>
 teams: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserTeamsGetParams): Promise<any>
+read(params?: OctokatUserTeamsGetParams): Promise<String>
+readBinary(params?: OctokatUserTeamsGetParams): Promise<any>
  }
 publicEmails: { 
 
 
-fetch(): Promise<SearchResult<UserEmail>>
-fetchAll(): Promise<UserEmail[]>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserPublicEmailsGetParams): Promise<SearchResult<UserEmail>>
+fetchAll(params?: OctokatUserPublicEmailsGetParams): Promise<UserEmail[]>
+read(params?: OctokatUserPublicEmailsGetParams): Promise<String>
+readBinary(params?: OctokatUserPublicEmailsGetParams): Promise<any>
  }
 emails: { 
 
 
-fetch(): Promise<SearchResult<UserEmail>>
-fetchAll(): Promise<UserEmail[]>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserEmailsGetParams): Promise<SearchResult<UserEmail>>
+fetchAll(params?: OctokatUserEmailsGetParams): Promise<UserEmail[]>
+read(params?: OctokatUserEmailsGetParams): Promise<String>
+readBinary(params?: OctokatUserEmailsGetParams): Promise<any>
 create(params: OctokatUserEmailsPostParams): Promise<any>
 remove(params: OctokatUserEmailsDeleteParams): Promise<any>
  }
 followers: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserFollowersGetParams): Promise<any>
+read(params?: OctokatUserFollowersGetParams): Promise<String>
+readBinary(params?: OctokatUserFollowersGetParams): Promise<any>
  }
 following: { 
 (username: any): { 
@@ -3634,9 +3974,9 @@ add(): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserFollowingGetParams): Promise<any>
+read(params?: OctokatUserFollowingGetParams): Promise<String>
+readBinary(params?: OctokatUserFollowingGetParams): Promise<any>
  }
 keys: { 
 (id: any): { 
@@ -3648,10 +3988,10 @@ readBinary(): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
-create(): Promise<any>
+fetch(params?: OctokatUserKeysGetParams): Promise<any>
+read(params?: OctokatUserKeysGetParams): Promise<String>
+readBinary(params?: OctokatUserKeysGetParams): Promise<any>
+create(params?: OctokatUserKeysPostParams): Promise<any>
  }
 gpgKeys: { 
 (id: any): { 
@@ -3663,9 +4003,9 @@ readBinary(): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatUserGpgKeysGetParams): Promise<any>
+read(params?: OctokatUserGpgKeysGetParams): Promise<String>
+readBinary(params?: OctokatUserGpgKeysGetParams): Promise<any>
 create(params: OctokatUserGpgKeysPostParams): Promise<any>
  }
 blocks: { 
@@ -3722,9 +4062,9 @@ remove(): Promise<any>
 forks: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatGistsFnForksGetParams): Promise<any>
+read(params?: OctokatGistsFnForksGetParams): Promise<String>
+readBinary(params?: OctokatGistsFnForksGetParams): Promise<any>
 create(): Promise<any>
  }
 comments: { 
@@ -3734,14 +4074,14 @@ comments: {
 fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
-update(): Promise<any>
+update(params?: OctokatGistsFnCommentsFnPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
 fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
-create(): Promise<any>
+create(params?: OctokatGistsFnCommentsPostParams): Promise<any>
  }
 fetch(): Promise<any>
 read(): Promise<String>
@@ -3752,20 +4092,20 @@ remove(): Promise<any>
 public: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatGistsPublicGetParams): Promise<any>
+read(params?: OctokatGistsPublicGetParams): Promise<String>
+readBinary(params?: OctokatGistsPublicGetParams): Promise<any>
  }
 starred: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatGistsStarredGetParams): Promise<any>
+read(params?: OctokatGistsStarredGetParams): Promise<String>
+readBinary(params?: OctokatGistsStarredGetParams): Promise<any>
  }
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatGistsGetParams): Promise<any>
+read(params?: OctokatGistsGetParams): Promise<String>
+readBinary(params?: OctokatGistsGetParams): Promise<any>
 create(params: OctokatGistsPostParams): Promise<any>
  }
 integration: { 
@@ -3773,9 +4113,9 @@ integration: {
 installations: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatIntegrationInstallationsGetParams): Promise<any>
+read(params?: OctokatIntegrationInstallationsGetParams): Promise<String>
+readBinary(params?: OctokatIntegrationInstallationsGetParams): Promise<any>
  }
 identity: { 
 
@@ -3868,7 +4208,7 @@ markdown: {
 raw: { 
 
 
-create(): Promise<any>
+create(params?: OctokatMarkdownRawPostParams): Promise<any>
  }
 create(params: OctokatMarkdownPostParams): Promise<any>
  }
@@ -3927,16 +4267,16 @@ add(params?: OctokatTeamsReposFnPutParams): Promise<any>
 remove(): Promise<any>
  }
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatTeamsReposGetParams): Promise<any>
+read(params?: OctokatTeamsReposGetParams): Promise<String>
+readBinary(params?: OctokatTeamsReposGetParams): Promise<any>
  }
 invitations: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatTeamsInvitationsGetParams): Promise<any>
+read(params?: OctokatTeamsInvitationsGetParams): Promise<String>
+readBinary(params?: OctokatTeamsInvitationsGetParams): Promise<any>
  }
 fetch(): Promise<any>
 read(): Promise<String>
@@ -3954,7 +4294,7 @@ columns: {
 fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
-create(): Promise<any>
+create(params?: OctokatProjectsFnColumnsPostParams): Promise<any>
  }
 fetch(): Promise<any>
 read(): Promise<String>
@@ -3968,9 +4308,9 @@ columns: {
 cards: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+fetch(params?: OctokatProjectsColumnsFnCardsGetParams): Promise<any>
+read(params?: OctokatProjectsColumnsFnCardsGetParams): Promise<String>
+readBinary(params?: OctokatProjectsColumnsFnCardsGetParams): Promise<any>
 create(params?: OctokatProjectsColumnsFnCardsPostParams): Promise<any>
  }
 moves: { 
@@ -3981,7 +4321,7 @@ create(params: OctokatProjectsColumnsFnMovesPostParams): Promise<any>
 fetch(): Promise<any>
 read(): Promise<String>
 readBinary(): Promise<any>
-update(): Promise<any>
+update(params?: OctokatProjectsColumnsFnPatchParams): Promise<any>
 remove(): Promise<any>
  }
 
@@ -4230,9 +4570,7 @@ create(params: OctokatStaffIndexingJobsPostParams): Promise<any>
 zen: { 
 
 
-fetch(): Promise<any>
-read(): Promise<String>
-readBinary(): Promise<any>
+
  }
 
 
