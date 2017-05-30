@@ -1,4 +1,5 @@
 {
+    "_ThisFileIsFrom https://github.com/mikedeboer/node-github/blob/master/lib/routes.json (with some changes)": true,
     "defines": {
         "constants": {
             "name": "Github",
@@ -7416,7 +7417,7 @@
             "description": "Create a pre-receive hook. (In preview period. See README.)"
         },
         "edit-pre-receive-hook": {
-            "url": "/admin/pre_receive_hooks/:id",
+            "url": "/admin/pre-receive-hooks/:id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -7432,7 +7433,7 @@
             "description": "Edit a pre-receive hook. (In preview period. See README.)"
         },
         "delete-pre-receive-hook": {
-            "url": "/admin/pre_receive_hooks/:id",
+            "url": "/admin/pre-receive-hooks/:id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -7480,6 +7481,10 @@
                 }
             },
             "description": "Create an organization"
+        },
+        "zen": {
+          "url": "/zen",
+          "method": "GET"
         }
     }
 }
