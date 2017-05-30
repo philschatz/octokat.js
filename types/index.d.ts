@@ -1878,7 +1878,8 @@ readonly 'organizations_url': string;
 readonly 'repos_url': string;
 readonly 'events_url': string;
 readonly 'received_events_url': string;
-readonly 'type': string;
+readonly 'type': "user" | "org";
+readonly 'name': string;
 readonly 'site_admin': boolean; };
 
 export type UserSlug = { readonly 'name': string;
@@ -2107,7 +2108,10 @@ events?: String[];
 active?: Boolean; }
 export type OctokatOrgsProjectsPostParams = { body?: String; }
 export type OctokatOrgsReposGetParams = { type?: String; }
-export type OctokatOrgsReposPostParams = { team_id?: Number;
+export type OctokatOrgsReposPostParams = { name: String;
+description?: String;
+private?: Boolean;
+team_id?: Number;
 allow_squash_merge?: Boolean;
 allow_merge_commit?: Boolean;
 allow_rebase_merge?: Boolean; }
@@ -2189,7 +2193,8 @@ export type OctokatSearchRepositoriesGetParams = { sort?: String; }
 export type OctokatSearchCodeGetParams = { sort?: String; }
 export type OctokatSearchCommitsGetParams = { sort?: String; }
 export type OctokatSearchIssuesGetParams = { sort?: String; }
-export type OctokatSearchUsersGetParams = { sort?: String; }
+export type OctokatSearchUsersGetParams = { q: String;
+sort?: String; }
 export type OctokatLegacyUserEmailGetParams = { email: String; }
 export type OctokatEnterpriseStatsGetParams = { type: String; }
 export type OctokatAdminLdapUsersMappingPatchParams = { ldap_dn: String; }
@@ -3353,7 +3358,7 @@ repos: {
 fetch(params?: OctokatOrgsReposGetParams): Promise<any>
 read(params?: OctokatOrgsReposGetParams): Promise<String>
 readBinary(params?: OctokatOrgsReposGetParams): Promise<any>
-create(params?: OctokatOrgsReposPostParams): Promise<any>
+create(params: OctokatOrgsReposPostParams): Promise<any>
  }
 fetch(): Promise<any>
 read(): Promise<String>
@@ -4075,9 +4080,9 @@ readBinary(params?: OctokatSearchIssuesGetParams): Promise<any>
 users: { 
 
 
-fetch(params?: OctokatSearchUsersGetParams): Promise<any>
-read(params?: OctokatSearchUsersGetParams): Promise<String>
-readBinary(params?: OctokatSearchUsersGetParams): Promise<any>
+fetch(params: OctokatSearchUsersGetParams): Promise<any>
+read(params: OctokatSearchUsersGetParams): Promise<String>
+readBinary(params: OctokatSearchUsersGetParams): Promise<any>
  }
 
  }
