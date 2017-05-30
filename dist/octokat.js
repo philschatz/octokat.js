@@ -2102,7 +2102,7 @@ module.exports = function () {
               } else if (data.pull_request) {
                 return 'PullRequest';
               } else if (data.labels_url) {
-                console.log('SOMETHING GUESSED ISSE');return 'Issue';
+                return 'Issue';
               } else if (data.download_count) {
                 return 'Download';
               } else if (data.stats) {
@@ -2205,7 +2205,7 @@ module.exports = function () {
                     valType = _buildTypescriptRec(value);
                   }
                 }
-                return '\'' + key + '\'' + (isOptional ? '?' : '') + ': ' + valType + ';'; // extra quotes are because of the emoji list
+                return 'readonly \'' + key + '\'' + (isOptional ? '?' : '') + ': ' + valType + ';'; // extra quotes are because of the emoji list
               });
 
               var guessed = guessTypeName(data);

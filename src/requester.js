@@ -240,7 +240,7 @@ module.exports = class Requester {
                   valType = buildTypescriptRec(value)
                 }
               }
-              return `'${key}'${isOptional? '?' : ''}: ${valType};` // extra quotes are because of the emoji list
+              return `readonly '${key}'${isOptional? '?' : ''}: ${valType};` // extra quotes are because of the emoji list
 
             })
 
