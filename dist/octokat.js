@@ -2158,7 +2158,7 @@ module.exports = function () {
               } else if (data.funeral_urn) {
                 return 'Emojis';
               } else if (data.total_count && data.items) {
-                return 'SearchResult';
+                return 'SearchResult<T>';
               }
               // else if (data.) { return '' }
               // else if (data.) { return '' }

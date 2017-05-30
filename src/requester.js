@@ -193,7 +193,7 @@ module.exports = class Requester {
             else if (data.sha && data.url && data.html_url /*&& Object.keys(data).length === 3*/) { return 'CommitSlugMaybe' }
             else if (data.sha && data.filename && data.status && data.blob_url && data.raw_url && data.contents_url && data.patch) { return 'CommitFile' }
             else if (data.funeral_urn) { return 'Emojis' }
-            else if (data.total_count && data.items) { return 'SearchResult' }
+            else if (data.total_count && data.items) { return 'SearchResult<T>' }
             // else if (data.) { return '' }
             // else if (data.) { return '' }
             // else if (data.) { return '' }

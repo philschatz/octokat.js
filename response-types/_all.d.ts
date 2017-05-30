@@ -1850,7 +1850,7 @@ readonly 'permissions': { readonly 'admin': boolean;
 readonly 'push': boolean;
 readonly 'pull': boolean; }; };
 
-export type SearchResult = { readonly 'total_count': number;
+export type SearchResult<T> = { readonly 'total_count': number;
 readonly 'incomplete_results': boolean;
 readonly 'items': User[]; };
 
