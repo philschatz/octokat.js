@@ -1966,6 +1966,7 @@
                 "$repo": null,
                 "$number": null
             },
+            "yields": "Issue",
             "description": "Get a single issue"
         },
         "create": {
@@ -2011,6 +2012,7 @@
                 },
                 "$assignees": null
             },
+            "yields": "Issue",
             "description": "Create an issue"
         },
         "edit": {
@@ -2069,6 +2071,7 @@
                 },
                 "$assignees": null
             },
+            "yields": "Issue",
             "description": "Edit an issue"
         },
         "lock": {

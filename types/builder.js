@@ -11,11 +11,14 @@ const converted = {}
 Object.keys(routes).forEach((key1) => {
   Object.keys(routes[key1]).forEach((key2) => {
 
-    const {url, method, params} = routes[key1][key2]
+    const {url, method, params, yields} = routes[key1][key2]
 
     if (url) {
       converted[url] = converted[url] || {}
       converted[url][method] = _.omitBy(params, (value, keyName) => keyName.startsWith('$'))
+      if (yields) {
+        converted[url][method].$yields = yields
+      }
     }
   })
 })
@@ -118,7 +121,8 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
   const ret = []
 
   function addDeclaration(methodName) {
-    const method = treeNode.methods[methodName]
+    let method = treeNode.methods[methodName]
+    method = _.omit(method, '$yields')
     if (Object.keys(method).length > 0) {
       const typeName = plus.camelize(`${pathSoFar}_${methodName.toLowerCase()}_Params`)
 
@@ -145,26 +149,31 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
   if (treeNode.methods) {
     if (treeNode.methods['GET']) {
       const paramsName = addDeclaration('GET')
-      ret.push(`fetch(${paramsName}): Promise<any>`)
-      ret.push(`fetchAll(${paramsName}): Promise<any>`)
-      ret.push(`read(${paramsName}): Promise<any>`)
-      ret.push(`readBinary(${paramsName}): Promise<any>`)
+      const yields = treeNode.methods['GET'].$yields || 'any'
+      ret.push(`fetch(${paramsName}): Promise<${yields}>`)
+      ret.push(`fetchAll(${paramsName}): Promise<${yields}>`)
+      ret.push(`read(${paramsName}): Promise<${yields}>`)
+      ret.push(`readBinary(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['POST']) {
       const paramsName = addDeclaration('POST')
-      ret.push(`create(${paramsName}): Promise<any>`)
+      const yields = treeNode.methods['POST'].$yields || 'any'
+      ret.push(`create(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['PATCH']) {
       const paramsName = addDeclaration('PATCH')
-      ret.push(`update(${paramsName}): Promise<any>`)
+      const yields = treeNode.methods['PATCH'].$yields || 'any'
+      ret.push(`update(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['PUT']) {
       const paramsName = addDeclaration('PUT')
-      ret.push(`add(${paramsName}): Promise<any>`)
+      const yields = treeNode.methods['PUT'].$yields || 'any'
+      ret.push(`add(${paramsName}): Promise<${yields}>`)
     }
     if (treeNode.methods['DELETE']) {
       const paramsName = addDeclaration('DELETE')
-      ret.push(`remove(${paramsName}): Promise<any>`)
+      const yields = treeNode.methods['DELETE'].$yields || 'any'
+      ret.push(`remove(${paramsName}): Promise<${yields}>`)
     }
   } else {
     ret.push(`// No verb methods`)
@@ -230,6 +239,10 @@ const rootChildren = recBuildType(rootDeclarations, convertedTree, 'BUG_IF_YOU_S
 source = `
 
 declare module 'octokat' {
+  // Response Types
+  ${fs.readFileSync(__dirname + `/../response-types/_all.d.ts`)}
+
+  // Input Param Types
   ${rootDeclarations.join('\n')}
 
   export default class Octokat {
