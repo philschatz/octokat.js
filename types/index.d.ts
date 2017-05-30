@@ -5,7 +5,7 @@ declare module 'octokat' {
   export type UserEmail = { readonly 'email': string;
 readonly 'verified': boolean;
 readonly 'primary': boolean;
-readonly 'visibility': string; }
+readonly 'visibility': "public" | "private" | null; }
 
 export type CommitDiff = { readonly 'url': string;
 readonly 'html_url': string;
