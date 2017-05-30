@@ -151,9 +151,12 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
       const paramsName = addDeclaration('GET')
       const yields = treeNode.methods['GET'].$yields || 'any'
       ret.push(`fetch(${paramsName}): Promise<${yields}>`)
-      ret.push(`fetchAll(${paramsName}): Promise<${yields}>`)
-      ret.push(`read(${paramsName}): Promise<${yields}>`)
-      ret.push(`readBinary(${paramsName}): Promise<${yields}>`)
+      if (yields.startsWith('SearchResult<')) {
+        // Replace SearchResult<Foo> with Foo[]
+        ret.push(`fetchAll(${paramsName}): Promise<${yields.substring('SearchResult<'.length, yields.length - 1)}[]>`)
+      }
+      ret.push(`read(${paramsName}): Promise<String>`)
+      ret.push(`readBinary(${paramsName}): Promise<any>`)
     }
     if (treeNode.methods['POST']) {
       const paramsName = addDeclaration('POST')

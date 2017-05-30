@@ -2101,6 +2101,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "SearchResult<User>",
             "description": "List assignees"
         },
         "check-assignee": {
@@ -2117,6 +2118,7 @@
                     "description": "Login for the user that this issue should be assigned to."
                 }
             },
+            "yields": "Boolean",
             "description": "Check assignee"
         },
         "add-assignees-to-issue": {
@@ -2145,6 +2147,7 @@
                 "$number": null,
                 "$assignees": null
             },
+            "yields": "void",
             "description": "Remove assignees from an issue."
         },
         "get-comments": {
@@ -2157,6 +2160,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<IssueComment>",
             "description": "List comments on an issue"
         },
         "get-comments-for-repo": {
@@ -2182,6 +2186,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<IssueComment>",
             "description": "List comments in a repository"
         },
         "get-comment": {
@@ -2192,6 +2197,7 @@
                 "$repo": null,
                 "$id": null
             },
+            "yields": "IssueComment",
             "description": "Get a single comment"
         },
         "create-comment": {
@@ -2203,6 +2209,7 @@
                 "$number": null,
                 "$body": null
             },
+            "yields": "IssueComment",
             "description": "Create a comment"
         },
         "edit-comment": {
@@ -2214,6 +2221,7 @@
                 "$id": null,
                 "$body": null
             },
+            "yields": "IssueComment",
             "description": "Edit a comment"
         },
         "delete-comment": {
@@ -2224,6 +2232,7 @@
                 "$repo": null,
                 "$id": null
             },
+            "yields": "void",
             "description": "Delete a comment"
         },
         "get-events": {
@@ -2268,6 +2277,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<IssueLabel>",
             "description": "List all labels for this repository"
         },
         "get-label": {
@@ -2278,6 +2288,7 @@
                 "$repo": null,
                 "$name": null
             },
+            "yields": "IssueLabel",
             "description": "Get a single label"
         },
         "create-label": {
@@ -2289,6 +2300,7 @@
                 "$name": null,
                 "$color": null
             },
+            "yields": "IssueLabel",
             "description": "Create a label"
         },
         "update-label": {
@@ -2306,6 +2318,7 @@
                 },
                 "$color": null
             },
+            "yields": "IssueLabel",
             "description": "Update a label"
         },
         "delete-label": {
@@ -2316,6 +2329,7 @@
                 "$repo": null,
                 "$name": null
             },
+            "yields": "void",
             "description": "Delete a label"
         },
         "get-issue-labels": {
@@ -2326,6 +2340,7 @@
                 "$repo": null,
                 "$number": null
             },
+            "yields": "SearchResult<IssueLabel>",
             "description": "List labels on an issue"
         },
         "add-labels": {
@@ -2344,6 +2359,7 @@
                     "description": ""
                 }
             },
+            "yields": "IssueLabel",
             "description": "Add labels to an issue"
         },
         "remove-label": {
@@ -2361,6 +2377,7 @@
                     "description": ""
                 }
             },
+            "yields": "void",
             "description": "Remove a label from an issue"
         },
         "replace-all-labels": {
@@ -2774,6 +2791,7 @@
             "url": "/emojis",
             "method": "GET",
             "params": {},
+            "yields": "Emojis",
             "description": "Lists all the emojis available to use on GitHub."
         },
         "get-gitignore-templates": {
@@ -6764,6 +6782,7 @@
             "url": "/user",
             "method": "GET",
             "params": {},
+            "yields": "User",
             "description": "Get the authenticated user"
         },
         "update": {
@@ -6897,6 +6916,16 @@
             },
             "description": "Get your teams"
         },
+        "get-public-emails": {
+            "url": "/user/public_emails",
+            "method": "GET",
+            "params": {
+                "$page": null,
+                "$per_page": null
+            },
+            "yields": "SearchResult<UserEmail>",
+            "description": "List public email addresses for a user"
+        },
         "get-emails": {
             "url": "/user/emails",
             "method": "GET",
@@ -6904,6 +6933,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<UserEmail>",
             "description": "List email addresses for a user"
         },
         "add-emails": {
