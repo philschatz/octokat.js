@@ -157,11 +157,15 @@ module.exports = class Requester {
           }
 
           function guessTypeName(data) {
-            if (data.truncated) { return 'Gist' }
-            else if (data.has_organization_projects) { return 'Organization' }
+            if (!data) {
+              return null
+            }
+            // if (data.truncated) { return 'Gist' }
+            if (data.has_organization_projects) { return 'Organization' }
             else if (data.public_members_url) { return 'OrganizationSlug' }
             else if (data.collaborators_url) { return 'Repository' }
-            else if (data.labels) { return 'Issue' }
+            else if (data.pull_request) { return 'PullRequest' }
+            else if (data.labels_url) { return 'Issue' }
             else if (data.download_count) { return 'Download' }
             else if (data.stats) { return 'RepoCommit' }
             else if (data.tree) { return 'GitCommit' }
@@ -172,7 +176,8 @@ module.exports = class Requester {
             else if (data.color) { return 'IssueLabel' }
             else if (data.position) { return 'RepoComment' }
             else if (data.followers_url) { return 'User' }
-            else if (data.diff_url) { return 'CommitDiff' }
+            else if (data.diff_url && data.permalink_url && data.base_commit) { return 'CommitDiff' }
+            else if (data.diff_url) { return 'CommitDiffSlug' }
             else if (data.encoding) { return 'RepoFileContents' }
             else if (data.sha && data.url && Object.keys(data).length === 2) { return 'GitBlob' }
             else if (data.subscribed) { return 'RepoSubscription' }
@@ -185,7 +190,7 @@ module.exports = class Requester {
             else if (data.filename && data.type && data.language && data.raw_url && data.size && data.content) { return 'FileContents' }
             else if (data.filename && data.type && data.language && data.raw_url && data.size) { return 'FileSlug' }
             else if (data.sha && data.commit && data.url && data.html_url && data.comments_url && data.author && data.committer && data.parents) { return 'RepoCommitMaybe' }
-            else if (data.sha && data.url && data.html_url /*&& Object.keys(data).length === 3*/) { console.log('SOMETHING GUESSED ME'); return 'CommitSlugMaybe' }
+            else if (data.sha && data.url && data.html_url /*&& Object.keys(data).length === 3*/) { return 'CommitSlugMaybe' }
             else if (data.sha && data.filename && data.status && data.blob_url && data.raw_url && data.contents_url && data.patch) { return 'CommitFile' }
             else if (data.funeral_urn) { return 'Emojis' }
             else if (data.total_count && data.items) { return 'SearchResult' }
@@ -204,6 +209,7 @@ module.exports = class Requester {
             const ret = Object.keys(data).map((key) => {
               const value = data[key]
               let valType = 'any'
+              let isOptional = false
               if (Array.isArray(value)) {
                 // Recurse on the 1st entry, or just mark it as `any[]`
                 if (value[0]) {
@@ -213,6 +219,9 @@ module.exports = class Requester {
                   valType = 'any[]'
                 }
 
+              } else if (value === null) {
+                isOptional = true
+                valType = 'any'
               } else if (typeof value === 'boolean') {
                 valType = 'boolean'
               } else if (typeof value === 'number') {
@@ -223,11 +232,6 @@ module.exports = class Requester {
                 // Recurse
                 const guessed = guessTypeName(value)
 
-                if (key === 'parents') {
-                  console.log('PHIL!!!!!!!!!!', guessed);
-                  console.log(value);
-                }
-
                 if (guessed) {
                   valType = guessed
                   buildTypescriptRec(value) // just so the guessed field is saved
@@ -236,7 +240,7 @@ module.exports = class Requester {
                   valType = buildTypescriptRec(value)
                 }
               }
-              return `'${key}': ${valType};` // extra quotes are because of the emoji list
+              return `'${key}'${isOptional? '?' : ''}: ${valType};` // extra quotes are because of the emoji list
 
             })
 

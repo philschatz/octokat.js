@@ -2089,16 +2089,20 @@ module.exports = function () {
             //   throw new Error(`Octokat Bug? got a response to a boolean question that was not 204 or 404.  ${fetchArgs.method} ${path} Status: ${response.status}`)
           } else if (response.status >= 200 && response.status < 300 || response.status === 304 || response.status === 302 || response.status === 0) {
             var guessTypeName = function guessTypeName(data) {
-              if (data.truncated) {
-                return 'Gist';
-              } else if (data.has_organization_projects) {
+              if (!data) {
+                return null;
+              }
+              // if (data.truncated) { return 'Gist' }
+              if (data.has_organization_projects) {
                 return 'Organization';
               } else if (data.public_members_url) {
                 return 'OrganizationSlug';
               } else if (data.collaborators_url) {
                 return 'Repository';
-              } else if (data.labels) {
-                return 'Issue';
+              } else if (data.pull_request) {
+                return 'PullRequest';
+              } else if (data.labels_url) {
+                console.log('SOMETHING GUESSED ISSE');return 'Issue';
               } else if (data.download_count) {
                 return 'Download';
               } else if (data.stats) {
@@ -2119,8 +2123,10 @@ module.exports = function () {
                 return 'RepoComment';
               } else if (data.followers_url) {
                 return 'User';
-              } else if (data.diff_url) {
+              } else if (data.diff_url && data.permalink_url && data.base_commit) {
                 return 'CommitDiff';
+              } else if (data.diff_url) {
+                return 'CommitDiffSlug';
               } else if (data.encoding) {
                 return 'RepoFileContents';
               } else if (data.sha && data.url && Object.keys(data).length === 2) {
@@ -2146,7 +2152,7 @@ module.exports = function () {
               } else if (data.sha && data.commit && data.url && data.html_url && data.comments_url && data.author && data.committer && data.parents) {
                 return 'RepoCommitMaybe';
               } else if (data.sha && data.url && data.html_url /*&& Object.keys(data).length === 3*/) {
-                  console.log('SOMETHING GUESSED ME');return 'CommitSlugMaybe';
+                  return 'CommitSlugMaybe';
                 } else if (data.sha && data.filename && data.status && data.blob_url && data.raw_url && data.contents_url && data.patch) {
                 return 'CommitFile';
               } else if (data.funeral_urn) {
@@ -2170,6 +2176,7 @@ module.exports = function () {
               var ret = Object.keys(data).map(function (key) {
                 var value = data[key];
                 var valType = 'any';
+                var isOptional = false;
                 if (Array.isArray(value)) {
                   // Recurse on the 1st entry, or just mark it as `any[]`
                   if (value[0]) {
@@ -2178,6 +2185,9 @@ module.exports = function () {
                   } else {
                     valType = 'any[]';
                   }
+                } else if (value === null) {
+                  isOptional = true;
+                  valType = 'any';
                 } else if (typeof value === 'boolean') {
                   valType = 'boolean';
                 } else if (typeof value === 'number') {
@@ -2188,11 +2198,6 @@ module.exports = function () {
                   // Recurse
                   var _guessed = guessTypeName(value);
 
-                  if (key === 'parents') {
-                    console.log('PHIL!!!!!!!!!!', _guessed);
-                    console.log(value);
-                  }
-
                   if (_guessed) {
                     valType = _guessed;
                     _buildTypescriptRec(value); // just so the guessed field is saved
@@ -2200,7 +2205,7 @@ module.exports = function () {
                     valType = _buildTypescriptRec(value);
                   }
                 }
-                return '\'' + key + '\': ' + valType + ';'; // extra quotes are because of the emoji list
+                return '\'' + key + '\'' + (isOptional ? '?' : '') + ': ' + valType + ';'; // extra quotes are because of the emoji list
               });
 
               var guessed = guessTypeName(data);
