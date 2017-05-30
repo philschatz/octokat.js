@@ -155,37 +155,47 @@ const addVerbMethods = (declarations, pathSoFar, treeNode) => {
       return `` // There are no args when calling .fetch() (or whatever verb it is)
     }
   }
+
+  function buildVerbMethod(verbName, paramsName, yields) {
+    const paramsAndCallback = []
+    if (paramsName) {
+      paramsAndCallback.push(paramsName)
+    }
+    paramsAndCallback.push(`callback?: Callback<${yields}>`)
+    return `${verbName}(${paramsAndCallback.join(', ')}): Promise<${yields}>`
+  }
+
   if (treeNode.methods) {
     if (treeNode.methods['GET']) {
       const paramsName = addDeclaration('GET')
       const yields = treeNode.methods['GET']._yields || 'any'
-      ret.push(`fetch(${paramsName}): Promise<${yields}>`)
+      ret.push(buildVerbMethod('fetch', paramsName, yields))
       if (yields.startsWith('SearchResult<')) {
         // Replace SearchResult<Foo> with Foo[]
-        ret.push(`fetchAll(${paramsName}): Promise<${yields.substring('SearchResult<'.length, yields.length - 1)}[]>`)
+        ret.push(buildVerbMethod('fetchAll', paramsName, `${yields.substring('SearchResult<'.length, yields.length - 1)}[]`))
       }
-      ret.push(`read(${paramsName}): Promise<String>`)
-      ret.push(`readBinary(${paramsName}): Promise<any>`)
+      ret.push(buildVerbMethod('read', paramsName, 'String'))
+      ret.push(buildVerbMethod('readBinary', paramsName, 'any'))
     }
     if (treeNode.methods['POST']) {
       const paramsName = addDeclaration('POST')
       const yields = treeNode.methods['POST']._yields || 'any'
-      ret.push(`create(${paramsName}): Promise<${yields}>`)
+      ret.push(buildVerbMethod('create', paramsName, yields))
     }
     if (treeNode.methods['PATCH']) {
       const paramsName = addDeclaration('PATCH')
       const yields = treeNode.methods['PATCH']._yields || 'any'
-      ret.push(`update(${paramsName}): Promise<${yields}>`)
+      ret.push(buildVerbMethod('update', paramsName, yields))
     }
     if (treeNode.methods['PUT']) {
       const paramsName = addDeclaration('PUT')
       const yields = treeNode.methods['PUT']._yields || 'any'
-      ret.push(`add(${paramsName}): Promise<${yields}>`)
+      ret.push(buildVerbMethod('add', paramsName, yields))
     }
     if (treeNode.methods['DELETE']) {
       const paramsName = addDeclaration('DELETE')
       const yields = treeNode.methods['DELETE']._yields || 'any'
-      ret.push(`remove(${paramsName}): Promise<${yields}>`)
+      ret.push(buildVerbMethod('remove', paramsName, yields))
     }
   } else {
     ret.push(`// No verb methods`)
@@ -283,6 +293,10 @@ const rootTypes = Object.keys(routes.defines.params).map((paramName) => {
 source = `
 
 declare module 'octokat' {
+
+  export interface Callback<T> {
+    (error: Error | null, result: T): void
+  }
 
   // Base types
   ${rootTypes.join('\n')}

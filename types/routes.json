@@ -4522,6 +4522,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Repository>",
             "description": "List your repositories"
         },
         "get-for-user": {
@@ -7522,7 +7523,8 @@
         },
         "zen": {
           "url": "/zen",
-          "method": "GET"
+          "method": "GET",
+          "params": {}
         }
     }
 }
