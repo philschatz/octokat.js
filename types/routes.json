@@ -6656,6 +6656,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Repository>",
             "description": "Search repositories."
         },
         "code": {
@@ -6750,6 +6751,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "Search users."
         },
         "email": {

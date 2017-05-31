@@ -4398,7 +4398,8 @@ search: {
 repositories: { 
 
 
-fetch(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<SearchResult<Repository>>): Promise<SearchResult<Repository>>
+fetchAll(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<Repository[]>): Promise<Repository[]>
 read(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4426,7 +4427,8 @@ readBinary(params?: OctokatSearchIssuesGetParams, callback?: Callback<any>): Pro
 users: { 
 
 
-fetch(params: OctokatSearchUsersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params: OctokatSearchUsersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params: OctokatSearchUsersGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params: OctokatSearchUsersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatSearchUsersGetParams, callback?: Callback<any>): Promise<any>
  }
