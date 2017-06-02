@@ -88,6 +88,7 @@
     "./dist/node/adapters/xhr-node.js": "./dist/node/adapters/xhr-browser.js",
     "./dist/node/adapters/base64-node.js": "./dist/node/adapters/base64-browser.js"
   },
+  "types": "./types/index.d.ts",
   "tonicExampleFilename": "examples/tonic-example.js",
   "license": "MIT"
 }
