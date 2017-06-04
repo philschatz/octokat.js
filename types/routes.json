@@ -1397,6 +1397,7 @@
                 "$repo": null,
                 "$sha": null
             },
+            "yields": "GitCommit",
             "description": "Get a Commit"
         },
         "create-commit": {
@@ -1441,6 +1442,7 @@
                     "description": ""
                 }
             },
+            "yields": "GitCommit",
             "description": "Create a Commit"
         },
         "get-commit-signature-verification": {
@@ -1451,6 +1453,7 @@
                 "$repo": null,
                 "$sha": null
             },
+            "yields": "GitCommit",
             "description": "Get a Commit Signature Verification. (In preview period. See README.)"
         },
         "get-reference": {
@@ -1461,6 +1464,7 @@
                 "$repo": null,
                 "$ref": null
             },
+            "yields": "GitCommit",
             "description": "Get a Reference"
         },
         "get-references": {
@@ -1472,6 +1476,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<GitRef>",
             "description": "Get all References"
         },
         "get-tags": {
@@ -1483,6 +1488,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "GitRef",
             "description": "Get all tag References"
         },
         "create-reference": {
@@ -1500,6 +1506,7 @@
                 },
                 "$sha": null
             },
+            "yields": "GitRef",
             "description": "Create a Reference"
         },
         "update-reference": {
@@ -1519,6 +1526,7 @@
                     "default": "false"
                 }
             },
+            "yields": "GitRef",
             "description": "Update a Reference"
         },
         "delete-reference": {
@@ -1765,6 +1773,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Issue>",
             "description": "List all issues across all the authenticated user's visible repositories including owned repositories, member repositories, and organization repositories"
         },
         "get-for-user": {
@@ -1823,6 +1832,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Issue>",
             "description": "List all issues across owned and member repositories for the authenticated user"
         },
         "get-for-org": {
@@ -1882,6 +1892,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Issue>",
             "description": "List all issues for a given organization for the authenticated user"
         },
         "get-for-repo": {
@@ -1956,6 +1967,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Issue>",
             "description": "List issues for a repository"
         },
         "get": {
@@ -2245,6 +2257,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<IssueEvent>",
             "description": "List events for an issue"
         },
         "get-events-for-repo": {
@@ -2256,6 +2269,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<IssueEvent>",
             "description": "List events for a repository"
         },
         "get-event": {
@@ -2266,6 +2280,7 @@
                 "$repo": null,
                 "$id": null
             },
+            "yields": "IssueEvent",
             "description": "Get a single event"
         },
         "get-labels": {
@@ -2359,7 +2374,7 @@
                     "description": ""
                 }
             },
-            "yields": "IssueLabel",
+            "yields": "SearchResult<IssueLabel>",
             "description": "Add labels to an issue"
         },
         "remove-label": {
@@ -2416,6 +2431,7 @@
                 "$repo": null,
                 "$number": null
             },
+            "yields": "SearchResult<IssueLabel>",
             "description": "Get labels for every issue in a milestone"
         },
         "get-milestones": {
@@ -2895,6 +2911,7 @@
             "url": "/rate_limit",
             "method": "GET",
             "params": {},
+            "yields": "Rate",
             "description": "Get your current rate limit status"
         }
     },
@@ -2923,6 +2940,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<OrganizationSlug>",
             "description": "List public organization memberships for the specified user."
         },
         "get": {
@@ -2933,6 +2951,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "Organization",
             "description": "Get an organization"
         },
         "update": {
@@ -3005,6 +3024,7 @@
                     "default": true
                 }
             },
+            "yields": "Organization",
             "description": "Edit an organization"
         },
         "get-members": {
@@ -3040,6 +3060,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "Members list"
         },
         "check-membership": {
@@ -3049,6 +3070,7 @@
                 "$org": null,
                 "$username": null
             },
+            "yields": "Boolean",
             "description": "Check membership"
         },
         "remove-member": {
@@ -3066,6 +3088,7 @@
             "params": {
                 "$org": null
             },
+            "yields": "SearchResult<User>",
             "description": "Public members list"
         },
         "check-public-membership": {
@@ -3075,6 +3098,7 @@
                 "$org": null,
                 "$username": null
             },
+            "yields": "Boolean",
             "description": "Check public membership"
         },
         "publicize-membership": {
@@ -3084,6 +3108,7 @@
                 "$org": null,
                 "$username": null
             },
+            "yields": "Boolean",
             "description": "Publicize a user's membership"
         },
         "conceal-membership": {
@@ -3102,6 +3127,7 @@
                 "$org": null,
                 "$username": null
             },
+            "yields": "Boolean",
             "description": "Get organization membership"
         },
         "add-org-membership": {
@@ -3333,6 +3359,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "Repository",
             "description": "Check if a team manages a repository"
         },
         "add-team-repo": {
@@ -5310,6 +5337,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "List commit comments for a repository."
         },
         "get-commit-comments": {
@@ -5328,6 +5356,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "List comments for a single commit."
         },
         "create-commit-comment": {
@@ -5370,6 +5399,7 @@
                 "$repo": null,
                 "$id": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "Get a single commit comment."
         },
         "update-commit-comment": {
@@ -5381,6 +5411,7 @@
                 "$id": null,
                 "$body": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "Update a commit comment."
         },
         "delete-commit-comment": {
@@ -5433,6 +5464,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoCommitMaybe>",
             "description": "List commits on a repository."
         },
         "get-commit": {
@@ -5443,6 +5475,7 @@
                 "$repo": null,
                 "$sha": null
             },
+            "yields": "RepoCommit",
             "description": "Get a single commit."
         },
         "get-sha-of-commit-ref": {
@@ -5453,6 +5486,7 @@
                 "$repo": null,
                 "$ref": null
             },
+            "yields": "RepoCommit",
             "description": "Get the SHA-1 of a commit reference."
         },
         "compare-commits": {
@@ -7001,6 +7035,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "Bolean",
             "description": "List who a user is following"
         },
         "get-following": {
@@ -7010,6 +7045,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "List who the authenticated user is following"
         },
         "check-following": {
@@ -7018,6 +7054,7 @@
             "params": {
                 "$username": null
             },
+            "yields": "Boolean",
             "description": "Check if you are following a user"
         },
         "check-if-one-followers-other": {
@@ -7033,6 +7070,7 @@
                     "description": ""
                 }
             },
+            "yields": "Boolean",
             "description": "Check if one user follows another"
         },
         "follow-user": {
@@ -7041,6 +7079,7 @@
             "params": {
                 "$username": null
             },
+            "yields": "Boolean",
             "description": "Follow a user"
         },
         "unfollow-user": {

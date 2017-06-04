@@ -1,8 +1,3 @@
-export type UserEmail = { readonly 'email': string;
-readonly 'verified': boolean;
-readonly 'primary': boolean;
-readonly 'visibility': "public" | "private" | null; }
-
 export type CommitDiff = { readonly 'url': string;
 readonly 'html_url': string;
 readonly 'permalink_url': string;
@@ -1555,6 +1550,9 @@ readonly 'public': boolean;
 readonly 'created_at': string;
 readonly 'org': OrganizationSlug3; };
 
+export type File = { readonly 'content': CommitSlugMaybe;
+readonly 'commit': GitCommit; };
+
 export type FileContents = { readonly 'filename': string;
 readonly 'type': string;
 readonly 'language': string;
@@ -1568,6 +1566,13 @@ readonly 'type': string;
 readonly 'language': string;
 readonly 'raw_url': string;
 readonly 'size': number; };
+
+export type GistSlug = { readonly 'url': string;
+readonly 'id': number;
+readonly 'user': User;
+readonly 'created_at': string;
+readonly 'updated_at': string;
+readonly 'body': string; };
 
 export type GitBlob = { readonly 'sha': string;
 readonly 'url': string; };
@@ -1632,6 +1637,15 @@ readonly 'user': User;
 readonly 'created_at': string;
 readonly 'updated_at': string;
 readonly 'body': string; };
+
+export type IssueEvent = { readonly 'id': number;
+readonly 'url': string;
+readonly 'actor': User;
+readonly 'event': string;
+readonly 'commit_id'?: any;
+readonly 'commit_url'?: any;
+readonly 'created_at': string;
+readonly 'issue': Issue; };
 
 export type IssueLabel = { readonly 'id': number;
 readonly 'url': string;
@@ -1722,13 +1736,26 @@ readonly 'closed_at'?: any;
 readonly 'pull_request': CommitDiffSlug;
 readonly 'body': string; };
 
+export type Rate = { readonly 'resources': { readonly 'core': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; };
+readonly 'search': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; };
+readonly 'graphql': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; }; };
+readonly 'rate': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; }; };
+
 export type RepoComment = { readonly 'url': string;
 readonly 'html_url': string;
 readonly 'id': number;
 readonly 'user': User;
-readonly 'position': number;
-readonly 'line': number;
-readonly 'path': string;
+readonly 'position'?: any;
+readonly 'line'?: any;
+readonly 'path'?: any;
 readonly 'commit_id': string;
 readonly 'created_at': string;
 readonly 'updated_at': string;
@@ -1857,7 +1884,7 @@ readonly 'pull': boolean; }; };
 
 export type SearchResult<T> = { readonly 'total_count': number;
 readonly 'incomplete_results': boolean;
-readonly 'items': T[]; };
+readonly 'items': User[]; };
 
 export type User = { readonly 'login': string;
 readonly 'id': number;
@@ -1874,8 +1901,7 @@ readonly 'organizations_url': string;
 readonly 'repos_url': string;
 readonly 'events_url': string;
 readonly 'received_events_url': string;
-readonly 'type': "user" | "org";
-readonly 'name': string;
+readonly 'type': string;
 readonly 'site_admin': boolean; };
 
 export type UserSlug = { readonly 'name': string;

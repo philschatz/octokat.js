@@ -64,12 +64,7 @@ export interface ParamAccessToken { access_token: String }
 export interface ParamAssignees { assignees?: string[] }
 
   // Response Types
-  export type UserEmail = { readonly 'email': string;
-readonly 'verified': boolean;
-readonly 'primary': boolean;
-readonly 'visibility': "public" | "private" | null; }
-
-export type CommitDiff = { readonly 'url': string;
+  export type CommitDiff = { readonly 'url': string;
 readonly 'html_url': string;
 readonly 'permalink_url': string;
 readonly 'diff_url': string;
@@ -1621,6 +1616,9 @@ readonly 'public': boolean;
 readonly 'created_at': string;
 readonly 'org': OrganizationSlug3; };
 
+export type File = { readonly 'content': CommitSlugMaybe;
+readonly 'commit': GitCommit; };
+
 export type FileContents = { readonly 'filename': string;
 readonly 'type': string;
 readonly 'language': string;
@@ -1634,6 +1632,13 @@ readonly 'type': string;
 readonly 'language': string;
 readonly 'raw_url': string;
 readonly 'size': number; };
+
+export type GistSlug = { readonly 'url': string;
+readonly 'id': number;
+readonly 'user': User;
+readonly 'created_at': string;
+readonly 'updated_at': string;
+readonly 'body': string; };
 
 export type GitBlob = { readonly 'sha': string;
 readonly 'url': string; };
@@ -1698,6 +1703,15 @@ readonly 'user': User;
 readonly 'created_at': string;
 readonly 'updated_at': string;
 readonly 'body': string; };
+
+export type IssueEvent = { readonly 'id': number;
+readonly 'url': string;
+readonly 'actor': User;
+readonly 'event': string;
+readonly 'commit_id'?: any;
+readonly 'commit_url'?: any;
+readonly 'created_at': string;
+readonly 'issue': Issue; };
 
 export type IssueLabel = { readonly 'id': number;
 readonly 'url': string;
@@ -1788,13 +1802,26 @@ readonly 'closed_at'?: any;
 readonly 'pull_request': CommitDiffSlug;
 readonly 'body': string; };
 
+export type Rate = { readonly 'resources': { readonly 'core': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; };
+readonly 'search': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; };
+readonly 'graphql': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; }; };
+readonly 'rate': { readonly 'limit': number;
+readonly 'remaining': number;
+readonly 'reset': number; }; };
+
 export type RepoComment = { readonly 'url': string;
 readonly 'html_url': string;
 readonly 'id': number;
 readonly 'user': User;
-readonly 'position': number;
-readonly 'line': number;
-readonly 'path': string;
+readonly 'position'?: any;
+readonly 'line'?: any;
+readonly 'path'?: any;
 readonly 'commit_id': string;
 readonly 'created_at': string;
 readonly 'updated_at': string;
@@ -1940,8 +1967,7 @@ readonly 'organizations_url': string;
 readonly 'repos_url': string;
 readonly 'events_url': string;
 readonly 'received_events_url': string;
-readonly 'type': "user" | "org";
-readonly 'name': string;
+readonly 'type': string;
 readonly 'site_admin': boolean; };
 
 export type UserSlug = { readonly 'name': string;
@@ -2564,14 +2590,14 @@ export type OctokatStaffIndexingJobsPostParams =  & { target: String; }
 
   export default class Octokat {
     constructor(options?: Object)
-    
 
-applications: { 
-(client_id: any): { 
+
+applications: {
+(client_id: any): {
 
 
 // Syntactic shortcut used here
-tokens(access_token: any): { 
+tokens(access_token: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -2583,8 +2609,8 @@ remove(callback?: Callback<any>): Promise<any>
 
 
  }
-grants: { 
-(id: any): { 
+grants: {
+(id: any): {
 
 
 fetch(params?: OctokatApplicationsGrantsFnGetParams, callback?: Callback<any>): Promise<any>
@@ -2599,8 +2625,8 @@ readBinary(params?: OctokatApplicationsGrantsGetParams, callback?: Callback<any>
  }
 
  }
-authorizations: { 
-(id: any): { 
+authorizations: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -2611,7 +2637,7 @@ remove(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-clients(client_id: any): { 
+clients(client_id: any): {
 
 
 add(params: OctokatAuthorizationsClientsPutParams, callback?: Callback<any>): Promise<any>
@@ -2622,7 +2648,7 @@ read(params?: OctokatAuthorizationsGetParams, callback?: Callback<String>): Prom
 readBinary(params?: OctokatAuthorizationsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatAuthorizationsPostParams, callback?: Callback<any>): Promise<any>
  }
-events: { 
+events: {
 
 
 fetch(params?: OctokatEventsGetParams, callback?: Callback<any>): Promise<any>
@@ -2631,31 +2657,31 @@ readBinary(params?: OctokatEventsGetParams, callback?: Callback<any>): Promise<a
  }
 
 // Syntactic shortcut used here
-repos(owner: any, repo: any): { 
+repos(owner: any, repo: any): {
 
-events: { 
+events: {
 
 
 fetch(params?: OctokatReposEventsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposEventsGetParams, callback?: Callback<any>): Promise<any>
  }
-issues: { 
-(number: any): { 
+issues: {
+(number: any): {
 
-lock: { 
+lock: {
 
 
 add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-assignees: { 
+assignees: {
 
 
 create(params: OctokatReposIssuesFnAssigneesPostParams, callback?: Callback<any>): Promise<any>
 remove(params?: OctokatReposIssuesFnAssigneesDeleteParams, callback?: Callback<void>): Promise<void>
  }
-comments: { 
+comments: {
 
 
 fetch(params?: OctokatReposIssuesFnCommentsGetParams, callback?: Callback<SearchResult<IssueComment>>): Promise<SearchResult<IssueComment>>
@@ -2664,15 +2690,16 @@ read(params?: OctokatReposIssuesFnCommentsGetParams, callback?: Callback<String>
 readBinary(params?: OctokatReposIssuesFnCommentsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposIssuesFnCommentsPostParams, callback?: Callback<IssueComment>): Promise<IssueComment>
  }
-events: { 
+events: {
 
 
-fetch(params?: OctokatReposIssuesFnEventsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposIssuesFnEventsGetParams, callback?: Callback<SearchResult<IssueEvent>>): Promise<SearchResult<IssueEvent>>
+fetchAll(params?: OctokatReposIssuesFnEventsGetParams, callback?: Callback<IssueEvent[]>): Promise<IssueEvent[]>
 read(params?: OctokatReposIssuesFnEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesFnEventsGetParams, callback?: Callback<any>): Promise<any>
  }
-labels: { 
-(name: any): { 
+labels: {
+(name: any): {
 
 
 remove(params: OctokatReposIssuesFnLabelsFnDeleteParams, callback?: Callback<void>): Promise<void>
@@ -2682,18 +2709,18 @@ fetch(callback?: Callback<SearchResult<IssueLabel>>): Promise<SearchResult<Issue
 fetchAll(callback?: Callback<IssueLabel[]>): Promise<IssueLabel[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
-create(params: OctokatReposIssuesFnLabelsPostParams, callback?: Callback<IssueLabel>): Promise<IssueLabel>
+create(params: OctokatReposIssuesFnLabelsPostParams, callback?: Callback<SearchResult<IssueLabel>>): Promise<SearchResult<IssueLabel>>
 add(params: OctokatReposIssuesFnLabelsPutParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-timeline: { 
+timeline: {
 
 
 fetch(params?: OctokatReposIssuesFnTimelineGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposIssuesFnTimelineGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesFnTimelineGetParams, callback?: Callback<any>): Promise<any>
  }
-reactions: { 
+reactions: {
 
 
 fetch(params?: OctokatReposIssuesFnReactionsGetParams, callback?: Callback<any>): Promise<any>
@@ -2706,23 +2733,24 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatReposIssuesFnPatchParams, callback?: Callback<Issue>): Promise<Issue>
  }
-events: { 
-(id: any): { 
+events: {
+(id: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<IssueEvent>): Promise<IssueEvent>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposIssuesEventsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposIssuesEventsGetParams, callback?: Callback<SearchResult<IssueEvent>>): Promise<SearchResult<IssueEvent>>
+fetchAll(params?: OctokatReposIssuesEventsGetParams, callback?: Callback<IssueEvent[]>): Promise<IssueEvent[]>
 read(params?: OctokatReposIssuesEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesEventsGetParams, callback?: Callback<any>): Promise<any>
  }
-comments: { 
-(id: any): { 
+comments: {
+(id: any): {
 
-reactions: { 
+reactions: {
 
 
 fetch(params?: OctokatReposIssuesCommentsFnReactionsGetParams, callback?: Callback<any>): Promise<any>
@@ -2742,12 +2770,13 @@ fetchAll(params?: OctokatReposIssuesCommentsGetParams, callback?: Callback<Issue
 read(params?: OctokatReposIssuesCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposIssuesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
+fetchAll(params?: OctokatReposIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
 read(params?: OctokatReposIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposIssuesPostParams, callback?: Callback<Issue>): Promise<Issue>
  }
-notifications: { 
+notifications: {
 
 
 fetch(params?: OctokatReposNotificationsGetParams, callback?: Callback<any>): Promise<any>
@@ -2755,21 +2784,21 @@ read(params?: OctokatReposNotificationsGetParams, callback?: Callback<String>): 
 readBinary(params?: OctokatReposNotificationsGetParams, callback?: Callback<any>): Promise<any>
 add(params?: OctokatReposNotificationsPutParams, callback?: Callback<any>): Promise<any>
  }
-stargazers: { 
+stargazers: {
 
 
 fetch(params?: OctokatReposStargazersGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposStargazersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposStargazersGetParams, callback?: Callback<any>): Promise<any>
  }
-subscribers: { 
+subscribers: {
 
 
 fetch(params?: OctokatReposSubscribersGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposSubscribersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposSubscribersGetParams, callback?: Callback<any>): Promise<any>
  }
-subscription: { 
+subscription: {
 
 
 fetch(params?: OctokatReposSubscriptionGetParams, callback?: Callback<any>): Promise<any>
@@ -2778,10 +2807,10 @@ readBinary(params?: OctokatReposSubscriptionGetParams, callback?: Callback<any>)
 add(params?: OctokatReposSubscriptionPutParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-git: { 
+git: {
 
-blobs: { 
-(sha: any): { 
+blobs: {
+(sha: any): {
 
 
 fetch(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<any>): Promise<any>
@@ -2791,38 +2820,38 @@ readBinary(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<any>): 
 
 create(params: OctokatReposGitBlobsPostParams, callback?: Callback<any>): Promise<any>
  }
-commits: { 
-(sha: any): { 
+commits: {
+(sha: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<GitCommit>): Promise<GitCommit>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 
-create(params: OctokatReposGitCommitsPostParams, callback?: Callback<any>): Promise<any>
+create(params: OctokatReposGitCommitsPostParams, callback?: Callback<GitCommit>): Promise<GitCommit>
  }
-refs: { 
-(ref: any): { 
+refs: {
+(ref: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<GitCommit>): Promise<GitCommit>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
-update(params?: OctokatReposGitRefsFnPatchParams, callback?: Callback<any>): Promise<any>
+update(params?: OctokatReposGitRefsFnPatchParams, callback?: Callback<GitRef>): Promise<GitRef>
 remove(callback?: Callback<any>): Promise<any>
  }
-tags: { 
+tags: {
 
 
-fetch(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<GitRef>): Promise<GitRef>
 read(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<any>): Promise<any>
  }
-create(params: OctokatReposGitRefsPostParams, callback?: Callback<any>): Promise<any>
+create(params: OctokatReposGitRefsPostParams, callback?: Callback<GitRef>): Promise<GitRef>
  }
-tags: { 
-(sha: any): { 
+tags: {
+(sha: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -2832,8 +2861,8 @@ readBinary(callback?: Callback<any>): Promise<any>
 
 create(params: OctokatReposGitTagsPostParams, callback?: Callback<any>): Promise<any>
  }
-trees: { 
-(sha: any): { 
+trees: {
+(sha: any): {
 
 
 fetch(params?: OctokatReposGitTreesFnGetParams, callback?: Callback<any>): Promise<any>
@@ -2845,8 +2874,8 @@ create(params: OctokatReposGitTreesPostParams, callback?: Callback<any>): Promis
  }
 
  }
-assignees: { 
-(assignee: any): { 
+assignees: {
+(assignee: any): {
 
 
 fetch(params: OctokatReposAssigneesFnGetParams, callback?: Callback<Boolean>): Promise<Boolean>
@@ -2859,8 +2888,8 @@ fetchAll(callback?: Callback<User[]>): Promise<User[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-labels: { 
-(name: any): { 
+labels: {
+(name: any): {
 
 
 fetch(callback?: Callback<IssueLabel>): Promise<IssueLabel>
@@ -2876,13 +2905,14 @@ read(params?: OctokatReposLabelsGetParams, callback?: Callback<String>): Promise
 readBinary(params?: OctokatReposLabelsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposLabelsPostParams, callback?: Callback<IssueLabel>): Promise<IssueLabel>
  }
-milestones: { 
-(number: any): { 
+milestones: {
+(number: any): {
 
-labels: { 
+labels: {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<SearchResult<IssueLabel>>): Promise<SearchResult<IssueLabel>>
+fetchAll(callback?: Callback<IssueLabel[]>): Promise<IssueLabel[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -2898,10 +2928,10 @@ read(params?: OctokatReposMilestonesGetParams, callback?: Callback<String>): Pro
 readBinary(params?: OctokatReposMilestonesGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposMilestonesPostParams, callback?: Callback<any>): Promise<any>
  }
-import: { 
+import: {
 
-authors: { 
-(author_id: any): { 
+authors: {
+(author_id: any): {
 
 
 update(params: OctokatReposImportAuthorsFnPatchParams, callback?: Callback<any>): Promise<any>
@@ -2918,14 +2948,14 @@ update(callback?: Callback<any>): Promise<any>
 add(params: OctokatReposImportPutParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-license: { 
+license: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-projects: { 
+projects: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -2933,24 +2963,24 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposProjectsPostParams, callback?: Callback<any>): Promise<any>
  }
-pulls: { 
-(number: any): { 
+pulls: {
+(number: any): {
 
-commits: { 
+commits: {
 
 
 fetch(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<any>): Promise<any>
  }
-files: { 
+files: {
 
 
 fetch(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<any>): Promise<any>
  }
-merge: { 
+merge: {
 
 
 fetch(params?: OctokatReposPullsFnMergeGetParams, callback?: Callback<any>): Promise<any>
@@ -2958,22 +2988,22 @@ read(params?: OctokatReposPullsFnMergeGetParams, callback?: Callback<String>): P
 readBinary(params?: OctokatReposPullsFnMergeGetParams, callback?: Callback<any>): Promise<any>
 add(params?: OctokatReposPullsFnMergePutParams, callback?: Callback<any>): Promise<any>
  }
-reviews: { 
-(id: any): { 
+reviews: {
+(id: any): {
 
-comments: { 
+comments: {
 
 
 fetch(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
-events: { 
+events: {
 
 
 create(params?: OctokatReposPullsFnReviewsFnEventsPostParams, callback?: Callback<any>): Promise<any>
  }
-dismissals: { 
+dismissals: {
 
 
 add(params?: OctokatReposPullsFnReviewsFnDismissalsPutParams, callback?: Callback<any>): Promise<any>
@@ -2988,7 +3018,7 @@ read(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<String>):
 readBinary(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposPullsFnReviewsPostParams, callback?: Callback<any>): Promise<any>
  }
-comments: { 
+comments: {
 
 
 fetch(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
@@ -2996,7 +3026,7 @@ read(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<String>)
 readBinary(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposPullsFnCommentsPostParams, callback?: Callback<any>): Promise<any>
  }
-requestedReviewers: { 
+requestedReviewers: {
 
 
 fetch(params?: OctokatReposPullsFnRequestedReviewersGetParams, callback?: Callback<any>): Promise<any>
@@ -3010,10 +3040,10 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatReposPullsFnPatchParams, callback?: Callback<any>): Promise<any>
  }
-comments: { 
-(id: any): { 
+comments: {
+(id: any): {
 
-reactions: { 
+reactions: {
 
 
 fetch(params?: OctokatReposPullsCommentsFnReactionsGetParams, callback?: Callback<any>): Promise<any>
@@ -3037,10 +3067,10 @@ read(params?: OctokatReposPullsGetParams, callback?: Callback<String>): Promise<
 readBinary(params?: OctokatReposPullsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposPullsPostParams, callback?: Callback<any>): Promise<any>
  }
-comments: { 
-(id: any): { 
+comments: {
+(id: any): {
 
-reactions: { 
+reactions: {
 
 
 fetch(params?: OctokatReposCommentsFnReactionsGetParams, callback?: Callback<any>): Promise<any>
@@ -3048,53 +3078,55 @@ read(params?: OctokatReposCommentsFnReactionsGetParams, callback?: Callback<Stri
 readBinary(params?: OctokatReposCommentsFnReactionsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposCommentsFnReactionsPostParams, callback?: Callback<any>): Promise<any>
  }
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
+fetchAll(callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
-update(params?: OctokatReposCommentsFnPatchParams, callback?: Callback<any>): Promise<any>
+update(params?: OctokatReposCommentsFnPatchParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposCommentsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposCommentsGetParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
+fetchAll(params?: OctokatReposCommentsGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(params?: OctokatReposCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
-contributors: { 
+contributors: {
 
 
 fetch(params?: OctokatReposContributorsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposContributorsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposContributorsGetParams, callback?: Callback<any>): Promise<any>
  }
-languages: { 
+languages: {
 
 
 fetch(params?: OctokatReposLanguagesGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposLanguagesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposLanguagesGetParams, callback?: Callback<any>): Promise<any>
  }
-teams: { 
+teams: {
 
 
 fetch(params?: OctokatReposTeamsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposTeamsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTeamsGetParams, callback?: Callback<any>): Promise<any>
  }
-tags: { 
+tags: {
 
 
 fetch(params?: OctokatReposTagsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposTagsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTagsGetParams, callback?: Callback<any>): Promise<any>
  }
-branches: { 
-(branch: any): { 
+branches: {
+(branch: any): {
 
-protection: { 
+protection: {
 
-requiredStatusChecks: { 
+requiredStatusChecks: {
 
-contexts: { 
+contexts: {
 
 
 fetch(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksContextsGetParams, callback?: Callback<any>): Promise<any>
@@ -3110,7 +3142,7 @@ readBinary(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksGetParam
 update(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksPatchParams, callback?: Callback<any>): Promise<any>
 remove(params?: OctokatReposBranchesFnProtectionRequiredStatusChecksDeleteParams, callback?: Callback<any>): Promise<any>
  }
-requiredPullRequestReviews: { 
+requiredPullRequestReviews: {
 
 
 fetch(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsGetParams, callback?: Callback<any>): Promise<any>
@@ -3119,9 +3151,9 @@ readBinary(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsGe
 update(params?: OctokatReposBranchesFnProtectionRequiredPullRequestReviewsPatchParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-restrictions: { 
+restrictions: {
 
-teams: { 
+teams: {
 
 
 fetch(params?: OctokatReposBranchesFnProtectionRestrictionsTeamsGetParams, callback?: Callback<any>): Promise<any>
@@ -3131,7 +3163,7 @@ create(params: OctokatReposBranchesFnProtectionRestrictionsTeamsPostParams, call
 add(params: OctokatReposBranchesFnProtectionRestrictionsTeamsPutParams, callback?: Callback<any>): Promise<any>
 remove(params: OctokatReposBranchesFnProtectionRestrictionsTeamsDeleteParams, callback?: Callback<any>): Promise<any>
  }
-users: { 
+users: {
 
 
 fetch(params?: OctokatReposBranchesFnProtectionRestrictionsUsersGetParams, callback?: Callback<any>): Promise<any>
@@ -3161,10 +3193,10 @@ fetch(params?: OctokatReposBranchesGetParams, callback?: Callback<any>): Promise
 read(params?: OctokatReposBranchesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposBranchesGetParams, callback?: Callback<any>): Promise<any>
  }
-collaborators: { 
-(username: any): { 
+collaborators: {
+(username: any): {
 
-permission: { 
+permission: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3182,42 +3214,44 @@ fetch(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<any>): Pr
 read(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<any>): Promise<any>
  }
-commits: { 
-(ref: any): { 
+commits: {
+(ref: any): {
 
-comments: { 
+comments: {
 
 
-fetch(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
+fetchAll(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
-statuses: { 
+statuses: {
 
 
 fetch(params: OctokatReposCommitsFnStatusesGetParams, callback?: Callback<any>): Promise<any>
 read(params: OctokatReposCommitsFnStatusesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatReposCommitsFnStatusesGetParams, callback?: Callback<any>): Promise<any>
  }
-status: { 
+status: {
 
 
 fetch(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<any>): Promise<any>
 read(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<RepoCommit>): Promise<RepoCommit>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposCommitsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposCommitsGetParams, callback?: Callback<SearchResult<RepoCommitMaybe>>): Promise<SearchResult<RepoCommitMaybe>>
+fetchAll(params?: OctokatReposCommitsGetParams, callback?: Callback<RepoCommitMaybe[]>): Promise<RepoCommitMaybe[]>
 read(params?: OctokatReposCommitsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCommitsGetParams, callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-compare(base: any, head: any): { 
+compare(base: any, head: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3225,7 +3259,7 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 
-readme: { 
+readme: {
 
 
 fetch(params?: OctokatReposReadmeGetParams, callback?: Callback<any>): Promise<any>
@@ -3234,7 +3268,7 @@ readBinary(params?: OctokatReposReadmeGetParams, callback?: Callback<any>): Prom
  }
 
 // Syntactic shortcut used here
-contents(path: any): { 
+contents(path: any): {
 
 
 fetch(params: OctokatReposContentsGetParams, callback?: Callback<any>): Promise<any>
@@ -3246,7 +3280,7 @@ remove(params: OctokatReposContentsDeleteParams, callback?: Callback<any>): Prom
 
 
 // Syntactic shortcut used here
-tarball(ref: any): { 
+tarball(ref: any): {
 
 
 fetch(params?: OctokatReposTarballGetParams, callback?: Callback<any>): Promise<any>
@@ -3256,7 +3290,7 @@ readBinary(params?: OctokatReposTarballGetParams, callback?: Callback<any>): Pro
 
 
 // Syntactic shortcut used here
-zipball(ref: any): { 
+zipball(ref: any): {
 
 
 fetch(params?: OctokatReposZipballGetParams, callback?: Callback<any>): Promise<any>
@@ -3264,8 +3298,8 @@ read(params?: OctokatReposZipballGetParams, callback?: Callback<String>): Promis
 readBinary(params?: OctokatReposZipballGetParams, callback?: Callback<any>): Promise<any>
  }
 
-keys: { 
-(id: any): { 
+keys: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3279,10 +3313,10 @@ read(params?: OctokatReposKeysGetParams, callback?: Callback<String>): Promise<S
 readBinary(params?: OctokatReposKeysGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposKeysPostParams, callback?: Callback<any>): Promise<any>
  }
-deployments: { 
-(id: any): { 
+deployments: {
+(id: any): {
 
-statuses: { 
+statuses: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3298,8 +3332,8 @@ read(params?: OctokatReposDeploymentsGetParams, callback?: Callback<String>): Pr
 readBinary(params?: OctokatReposDeploymentsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposDeploymentsPostParams, callback?: Callback<any>): Promise<any>
  }
-downloads: { 
-(id: any): { 
+downloads: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3312,7 +3346,7 @@ fetch(params?: OctokatReposDownloadsGetParams, callback?: Callback<any>): Promis
 read(params?: OctokatReposDownloadsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposDownloadsGetParams, callback?: Callback<any>): Promise<any>
  }
-forks: { 
+forks: {
 
 
 fetch(params?: OctokatReposForksGetParams, callback?: Callback<any>): Promise<any>
@@ -3320,22 +3354,22 @@ read(params?: OctokatReposForksGetParams, callback?: Callback<String>): Promise<
 readBinary(params?: OctokatReposForksGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposForksPostParams, callback?: Callback<any>): Promise<any>
  }
-merges: { 
+merges: {
 
 
 create(params?: OctokatReposMergesPostParams, callback?: Callback<any>): Promise<any>
  }
-pages: { 
+pages: {
 
-builds: { 
-(id: any): { 
+builds: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-latest: { 
+latest: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3351,10 +3385,10 @@ fetch(params?: OctokatReposPagesGetParams, callback?: Callback<any>): Promise<an
 read(params?: OctokatReposPagesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPagesGetParams, callback?: Callback<any>): Promise<any>
  }
-releases: { 
-(id: any): { 
+releases: {
+(id: any): {
 
-assets: { 
+assets: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3368,7 +3402,7 @@ readBinary(callback?: Callback<any>): Promise<any>
 update(params: OctokatReposReleasesFnPatchParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-latest: { 
+latest: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3377,7 +3411,7 @@ readBinary(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-tags(tag: any): { 
+tags(tag: any): {
 
 
 fetch(params: OctokatReposReleasesTagsGetParams, callback?: Callback<any>): Promise<any>
@@ -3387,7 +3421,7 @@ readBinary(params: OctokatReposReleasesTagsGetParams, callback?: Callback<any>):
 
 
 // Syntactic shortcut used here
-assets(id: any): { 
+assets(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3402,37 +3436,37 @@ read(params?: OctokatReposReleasesGetParams, callback?: Callback<String>): Promi
 readBinary(params?: OctokatReposReleasesGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposReleasesPostParams, callback?: Callback<any>): Promise<any>
  }
-stats: { 
+stats: {
 
-contributors: { 
-
-
-fetch(callback?: Callback<any>): Promise<any>
-read(callback?: Callback<String>): Promise<String>
-readBinary(callback?: Callback<any>): Promise<any>
- }
-commitActivity: { 
+contributors: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-codeFrequency: { 
+commitActivity: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-participation: { 
+codeFrequency: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-punchCard: { 
+participation: {
+
+
+fetch(callback?: Callback<any>): Promise<any>
+read(callback?: Callback<String>): Promise<String>
+readBinary(callback?: Callback<any>): Promise<any>
+ }
+punchCard: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3443,24 +3477,24 @@ readBinary(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-statuses(sha: any): { 
+statuses(sha: any): {
 
 
 create(params: OctokatReposStatusesPostParams, callback?: Callback<any>): Promise<any>
  }
 
-traffic: { 
+traffic: {
 
-popular: { 
+popular: {
 
-referrers: { 
+referrers: {
 
 
 fetch(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<any>): Promise<any>
  }
-paths: { 
+paths: {
 
 
 fetch(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callback<any>): Promise<any>
@@ -3469,14 +3503,14 @@ readBinary(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callbac
  }
 
  }
-views: { 
+views: {
 
 
 fetch(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<any>): Promise<any>
  }
-clones: { 
+clones: {
 
 
 fetch(params?: OctokatReposTrafficClonesGetParams, callback?: Callback<any>): Promise<any>
@@ -3485,15 +3519,15 @@ readBinary(params?: OctokatReposTrafficClonesGetParams, callback?: Callback<any>
  }
 
  }
-hooks: { 
-(id: any): { 
+hooks: {
+(id: any): {
 
-tests: { 
+tests: {
 
 
 create(callback?: Callback<any>): Promise<any>
  }
-pings: { 
+pings: {
 
 
 create(callback?: Callback<any>): Promise<any>
@@ -3519,9 +3553,9 @@ remove(callback?: Callback<any>): Promise<any>
 
 
 // Syntactic shortcut used here
-networks(owner: any, repo: any): { 
+networks(owner: any, repo: any): {
 
-events: { 
+events: {
 
 
 fetch(params?: OctokatNetworksEventsGetParams, callback?: Callback<any>): Promise<any>
@@ -3533,26 +3567,27 @@ readBinary(params?: OctokatNetworksEventsGetParams, callback?: Callback<any>): P
 
 
 // Syntactic shortcut used here
-orgs(org: any): { 
+orgs(org: any): {
 
-events: { 
+events: {
 
 
 fetch(params?: OctokatOrgsEventsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatOrgsEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsEventsGetParams, callback?: Callback<any>): Promise<any>
  }
-issues: { 
+issues: {
 
 
-fetch(params?: OctokatOrgsIssuesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatOrgsIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
+fetchAll(params?: OctokatOrgsIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
 read(params?: OctokatOrgsIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
-migrations: { 
-(id: any): { 
+migrations: {
+(id: any): {
 
-archive: { 
+archive: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3562,9 +3597,9 @@ remove(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-repos(repo_name: any): { 
+repos(repo_name: any): {
 
-lock: { 
+lock: {
 
 
 remove(params: OctokatOrgsMigrationsFnReposLockDeleteParams, callback?: Callback<any>): Promise<any>
@@ -3582,55 +3617,57 @@ read(params?: OctokatOrgsMigrationsGetParams, callback?: Callback<String>): Prom
 readBinary(params?: OctokatOrgsMigrationsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatOrgsMigrationsPostParams, callback?: Callback<any>): Promise<any>
  }
-members: { 
-(username: any): { 
+members: {
+(username: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<Boolean>): Promise<Boolean>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatOrgsMembersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatOrgsMembersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatOrgsMembersGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatOrgsMembersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsMembersGetParams, callback?: Callback<any>): Promise<any>
  }
-publicMembers: { 
-(username: any): { 
+publicMembers: {
+(username: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<Boolean>): Promise<Boolean>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
-add(callback?: Callback<any>): Promise<any>
+add(callback?: Callback<Boolean>): Promise<Boolean>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(callback?: Callback<User[]>): Promise<User[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-memberships(username: any): { 
+memberships(username: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<Boolean>): Promise<Boolean>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 add(params: OctokatOrgsMembershipsPutParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-invitations: { 
+invitations: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-outsideCollaborators: { 
+outsideCollaborators: {
 
 
 fetch(params?: OctokatOrgsOutsideCollaboratorsGetParams, callback?: Callback<any>): Promise<any>
@@ -3639,14 +3676,14 @@ readBinary(params?: OctokatOrgsOutsideCollaboratorsGetParams, callback?: Callbac
  }
 
 // Syntactic shortcut used here
-outsideCollaborator(username: any): { 
+outsideCollaborator(username: any): {
 
 
 add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-teams: { 
+teams: {
 
 
 fetch(params?: OctokatOrgsTeamsGetParams, callback?: Callback<any>): Promise<any>
@@ -3654,10 +3691,10 @@ read(params?: OctokatOrgsTeamsGetParams, callback?: Callback<String>): Promise<S
 readBinary(params?: OctokatOrgsTeamsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatOrgsTeamsPostParams, callback?: Callback<any>): Promise<any>
  }
-hooks: { 
-(id: any): { 
+hooks: {
+(id: any): {
 
-pings: { 
+pings: {
 
 
 create(callback?: Callback<any>): Promise<any>
@@ -3674,8 +3711,8 @@ read(params?: OctokatOrgsHooksGetParams, callback?: Callback<String>): Promise<S
 readBinary(params?: OctokatOrgsHooksGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatOrgsHooksPostParams, callback?: Callback<any>): Promise<any>
  }
-blocks: { 
-(username: any): { 
+blocks: {
+(username: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3689,7 +3726,7 @@ fetch(params?: OctokatOrgsBlocksGetParams, callback?: Callback<any>): Promise<an
 read(params?: OctokatOrgsBlocksGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsBlocksGetParams, callback?: Callback<any>): Promise<any>
  }
-projects: { 
+projects: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3697,7 +3734,7 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 create(params?: OctokatOrgsProjectsPostParams, callback?: Callback<any>): Promise<any>
  }
-repos: { 
+repos: {
 
 
 fetch(params?: OctokatOrgsReposGetParams, callback?: Callback<any>): Promise<any>
@@ -3705,18 +3742,18 @@ read(params?: OctokatOrgsReposGetParams, callback?: Callback<String>): Promise<S
 readBinary(params?: OctokatOrgsReposGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatOrgsReposPostParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatOrgsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatOrgsGetParams, callback?: Callback<Organization>): Promise<Organization>
 read(params?: OctokatOrgsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsGetParams, callback?: Callback<any>): Promise<any>
-update(params?: OctokatOrgsPatchParams, callback?: Callback<any>): Promise<any>
+update(params?: OctokatOrgsPatchParams, callback?: Callback<Organization>): Promise<Organization>
  }
 
-users: { 
-(username: any): { 
+users: {
+(username: any): {
 
-receivedEvents: { 
+receivedEvents: {
 
-public: { 
+public: {
 
 
 fetch(params?: OctokatUsersFnReceivedEventsPublicGetParams, callback?: Callback<any>): Promise<any>
@@ -3727,9 +3764,9 @@ fetch(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<any>):
 read(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<any>): Promise<any>
  }
-events: { 
+events: {
 
-public: { 
+public: {
 
 
 fetch(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<any>): Promise<any>
@@ -3738,7 +3775,7 @@ readBinary(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<any
  }
 
 // Syntactic shortcut used here
-orgs(org: any): { 
+orgs(org: any): {
 
 
 fetch(params?: OctokatUsersFnEventsOrgsGetParams, callback?: Callback<any>): Promise<any>
@@ -3750,50 +3787,51 @@ fetch(params?: OctokatUsersFnEventsGetParams, callback?: Callback<any>): Promise
 read(params?: OctokatUsersFnEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnEventsGetParams, callback?: Callback<any>): Promise<any>
  }
-starred: { 
+starred: {
 
 
 fetch(params?: OctokatUsersFnStarredGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersFnStarredGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnStarredGetParams, callback?: Callback<any>): Promise<any>
  }
-subscriptions: { 
+subscriptions: {
 
 
 fetch(params?: OctokatUsersFnSubscriptionsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersFnSubscriptionsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnSubscriptionsGetParams, callback?: Callback<any>): Promise<any>
  }
-gists: { 
+gists: {
 
 
 fetch(params?: OctokatUsersFnGistsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersFnGistsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnGistsGetParams, callback?: Callback<any>): Promise<any>
  }
-orgs: { 
+orgs: {
 
 
-fetch(params?: OctokatUsersFnOrgsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnOrgsGetParams, callback?: Callback<SearchResult<OrganizationSlug>>): Promise<SearchResult<OrganizationSlug>>
+fetchAll(params?: OctokatUsersFnOrgsGetParams, callback?: Callback<OrganizationSlug[]>): Promise<OrganizationSlug[]>
 read(params?: OctokatUsersFnOrgsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnOrgsGetParams, callback?: Callback<any>): Promise<any>
  }
-repos: { 
+repos: {
 
 
 fetch(params?: OctokatUsersFnReposGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersFnReposGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnReposGetParams, callback?: Callback<any>): Promise<any>
  }
-followers: { 
+followers: {
 
 
 fetch(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<any>): Promise<any>
  }
-following: { 
-(target_user: any): { 
+following: {
+(target_user: any): {
 
 
 fetch(params: OctokatUsersFnFollowingFnGetParams, callback?: Callback<any>): Promise<any>
@@ -3805,20 +3843,20 @@ fetch(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<any>): Prom
 read(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<any>): Promise<any>
  }
-keys: { 
+keys: {
 
 
 fetch(params?: OctokatUsersFnKeysGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersFnKeysGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnKeysGetParams, callback?: Callback<any>): Promise<any>
  }
-siteAdmin: { 
+siteAdmin: {
 
 
 add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-suspended: { 
+suspended: {
 
 
 add(callback?: Callback<any>): Promise<any>
@@ -3833,20 +3871,20 @@ fetch(params?: OctokatUsersGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUsersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersGetParams, callback?: Callback<any>): Promise<any>
  }
-feeds: { 
+feeds: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-notifications: { 
+notifications: {
 
 
 // Syntactic shortcut used here
-threads(id: any): { 
+threads(id: any): {
 
-subscription: { 
+subscription: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3866,16 +3904,16 @@ read(params?: OctokatNotificationsGetParams, callback?: Callback<String>): Promi
 readBinary(params?: OctokatNotificationsGetParams, callback?: Callback<any>): Promise<any>
 add(params?: OctokatNotificationsPutParams, callback?: Callback<any>): Promise<any>
  }
-user: { 
-(id: any): { 
+user: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-starred: { 
-(owner: any, repo: any): { 
+starred: {
+(owner: any, repo: any): {
 
 
 fetch(params?: OctokatUserStarredFnGetParams, callback?: Callback<any>): Promise<any>
@@ -3889,21 +3927,22 @@ fetch(params?: OctokatUserStarredGetParams, callback?: Callback<any>): Promise<a
 read(params?: OctokatUserStarredGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserStarredGetParams, callback?: Callback<any>): Promise<any>
  }
-subscriptions: { 
+subscriptions: {
 
 
 fetch(params?: OctokatUserSubscriptionsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUserSubscriptionsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserSubscriptionsGetParams, callback?: Callback<any>): Promise<any>
  }
-issues: { 
+issues: {
 
 
-fetch(params?: OctokatUserIssuesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUserIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
+fetchAll(params?: OctokatUserIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
 read(params?: OctokatUserIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
-repos: { 
+repos: {
 
 
 fetch(params?: OctokatUserReposGetParams, callback?: Callback<SearchResult<Repository>>): Promise<SearchResult<Repository>>
@@ -3912,17 +3951,17 @@ read(params?: OctokatUserReposGetParams, callback?: Callback<String>): Promise<S
 readBinary(params?: OctokatUserReposGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatUserReposPostParams, callback?: Callback<any>): Promise<any>
  }
-orgs: { 
+orgs: {
 
 
 fetch(params?: OctokatUserOrgsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUserOrgsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserOrgsGetParams, callback?: Callback<any>): Promise<any>
  }
-memberships: { 
+memberships: {
 
-orgs: { 
-(org: any): { 
+orgs: {
+(org: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3937,14 +3976,14 @@ readBinary(params?: OctokatUserMembershipsOrgsGetParams, callback?: Callback<any
  }
 
  }
-teams: { 
+teams: {
 
 
 fetch(params?: OctokatUserTeamsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUserTeamsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserTeamsGetParams, callback?: Callback<any>): Promise<any>
  }
-publicEmails: { 
+publicEmails: {
 
 
 fetch(params?: OctokatUserPublicEmailsGetParams, callback?: Callback<SearchResult<UserEmail>>): Promise<SearchResult<UserEmail>>
@@ -3952,7 +3991,7 @@ fetchAll(params?: OctokatUserPublicEmailsGetParams, callback?: Callback<UserEmai
 read(params?: OctokatUserPublicEmailsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserPublicEmailsGetParams, callback?: Callback<any>): Promise<any>
  }
-emails: { 
+emails: {
 
 
 fetch(params?: OctokatUserEmailsGetParams, callback?: Callback<SearchResult<UserEmail>>): Promise<SearchResult<UserEmail>>
@@ -3962,15 +4001,15 @@ readBinary(params?: OctokatUserEmailsGetParams, callback?: Callback<any>): Promi
 create(params: OctokatUserEmailsPostParams, callback?: Callback<any>): Promise<any>
 remove(params: OctokatUserEmailsDeleteParams, callback?: Callback<any>): Promise<any>
  }
-followers: { 
+followers: {
 
 
 fetch(params?: OctokatUserFollowersGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatUserFollowersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserFollowersGetParams, callback?: Callback<any>): Promise<any>
  }
-following: { 
-(username: any): { 
+following: {
+(username: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3984,8 +4023,8 @@ fetch(params?: OctokatUserFollowingGetParams, callback?: Callback<any>): Promise
 read(params?: OctokatUserFollowingGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserFollowingGetParams, callback?: Callback<any>): Promise<any>
  }
-keys: { 
-(id: any): { 
+keys: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -3999,8 +4038,8 @@ read(params?: OctokatUserKeysGetParams, callback?: Callback<String>): Promise<St
 readBinary(params?: OctokatUserKeysGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatUserKeysPostParams, callback?: Callback<any>): Promise<any>
  }
-gpgKeys: { 
-(id: any): { 
+gpgKeys: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4014,8 +4053,8 @@ read(params?: OctokatUserGpgKeysGetParams, callback?: Callback<String>): Promise
 readBinary(params?: OctokatUserGpgKeysGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatUserGpgKeysPostParams, callback?: Callback<any>): Promise<any>
  }
-blocks: { 
-(username: any): { 
+blocks: {
+(username: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4029,8 +4068,8 @@ fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-repositoryInvitations: { 
-(invitation_id: any): { 
+repositoryInvitations: {
+(invitation_id: any): {
 
 
 update(callback?: Callback<any>): Promise<any>
@@ -4046,17 +4085,17 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatUserPatchParams, callback?: Callback<any>): Promise<any>
  }
-gists: { 
-(id: any): { 
+gists: {
+(id: any): {
 
-commits: { 
+commits: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-star: { 
+star: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4065,7 +4104,7 @@ readBinary(callback?: Callback<any>): Promise<any>
 add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-forks: { 
+forks: {
 
 
 fetch(params?: OctokatGistsFnForksGetParams, callback?: Callback<any>): Promise<any>
@@ -4073,8 +4112,8 @@ read(params?: OctokatGistsFnForksGetParams, callback?: Callback<String>): Promis
 readBinary(params?: OctokatGistsFnForksGetParams, callback?: Callback<any>): Promise<any>
 create(callback?: Callback<any>): Promise<any>
  }
-comments: { 
-(id: any): { 
+comments: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4095,14 +4134,14 @@ readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatGistsFnPatchParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-public: { 
+public: {
 
 
 fetch(params?: OctokatGistsPublicGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatGistsPublicGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatGistsPublicGetParams, callback?: Callback<any>): Promise<any>
  }
-starred: { 
+starred: {
 
 
 fetch(params?: OctokatGistsStarredGetParams, callback?: Callback<any>): Promise<any>
@@ -4114,18 +4153,18 @@ read(params?: OctokatGistsGetParams, callback?: Callback<String>): Promise<Strin
 readBinary(params?: OctokatGistsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatGistsPostParams, callback?: Callback<any>): Promise<any>
  }
-integration: { 
+integration: {
 
-installations: { 
+installations: {
 
 
 fetch(params?: OctokatIntegrationInstallationsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatIntegrationInstallationsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatIntegrationInstallationsGetParams, callback?: Callback<any>): Promise<any>
  }
-identity: { 
+identity: {
 
-user: { 
+user: {
 
 
 create(params?: OctokatIntegrationIdentityUserPostParams, callback?: Callback<any>): Promise<any>
@@ -4136,16 +4175,16 @@ create(params?: OctokatIntegrationIdentityUserPostParams, callback?: Callback<an
  }
 
 // Syntactic shortcut used here
-installations(installation_id: any): { 
+installations(installation_id: any): {
 
-accessTokens: { 
+accessTokens: {
 
 
 create(params?: OctokatInstallationsAccessTokensPostParams, callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-repositories(repository_id: any): { 
+repositories(repository_id: any): {
 
 
 create(callback?: Callback<any>): Promise<any>
@@ -4154,9 +4193,9 @@ create(callback?: Callback<any>): Promise<any>
 
  }
 
-installation: { 
+installation: {
 
-repositories: { 
+repositories: {
 
 
 fetch(params?: OctokatInstallationRepositoriesGetParams, callback?: Callback<any>): Promise<any>
@@ -4165,24 +4204,25 @@ readBinary(params?: OctokatInstallationRepositoriesGetParams, callback?: Callbac
  }
 
  }
-issues: { 
+issues: {
 
 
-fetch(params?: OctokatIssuesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
+fetchAll(params?: OctokatIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
 read(params?: OctokatIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
-emojis: { 
+emojis: {
 
 
 fetch(callback?: Callback<Emojis>): Promise<Emojis>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-gitignore: { 
+gitignore: {
 
-templates: { 
-(name: any): { 
+templates: {
+(name: any): {
 
 
 fetch(params: OctokatGitignoreTemplatesFnGetParams, callback?: Callback<any>): Promise<any>
@@ -4196,8 +4236,8 @@ readBinary(callback?: Callback<any>): Promise<any>
  }
 
  }
-licenses: { 
-(license: any): { 
+licenses: {
+(license: any): {
 
 
 fetch(params: OctokatLicensesFnGetParams, callback?: Callback<any>): Promise<any>
@@ -4209,30 +4249,30 @@ fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-markdown: { 
+markdown: {
 
-raw: { 
+raw: {
 
 
 create(params?: OctokatMarkdownRawPostParams, callback?: Callback<any>): Promise<any>
  }
 create(params: OctokatMarkdownPostParams, callback?: Callback<any>): Promise<any>
  }
-meta: { 
+meta: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-rateLimit: { 
+rateLimit: {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<Rate>): Promise<Rate>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-organizations: { 
+organizations: {
 
 
 fetch(params?: OctokatOrganizationsGetParams, callback?: Callback<any>): Promise<any>
@@ -4241,9 +4281,9 @@ readBinary(params?: OctokatOrganizationsGetParams, callback?: Callback<any>): Pr
  }
 
 // Syntactic shortcut used here
-teams(id: any): { 
+teams(id: any): {
 
-members: { 
+members: {
 
 
 fetch(params?: OctokatTeamsMembersGetParams, callback?: Callback<any>): Promise<any>
@@ -4252,7 +4292,7 @@ readBinary(params?: OctokatTeamsMembersGetParams, callback?: Callback<any>): Pro
  }
 
 // Syntactic shortcut used here
-memberships(username: any): { 
+memberships(username: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4262,11 +4302,11 @@ add(params?: OctokatTeamsMembershipsPutParams, callback?: Callback<any>): Promis
 remove(callback?: Callback<any>): Promise<any>
  }
 
-repos: { 
-(owner: any, repo: any): { 
+repos: {
+(owner: any, repo: any): {
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<Repository>): Promise<Repository>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 add(params?: OctokatTeamsReposFnPutParams, callback?: Callback<any>): Promise<any>
@@ -4277,7 +4317,7 @@ fetch(params?: OctokatTeamsReposGetParams, callback?: Callback<any>): Promise<an
 read(params?: OctokatTeamsReposGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatTeamsReposGetParams, callback?: Callback<any>): Promise<any>
  }
-invitations: { 
+invitations: {
 
 
 fetch(params?: OctokatTeamsInvitationsGetParams, callback?: Callback<any>): Promise<any>
@@ -4291,10 +4331,10 @@ update(params?: OctokatTeamsPatchParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-projects: { 
-(id: any): { 
+projects: {
+(id: any): {
 
-columns: { 
+columns: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4308,10 +4348,10 @@ readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatProjectsFnPatchParams, callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-columns: { 
-(id: any): { 
+columns: {
+(id: any): {
 
-cards: { 
+cards: {
 
 
 fetch(params?: OctokatProjectsColumnsFnCardsGetParams, callback?: Callback<any>): Promise<any>
@@ -4319,7 +4359,7 @@ read(params?: OctokatProjectsColumnsFnCardsGetParams, callback?: Callback<String
 readBinary(params?: OctokatProjectsColumnsFnCardsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatProjectsColumnsFnCardsPostParams, callback?: Callback<any>): Promise<any>
  }
-moves: { 
+moves: {
 
 
 create(params: OctokatProjectsColumnsFnMovesPostParams, callback?: Callback<any>): Promise<any>
@@ -4332,9 +4372,9 @@ remove(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-cards(id: any): { 
+cards(id: any): {
 
-moves: { 
+moves: {
 
 
 create(params: OctokatProjectsColumnsCardsMovesPostParams, callback?: Callback<any>): Promise<any>
@@ -4352,18 +4392,18 @@ remove(callback?: Callback<any>): Promise<any>
  }
 
 // Syntactic shortcut used here
-reactions(id: any): { 
+reactions(id: any): {
 
 
 remove(callback?: Callback<any>): Promise<any>
  }
 
-repositories: { 
-(id: any): { 
+repositories: {
+(id: any): {
 
-community: { 
+community: {
 
-profile: { 
+profile: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4372,8 +4412,8 @@ readBinary(callback?: Callback<any>): Promise<any>
  }
 
  }
-invitations: { 
-(invitation_id: any): { 
+invitations: {
+(invitation_id: any): {
 
 
 update(params?: OctokatRepositoriesFnInvitationsFnPatchParams, callback?: Callback<any>): Promise<any>
@@ -4393,9 +4433,9 @@ fetch(params?: OctokatRepositoriesGetParams, callback?: Callback<any>): Promise<
 read(params?: OctokatRepositoriesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatRepositoriesGetParams, callback?: Callback<any>): Promise<any>
  }
-search: { 
+search: {
 
-repositories: { 
+repositories: {
 
 
 fetch(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<SearchResult<Repository>>): Promise<SearchResult<Repository>>
@@ -4403,28 +4443,28 @@ fetchAll(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<Reposi
 read(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatSearchRepositoriesGetParams, callback?: Callback<any>): Promise<any>
  }
-code: { 
+code: {
 
 
 fetch(params?: OctokatSearchCodeGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatSearchCodeGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatSearchCodeGetParams, callback?: Callback<any>): Promise<any>
  }
-commits: { 
+commits: {
 
 
 fetch(params?: OctokatSearchCommitsGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatSearchCommitsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatSearchCommitsGetParams, callback?: Callback<any>): Promise<any>
  }
-issues: { 
+issues: {
 
 
 fetch(params?: OctokatSearchIssuesGetParams, callback?: Callback<any>): Promise<any>
 read(params?: OctokatSearchIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatSearchIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
-users: { 
+users: {
 
 
 fetch(params: OctokatSearchUsersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
@@ -4434,13 +4474,13 @@ readBinary(params: OctokatSearchUsersGetParams, callback?: Callback<any>): Promi
  }
 
  }
-legacy: { 
+legacy: {
 
-user: { 
+user: {
 
 
 // Syntactic shortcut used here
-email(email: any): { 
+email(email: any): {
 
 
 fetch(params: OctokatLegacyUserEmailGetParams, callback?: Callback<any>): Promise<any>
@@ -4452,11 +4492,11 @@ readBinary(params: OctokatLegacyUserEmailGetParams, callback?: Callback<any>): P
  }
 
  }
-enterprise: { 
+enterprise: {
 
 
 // Syntactic shortcut used here
-stats(type: any): { 
+stats(type: any): {
 
 
 fetch(params: OctokatEnterpriseStatsGetParams, callback?: Callback<any>): Promise<any>
@@ -4464,9 +4504,9 @@ read(params: OctokatEnterpriseStatsGetParams, callback?: Callback<String>): Prom
 readBinary(params: OctokatEnterpriseStatsGetParams, callback?: Callback<any>): Promise<any>
  }
 
-settings: { 
+settings: {
 
-license: { 
+license: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4477,20 +4517,20 @@ readBinary(callback?: Callback<any>): Promise<any>
  }
 
  }
-admin: { 
+admin: {
 
-ldap: { 
+ldap: {
 
 
 // Syntactic shortcut used here
-users(username: any): { 
+users(username: any): {
 
-mapping: { 
+mapping: {
 
 
 update(params: OctokatAdminLdapUsersMappingPatchParams, callback?: Callback<any>): Promise<any>
  }
-sync: { 
+sync: {
 
 
 create(callback?: Callback<any>): Promise<any>
@@ -4500,14 +4540,14 @@ create(callback?: Callback<any>): Promise<any>
 
 
 // Syntactic shortcut used here
-teams(team_id: any): { 
+teams(team_id: any): {
 
-mapping: { 
+mapping: {
 
 
 update(params: OctokatAdminLdapTeamsMappingPatchParams, callback?: Callback<any>): Promise<any>
  }
-sync: { 
+sync: {
 
 
 create(params: OctokatAdminLdapTeamsSyncPostParams, callback?: Callback<any>): Promise<any>
@@ -4517,12 +4557,12 @@ create(params: OctokatAdminLdapTeamsSyncPostParams, callback?: Callback<any>): P
 
 
  }
-preReceiveEnvironments: { 
-(id: any): { 
+preReceiveEnvironments: {
+(id: any): {
 
-downloads: { 
+downloads: {
 
-latest: { 
+latest: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4543,8 +4583,8 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 create(params: OctokatAdminPreReceiveEnvironmentsPostParams, callback?: Callback<any>): Promise<any>
  }
-preReceiveHooks: { 
-(id: any): { 
+preReceiveHooks: {
+(id: any): {
 
 
 fetch(callback?: Callback<any>): Promise<any>
@@ -4559,23 +4599,23 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 create(params: OctokatAdminPreReceiveHooksPostParams, callback?: Callback<any>): Promise<any>
  }
-organizations: { 
+organizations: {
 
 
 create(params: OctokatAdminOrganizationsPostParams, callback?: Callback<any>): Promise<any>
  }
 
  }
-staff: { 
+staff: {
 
-indexingJobs: { 
+indexingJobs: {
 
 
 create(params: OctokatStaffIndexingJobsPostParams, callback?: Callback<any>): Promise<any>
  }
 
  }
-zen: { 
+zen: {
 
 
 fetch(callback?: Callback<any>): Promise<any>
