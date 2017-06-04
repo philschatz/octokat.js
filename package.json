@@ -4,6 +4,7 @@
   "description": "Javascript GitHub client for NodeJS or a browser using promises or callbacks",
   "main": "index.js",
   "scripts": {
+    "typescript": "node ./types/builder.js",
     "lint": "standard *.js src/**.js | snazzy && coffeelint --file ./coffeelint.json src/**/*.coffee",
     "build": "npm run-script dist",
     "pretest": "npm run-script build",
@@ -33,6 +34,7 @@
     "node-fetch": "^1.6.3"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^3.1.3",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.16.0",
     "babel-loader": "^7.0.0",
@@ -57,6 +59,7 @@
     "remap-istanbul": "^0.9.0",
     "snazzy": "^6.0.0",
     "standard": "^9.0.0",
+    "typescript": "^2.3.2",
     "webpack": "^2.3.1",
     "whatwg-fetch": "^2.0.3"
   },
@@ -83,6 +86,7 @@
     "./dist/node/adapters/fetch-node.js": "./dist/node/adapters/fetch-browser.js",
     "./dist/node/adapters/base64-node.js": "./dist/node/adapters/base64-browser.js"
   },
+  "types": "./types/index.d.ts",
   "tonicExampleFilename": "examples/tonic-example.js",
   "license": "MIT"
 }
