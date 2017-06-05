@@ -2,7 +2,7 @@
 const fetchVCR = require('fetch-vcr')
 fetchVCR.configure({
   fixturePath: '../node_modules/octokat-fixtures/_fixtures',
-  // headerBlacklist: ['authorization', 'user-agent']
+  headerBlacklist: ['authorization', 'user-agent']
 })
 
 require('./all')

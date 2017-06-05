@@ -9,7 +9,7 @@ describe('Gists', function () {
   describe('Authenticated Gists', function () {
     before(function () {
       let newGist = {
-        description: 'A gist from Octokit',
+        description: 'A gist from Octokat',
         public: true,
         files: {
           'zen.text': {

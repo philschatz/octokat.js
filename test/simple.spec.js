@@ -98,15 +98,15 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       let {finalArgs, context} = constructMethod()
       // If the last arg was something like 'fetch' then
       if (isFuncArgs) {
-        context().then(cb)
+        return context().then(cb)
       } else {
-        context(...finalArgs).then(cb)
+        return context(...finalArgs).then(cb)
       }
     })
 
     it(`${obj}${code} (callback ver)`, function () {
       let {finalArgs, context} = constructMethod()
-      context(...finalArgs, function (err, val) {
+      return context(...finalArgs, function (err, val) {
         if (err) { return assert.fail(err) }
         cb(val)
       })
@@ -116,7 +116,13 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   let itIsOk = (obj, ...args) => itIs(obj, '', args, val => expect(val).to.be.ok)
 
   let itIsArray = (obj, ...args) =>
-    itIs(obj, ' yields Array', args, val => expect(val).to.be.an.array)
+    itIs(obj, ' yields Array', args, (val) => {
+      expect(val).to.be.an.array
+      if (!val || (!Array.isArray(val) && !Array.isArray(val.items))) {
+        console.log('woops not an array!', val);
+        throw new Error('woops, not an array!')
+      }
+    })
 
   let itIsFalse = (obj, ...args) =>
     itIs(obj, ' yields False', args, val => expect(val).to.be.false)
@@ -173,6 +179,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     itIsOk(GH, 'feeds.fetch')
   })
 
+  itIsArray(GH, 'user.publicEmails.fetch')
   itIsArray(GH, 'users.fetch')
   itIsArray(GH, 'gists.public.fetch')
   // itIsArray(GH, 'global.events')
@@ -280,13 +287,13 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     itIsOk(REPO, 'readme.read')
     itIsArray(REPO, 'hooks.fetch')
     itIsArray(REPO, 'assignees.fetch')
-    itIsArray(REPO, 'languages.fetch')
+    itIsOk(REPO, 'languages.fetch')
     itIsArray(REPO, 'teams.fetch')
     itIsArray(REPO, 'tags.fetch')
     itIsArray(REPO, 'branches.fetch')
     itIsArray(REPO, 'contributors.fetch')
     itIsArray(REPO, 'subscribers.fetch')
-    itIsArray(REPO, 'subscription.fetch')
+    itIsOk(REPO, 'subscription.fetch')
     itIsArray(REPO, 'comments.fetch')
     itIsArray(REPO, 'downloads.fetch')
     itIsArray(REPO, 'milestones.fetch')
@@ -421,7 +428,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
   describe(`${ORG} = ${GH}.orgs(ORG_NAME)`, function () {
     before(() => { STATE[ORG] = STATE[GH].orgs(ORG_NAME) })
 
-    itIsArray(ORG, 'fetch')
+    itIsOk(ORG, 'fetch')
     itIsArray(ORG, 'members.fetch')
     itIsArray(ORG, 'repos.fetch')
     return itIsArray(ORG, 'issues.fetch')
