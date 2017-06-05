@@ -1506,7 +1506,7 @@ module.exports = new (function () {
     value: function _replaceKeyValue(instance, acc, key, value) {
       if (/_url$/.test(key)) {
         if (/^upload_url$/.test(key)) {
-          // POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
+          // POST https://<upload_url>/repos/:owner/:repo/releases/:release_id/assets?name=foo.zip
           var defaultFn = function defaultFn() {
             // TODO: Maybe always set isRaw=true when contentType is provided
             deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');

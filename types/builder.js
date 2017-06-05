@@ -1,6 +1,7 @@
 const fs = require('fs')
 
 const routes = require('./routes.json')
+const responseTypes = require('./response-types.json')
 const _ = require('lodash')
 const plus = require('../src/plus')
 
@@ -14,6 +15,7 @@ Object.keys(routes).forEach((key1) => {
     const {url, method, params, yields} = routes[key1][key2]
 
     if (url) {
+      // console.log('URL', url);
       converted[url] = converted[url] || {}
       converted[url][method] = params // _.omitBy(params, (value, keyName) => keyName.startsWith('$'))
       if (yields) {
@@ -209,7 +211,11 @@ const shortcutBuildType = (keyName, declarations, treeNode, myName, pathSoFar) =
     const argsStr = Object.keys(treeNode.childrenWithArgs)[0]
     const value = treeNode.childrenWithArgs[argsStr]
     const args = argsStr.split('/').map((arg) => {
-      return `${arg.substring(1)}: any`
+      const param = routes.defines.url_params[arg]
+      if (!param) {
+        throw new Error(`BUG: Missing top-level param namd "${arg}". Add it to routes.json under defines.url_params .`)
+      }
+      return `${arg.substring(1)}: ${param.type}`
     })
 
     return `
@@ -232,7 +238,11 @@ const recBuildType = (declarations, treeNode, myName, pathSoFar) => {
     const argsStr = Object.keys(treeNode.childrenWithArgs)[0]
     const value = treeNode.childrenWithArgs[argsStr]
     const args = argsStr.split('/').map((arg) => {
-      return `${arg.substring(1)}: any`
+      const param = routes.defines.url_params[arg]
+      if (!param) {
+        throw new Error(`BUG: Missing top-level param namd "${arg}". Add it to routes.json under defines.url_params .`)
+      }
+      return `${arg.substring(1)}: ${param.type}`
     })
 
     functionDefinition = `(${args.join(', ')}): { ${recBuildType(declarations, value, myName, `${pathSoFar}_Fn`)} }`
@@ -290,6 +300,43 @@ const rootTypes = Object.keys(routes.defines.params).map((paramName) => {
   return `export interface ${plus.camelize(`Param_${paramName}`)} { ${paramName}${required? '' : '?'}: ${paramType} }`
 })
 
+
+const responseTypesStr = Object.keys(responseTypes).map((responseTypeName) => {
+  const fields = responseTypes[responseTypeName]
+
+  function recBuildFieldType(fields) {
+    const fieldsConverted = Object.keys(fields).map((fieldName) => {
+      const fieldValue = fields[fieldName].type
+      const isRequired = fields[fieldName].required
+      let value;
+      if (typeof fieldValue === 'string') {
+        // simple type (primitive, or another named type)
+        value = fieldValue
+      } else if (Array.isArray(fieldValue)) {
+        // enum
+        value = `'${fieldValue.join("' | '")}'`
+      } else if (Object.keys(fieldValue).length >= 1){
+        // nested object
+        value = `{ ${recBuildFieldType(fieldValue).join('\n  ')} }`
+      }
+
+      const fieldNameEscaped = /^[a-z][a-z0-9_]*$/.test(fieldName) ? fieldName : `'${fieldName}'`
+      return `readonly ${fieldNameEscaped}${isRequired ? '' : '?'}: ${value}`
+    })
+    return fieldsConverted
+  }
+
+  if (/^__/.test(responseTypeName)) {
+    // Skip commented-out type names (like SearchResult<T>)
+    return ''
+  } else {
+    const fieldsConverted = recBuildFieldType(fields)
+    return `export type ${responseTypeName} = {\n  ${fieldsConverted.join('\n  ')}\n}`
+  }
+
+}).join('\n\n')
+
+
 source = `
 
 declare module 'octokat' {
@@ -302,7 +349,18 @@ declare module 'octokat' {
   ${rootTypes.join('\n')}
 
   // Response Types
-  ${fs.readFileSync(__dirname + `/../response-types/_all.d.ts`)}
+  ${responseTypesStr}
+
+  export type SearchResult<T> = {
+    readonly total_count: number
+    readonly incomplete_results: boolean
+    readonly items: T[]
+    readonly nextPage?:     { fetch(callback?: Callback<SearchResult<T>>): Promise<SearchResult<T>> }
+    readonly previousPage?: { fetch(callback?: Callback<SearchResult<T>>): Promise<SearchResult<T>> }
+    readonly firstPage?:    { fetch(callback?: Callback<SearchResult<T>>): Promise<SearchResult<T>> }
+    readonly lastPage?:     { fetch(callback?: Callback<SearchResult<T>>): Promise<SearchResult<T>> }
+  }
+
 
   // Input Param Types
   ${rootDeclarations.join('\n')}

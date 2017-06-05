@@ -36,6 +36,278 @@
             "Accept",
             "X-GitHub-OTP"
         ],
+        "url_params": {
+          ":owner": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":username": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":org": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":repo": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":pre_receive_hook_id": {
+              "type": "String",
+              "required": true
+          },
+          ":environment_id": {
+              "type": "String",
+              "required": true
+          },
+          ":application_id": {
+              "type": "String",
+              "required": true
+          },
+          ":thread_id": {
+              "type": "String",
+              "required": true
+          },
+          ":org_hook_id": {
+              "type": "String",
+              "required": true
+          },
+          ":migration_id": {
+              "type": "String",
+              "required": true
+          },
+          ":project_id": {
+              "type": "Number",
+              "required": true
+          },
+          ":column_id": {
+              "type": "Number",
+              "required": true
+          },
+          ":card_id": {
+              "type": "Number",
+              "required": true
+          },
+          ":reaction_id": {
+              "type": "String",
+              "required": true
+          },
+          ":repo_comment_id": {
+              "type": "String",
+              "required": true
+          },
+          ":repo_hook_id": {
+              "type": "String",
+              "required": true
+          },
+          ":issue_comment_id": {
+              "type": "String",
+              "required": true
+          },
+          ":issue_event_id": {
+              "type": "String",
+              "required": true
+          },
+          ":gpg_id": {
+              "type": "String",
+              "required": true
+          },
+          ":pull_request_comment_id": {
+              "type": "String",
+              "required": true
+          },
+          ":release_id": {
+              "type": "String",
+              "required": true
+          },
+          ":asset_id": {
+              "type": "String",
+              "required": true
+          },
+          ":team_id": {
+              "type": "String",
+              "required": true
+          },
+          ":milestone_number": {
+              "type": "Number",
+              "required": true
+          },
+          ":gist_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": "Id (SHA1 hash) of the gist."
+          },
+          ":installation_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":repository_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":commit_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "Sha of the commit to comment on.",
+              "description": "Sha of the commit to comment on."
+          },
+          ":client_id": {
+              "type": "String",
+              "required": false,
+              "validation": "",
+              "invalidmsg": "",
+              "description": "The 20 character OAuth app client key for which to create the token."
+          },
+          ":column_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":project_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":invitation_id": {
+              "type": "String",
+              "required": true,
+              "validation": "",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":authorization_id": {
+              "type": "String",
+              "required": true
+          },
+          ":assignee": {
+              "type": "String",
+              "required": true,
+              "description": "Username to assign"
+          },
+          ":label_name": {
+              "type": "String",
+              "required": true
+          },
+          ":author_id": {
+              "type": "String",
+              "required": true
+          },
+          ":review_id": {
+              "type": "String",
+              "required": true
+          },
+          ":key_id": {
+              "type": "String",
+              "required": true
+          },
+          ":deployment_id": {
+              "type": "String",
+              "required": true
+          },
+          ":download_id": {
+              "type": "String",
+              "required": true
+          },
+          ":build_id": {
+              "type": "String",
+              "required": true
+          },
+          ":user_key_id": {
+              "type": "String",
+              "required": true
+          },
+          ":gist_comment_id": {
+              "type": "String",
+              "required": true
+          },
+          ":template_name": {
+              "type": "String",
+              "required": true
+          },
+          ":license": {
+              "type": "String",
+              "required": true
+          },
+          ":target_user": {
+              "type": "String",
+              "required": true
+          },
+          ":pull_request_number": {
+              "type": "Number",
+              "required": true,
+              "validation": "^[0-9]+$",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":issue_number": {
+              "type": "Number",
+              "required": true,
+              "validation": "^[0-9]+$",
+              "invalidmsg": "",
+              "description": ""
+          },
+          ":name": {
+              "type": "String"
+          },
+          ":sha": {
+              "type": "String",
+              "description": "SHA that pull request head must match to allow merge"
+          },
+          ":ref": {
+              "type": "String"
+          },
+          ":branch": {
+              "type": "String"
+          },
+          ":access_token": {
+              "type": "String"
+          },
+          ":base": {
+              "type": "String"
+          },
+          ":head": {
+              "type": "String",
+              "required": false
+          },
+          ":path": {
+              "type": "String"
+          },
+          ":tag": {
+              "type": "String"
+          },
+          ":email": {
+              "type": "String"
+          },
+          ":stats_type": {
+              "type": "String"
+          }
+        },
         "params": {
             "files": {
                 "type": "Json",
@@ -44,40 +316,19 @@
                 "invalidmsg": "",
                 "description": "Files that make up this gist. The key of which should be a required string filename and the value another required hash with parameters: 'content'"
             },
-            "owner": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "username": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "org": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "repo": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
             "branch": {
                 "type": "String",
                 "required": true,
                 "validation": "",
                 "invalidmsg": "",
                 "description": ""
+            },
+            "client_id": {
+                "type": "String",
+                "required": false,
+                "validation": "",
+                "invalidmsg": "",
+                "description": "The 20 character OAuth app client key for which to create the token."
             },
             "sha": {
                 "type": "String",
@@ -100,69 +351,6 @@
                 "invalidmsg": "",
                 "description": ""
             },
-            "gist_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": "Id (SHA1 hash) of the gist."
-            },
-            "installation_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "repository_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "commit_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "Sha of the commit to comment on.",
-                "description": "Sha of the commit to comment on."
-            },
-            "client_id": {
-                "type": "String",
-                "required": false,
-                "validation": "",
-                "invalidmsg": "",
-                "description": "The 20 character OAuth app client key for which to create the token."
-            },
-            "column_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "project_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "repo_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "invitation_id": {
-                "type": "String",
-                "required": true,
-                "validation": "",
-                "invalidmsg": "",
-                "description": ""
-            },
             "ref": {
                 "type": "String",
                 "required": true,
@@ -172,13 +360,6 @@
                 "description": "String of the name of the fully qualified reference (ie: heads/master). If it doesn’t have at least one slash, it will be rejected."
             },
             "number": {
-                "type": "Number",
-                "required": true,
-                "validation": "^[0-9]+$",
-                "invalidmsg": "",
-                "description": ""
-            },
-            "issue_number": {
                 "type": "Number",
                 "required": true,
                 "validation": "^[0-9]+$",
@@ -457,15 +638,15 @@
                 "/search/commits"
             ],
             "application/vnd.github.black-panther-preview+json": [
-                "/repositories/:id/community/profile"
+                "/repositories/:repository_id/community/profile"
             ],
             "application/vnd.github.ant-man-preview+json": [
                 "/repos/:owner/:repo/deployments",
-                "/repos/:owner/:repo/deployments/:id/statuses"
+                "/repos/:owner/:repo/deployments/:deployment_id/statuses"
             ],
             "application/vnd.github.cryptographer-preview": [
                 "/user/gpg_keys",
-                "/user/gpg_keys/:id"
+                "/user/gpg_keys/:gpg_id"
             ],
             "application/vnd.github.barred-rock-preview": [
                 "/repos/:owner/:repo/import/authors",
@@ -489,9 +670,9 @@
             ],
             "application/vnd.github.wyandotte-preview+json": [
                 "/orgs/:org/migrations",
-                "/orgs/:org/migrations/:id",
-                "/orgs/:org/migrations/:id/archive",
-                "/orgs/:org/migrations/:id/repos/:repo_name/lock"
+                "/orgs/:org/migrations/:migration_id",
+                "/orgs/:org/migrations/:migration_id/archive",
+                "/orgs/:org/migrations/:migration_id/repos/:repo/lock"
             ],
             "application/vnd.github.korra-preview+json": [
                 "/orgs/:org",
@@ -501,32 +682,32 @@
                 "/orgs/:org/teams",
                 "/repos/:owner/:repo/collaborators",
                 "/repos/:owner/:repo/collaborators/:username/permission",
-                "/teams/:id/invitations"
+                "/teams/:team_id/invitations"
             ],
             "application/vnd.github.mister-fantastic-preview+json": [
                 "/repos/:owner/:repo/pages",
                 "/repos/:owner/:repo/pages/builds",
                 "/repos/:owner/:repo/pages/builds/latest",
-                "/repos/:owner/:repo/pages/builds/:id"
+                "/repos/:owner/:repo/pages/builds/:build_id"
             ],
             "application/vnd.github.eye-scream-preview": [
-                "/admin/pre_receive_environments/:id",
+                "/admin/pre_receive_environments/:environment_id",
                 "/admin/pre_receive_environments",
-                "/admin/pre_receive_environments/:id/downloads/latest",
-                "/admin/pre_receive_environments/:id/downloads",
-                "/admin/pre-receive-hooks/:id",
+                "/admin/pre_receive_environments/:environment_id/downloads/latest",
+                "/admin/pre_receive_environments/:environment_id/downloads",
+                "/admin/pre-receive-hooks/:pre_receive_hook_id",
                 "/admin/pre-receive-hooks"
             ],
             "application/vnd.github.inertia-preview+json": [
                 "/repos/:owner/:repo/projects",
                 "/orgs/:org/projects",
-                "/projects/:id",
-                "/projects/columns/:id/cards",
-                "/projects/columns/cards/:id",
-                "/projects/columns/cards/:id/moves",
-                "/projects/:id/columns",
-                "/projects/columns/:id",
-                "/projects/columns/:id/moves"
+                "/projects/:project_id",
+                "/projects/columns/:column_id/cards",
+                "/projects/columns/cards/:card_id",
+                "/projects/columns/cards/:card_id/moves",
+                "/projects/:project_id/columns",
+                "/projects/columns/:column_id",
+                "/projects/columns/:column_id/moves"
             ],
             "application/vnd.github.loki-preview+json": [
                 "/repos/:owner/:repo/branches",
@@ -539,28 +720,28 @@
                 "/repos/:owner/:repo/branches/:branch/protection/restrictions/users"
             ],
             "application/vnd.github.polaris-preview": [
-                "/repos/:owner/:repo/pulls/:number/merge"
+                "/repos/:owner/:repo/pulls/:pull_request_number/merge"
             ],
             "application/vnd.github.squirrel-girl-preview": [
-                "/repos/:owner/:repo/comments/:id/reactions",
-                "/repos/:owner/:repo/issues/:number/reactions",
-                "/repos/:owner/:repo/issues/comments/:id/reactions",
-                "/repos/:owner/:repo/pulls/comments/:id/reactions",
-                "/reactions/:id",
-                "/repos/:owner/:repo/pulls/:number/comments",
+                "/repos/:owner/:repo/comments/:repo_comment_id/reactions",
+                "/repos/:owner/:repo/issues/:issue_number/reactions",
+                "/repos/:owner/:repo/issues/comments/:issue_comment_id/reactions",
+                "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id/reactions",
+                "/reactions/:reaction_id",
+                "/repos/:owner/:repo/pulls/:pull_request_number/comments",
                 "/repos/:owner/:repo/pulls/comments",
-                "/repos/:owner/:repo/pulls/comments/:id"
+                "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id"
             ],
             "application/vnd.github.mockingbird-preview": [
                 "/repos/:owner/:repo/issues/:issue_number/timeline"
             ],
             "application/vnd.github.black-cat-preview+json": [
-                "/repos/:owner/:repo/pulls/:number/reviews",
-                "/repos/:owner/:repo/pulls/:number/reviews/:id",
-                "/repos/:owner/:repo/pulls/:number/reviews/:id/comments",
-                "/repos/:owner/:repo/pulls/:number/reviews/:id/events",
-                "/repos/:owner/:repo/pulls/:number/reviews/:id/dismissals",
-                "/repos/:owner/:repo/pulls/:number/requested_reviewers"
+                "/repos/:owner/:repo/pulls/:pull_request_number/reviews",
+                "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id",
+                "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id/comments",
+                "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id/events",
+                "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id/dismissals",
+                "/repos/:owner/:repo/pulls/:pull_request_number/requested_reviewers"
             ],
             "application/vnd.github.giant-sentry-fist-preview+json": [
                 "/user/blocks",
@@ -581,7 +762,7 @@
             "description": "List your grants."
         },
         "get-grant": {
-            "url": "/applications/grants/:id",
+            "url": "/applications/grants/:application_id",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -591,7 +772,7 @@
             "description": "Get a single grant."
         },
         "delete-grant": {
-            "url": "/applications/grants/:id",
+            "url": "/applications/grants/:application_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -608,7 +789,7 @@
             "description": "List your authorizations."
         },
         "get": {
-            "url": "/authorizations/:id",
+            "url": "/authorizations/:authorization_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -673,7 +854,7 @@
             "description": "Get or create an authorization for a specific app and fingerprint."
         },
         "update": {
-            "url": "/authorizations/:id",
+            "url": "/authorizations/:authorization_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -699,7 +880,7 @@
             "description": "Update an existing authorization."
         },
         "delete": {
-            "url": "/authorizations/:id",
+            "url": "/authorizations/:authorization_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -941,7 +1122,7 @@
             "description": "Mark notifications in a repo as read."
         },
         "get-notification-thread": {
-            "url": "/notifications/threads/:id",
+            "url": "/notifications/threads/:thread_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -949,7 +1130,7 @@
             "description": "View a single notification thread."
         },
         "mark-notification-thread-as-read": {
-            "url": "/notifications/threads/:id",
+            "url": "/notifications/threads/:thread_id",
             "method": "PATCH",
             "params": {
                 "$id": null
@@ -957,7 +1138,7 @@
             "description": "Mark a notification thread as read."
         },
         "check-notification-thread-subscription": {
-            "url": "/notifications/threads/:id/subscription",
+            "url": "/notifications/threads/:thread_id/subscription",
             "method": "GET",
             "params": {
                 "$id": null
@@ -965,7 +1146,7 @@
             "description": "Check to see if the current user is subscribed to a thread."
         },
         "set-notification-thread-subscription": {
-            "url": "/notifications/threads/:id/subscription",
+            "url": "/notifications/threads/:thread_id/subscription",
             "method": "PUT",
             "params": {
                 "$id": null,
@@ -987,7 +1168,7 @@
             "description": "This lets you subscribe or unsubscribe from a conversation. Unsubscribing from a conversation mutes all future notifications (until you comment or get @mentioned once more)."
         },
         "delete-notification-thread-subscription": {
-            "url": "/notifications/threads/:id/subscription",
+            "url": "/notifications/threads/:thread_id/subscription",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -1192,7 +1373,7 @@
             "description": "List the authenticated user's starred gists"
         },
         "get": {
-            "url": "/gists/:id",
+            "url": "/gists/:gist_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -1200,7 +1381,7 @@
             "description": "Get a single gist"
         },
         "get-revision": {
-            "url": "/gists/:id/:sha",
+            "url": "/gists/:gist_id/:sha",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -1225,7 +1406,7 @@
             "description": "Create a gist"
         },
         "edit": {
-            "url": "/gists/:id",
+            "url": "/gists/:gist_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -1249,7 +1430,7 @@
             "description": "Edit a gist"
         },
         "get-commits": {
-            "url": "/gists/:id/commits",
+            "url": "/gists/:gist_id/commits",
             "method": "GET",
             "params": {
                 "$id": null
@@ -1257,7 +1438,7 @@
             "description": "List gist commits"
         },
         "star": {
-            "url": "/gists/:id/star",
+            "url": "/gists/:gist_id/star",
             "method": "PUT",
             "params": {
                 "$id": null
@@ -1265,7 +1446,7 @@
             "description": "Star a gist"
         },
         "unstar": {
-            "url": "/gists/:id/star",
+            "url": "/gists/:gist_id/star",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -1273,7 +1454,7 @@
             "description": "Unstar a gist"
         },
         "check-star": {
-            "url": "/gists/:id/star",
+            "url": "/gists/:gist_id/star",
             "method": "GET",
             "params": {
                 "$id": null
@@ -1281,7 +1462,7 @@
             "description": "Check if a gist is starred"
         },
         "fork": {
-            "url": "/gists/:id/forks",
+            "url": "/gists/:gist_id/forks",
             "method": "POST",
             "params": {
                 "$id": null
@@ -1289,7 +1470,7 @@
             "description": "Fork a gist"
         },
         "get-forks": {
-            "url": "/gists/:id/forks",
+            "url": "/gists/:gist_id/forks",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -1299,7 +1480,7 @@
             "description": "List gist forks"
         },
         "delete": {
-            "url": "/gists/:id",
+            "url": "/gists/:gist_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -1307,7 +1488,7 @@
             "description": "Delete a gist"
         },
         "get-comments": {
-            "url": "/gists/:id/comments",
+            "url": "/gists/:gist_id/comments",
             "method": "GET",
             "params": {
                 "$id": null
@@ -1315,7 +1496,7 @@
             "description": "List comments on a gist"
         },
         "get-comment": {
-            "url": "/gists/:id/comments/:id",
+            "url": "/gists/:gist_id/comments/:gist_comment_id",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -1324,7 +1505,7 @@
             "description": "Get a single comment"
         },
         "create-comment": {
-            "url": "/gists/:id/comments",
+            "url": "/gists/:gist_id/comments",
             "method": "POST",
             "params": {
                 "$id": null,
@@ -1333,7 +1514,7 @@
             "description": "Create a comment"
         },
         "edit-comment": {
-            "url": "/gists/:id/comments/:id",
+            "url": "/gists/:gist_id/comments/:gist_comment_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -1343,7 +1524,7 @@
             "description": "Edit a comment"
         },
         "delete-comment": {
-            "url": "/gists/:id/comments/:id",
+            "url": "/gists/:gist_id/comments/:gist_comment_id",
             "method": "DELETE",
             "params": {
                 "$id": null,
@@ -1971,7 +2152,7 @@
             "description": "List issues for a repository"
         },
         "get": {
-            "url": "/repos/:owner/:repo/issues/:number",
+            "url": "/repos/:owner/:repo/issues/:issue_number",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2028,7 +2209,7 @@
             "description": "Create an issue"
         },
         "edit": {
-            "url": "/repos/:owner/:repo/issues/:number",
+            "url": "/repos/:owner/:repo/issues/:issue_number",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -2087,7 +2268,7 @@
             "description": "Edit an issue"
         },
         "lock": {
-            "url": "/repos/:owner/:repo/issues/:number/lock",
+            "url": "/repos/:owner/:repo/issues/:issue_number/lock",
             "method": "PUT",
             "params": {
                 "$owner": null,
@@ -2097,7 +2278,7 @@
             "description": "Users with push access can lock an issue's conversation."
         },
         "unlock": {
-            "url": "/repos/:owner/:repo/issues/:number/lock",
+            "url": "/repos/:owner/:repo/issues/:issue_number/lock",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2134,7 +2315,7 @@
             "description": "Check assignee"
         },
         "add-assignees-to-issue": {
-            "url": "/repos/:owner/:repo/issues/:number/assignees",
+            "url": "/repos/:owner/:repo/issues/:issue_number/assignees",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -2151,7 +2332,7 @@
             "description": "Add assignees to an issue."
         },
         "remove-assignees-from-issue": {
-            "url": "/repos/:owner/:repo/issues/:number/assignees",
+            "url": "/repos/:owner/:repo/issues/:issue_number/assignees",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2163,7 +2344,7 @@
             "description": "Remove assignees from an issue."
         },
         "get-comments": {
-            "url": "/repos/:owner/:repo/issues/:number/comments",
+            "url": "/repos/:owner/:repo/issues/:issue_number/comments",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2202,7 +2383,7 @@
             "description": "List comments in a repository"
         },
         "get-comment": {
-            "url": "/repos/:owner/:repo/issues/comments/:id",
+            "url": "/repos/:owner/:repo/issues/comments/:issue_comment_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2213,7 +2394,7 @@
             "description": "Get a single comment"
         },
         "create-comment": {
-            "url": "/repos/:owner/:repo/issues/:number/comments",
+            "url": "/repos/:owner/:repo/issues/:issue_number/comments",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -2225,7 +2406,7 @@
             "description": "Create a comment"
         },
         "edit-comment": {
-            "url": "/repos/:owner/:repo/issues/comments/:id",
+            "url": "/repos/:owner/:repo/issues/comments/:issue_comment_id",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -2237,7 +2418,7 @@
             "description": "Edit a comment"
         },
         "delete-comment": {
-            "url": "/repos/:owner/:repo/issues/comments/:id",
+            "url": "/repos/:owner/:repo/issues/comments/:issue_comment_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2248,7 +2429,7 @@
             "description": "Delete a comment"
         },
         "get-events": {
-            "url": "/repos/:owner/:repo/issues/:number/events",
+            "url": "/repos/:owner/:repo/issues/:issue_number/events",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2273,7 +2454,7 @@
             "description": "List events for a repository"
         },
         "get-event": {
-            "url": "/repos/:owner/:repo/issues/events/:id",
+            "url": "/repos/:owner/:repo/issues/events/:issue_event_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2296,7 +2477,7 @@
             "description": "List all labels for this repository"
         },
         "get-label": {
-            "url": "/repos/:owner/:repo/labels/:name",
+            "url": "/repos/:owner/:repo/labels/:label_name",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2319,7 +2500,7 @@
             "description": "Create a label"
         },
         "update-label": {
-            "url": "/repos/:owner/:repo/labels/:name",
+            "url": "/repos/:owner/:repo/labels/:label_name",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -2337,7 +2518,7 @@
             "description": "Update a label"
         },
         "delete-label": {
-            "url": "/repos/:owner/:repo/labels/:name",
+            "url": "/repos/:owner/:repo/labels/:label_name",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2348,7 +2529,7 @@
             "description": "Delete a label"
         },
         "get-issue-labels": {
-            "url": "/repos/:owner/:repo/issues/:number/labels",
+            "url": "/repos/:owner/:repo/issues/:issue_number/labels",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2359,7 +2540,7 @@
             "description": "List labels on an issue"
         },
         "add-labels": {
-            "url": "/repos/:owner/:repo/issues/:number/labels",
+            "url": "/repos/:owner/:repo/issues/:issue_number/labels",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -2378,7 +2559,7 @@
             "description": "Add labels to an issue"
         },
         "remove-label": {
-            "url": "/repos/:owner/:repo/issues/:number/labels/:name",
+            "url": "/repos/:owner/:repo/issues/:issue_number/labels/:name",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2396,7 +2577,7 @@
             "description": "Remove a label from an issue"
         },
         "replace-all-labels": {
-            "url": "/repos/:owner/:repo/issues/:number/labels",
+            "url": "/repos/:owner/:repo/issues/:issue_number/labels",
             "method": "PUT",
             "params": {
                 "$owner": null,
@@ -2414,7 +2595,7 @@
             "description": "Replace all labels for an issue"
         },
         "remove-all-labels": {
-            "url": "/repos/:owner/:repo/issues/:number/labels",
+            "url": "/repos/:owner/:repo/issues/:issue_number/labels",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2424,7 +2605,7 @@
             "description": "Remove all labels from an issue"
         },
         "get-milestone-labels": {
-            "url": "/repos/:owner/:repo/milestones/:number/labels",
+            "url": "/repos/:owner/:repo/milestones/:milestone_number/labels",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2471,7 +2652,7 @@
             "description": "List milestones for a repository"
         },
         "get-milestone": {
-            "url": "/repos/:owner/:repo/milestones/:number",
+            "url": "/repos/:owner/:repo/milestones/:milestone_number",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2506,7 +2687,7 @@
             "description": "Create a milestone"
         },
         "update-milestone": {
-            "url": "/repos/:owner/:repo/milestones/:number",
+            "url": "/repos/:owner/:repo/milestones/:milestone_number",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -2532,7 +2713,7 @@
             "description": "Update a milestone"
         },
         "delete-milestone": {
-            "url": "/repos/:owner/:repo/milestones/:number",
+            "url": "/repos/:owner/:repo/milestones/:milestone_number",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -2542,7 +2723,7 @@
             "description": "Delete a milestone"
         },
         "get-events-timeline": {
-            "url": "/repos/:owner/:repo/issues/:number/timeline",
+            "url": "/repos/:owner/:repo/issues/:issue_number/timeline",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -2597,7 +2778,7 @@
             "description": "Get a list of migrations. (In preview period. See README.)"
         },
         "get-migration-status": {
-            "url": "/orgs/:org/migrations/:id",
+            "url": "/orgs/:org/migrations/:migration_id",
             "method": "GET",
             "params": {
                 "$org": null,
@@ -2606,7 +2787,7 @@
             "description": "Get the status of a migration. (In preview period. See README.)"
         },
         "get-migration-archive-link": {
-            "url": "/orgs/:org/migrations/:id/archive",
+            "url": "/orgs/:org/migrations/:migration_id/archive",
             "method": "GET",
             "params": {
                 "$org": null,
@@ -2615,7 +2796,7 @@
             "description": "Get the URL to a migration archive. (In preview period. See README.)"
         },
         "delete-migration-archive": {
-            "url": "/orgs/:org/migrations/:id/archive",
+            "url": "/orgs/:org/migrations/:migration_id/archive",
             "method": "DELETE",
             "params": {
                 "$org": null,
@@ -2624,7 +2805,7 @@
             "description": "Delete a migration archive. (In preview period. See README.)"
         },
         "unlock-repo-locked-for-migration": {
-            "url": "/orgs/:org/migrations/:id/repos/:repo_name/lock",
+            "url": "/orgs/:org/migrations/:migration_id/repos/:repo/lock",
             "method": "DELETE",
             "params": {
                 "$org": null,
@@ -2817,7 +2998,7 @@
             "description": "Lists available gitignore templates"
         },
         "get-gitignore-template": {
-            "url": "/gitignore/templates/:name",
+            "url": "/gitignore/templates/:template_name",
             "method": "GET",
             "params": {
                 "name": {
@@ -3206,7 +3387,7 @@
             "description": "List teams"
         },
         "get-team": {
-            "url": "/teams/:id",
+            "url": "/teams/:team_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -3245,7 +3426,7 @@
             "description": "Create team"
         },
         "edit-team": {
-            "url": "/teams/:id",
+            "url": "/teams/:team_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -3262,7 +3443,7 @@
             "description": "Edit team"
         },
         "delete-team": {
-            "url": "/teams/:id",
+            "url": "/teams/:team_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -3270,7 +3451,7 @@
             "description": "Delete team"
         },
         "get-team-members": {
-            "url": "/teams/:id/members",
+            "url": "/teams/:team_id/members",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -3293,7 +3474,7 @@
             "description": "List team members"
         },
         "get-team-membership": {
-            "url": "/teams/:id/memberships/:username",
+            "url": "/teams/:team_id/memberships/:username",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -3302,7 +3483,7 @@
             "description": "Get team membership"
         },
         "add-team-membership": {
-            "url": "/teams/:id/memberships/:username",
+            "url": "/teams/:team_id/memberships/:username",
             "method": "PUT",
             "params": {
                 "$id": null,
@@ -3323,7 +3504,7 @@
             "description": "Add team membership"
         },
         "remove-team-membership": {
-            "url": "/teams/:id/memberships/:username",
+            "url": "/teams/:team_id/memberships/:username",
             "method": "DELETE",
             "params": {
                 "$id": null,
@@ -3332,7 +3513,7 @@
             "description": "Remove team membership"
         },
         "get-team-repos": {
-            "url": "/teams/:id/repos",
+            "url": "/teams/:team_id/repos",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -3342,7 +3523,7 @@
             "description": "Get team repos"
         },
         "get-pending-team-invites": {
-            "url": "/teams/:id/invitations",
+            "url": "/teams/:team_id/invitations",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -3352,7 +3533,7 @@
             "description": "List pending team invitations."
         },
         "check-team-repo": {
-            "url": "/teams/:id/repos/:owner/:repo",
+            "url": "/teams/:team_id/repos/:owner/:repo",
             "method": "GET",
             "params": {
                 "$id": null,
@@ -3363,12 +3544,9 @@
             "description": "Check if a team manages a repository"
         },
         "add-team-repo": {
-            "url": "/teams/:id/repos/:owner/:repo",
+            "url": "/teams/:team_id/repos/:owner/:repo",
             "method": "PUT",
             "params": {
-                "$id": null,
-                "$org": null,
-                "$repo": null,
                 "permission": {
                     "type": "String",
                     "required": false,
@@ -3385,7 +3563,7 @@
             "description": "Add team repository"
         },
         "delete-team-repo": {
-            "url": "/teams/:id/repos/:owner/:repo",
+            "url": "/teams/:team_id/repos/:owner/:repo",
             "method": "DELETE",
             "params": {
                 "$id": null,
@@ -3405,7 +3583,7 @@
             "description": "List hooks"
         },
         "get-hook": {
-            "url": "/orgs/:org/hooks/:id",
+            "url": "/orgs/:org/hooks/:org_hook_id",
             "method": "GET",
             "params": {
                 "$org": null,
@@ -3451,7 +3629,7 @@
             "description": "Create a hook"
         },
         "edit-hook": {
-            "url": "/orgs/:org/hooks/:id",
+            "url": "/orgs/:org/hooks/:org_hook_id",
             "method": "PATCH",
             "params": {
                 "$org": null,
@@ -3482,7 +3660,7 @@
             "description": "Edit a hook"
         },
         "ping-hook": {
-            "url": "/orgs/:org/hooks/:id/pings",
+            "url": "/orgs/:org/hooks/:org_hook_id/pings",
             "method": "POST",
             "params": {
                 "$org": null,
@@ -3491,7 +3669,7 @@
             "description": "Ping a hook"
         },
         "delete-hook": {
-            "url": "/orgs/:org/hooks/:id",
+            "url": "/orgs/:org/hooks/:org_hook_id",
             "method": "DELETE",
             "params": {
                 "$org": null,
@@ -3556,7 +3734,7 @@
             "description": "List organization projects. (In preview period. See README.)"
         },
         "get-project": {
-            "url": "/projects/:id",
+            "url": "/projects/:project_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -3597,7 +3775,7 @@
             "description": "Create an organization project. (In preview period. See README.)"
         },
         "update-project": {
-            "url": "/projects/:id",
+            "url": "/projects/:project_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -3613,7 +3791,7 @@
             "description": "Update a project. (In preview period. See README.)"
         },
         "delete-project": {
-            "url": "/projects/:id",
+            "url": "/projects/:project_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -3621,7 +3799,7 @@
             "description": "Delete a project. (In preview period. See README.)"
         },
         "get-project-cards": {
-            "url": "/projects/columns/:id/cards",
+            "url": "/projects/columns/:column_id/cards",
             "method": "GET",
             "params": {
                 "$column_id": null
@@ -3629,7 +3807,7 @@
             "description": "List project cards. (In preview period. See README.)"
         },
         "get-project-card": {
-            "url": "/projects/columns/cards/:id",
+            "url": "/projects/columns/cards/:card_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -3637,7 +3815,7 @@
             "description": "Get project card. (In preview period. See README.)"
         },
         "create-project-card": {
-            "url": "/projects/columns/:id/cards",
+            "url": "/projects/columns/:column_id/cards",
             "method": "POST",
             "params": {
                 "$column_id": null,
@@ -3666,7 +3844,7 @@
             "description": "Create a project card. (In preview period. See README.)"
         },
         "update-project-card": {
-            "url": "/projects/columns/cards/:id",
+            "url": "/projects/columns/cards/:card_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -3681,7 +3859,7 @@
             "description": "Update a project card. (In preview period. See README.)"
         },
         "delete-project-card": {
-            "url": "/projects/columns/cards/:id",
+            "url": "/projects/columns/cards/:card_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -3689,7 +3867,7 @@
             "description": "Delete a project card. (In preview period. See README.)"
         },
         "move-project-card": {
-            "url": "/projects/columns/cards/:id/moves",
+            "url": "/projects/columns/cards/:card_id/moves",
             "method": "POST",
             "params": {
                 "$id": null,
@@ -3711,7 +3889,7 @@
             "description": "Move a project card. (In preview period. See README.)"
         },
         "get-project-columns": {
-            "url": "/projects/:id/columns",
+            "url": "/projects/:project_id/columns",
             "method": "GET",
             "params": {
                 "$id": null
@@ -3719,7 +3897,7 @@
             "description": "List project columns. (In preview period. See README.)"
         },
         "get-project-column": {
-            "url": "/projects/columns/:id",
+            "url": "/projects/columns/:column_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -3727,7 +3905,7 @@
             "description": "Get a project column. (In preview period. See README.)"
         },
         "create-project-column": {
-            "url": "/projects/:id/columns",
+            "url": "/projects/:project_id/columns",
             "method": "POST",
             "params": {
                 "$id": null,
@@ -3736,7 +3914,7 @@
             "description": "Create a project column. (In preview period. See README.)"
         },
         "update-project-column": {
-            "url": "/projects/columns/:id",
+            "url": "/projects/columns/:column_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -3745,7 +3923,7 @@
             "description": "Update a project column. (In preview period. See README.)"
         },
         "delete-project-column": {
-            "url": "/projects/columns/:id",
+            "url": "/projects/columns/:column_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -3753,7 +3931,7 @@
             "description": "Delete a project column. (In preview period. See README.)"
         },
         "move-project-column": {
-            "url": "/projects/columns/:id/moves",
+            "url": "/projects/columns/:column_id/moves",
             "method": "POST",
             "params": {
                 "$id": null,
@@ -3823,7 +4001,7 @@
             "description": "List pull requests"
         },
         "get": {
-            "url": "/repos/:owner/:repo/pulls/:number",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -3882,7 +4060,7 @@
             "description": "Create a pull request from an existing issue"
         },
         "update": {
-            "url": "/repos/:owner/:repo/pulls/:number",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -3914,7 +4092,7 @@
             "description": "Update a pull request"
         },
         "get-commits": {
-            "url": "/repos/:owner/:repo/pulls/:number/commits",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/commits",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -3926,7 +4104,7 @@
             "description": "List commits on a pull request"
         },
         "get-files": {
-            "url": "/repos/:owner/:repo/pulls/:number/files",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/files",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -3938,7 +4116,7 @@
             "description": "List pull requests files"
         },
         "check-merged": {
-            "url": "/repos/:owner/:repo/pulls/:number/merge",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/merge",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -3950,7 +4128,7 @@
             "description": "Get if a pull request has been merged"
         },
         "merge": {
-            "url": "/repos/:owner/:repo/pulls/:number/merge",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/merge",
             "method": "PUT",
             "params": {
                 "$owner": null,
@@ -3994,7 +4172,7 @@
             "description": "Merge a pull request (Merge Button)"
         },
         "get-reviews": {
-            "url": "/repos/:owner/:repo/pulls/:number/reviews",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/reviews",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4006,7 +4184,7 @@
             "description": "List reviews on a pull request. (In preview period. See README.)"
         },
         "get-review": {
-            "url": "/repos/:owner/:repo/pulls/:number/reviews/:id",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4017,7 +4195,7 @@
             "description": "Get a single pull request review. (In preview period. See README.)"
         },
         "get-review-comments": {
-            "url": "/repos/:owner/:repo/pulls/:number/reviews/:id/comments",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id/comments",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4030,7 +4208,7 @@
             "description": "Get comments for a pull request review. (In preview period. See README.)"
         },
         "create-review": {
-            "url": "/repos/:owner/:repo/pulls/:number/reviews",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/reviews",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4082,7 +4260,7 @@
             "description": "Create a pull request review. (In preview period. See README.)"
         },
         "submit-review": {
-            "url": "/repos/:owner/:repo/pulls/:number/reviews/:id/events",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id/events",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4114,7 +4292,7 @@
             "description": "Submit a pull request review. (In preview period. See README.)"
         },
         "dismiss-review": {
-            "url": "/repos/:owner/:repo/pulls/:number/reviews/:id/dismissals",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/reviews/:review_id/dismissals",
             "method": "PUT",
             "params": {
                 "$owner": null,
@@ -4134,7 +4312,7 @@
             "description": "Dismiss a pull request review. (In preview period. See README.)"
         },
         "get-comments": {
-            "url": "/repos/:owner/:repo/pulls/:number/comments",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/comments",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4171,7 +4349,7 @@
             "description": "List comments in a repository"
         },
         "get-comment": {
-            "url": "/repos/:owner/:repo/pulls/comments/:id",
+            "url": "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4181,7 +4359,7 @@
             "description": "Get a single comment"
         },
         "create-comment": {
-            "url": "/repos/:owner/:repo/pulls/:number/comments",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/comments",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4195,7 +4373,7 @@
             "description": "Create a comment"
         },
         "create-comment-reply": {
-            "url": "/repos/:owner/:repo/pulls/:number/comments",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/comments",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4213,7 +4391,7 @@
             "description": "Reply to existing pull request comment"
         },
         "edit-comment": {
-            "url": "/repos/:owner/:repo/pulls/comments/:id",
+            "url": "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -4224,7 +4402,7 @@
             "description": "Edit a comment"
         },
         "delete-comment": {
-            "url": "/repos/:owner/:repo/pulls/comments/:id",
+            "url": "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -4234,7 +4412,7 @@
             "description": "Delete a comment"
         },
         "get-review-requests": {
-            "url": "/repos/:owner/:repo/pulls/:number/requested_reviewers",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/requested_reviewers",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4246,7 +4424,7 @@
             "description": "List review requests. (In preview period. See README.)"
         },
         "create-review-request": {
-            "url": "/repos/:owner/:repo/pulls/:number/requested_reviewers",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/requested_reviewers",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4263,7 +4441,7 @@
             "description": "Create a review request. (In preview period. See README.)"
         },
         "delete-review-request": {
-            "url": "/repos/:owner/:repo/pulls/:number/requested_reviewers",
+            "url": "/repos/:owner/:repo/pulls/:pull_request_number/requested_reviewers",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -4282,7 +4460,7 @@
     },
     "reactions": {
         "get-for-commit-comment": {
-            "url": "/repos/:owner/:repo/comments/:id/reactions",
+            "url": "/repos/:owner/:repo/comments/:repo_comment_id/reactions",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4307,7 +4485,7 @@
             "description": "List reactions for a commit comment. (In preview period. See README.)"
         },
         "create-for-commit-comment": {
-            "url": "/repos/:owner/:repo/comments/:id/reactions",
+            "url": "/repos/:owner/:repo/comments/:repo_comment_id/reactions",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4332,7 +4510,7 @@
             "description": "Create reaction for a commit comment. (In preview period. See README.)"
         },
         "get-for-issue": {
-            "url": "/repos/:owner/:repo/issues/:number/reactions",
+            "url": "/repos/:owner/:repo/issues/:issue_number/reactions",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4357,7 +4535,7 @@
             "description": "List reactions for an issue. (In preview period. See README.)"
         },
         "create-for-issue": {
-            "url": "/repos/:owner/:repo/issues/:number/reactions",
+            "url": "/repos/:owner/:repo/issues/:issue_number/reactions",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4382,7 +4560,7 @@
             "description": "Create reaction for an issue. (In preview period. See README.)"
         },
         "get-for-issue-comment": {
-            "url": "/repos/:owner/:repo/issues/comments/:id/reactions",
+            "url": "/repos/:owner/:repo/issues/comments/:issue_comment_id/reactions",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4407,7 +4585,7 @@
             "description": "List reactions for an issue comment. (In preview period. See README.)"
         },
         "create-for-issue-comment": {
-            "url": "/repos/:owner/:repo/issues/comments/:id/reactions",
+            "url": "/repos/:owner/:repo/issues/comments/:issue_comment_id/reactions",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4432,7 +4610,7 @@
             "description": "Create reaction for an issue comment. (In preview period. See README.)"
         },
         "get-for-pull-request-review-comment": {
-            "url": "/repos/:owner/:repo/pulls/comments/:id/reactions",
+            "url": "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id/reactions",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -4457,7 +4635,7 @@
             "description": "List reactions for a pull request review comment. (In preview period. See README.)"
         },
         "create-for-pull-request-review-comment": {
-            "url": "/repos/:owner/:repo/pulls/comments/:id/reactions",
+            "url": "/repos/:owner/:repo/pulls/comments/:pull_request_comment_id/reactions",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -4482,7 +4660,7 @@
             "description": "Create reaction for a pull request review comment. (In preview period. See README.)"
         },
         "delete": {
-            "url": "/reactions/:id",
+            "url": "/reactions/:reaction_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -4631,7 +4809,7 @@
             "description": "List all public repositories"
         },
         "get-by-id": {
-            "url": "/repositories/:id",
+            "url": "/repositories/:repository_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -5392,7 +5570,7 @@
             "description": "Create a commit comment."
         },
         "get-commit-comment": {
-            "url": "/repos/:owner/:repo/comments/:id",
+            "url": "/repos/:owner/:repo/comments/:repo_comment_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5403,7 +5581,7 @@
             "description": "Get a single commit comment."
         },
         "update-commit-comment": {
-            "url": "/repos/:owner/:repo/comments/:id",
+            "url": "/repos/:owner/:repo/comments/:repo_comment_id",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -5415,7 +5593,7 @@
             "description": "Update a commit comment."
         },
         "delete-commit-comment": {
-            "url": "/repos/:owner/:repo/comments/:id",
+            "url": "/repos/:owner/:repo/comments/:repo_comment_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -5425,7 +5603,7 @@
             "description": "Delete a commit comment."
         },
         "get-community-health-metrics": {
-            "url": "/repositories/:id/community/profile",
+            "url": "/repositories/:repository_id/community/profile",
             "method": "GET",
             "params": {
                 "$id": null
@@ -5723,7 +5901,7 @@
             "description": "List deploy keys."
         },
         "get-key": {
-            "url": "/repos/:owner/:repo/keys/:id",
+            "url": "/repos/:owner/:repo/keys/:key_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5751,7 +5929,7 @@
             "description": "Add a new deploy key."
         },
         "delete-key": {
-            "url": "/repos/:owner/:repo/keys/:id",
+            "url": "/repos/:owner/:repo/keys/:key_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -5882,7 +6060,7 @@
             "description": "Create a deployment. (In preview period. See README.)"
         },
         "get-deployment-statuses": {
-            "url": "/repos/:owner/:repo/deployments/:id/statuses",
+            "url": "/repos/:owner/:repo/deployments/:deployment_id/statuses",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5892,7 +6070,7 @@
             "description": "List deployment statuses. (In preview period. See README.)"
         },
         "create-deployment-status": {
-            "url": "/repos/:owner/:repo/deployments/:id/statuses",
+            "url": "/repos/:owner/:repo/deployments/:deployment_id/statuses",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -5960,7 +6138,7 @@
             "description": "List downloads for repository."
         },
         "get-download": {
-            "url": "/repos/:owner/:repo/downloads/:id",
+            "url": "/repos/:owner/:repo/downloads/:download_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5970,7 +6148,7 @@
             "description": "Get a single download."
         },
         "delete-download": {
-            "url": "/repos/:owner/:repo/downloads/:id",
+            "url": "/repos/:owner/:repo/downloads/:download_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -6020,7 +6198,7 @@
             "description": "Create a fork."
         },
         "get-invites": {
-            "url": "/repositories/:id/invitations",
+            "url": "/repositories/:repository_id/invitations",
             "method": "GET",
             "params": {
                 "$id": null
@@ -6028,7 +6206,7 @@
             "description": "List invitations for a repository. (In preview period. See README.)"
         },
         "delete-invite": {
-            "url": "/repositories/:id/invitations/:invitation_id",
+            "url": "/repositories/:repository_id/invitations/:invitation_id",
             "method": "DELETE",
             "params": {
                 "$id": null,
@@ -6037,7 +6215,7 @@
             "description": "Delete a repository invitation. (In preview period. See README.)"
         },
         "update-invite": {
-            "url": "/repositories/:id/invitations/:invitation_id",
+            "url": "/repositories/:repository_id/invitations/:invitation_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -6116,7 +6294,7 @@
             "description": "Get latest Pages build. (In preview period. See README.)"
         },
         "get-pages-build": {
-            "url": "/repos/:owner/:repo/pages/builds/:id",
+            "url": "/repos/:owner/:repo/pages/builds/:build_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6137,7 +6315,7 @@
             "description": "List releases for a repository."
         },
         "get-release": {
-            "url": "/repos/:owner/:repo/releases/:id",
+            "url": "/repos/:owner/:repo/releases/:release_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6223,7 +6401,7 @@
             "description": "Create a release."
         },
         "edit-release": {
-            "url": "/repos/:owner/:repo/releases/:id",
+            "url": "/repos/:owner/:repo/releases/:release_id",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -6277,7 +6455,7 @@
             "description": "Edit a release."
         },
         "delete-release": {
-            "url": "/repos/:owner/:repo/releases/:id",
+            "url": "/repos/:owner/:repo/releases/:release_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -6287,7 +6465,7 @@
             "description": "Delete a release"
         },
         "get-assets": {
-            "url": "/repos/:owner/:repo/releases/:id/assets",
+            "url": "/repos/:owner/:repo/releases/:release_id/assets",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6297,7 +6475,7 @@
             "description": "List assets for a release."
         },
         "get-asset": {
-            "url": "/repos/:owner/:repo/releases/assets/:id",
+            "url": "/repos/:owner/:repo/releases/assets/:asset_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6307,7 +6485,7 @@
             "description": "Get a single release asset."
         },
         "upload-asset": {
-            "url": "/repos/:owner/:repo/releases/:id/assets",
+            "url": "/repos/:owner/:repo/releases/:release_id/assets",
             "method": "POST",
             "host": "uploads.github.com",
             "hasFileBody": true,
@@ -6341,7 +6519,7 @@
             "description": "Upload a release asset."
         },
         "edit-asset": {
-            "url": "/repos/:owner/:repo/releases/assets/:id",
+            "url": "/repos/:owner/:repo/releases/assets/:asset_id",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -6359,7 +6537,7 @@
             "description": "Edit a release asset."
         },
         "delete-asset": {
-            "url": "/repos/:owner/:repo/releases/assets/:id",
+            "url": "/repos/:owner/:repo/releases/assets/:asset_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -6549,7 +6727,7 @@
             "description": "List hooks."
         },
         "get-hook": {
-            "url": "/repos/:owner/:repo/hooks/:id",
+            "url": "/repos/:owner/:repo/hooks/:repo_hook_id",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6591,7 +6769,7 @@
             "description": "Create a hook."
         },
         "edit-hook": {
-            "url": "/repos/:owner/:repo/hooks/:id",
+            "url": "/repos/:owner/:repo/hooks/:repo_hook_id",
             "method": "PATCH",
             "params": {
                 "$owner": null,
@@ -6638,7 +6816,7 @@
             "description": "Edit a hook."
         },
         "test-hook": {
-            "url": "/repos/:owner/:repo/hooks/:id/tests",
+            "url": "/repos/:owner/:repo/hooks/:repo_hook_id/tests",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -6648,7 +6826,7 @@
             "description": "Test a [push] hook."
         },
         "ping-hook": {
-            "url": "/repos/:owner/:repo/hooks/:id/pings",
+            "url": "/repos/:owner/:repo/hooks/:repo_hook_id/pings",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -6658,7 +6836,7 @@
             "description": "Ping a hook."
         },
         "delete-hook": {
-            "url": "/repos/:owner/:repo/hooks/:id",
+            "url": "/repos/:owner/:repo/hooks/:repo_hook_id",
             "method": "DELETE",
             "params": {
                 "$owner": null,
@@ -6813,7 +6991,7 @@
             "description": "Get a single user"
         },
         "get-by-id": {
-            "url": "/user/:id",
+            "url": "/user/:username",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7035,7 +7213,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "Bolean",
+            "yields": "Boolean",
             "description": "List who a user is following"
         },
         "get-following": {
@@ -7110,7 +7288,7 @@
             "description": "List your public keys"
         },
         "get-key": {
-            "url": "/user/keys/:id",
+            "url": "/user/keys/:user_key_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7127,7 +7305,7 @@
             "description": "Create a public key"
         },
         "delete-key": {
-            "url": "/user/keys/:id",
+            "url": "/user/keys/:user_key_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -7144,7 +7322,7 @@
             "description": "List your GPG keys. (In preview period. See README.)"
         },
         "get-gpg-key": {
-            "url": "/user/gpg_keys/:id",
+            "url": "/user/gpg_keys/:gpg_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7166,7 +7344,7 @@
             "description": "Create a GPG key. (In preview period. See README.)"
         },
         "delete-gpg-key": {
-            "url": "/user/gpg_keys/:id",
+            "url": "/user/gpg_keys/:gpg_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -7260,7 +7438,7 @@
     },
     "enterprise": {
         "stats": {
-            "url": "/enterprise/stats/:type",
+            "url": "/enterprise/stats/:stats_type",
             "method": "GET",
             "params": {
                 "type": {
@@ -7351,7 +7529,7 @@
             "description": "Get license information"
         },
         "get-pre-receive-environment": {
-            "url": "/admin/pre_receive_environments/:id",
+            "url": "/admin/pre_receive_environments/:environment_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7386,7 +7564,7 @@
             "description": "Create a pre-receive environment. (In preview period. See README.)"
         },
         "edit-pre-receive-environment": {
-            "url": "/admin/pre_receive_environments/:id",
+            "url": "/admin/pre_receive_environments/:environment_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -7408,7 +7586,7 @@
             "description": "Create a pre-receive environment. (In preview period. See README.)"
         },
         "delete-pre-receive-environment": {
-            "url": "/admin/pre_receive_environments/:id",
+            "url": "/admin/pre_receive_environments/:environment_id",
             "method": "DELETE",
             "params": {
                 "$id": null
@@ -7416,7 +7594,7 @@
             "description": "Delete a pre-receive environment. (In preview period. See README.)"
         },
         "get-pre-receive-environment-download-status": {
-            "url": "/admin/pre_receive_environments/:id/downloads/latest",
+            "url": "/admin/pre_receive_environments/:environment_id/downloads/latest",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7424,7 +7602,7 @@
             "description": "Get a pre-receive environment's download status. (In preview period. See README.)"
         },
         "trigger-pre-receive-environment-download": {
-            "url": "/admin/pre_receive_environments/:id/downloads",
+            "url": "/admin/pre_receive_environments/:environment_id/downloads",
             "method": "POST",
             "params": {
                 "$id": null
@@ -7432,7 +7610,7 @@
             "description": "Trigger a pre-receive environment download. (In preview period. See README.)"
         },
         "get-pre-receive-hook": {
-            "url": "/admin/pre-receive-hooks/:id",
+            "url": "/admin/pre-receive-hooks/:pre_receive_hook_id",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7497,7 +7675,7 @@
             "description": "Create a pre-receive hook. (In preview period. See README.)"
         },
         "edit-pre-receive-hook": {
-            "url": "/admin/pre-receive-hooks/:id",
+            "url": "/admin/pre-receive-hooks/:pre_receive_hook_id",
             "method": "PATCH",
             "params": {
                 "$id": null,
@@ -7513,7 +7691,7 @@
             "description": "Edit a pre-receive hook. (In preview period. See README.)"
         },
         "delete-pre-receive-hook": {
-            "url": "/admin/pre-receive-hooks/:id",
+            "url": "/admin/pre-receive-hooks/:pre_receive_hook_id",
             "method": "DELETE",
             "params": {
                 "$id": null
