@@ -87,10 +87,10 @@ return /******/ (function(modules) { // webpackBootstrap
 // working with arrays anyway
 var filter = __webpack_require__(28);
 var forEach = __webpack_require__(27);
-var map = __webpack_require__(29);
+var map = __webpack_require__(29
 
 // require('underscore-plus')
-var plus = {
+);var plus = {
   camelize: function camelize(string) {
     if (string) {
       return string.replace(/[_-]+(\w)/g, function (m) {
@@ -215,7 +215,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var plus = __webpack_require__(0);
+var plus = __webpack_require__(0
 
 // Daisy-Chainer
 // ===============================
@@ -223,7 +223,7 @@ var plus = __webpack_require__(0);
 // Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
 // Constructs a URL for the verb methods (like `.fetch` and `.create`).
 
-module.exports = function () {
+);module.exports = function () {
   function Chainer(_verbMethods) {
     _classCallCheck(this, Chainer);
 
@@ -521,10 +521,10 @@ module.exports = (_module$exports = {
 "use strict";
 
 
-var toQueryString = __webpack_require__(2);
+var toQueryString = __webpack_require__(2
 
 // new class SimpleVerbs
-module.exports = {
+);module.exports = {
   verbs: {
     fetch: function fetch(path, query) {
       return { method: 'GET', path: '' + path + toQueryString(query) };
@@ -576,15 +576,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = __webpack_require__(0),
-    filter = _require.filter,
-    forOwn = _require.forOwn,
-    extend = _require.extend;
+var _require = __webpack_require__(0
 
 // When `origFn` is not passed a callback as the last argument then return a
 // Promise, or error if no Promise can be found (see `plugins/promise/*` for
 // some strategies for loading a Promise implementation)
-
+),
+    filter = _require.filter,
+    forOwn = _require.forOwn,
+    extend = _require.extend;
 
 var toPromise = function toPromise(orig) {
   return function () {
@@ -682,8 +682,8 @@ var VerbMethods = function () {
 
         forOwn(this._asyncVerbs, function (verbFunc, verbName) {
           obj[verbName] = function () {
-            var makeRequest = verbFunc(_this._requester, path); // Curried function
-            return toPromise(makeRequest).apply(undefined, arguments);
+            var makeRequest = verbFunc(_this._requester, path // Curried function
+            );return toPromise(makeRequest).apply(undefined, arguments);
           };
         });
       } else {
@@ -763,9 +763,9 @@ module.exports = btoa;
 "use strict";
 
 
-__webpack_require__(31);
+__webpack_require__(31
 // 'fetch' is now a global
-module.exports = window.fetch;
+);module.exports = window.fetch;
 //# sourceMappingURL=fetch-browser.js.map
 
 /***/ }),
@@ -781,20 +781,20 @@ var deprecate = __webpack_require__(1);
 var TREE_OPTIONS = __webpack_require__(4);
 var Chainer = __webpack_require__(3);
 
-var _require = __webpack_require__(6),
-    VerbMethods = _require.VerbMethods,
-    toPromise = _require.toPromise;
+var _require = __webpack_require__(6
 
 // Use the following plugins by default (they should be neglegible additional code)
-
+),
+    VerbMethods = _require.VerbMethods,
+    toPromise = _require.toPromise;
 
 var SimpleVerbsPlugin = __webpack_require__(5);
 
 var Requester = __webpack_require__(26);
-var applyHypermedia = __webpack_require__(14);
+var applyHypermedia = __webpack_require__(14
 
 // Checks if a response is a Buffer or not
-var isBuffer = function isBuffer(data) {
+);var isBuffer = function isBuffer(data) {
   if (typeof global['Buffer'] !== 'undefined') {
     return global['Buffer'].isBuffer(data);
   } else {
@@ -878,10 +878,10 @@ var OctokatBase = function OctokatBase() {
   };
 
   var verbMethods = new VerbMethods(plugins, { request: request });
-  new Chainer(verbMethods).chain('', null, TREE_OPTIONS, instance);
+  new Chainer(verbMethods).chain('', null, TREE_OPTIONS, instance
 
   // Special case for `me`
-  instance.me = instance.user;
+  );instance.me = instance.user;
 
   instance.parse = function (data) {
     // The signature of toPromise has cb as the 1st arg
@@ -1072,8 +1072,8 @@ module.exports = function (url) {
     // replace it
     switch (match[1]) {
       case '/':
-        var fieldName = match.slice(2, match.length - 1); // omit the braces and the slash
-        var fieldValue = templateParams[fieldName];
+        var fieldName = match.slice(2, match.length - 1 // omit the braces and the slash
+        );var fieldValue = templateParams[fieldName];
         if (fieldValue) {
           if (/\//.test(fieldValue)) {
             throw new Error('Octokat Error: this field must not contain slashes: ' + fieldName);
@@ -1082,8 +1082,8 @@ module.exports = function (url) {
         }
         break;
       case '+':
-        fieldName = match.slice(2, match.length - 1); // omit the braces and the `+`
-        fieldValue = templateParams[fieldName];
+        fieldName = match.slice(2, match.length - 1 // omit the braces and the `+`
+        );fieldValue = templateParams[fieldName];
         if (fieldValue) {
           param = fieldValue;
         }
@@ -1096,8 +1096,8 @@ module.exports = function (url) {
         //
         // When match contains `,` or
         // `args.length is 1` and args[0] is object match the args to those in the template
-        var optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
-        var optionalParams = {};
+        var optionalNames = match.slice(2, -2 + 1).split(',' // omit the braces and the `?` before splitting
+        );var optionalParams = {};
         for (var j = 0; j < optionalNames.length; j++) {
           fieldName = optionalNames[j];
           optionalParams[fieldName] = templateParams[fieldName];
@@ -1105,19 +1105,19 @@ module.exports = function (url) {
         param = toQueryString(optionalParams);
         break;
       case '&':
-        optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
-        optionalParams = {};
+        optionalNames = match.slice(2, -2 + 1).split(',' // omit the braces and the `?` before splitting
+        );optionalParams = {};
         for (var k = 0; k < optionalNames.length; k++) {
           fieldName = optionalNames[k];
           optionalParams[fieldName] = templateParams[fieldName];
         }
-        param = toQueryString(optionalParams, true); // true means omitQuestionMark
-        break;
+        param = toQueryString(optionalParams, true // true means omitQuestionMark
+        );break;
 
       default:
         // This is a required field. ie `{repoName}`
-        fieldName = match.slice(1, match.length - 1); // omit the braces
-        if (templateParams[fieldName]) {
+        fieldName = match.slice(1, match.length - 1 // omit the braces
+        );if (templateParams[fieldName]) {
           param = templateParams[fieldName];
         } else {
           throw new Error('Octokat Error: Required parameter is missing: ' + fieldName);
@@ -1393,9 +1393,9 @@ var getMore = function getMore(fetchable, requester, acc) {
   var nextPagePromise = fetchNextPage(fetchable, requester);
   if (nextPagePromise) {
     return nextPagePromise.then(function (results) {
-      pushAll(acc, results.items);
+      pushAll(acc, results.items
       // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-      return getMore(results, requester, acc);
+      );return getMore(results, requester, acc);
     });
   } else {
     return acc;
@@ -1425,9 +1425,9 @@ module.exports = {
         // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
         return requester.request('GET', '' + path + toQueryString(query), null, null).then(function (results) {
           var acc = [];
-          pushAll(acc, results.items);
+          pushAll(acc, results.items
           // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-          return getMore(results, requester, acc);
+          );return getMore(results, requester, acc);
         });
       };
     }
@@ -1620,9 +1620,9 @@ module.exports = new (function () {
         chainer.chain(url, true, {}, data);
         this.chainChildren(chainer, url, data);
       } else {
-        chainer.chain('', null, {}, data);
+        chainer.chain('', null, {}, data
         // For the paged results, rechain all children in the array
-        if (Array.isArray(data)) {
+        );if (Array.isArray(data)) {
           for (var i = 0; i < data.length; i++) {
             var datum = data[i];
             this.chainChildren(chainer, datum.url, datum);
@@ -1670,21 +1670,21 @@ module.exports = new (function () {
       // Add them to data so the resolved value is iterable
 
       if (Array.isArray(data)) {
-        data = { items: data.slice() }; // Convert to object so we can add the next/prev/first/last link headers
+        data = { items: data.slice() // Convert to object so we can add the next/prev/first/last link headers
 
-        // Parse the Link headers
-        // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-        var linksHeader = jqXHR.headers.get('Link');
+          // Parse the Link headers
+          // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
+        };var linksHeader = jqXHR.headers.get('Link');
         if (linksHeader) {
           linksHeader.split(',').forEach(function (part) {
-            var _part$match = part.match(/<([^>]+)>; rel="([^"]+)"/),
+            var _part$match = part.match(/<([^>]+)>; rel="([^"]+)"/
+            // Add the pagination functions on the JSON since Promises resolve one value
+            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
+            ),
                 _part$match2 = _slicedToArray(_part$match, 3),
                 unusedField = _part$match2[0],
                 href = _part$match2[1],
                 rel = _part$match2[2];
-            // Add the pagination functions on the JSON since Promises resolve one value
-            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-
 
             data[rel + '_page_url'] = href;
           });
@@ -1904,9 +1904,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = __webpack_require__(0),
-    filter = _require.filter,
-    map = _require.map;
+var _require = __webpack_require__(0
 
 // Request Function
 // ===============================
@@ -1916,6 +1914,10 @@ var _require = __webpack_require__(0),
 
 // # Construct the request function.
 // It contains all the auth credentials passed in to the client constructor
+
+),
+    filter = _require.filter,
+    map = _require.map;
 
 var EVENT_ID = 0; // counter for the emitter so it is easier to match up requests
 
@@ -2006,11 +2008,11 @@ module.exports = function () {
         'User-Agent': this._clientOptions.userAgent || 'octokat.js'
       };
 
-      var acc = { method: method, path: path, headers: headers, options: options, clientOptions: this._clientOptions };
+      var acc = { method: method, path: path, headers: headers, options: options, clientOptions: this._clientOptions
 
-      // To use async.waterfall we need to pass in the initial data (`acc`)
-      // so we create an initial function that just takes a callback
-      var initial = Promise.resolve(acc);
+        // To use async.waterfall we need to pass in the initial data (`acc`)
+        // so we create an initial function that just takes a callback
+      };var initial = Promise.resolve(acc);
 
       var prev = initial;
       this._pluginMiddlewareAsync.forEach(function (p) {
@@ -2047,12 +2049,12 @@ module.exports = function () {
             if (response.headers.get('X-RateLimit-Limit')) {
               var rateLimit = parseFloat(response.headers.get('X-RateLimit-Limit'));
               var rateLimitRemaining = parseFloat(response.headers.get('X-RateLimit-Remaining'));
-              var rateLimitReset = parseFloat(response.headers.get('X-RateLimit-Reset'));
+              var rateLimitReset = parseFloat(response.headers.get('X-RateLimit-Reset')
               // Reset time is in seconds, not milliseconds
               // if rateLimitReset
               //   rateLimitReset = new Date(rateLimitReset * 1000)
 
-              var emitterRate = {
+              );var emitterRate = {
                 remaining: rateLimitRemaining,
                 limit: rateLimit,
                 reset: rateLimitReset

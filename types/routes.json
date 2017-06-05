@@ -279,6 +279,9 @@
               "type": "String",
               "description": "SHA that pull request head must match to allow merge"
           },
+          ":commit_sha": {
+              "type": "String"
+          },
           ":ref": {
               "type": "String"
           },
@@ -1571,7 +1574,7 @@
             "description": "Create a Blob"
         },
         "get-commit": {
-            "url": "/repos/:owner/:repo/git/commits/:sha",
+            "url": "/repos/:owner/:repo/git/commits/:commit_sha",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -1627,7 +1630,7 @@
             "description": "Create a Commit"
         },
         "get-commit-signature-verification": {
-            "url": "/repos/:owner/:repo/git/commits/:sha",
+            "url": "/repos/:owner/:repo/git/commits/:commit_sha",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -1649,7 +1652,7 @@
             "description": "Get a Reference"
         },
         "get-references": {
-            "url": "/repos/:owner/:repo/git/refs/",
+            "url": "/repos/:owner/:repo/git/refs",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5538,7 +5541,7 @@
             "description": "List comments for a single commit."
         },
         "create-commit-comment": {
-            "url": "/repos/:owner/:repo/commits/:sha/comments",
+            "url": "/repos/:owner/:repo/commits/:commit_sha/comments",
             "method": "POST",
             "params": {
                 "$owner": null,
@@ -5642,18 +5645,18 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<RepoCommitMaybe>",
+            "yields": "SearchResult<RepoCommit2>",
             "description": "List commits on a repository."
         },
         "get-commit": {
-            "url": "/repos/:owner/:repo/commits/:sha",
+            "url": "/repos/:owner/:repo/commits/:commit_sha",
             "method": "GET",
             "params": {
                 "$owner": null,
                 "$repo": null,
                 "$sha": null
             },
-            "yields": "RepoCommit",
+            "yields": "RepoCommitSlug2",
             "description": "Get a single commit."
         },
         "get-sha-of-commit-ref": {
@@ -6991,7 +6994,7 @@
             "description": "Get a single user"
         },
         "get-by-id": {
-            "url": "/user/:username",
+            "url": "/users/:username",
             "method": "GET",
             "params": {
                 "$id": null
@@ -7213,7 +7216,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "Boolean",
+            "yields": "SearchResult<User>",
             "description": "List who a user is following"
         },
         "get-following": {

@@ -28,6 +28,11 @@
 "git": { "type": "string", "required": true },
 "html": { "type": "string", "required": true } }, "required": true } },
 
+"CommitSlug2": {
+  "sha": { "type": "string", "required": true },
+  "url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true } },
+
 "Download": {
   "url": { "type": "string", "required": true },
   "id": { "type": "number", "required": true },
@@ -1598,6 +1603,14 @@
   "message": { "type": "string", "required": true },
   "parents": { "type": "CommitSlugMaybe[]", "required": true } },
 
+"GitCommitSlug": {
+  "author": { "type": "UserSlug", "required": true },
+  "committer": { "type": "UserSlug", "required": true },
+  "message": { "type": "string", "required": true },
+  "tree": { "type": "GitBlob", "required": true },
+  "url": { "type": "string", "required": true },
+  "comment_count": { "type": "number", "required": true } },
+
 "GitPatch": {
   "sha": { "type": "string", "required": true },
   "filename": { "type": "string", "required": true },
@@ -1638,9 +1651,9 @@
   "comments": { "type": "number", "required": true },
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
-  "closed_at": { "type": "string", "required": true },
+  "closed_at": { "type": "string", "required": false },
   "body": { "type": "any", "required": false },
-  "closed_by": { "type": "User", "required": true } },
+  "closed_by": { "type": "User", "required": false } },
 
 "IssueComment": {
   "url": { "type": "string", "required": true },
@@ -1660,7 +1673,7 @@
   "commit_id": { "type": "any", "required": false },
   "commit_url": { "type": "any", "required": false },
   "created_at": { "type": "string", "required": true },
-  "issue": { "type": "Issue", "required": true } },
+  "issue": { "type": "Issue", "required": false } },
 
 "IssueLabel": {
   "id": { "type": "number", "required": true },
@@ -1716,7 +1729,7 @@
   "members_url": { "type": "string", "required": true },
   "public_members_url": { "type": "string", "required": true },
   "avatar_url": { "type": "string", "required": true },
-  "description": { "type": "string", "required": true } },
+  "description": { "type": "string", "required": false } },
 
 "OrganizationSlug2": {
   "id": { "type": "number", "required": true },
@@ -1774,8 +1787,21 @@
 "deletions": { "type": "number", "required": true } }, "required": true },
   "files": { "type": "GitPatch[]", "required": true } },
 
-"RepoCommitMaybe": {
+"RepoCommit2": {
   "sha": { "type": "string", "required": true },
+  "commit": { "type": "RepoCommitSlug", "required": true },
+  "url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true },
+  "comments_url": { "type": "string", "required": true },
+  "author": { "type": "User", "required": true },
+  "committer": { "type": "User", "required": true },
+  "parents": { "type": "CommitSlug2[]", "required": true },
+  "stats": { "type": { "total": { "type": "number", "required": true },
+"additions": { "type": "number", "required": true },
+"deletions": { "type": "number", "required": true } }, "required": true } },
+
+"RepoCommitMaybe": {
+  "sha": { "type": "string", "required": false },
   "commit": { "type": "GitCommit", "required": true },
   "url": { "type": "string", "required": true },
   "html_url": { "type": "string", "required": true },
@@ -1783,6 +1809,28 @@
   "author": { "type": "User", "required": true },
   "committer": { "type": "User", "required": true },
   "parents": { "type": "CommitSlugMaybe[]", "required": true } },
+
+"RepoCommitSlug": {
+  "author": { "type": "UserSlug", "required": true },
+  "committer": { "type": "UserSlug", "required": true },
+  "message": { "type": "string", "required": true },
+  "url": { "type": "string", "required": true },
+  "comment_count": { "type": "number", "required": true },
+  "tree": { "type": "GitBlob", "required": true } },
+
+"RepoCommitSlug2": {
+  "sha": { "type": "string", "required": true },
+  "commit": { "type": "GitCommitSlug", "required": true },
+  "url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true },
+  "comments_url": { "type": "string", "required": true },
+  "author": { "type": "User", "required": true },
+  "committer": { "type": "User", "required": true },
+  "parents": { "type": "CommitSlugMaybe[]", "required": true },
+  "stats": { "type": { "total": { "type": "number", "required": true },
+"additions": { "type": "number", "required": true },
+"deletions": { "type": "number", "required": true } }, "required": true },
+  "files": { "type": "GitPatch[]", "required": true } },
 
 "RepoSlug": {
   "id": { "type": "number", "required": true },
@@ -1804,7 +1852,7 @@
   "owner": { "type": "User", "required": true },
   "private": { "type": "boolean", "required": true },
   "html_url": { "type": "string", "required": true },
-  "description": { "type": "string", "required": true },
+  "description": { "type": "string", "required": false },
   "fork": { "type": "boolean", "required": true },
   "url": { "type": "string", "required": true },
   "forks_url": { "type": "string", "required": true },
@@ -1854,7 +1902,7 @@
   "size": { "type": "number", "required": true },
   "stargazers_count": { "type": "number", "required": true },
   "watchers_count": { "type": "number", "required": true },
-  "language": { "type": "string", "required": true },
+  "language": { "type": "string", "required": false },
   "has_issues": { "type": "boolean", "required": true },
   "has_projects": { "type": "boolean", "required": true },
   "has_downloads": { "type": "boolean", "required": true },
@@ -1863,7 +1911,7 @@
   "forks_count": { "type": "number", "required": true },
   "mirror_url": { "type": "any", "required": false },
   "open_issues_count": { "type": "number", "required": true },
-  "forks": { "type": "number", "required": true },
+  "forks": { "type": "number", "required": false },
   "open_issues": { "type": "number", "required": true },
   "watchers": { "type": "number", "required": true },
   "default_branch": { "type": "string", "required": true },
@@ -1879,7 +1927,7 @@
 
 "User": {
   "login": { "type": "string", "required": true },
-  "name": { "type": "string", "required": true},
+  "name": { "type": "string", "required": false},
   "id": { "type": "number", "required": true },
   "avatar_url": { "type": "string", "required": true },
   "gravatar_id": { "type": "string", "required": true },
@@ -1894,7 +1942,7 @@
   "repos_url": { "type": "string", "required": true },
   "events_url": { "type": "string", "required": true },
   "received_events_url": { "type": "string", "required": true },
-  "type": { "type": ["user", "org"], "required": true },
+  "type": { "type": ["User", "Organization"], "required": true },
   "site_admin": { "type": "boolean", "required": true } },
 
 "UserEmail": {

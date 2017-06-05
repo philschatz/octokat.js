@@ -320,6 +320,7 @@ const responseTypesStr = Object.keys(responseTypes).map((responseTypeName) => {
         value = `{ ${recBuildFieldType(fieldValue).join('\n  ')} }`
       }
 
+      // pesky emojis
       const fieldNameEscaped = /^[a-z][a-z0-9_]*$/.test(fieldName) ? fieldName : `'${fieldName}'`
       return `readonly ${fieldNameEscaped}${isRequired ? '' : '?'}: ${value}`
     })
