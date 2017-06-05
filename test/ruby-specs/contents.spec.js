@@ -42,18 +42,33 @@ describe('Contents', function () {
 
   context('With a file', function () {
     beforeEach(function (done) {
-      let removeFile = function (content) {
+      let removeFile = function (octoPartial, content) {
         let config = {
           sha: content.sha,
           message: 'Removing as prep for testing'
         }
-        return client.repos(test_repo).contents('test_create.txt').remove(config).then(() => done())
+        return octoPartial.remove(config)
       }
 
       // If the file exists, remove it. Otherwise, done.
-      client.repos(test_repo).contents('test_create.txt').fetch()
+      function removeFirst(content1) {
+        function removeSecond () {
+          const octoPartial2 = client.repos(test_repo).contents('test_delete.txt')
+          octoPartial2.fetch()
+          /* eslint handle-callback-err: "off" */
+          .then(content => {
+            removeFile(octoPartial2, content)
+            .then(x => done())
+          }, err => done())
+        }
+        removeFile(octoPartial, content1)
+        .then(removeSecond, removeSecond)
+      }
+      let octoPartial = client.repos(test_repo).contents('test_create.txt')
+      octoPartial.fetch()
       /* eslint handle-callback-err: "off" */
-      .then(removeFile, err => done())
+      .then(removeFirst, removeFirst)
+
 
       // In Mocha 3, if the returned value is a promise then it will complain that
       // we have specified a done() callback _and_ returned a promise.
@@ -113,10 +128,10 @@ describe('Contents', function () {
       return repo.fetch().then(({defaultBranch}) => {
         return repo.branches(defaultBranch).fetch().then(({commit}) => {
           let config = {
-            message: 'I am commit-ing',
+            message: 'I am commit-ing for removal',
             content: btoa('Here be the content\n')
           }
-          return repo.contents('test_create.txt').add(config)
+          return repo.contents('test_delete.txt').add(config)
           .then(null, function (err) { console.log(err); throw new Error(err) })
           .then(response => {
             expect(response.commit.sha).to.match(/[a-z0-9]{40}/)
@@ -126,7 +141,7 @@ describe('Contents', function () {
               sha: response.content.sha,
               message: 'I am rm-ing'
             }
-            return client.repos(test_repo).contents('test_create.txt').remove(config)
+            return client.repos(test_repo).contents('test_delete.txt').remove(config)
             .then(function (response) {
               expect(response.url).is.a('string')
             })

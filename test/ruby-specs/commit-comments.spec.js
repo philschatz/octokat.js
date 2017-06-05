@@ -51,9 +51,6 @@ describe('Commit Comments', function () {
 
     it('deletes a commit comment', () => {
       return this.commit_comment.remove()
-      .then(result => {
-        expect(result).to.equal(true)
-      })
     })
   })
 })
