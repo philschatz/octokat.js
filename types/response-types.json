@@ -1919,7 +1919,7 @@
 "push": { "type": "boolean", "required": true },
 "pull": { "type": "boolean", "required": true } }, "required": true } },
 
-"__The following is commented for now because it is special-cased in the builder so that it adds the functions necessary for fetching pages" : false,
+"__The following is commented for now because it is special-cased in the builder so that it adds the functions necessary for fetching pages" : { "zzzkjhzkjhz" : { "type" : "boolean", "required": true}},
 "__SearchResult<T>": {
   "total_count": { "type": "number", "required": true },
   "incomplete_results": { "type": "boolean", "required": true },

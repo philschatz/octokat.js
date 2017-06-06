@@ -219,7 +219,7 @@
               "required": true
           },
           ":review_id": {
-              "type": "String",
+              "type": "Number",
               "required": true
           },
           ":key_id": {
@@ -282,7 +282,13 @@
           ":commit_sha": {
               "type": "String"
           },
+          ":blob_sha": {
+              "type": "String"
+          },
           ":ref": {
+              "type": "String"
+          },
+          ":tarball_ref": {
               "type": "String"
           },
           ":branch": {
@@ -1538,7 +1544,7 @@
     },
     "gitdata": {
         "get-blob": {
-            "url": "/repos/:owner/:repo/git/blobs/:sha",
+            "url": "/repos/:owner/:repo/git/blobs/:blob_sha",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -1547,6 +1553,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "GitBlob",
             "description": "Get a Blob"
         },
         "create-blob": {
@@ -5522,7 +5529,7 @@
             "description": "List commit comments for a repository."
         },
         "get-commit-comments": {
-            "url": "/repos/:owner/:repo/commits/:ref/comments",
+            "url": "/repos/:owner/:repo/commits/:commit_sha/comments",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5580,7 +5587,7 @@
                 "$repo": null,
                 "$id": null
             },
-            "yields": "SearchResult<RepoComment>",
+            "yields": "RepoComment",
             "description": "Get a single commit comment."
         },
         "update-commit-comment": {
@@ -5861,7 +5868,7 @@
             "description": "Delete a file."
         },
         "get-tarball-link": {
-            "url": "/repos/:owner/:repo/tarball/:ref",
+            "url": "/repos/:owner/:repo/tarball/:tarball_ref",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -5877,7 +5884,7 @@
             "description": "Get archive tarball link."
         },
         "get-zipball-link": {
-            "url": "/repos/:owner/:repo/zipball/:ref",
+            "url": "/repos/:owner/:repo/zipball/:tarball_ref",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6639,7 +6646,7 @@
             "description": "Create a status."
         },
         "get-statuses": {
-            "url": "/repos/:owner/:repo/commits/:ref/statuses",
+            "url": "/repos/:owner/:repo/commits/:commit_sha/statuses",
             "method": "GET",
             "params": {
                 "$owner": null,
@@ -6657,7 +6664,7 @@
             "description": "List statuses for a specfic ref."
         },
         "get-combined-status": {
-            "url": "/repos/:owner/:repo/commits/:ref/status",
+            "url": "/repos/:owner/:repo/commits/:commit_sha/status",
             "method": "GET",
             "params": {
                 "$owner": null,

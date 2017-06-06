@@ -12,6 +12,13 @@ const CONFIG = {
   ':username': 'philschatz',
   ':gist_id': '5a44800ed2b6a02ef4540bf0fc87b776',
   ':commit_sha': '8a916cc3af923653680ce59592f88b31a6a5afba',
+  ':branch': 'master',
+  ':blob_sha': '273c363d10aa22c045601f9b8a7e8ca619508c61',
+  ':repo_comment_id': 22407511,
+  ':repository_id': 91059817,
+  ':issue_comment_id': 302601077,
+  ':pull_request_number': 44,
+  ':review_id': 42187329,
 }
 
 
@@ -53,12 +60,29 @@ const URL_EXCEPTIONS = [
   '/repos/:owner/:repo/collaborators/:username',
   '/repos/:owner/:repo/keys',
   '/repos/:owner/:repo/pages',
-  '/repos/:owner/:repo/pages/builds',
-  '/repos/:owner/:repo/pages/builds/latest',
   '/repos/:owner/:repo/releases/latest',
 
   '/gists/:gist_id/commits',
   '/gists/:gist_id/star',
+
+  '/repos/:owner/:repo/branches/:branch/protection',
+  '/repos/:owner/:repo/branches/:branch/protection/required_status_checks',
+  '/repos/:owner/:repo/branches/:branch/protection/required_status_checks/contexts',
+  '/repos/:owner/:repo/branches/:branch/protection/required_pull_request_reviews',
+  '/repos/:owner/:repo/branches/:branch/protection/restrictions',
+  '/repos/:owner/:repo/branches/:branch/protection/restrictions/teams',
+  '/repos/:owner/:repo/branches/:branch/protection/restrictions/users',
+
+  '/repos/:owner/:repo/comments/:repo_comment_id/reactions',
+
+  '/repositories/:repository_id/community/profile',
+  '/repositories/:repository_id/invitations',
+
+  '/repos/:owner/:repo/issues/comments/:issue_comment_id/reactions',
+  '/repos/:owner/:repo/pulls/:pull_request_number/merge',
+  '',
+  '',
+  '',
   '',
   '',
   '',
@@ -66,9 +90,11 @@ const URL_EXCEPTIONS = [
 ]
 
 
+const testers = []
 
 const validators = Object.keys(responseTypes).map((responseTypeName) => {
   const responseType = responseTypes[responseTypeName]
+  const testFields = []
   let validateFields = Object.keys(responseType).map((fieldName) => {
     const {type, required} = responseType[fieldName]
 
@@ -80,25 +106,33 @@ const validators = Object.keys(responseTypes).map((responseTypeName) => {
         switch (type) {
           case 'String':
           case 'string':
+            testFields.push(`if(typeof response${fieldNameEscaped} !== 'string') { return false }`)
             return `expect(response${fieldNameEscaped}, 'response.${fieldName}: ' + JSON.stringify(response)).to.be.a('string')`
             break;
           case 'Number':
           case 'number':
+            testFields.push(`if(!Number.isFinite(response${fieldNameEscaped})) { return false }`)
             return `expect(response${fieldNameEscaped}, 'response.${fieldName}: ' + JSON.stringify(response)).to.be.a('number')`
             break;
           case 'Boolean':
           case 'boolean':
+            testFields.push(`if(! (response${fieldNameEscaped} === true || response${fieldNameEscaped} === false)) { return false }`)
             return `expect(response${fieldNameEscaped}, 'response.${fieldName}: ' + JSON.stringify(response)).to.be.a('boolean')`
             break;
           default:
             // if the type ends in [] then it is an array, so validate each entry
             if (/\[\]$/.test(type)) {
-              return `response${fieldNameEscaped}.forEach((item) => VALIDATORS['${type.substring(0, type.length - 2)}'](item))`
+              const concreteType = type.substring(0, type.length - 2)
+              testFields.push(`if(! Array.isArray(response${fieldNameEscaped})) { return false }`)
+              testFields.push(`if(response${fieldNameEscaped}.length >= 1) { if (!TESTERS['${concreteType}'](response${fieldNameEscaped}[0])) { return false } }`)
+              return `response${fieldNameEscaped}.forEach((item) => VALIDATORS['${concreteType}'](item))`
             } else {
+              testFields.push(`if (! TESTERS['${type}'](response${fieldNameEscaped})) { return false }`)
               return `VALIDATORS['${type}'](response${fieldNameEscaped})`
             }
         }
       } else if (Array.isArray(type)) {
+        testFields.push(`if (${JSON.stringify(type)}.indexOf(response${fieldNameEscaped}) < 0) { return false }`)
         return `expect(response${fieldNameEscaped}, 'response.${fieldName}: ' + JSON.stringify(response)).to.be.oneOf(${JSON.stringify(type)})`
       } else {
         console.log(`TODO: Skipping nested object for now keys=${Object.keys(type)}`);
@@ -111,6 +145,14 @@ const validators = Object.keys(responseTypes).map((responseTypeName) => {
   if (responseTypeName === 'Emojis') {
     validateFields = [`expect(response["+1"]).to.be.a("string") /* Shortcot for emojis */`]
   }
+
+  testers.push(`
+TESTERS['${responseTypeName}'] = (response) => {
+  if (response === null || typeof response === 'undefined') { return false }
+  ${testFields.join('\n  ')}
+  return true
+}
+`)
 
   return `
 VALIDATORS['${responseTypeName}'] = (response) => {
@@ -223,6 +265,7 @@ const octo = new OctokatBase({token: process.env['GH_TOKEN'], plugins: OctokatPl
 
 const CONFIG = ${JSON.stringify(CONFIG)}
 
+const TESTERS = { }
 const VALIDATORS = { }
 
 const validate = (responseType) => {
@@ -231,12 +274,21 @@ const validate = (responseType) => {
   return v
 }
 
+const compatibleTypes = (response) => {
+  if (Array.isArray(response.items) && response.items[0]) {
+    response = response.items[0]
+  }
+  return Object.keys(TESTERS).filter((testType) => {
+    return TESTERS[testType](response)
+  })
+}
+
 // Hardcoded validator for generic arrays
 VALIDATORS['any[]'] = (response) => {
   expect(response).to.be.an('array')
 }
 VALIDATORS['any'] = (response) => {
-  console.log('TODO: change this response to be typed')
+  console.log('TODO: change this response to be typed. Possible types: ' + JSON.stringify(compatibleTypes(response)))
   expect(response).to.be.truthy
 }
 VALIDATORS['Boolean'] = (response) => {
@@ -252,7 +304,21 @@ VALIDATORS['SearchResult'] = (underlyingType) => (response) => {
 }
 
 
+TESTERS['any[]'] = (response) => {
+  return Array.isArray(response)
+}
+TESTERS['any'] = (response) => {
+  return response !== null
+}
+TESTERS['Boolean'] = (response) => {
+  return response === true || response === false
+}
+
+
 ${validators.join('\n')}
+
+${testers.join('\n')}
+
 
 
 ${tests.join('\n\n')}
