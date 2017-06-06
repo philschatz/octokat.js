@@ -1406,6 +1406,7 @@
             "params": {
                 "$id": null
             },
+            "yields": "Gist",
             "description": "Get a single gist"
         },
         "get-revision": {
@@ -1505,6 +1506,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Gist>",
             "description": "List gist forks"
         },
         "delete": {
@@ -3024,6 +3026,7 @@
             "url": "/gitignore/templates",
             "method": "GET",
             "params": {},
+            "yields": "SearchResult<string>",
             "description": "Lists available gitignore templates"
         },
         "get-gitignore-template": {
@@ -3044,6 +3047,7 @@
             "url": "/licenses",
             "method": "GET",
             "params": {},
+            "yields": "SearchResult<RootLicense>",
             "description": "List all licenses. (In preview period. See README.)"
         },
         "get-license": {
@@ -3058,6 +3062,7 @@
                     "description": "Ex: /licenses/mit"
                 }
             },
+            "yields": "RootLicense",
             "description": "Get an individual license. (In preview period. See README.)"
         },
         "get-repo-license": {
@@ -3115,6 +3120,7 @@
             "url": "/meta",
             "method": "GET",
             "params": {},
+            "yields": "RootMeta",
             "description": "This endpoint provides information about GitHub.com, the service. Or, if you access this endpoint on your organization's GitHub Enterprise installation, this endpoint provides information about that installation."
         },
         "get-rate-limit": {
@@ -3414,6 +3420,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RootTeam>",
             "description": "List teams"
         },
         "get-team": {
@@ -3422,6 +3429,7 @@
             "params": {
                 "$id": null
             },
+            "yields": "RootTeam",
             "description": "Get team"
         },
         "create-team": {
@@ -4133,6 +4141,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoCommit2>",
             "description": "List commits on a pull request"
         },
         "get-files": {
@@ -5515,6 +5524,7 @@
                 "$repo": null,
                 "$username": null
             },
+            "yields": "RepoPermission",
             "description": "Review a user's permission level."
         },
         "add-collaborator": {
@@ -5736,6 +5746,7 @@
                     "description": "The name of the commit/branch/tag. Default: the repository’s default branch (usually master)"
                 }
             },
+            "yields": "RepoReadmeFile",
             "description": "Get the README for the given repository."
         },
         "get-content": {
@@ -6023,6 +6034,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoDeployment>",
             "description": "List deployments. (In preview period. See README.)"
         },
         "create-deployment": {
@@ -6326,6 +6338,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoPagesBuild>",
             "description": "List Pages builds. (In preview period. See README.)"
         },
         "get-latest-pages-build": {
@@ -6335,6 +6348,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "RepoPagesBuild",
             "description": "Get latest Pages build. (In preview period. See README.)"
         },
         "get-pages-build": {
@@ -6345,6 +6359,7 @@
                 "$repo": null,
                 "$id": null
             },
+            "yields": "RepoPagesBuild",
             "description": "Get a specific Pages build. (In preview period. See README.)"
         },
         "get-releases": {
@@ -6624,6 +6639,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "RepoStatsParticipation",
             "description": "Get the weekly commit count for the repository owner and everyone else."
         },
         "get-stats-punch-card": {
@@ -6633,6 +6649,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "SearchResult<number[]>",
             "description": "Get the number of commits per hour in each day."
         },
         "create-status": {
@@ -6713,6 +6730,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "RepoCommitStatus",
             "description": "Get the combined status for a specific ref."
         },
         "get-referrers": {
@@ -6724,6 +6742,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoTrafficReferrer>",
             "description": "Get the top 10 referrers over the last 14 days."
         },
         "get-paths": {
@@ -6735,6 +6754,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoTrafficPath>",
             "description": "Get the top 10 popular contents over the last 14 days."
         },
         "get-views": {
@@ -6746,6 +6766,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "RepoTrafficViews",
             "description": "Get the total number of views and breakdown per day or week for the last 14 days."
         },
         "get-clones": {
@@ -6757,6 +6778,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "RepoTrafficClones",
             "description": "Get the total number of clones and breakdown per day or week for the last 14 days."
         },
         "get-hooks": {
@@ -7182,6 +7204,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RootTeam>",
             "description": "Get your teams"
         },
         "get-public-emails": {
