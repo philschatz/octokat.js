@@ -4223,6 +4223,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoPullRequestReview>",
             "description": "List reviews on a pull request. (In preview period. See README.)"
         },
         "get-review": {
@@ -4234,6 +4235,7 @@
                 "$number": null,
                 "$id": null
             },
+            "yields": "RepoPullRequestReview",
             "description": "Get a single pull request review. (In preview period. See README.)"
         },
         "get-review-comments": {

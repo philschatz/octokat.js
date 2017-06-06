@@ -349,6 +349,10 @@ TESTERS['any'] = (response) => {
 TESTERS['Boolean'] = (response) => {
   return response === true || response === false
 }
+TESTERS['json'] = (response) => {
+  JSON.stringify(response)
+  return true
+}
 TESTERS['FilesMap'] = (response) => {
   if (Object.keys(response).length === 0) { return false }
   let hasFileSlugs = true
