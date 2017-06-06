@@ -1554,16 +1554,13 @@
   "zipper_mouth_face": { "type": "string", "required": true },
   "zzz": { "type": "string", "required": true } },
 
-"Event": {
-  "id": { "type": "string", "required": true },
-  "type": { "type": "string", "required": true },
-  "actor": { "type": "OrganizationSlug2", "required": true },
-  "repo": { "type": "RepoSlug", "required": true },
-  "payload": { "type": { "member": { "type": "User", "required": true },
-"action": { "type": "string", "required": true } }, "required": true },
-  "public": { "type": "boolean", "required": true },
-  "created_at": { "type": "string", "required": true },
-  "org": { "type": "OrganizationSlug3", "required": true } },
+"EventActor": {
+  "id": { "type": "number", "required": true },
+  "login": { "type": "string", "required": true },
+  "display_login": { "type": "string", "required": true },
+  "gravatar_id": { "type": "string", "required": false },
+  "url": { "type": "string", "required": true },
+  "avatar_url": { "type": "string", "required": true } },
 
 "File": {
   "content": { "type": "CommitSlugMaybe", "required": true },
@@ -1585,11 +1582,28 @@
   "raw_url": { "type": "string", "required": true },
   "size": { "type": "number", "required": true } },
 
+"Gist": {
+  "url": { "type": "string", "required": true },
+  "forks_url": { "type": "string", "required": true },
+  "commits_url": { "type": "string", "required": true },
+  "id": { "type": "string", "required": true },
+  "git_pull_url": { "type": "string", "required": true },
+  "git_push_url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true },
+  "files": { "type": "any", "required": true },
+  "created_at": { "type": "string", "required": true },
+  "updated_at": { "type": "string", "required": true },
+  "description": { "type": "string", "required": false },
+  "user": { "type": "User", "required": false },
+  "comments_url": { "type": "string", "required": true },
+  "owner": { "type": "User", "required": false },
+  "truncated": { "type": "boolean", "required": true } },
+
 "GitBlob": {
   "sha": { "type": "string", "required": true },
   "url": { "type": "string", "required": true } },
 
-"GitBranch": {
+"RepoBranch": {
   "name": { "type": "string", "required": true },
   "commit": { "type": "GitBlob", "required": true } },
 
@@ -1631,7 +1645,7 @@
 "type": { "type": "string", "required": true },
 "url": { "type": "string", "required": true } }, "required": true } },
 
-"Issue": {
+"RepoIssue": {
   "url": { "type": "string", "required": true },
   "repository_url": { "type": "string", "required": true },
   "labels_url": { "type": "string", "required": true },
@@ -1642,17 +1656,17 @@
   "number": { "type": "number", "required": true },
   "title": { "type": "string", "required": true },
   "user": { "type": "User", "required": true },
-  "labels": { "type": "any[]", "required": true },
+  "labels": { "type": "IssueLabel[]", "required": true },
   "state": { "type": ["open", "closed"], "required": true },
   "locked": { "type": "boolean", "required": true },
-  "assignee": { "type": "any", "required": false },
-  "assignees": { "type": "any[]", "required": true },
+  "assignee": { "type": "User", "required": false },
+  "assignees": { "type": "User[]", "required": true },
   "milestone": { "type": "any", "required": false },
   "comments": { "type": "number", "required": true },
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
   "closed_at": { "type": "string", "required": false },
-  "body": { "type": "any", "required": false },
+  "body": { "type": "string", "required": false },
   "closed_by": { "type": "User", "required": false } },
 
 "IssueComment": {
@@ -1673,7 +1687,7 @@
   "commit_id": { "type": "any", "required": false },
   "commit_url": { "type": "any", "required": false },
   "created_at": { "type": "string", "required": true },
-  "issue": { "type": "Issue", "required": false } },
+  "RepoIssue": { "type": "RepoIssue", "required": false } },
 
 "IssueLabel": {
   "id": { "type": "number", "required": true },
@@ -1745,6 +1759,47 @@
   "gravatar_id": { "type": "string", "required": true },
   "url": { "type": "string", "required": true },
   "avatar_url": { "type": "string", "required": true } },
+
+"RepoPullRequest": {
+  "url": { "type": "string", "required": true },
+  "comments_url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true },
+  "id": { "type": "number", "required": true },
+  "number": { "type": "number", "required": true },
+  "title": { "type": "string", "required": true },
+  "user": { "type": "User", "required": true },
+  "state": { "type": ["open", "closed"], "required": true },
+  "locked": { "type": "boolean", "required": true },
+  "assignee": { "type": "User", "required": false },
+  "assignees": { "type": "User[]", "required": true },
+  "milestone": { "type": "any", "required": false },
+  "comments": { "type": "number", "required": true },
+  "created_at": { "type": "string", "required": true },
+  "updated_at": { "type": "string", "required": true },
+  "closed_at": { "type": "string", "required": false },
+  "body": { "type": "string", "required": false },
+  "closed_by": { "type": "User", "required": false },
+  "merged_at": { "type": "string", "required": false },
+  "merge_commit_sha": { "type": "string", "required": false },
+  "requested_reviewers": { "type": "User[]", "required": true },
+  "review_comments_url": { "type": "string", "required": true },
+  "review_comment_url": { "type": "string", "required": true },
+  "statuses_url": { "type": "string", "required": true },
+  "head": { "type": "any", "required": true },
+  "base": { "type": "any", "required": true },
+  "_links": { "type": "any", "required": true },
+  "merged": { "type": "boolean", "required": true },
+  "mergeable": { "type": "any", "required": false },
+  "rebaseable": { "type": "any", "required": false },
+  "mergeable_state": { "type": "any", "required": true },
+  "merged_by": { "type": "User", "required": false },
+  "review_comments": { "type": "number", "required": true },
+  "maintainer_can_modify": { "type": "boolean", "required": true },
+  "commits": { "type": "number", "required": true },
+  "additions": { "type": "number", "required": true },
+  "deletions": { "type": "number", "required": true },
+  "changed_files": { "type": "number", "required": true }
+},
 
 "Rate": {
   "resources": { "type": { "core": { "type": { "limit": { "type": "number", "required": true },
@@ -1831,6 +1886,17 @@
 "additions": { "type": "number", "required": true },
 "deletions": { "type": "number", "required": true } }, "required": true },
   "files": { "type": "GitPatch[]", "required": true } },
+
+"RepoEvent": {
+  "id": { "type": "string", "required": true },
+  "type": { "type": "string", "required": true },
+  "actor": { "type": "EventActor", "required": true },
+  "repo": { "type": "RepoSlug", "required": true },
+  "payload": { "type": { "member": { "type": "User", "required": true },
+"action": { "type": "string", "required": true } }, "required": true },
+  "public": { "type": "boolean", "required": true },
+  "created_at": { "type": "string", "required": true },
+  "org": { "type": "OrganizationSlug3", "required": false } },
 
 "RepoSlug": {
   "id": { "type": "number", "required": true },
@@ -1919,15 +1985,52 @@
 "push": { "type": "boolean", "required": true },
 "pull": { "type": "boolean", "required": true } }, "required": true } },
 
+"RootFeeds": {
+  "timeline_url": { "type": "string", "required": true },
+  "user_url": { "type": "string", "required": true },
+  "current_user_public_url": { "type": "string", "required": true },
+  "_links": { "type": "RootFeedsLinks", "required": true },
+  "url": { "type": "string", "required": true } },
+
+"RootFeedsLinks": {
+  "timeline": { "type": "RootFeedsLink", "required": true },
+  "user": { "type": "RootFeedsLink", "required": true },
+  "current_user_public": { "type": "RootFeedsLink", "required": true } },
+
+"RootFeedsLink": {
+  "href": { "type": "string", "required": true },
+  "type": { "type": ["application/atom+xml"], "required": true } },
+
+"RootNotification": {
+  "id": { "type": "string", "required": true },
+  "unread": { "type": "boolean", "required": true },
+  "reason": { "type": ["assign", "author", "comment", "invitation", "manual", "mention", "state_change", "subscribed", "team_mention", "review_requested", "review_request_removed"], "required": true },
+  "updated_at": { "type": "string", "required": true },
+  "last_read_at": { "type": "string", "required": false },
+  "subject": { "type": "RootNotificationSubject", "required": true },
+  "repository": { "type": "RepoSlug", "required": true },
+  "url": { "type": "string", "required": true },
+  "subscription_url": { "type": "string", "required": true } },
+
+"RootNotificationSubject": {
+  "title": { "type": "string", "required": true },
+  "url": { "type": "string", "required": true },
+  "latest_comment_url": { "type": "string", "required": false },
+  "type": { "type": ["Issue", "PullRequest"], "required": true } },
+
 "__The following is commented for now because it is special-cased in the builder so that it adds the functions necessary for fetching pages" : { "zzzkjhzkjhz" : { "type" : "boolean", "required": true}},
 "__SearchResult<T>": {
   "total_count": { "type": "number", "required": true },
   "incomplete_results": { "type": "boolean", "required": true },
   "items": { "type": "T[]", "required": true } },
 
+"Stargazer": {
+  "starred_at": { "type": "string", "required": true },
+  "repo": { "type": "Repository", "required": true } },
+
 "User": {
   "login": { "type": "string", "required": true },
-  "name": { "type": "string", "required": false},
+  "name": { "type": "string", "required": false },
   "id": { "type": "number", "required": true },
   "avatar_url": { "type": "string", "required": true },
   "gravatar_id": { "type": "string", "required": true },

@@ -932,6 +932,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoEvent>",
             "description": "List public events"
         },
         "get-events-for-repo": {
@@ -943,6 +944,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoEvent>",
             "description": "List repository events"
         },
         "get-events-for-repo-issues": {
@@ -954,6 +956,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<IssueEvent>",
             "description": "List issue events for a repository"
         },
         "get-events-for-repo-network": {
@@ -985,6 +988,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoEvent>",
             "description": "List events that a user has received"
         },
         "get-events-received-public": {
@@ -995,6 +999,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoEvent>",
             "description": "List public events that a user has received"
         },
         "get-events-for-user": {
@@ -1005,6 +1010,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoEvent>",
             "description": "List events performed by a user"
         },
         "get-events-for-user-public": {
@@ -1015,6 +1021,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoEvent>",
             "description": "List public events performed by a user"
         },
         "get-events-for-user-org": {
@@ -1032,6 +1039,7 @@
             "url": "/feeds",
             "method": "GET",
             "params": {},
+            "yields": "RootFeeds",
             "description": "Get all feeds available for the authenticated user."
         },
         "get-notifications": {
@@ -1063,6 +1071,7 @@
                     "description": "Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ."
                 }
             },
+            "yields": "SearchResult<RootNotification>",
             "description": "Get all notifications for the current user, grouped by repository."
         },
         "get-notifications-for-user": {
@@ -1096,6 +1105,7 @@
                     "description": "Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ."
                 }
             },
+            "yields": "SearchResult<RootNotification>",
             "description": "Get all notifications for the given user."
         },
         "mark-notifications-as-read": {
@@ -1193,6 +1203,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Stargazer>",
             "description": "List Stargazers"
         },
         "get-starred-repos-for-user": {
@@ -1216,6 +1227,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Stargazer>",
             "description": "List repositories being starred by a user"
         },
         "get-starred-repos": {
@@ -1238,6 +1250,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Repository>",
             "description": "List repositories being starred by the authenticated user"
         },
         "check-starring-repo": {
@@ -1278,6 +1291,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "Get watchers for repository."
         },
         "get-watched-repos-for-user": {
@@ -1308,6 +1322,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "RepoSubscription",
             "description": "Get a Repository Subscription."
         },
         "set-repo-subscription": {
@@ -1353,6 +1368,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Gist>",
             "description": "List a user's gists"
         },
         "get-all": {
@@ -1363,6 +1379,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Gist>",
             "description": "List the authenticated user's gists or if called anonymously, this will return all public gists"
         },
         "get-public": {
@@ -1371,6 +1388,7 @@
             "params": {
                 "$since": null
             },
+            "yields": "SearchResult<Gist>",
             "description": "List all public gists"
         },
         "get-starred": {
@@ -1379,6 +1397,7 @@
             "params": {
                 "$since": null
             },
+            "yields": "SearchResult<Gist>",
             "description": "List the authenticated user's starred gists"
         },
         "get": {
@@ -1964,7 +1983,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<Issue>",
+            "yields": "SearchResult<RepoIssue>",
             "description": "List all issues across all the authenticated user's visible repositories including owned repositories, member repositories, and organization repositories"
         },
         "get-for-user": {
@@ -2023,7 +2042,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<Issue>",
+            "yields": "SearchResult<RepoIssue>",
             "description": "List all issues across owned and member repositories for the authenticated user"
         },
         "get-for-org": {
@@ -2083,7 +2102,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<Issue>",
+            "yields": "SearchResult<RepoIssue>",
             "description": "List all issues for a given organization for the authenticated user"
         },
         "get-for-repo": {
@@ -2158,7 +2177,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<Issue>",
+            "yields": "SearchResult<RepoIssue>",
             "description": "List issues for a repository"
         },
         "get": {
@@ -2169,7 +2188,7 @@
                 "$repo": null,
                 "$number": null
             },
-            "yields": "Issue",
+            "yields": "RepoIssue",
             "description": "Get a single issue"
         },
         "create": {
@@ -2215,7 +2234,7 @@
                 },
                 "$assignees": null
             },
-            "yields": "Issue",
+            "yields": "RepoIssue",
             "description": "Create an issue"
         },
         "edit": {
@@ -2274,7 +2293,7 @@
                 },
                 "$assignees": null
             },
-            "yields": "Issue",
+            "yields": "RepoIssue",
             "description": "Edit an issue"
         },
         "lock": {
@@ -3121,6 +3140,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<OrganizationSlug>",
             "description": "List all organizations"
         },
         "get-for-user": {
@@ -4008,6 +4028,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoPullRequest>",
             "description": "List pull requests"
         },
         "get": {
@@ -4018,6 +4039,7 @@
                 "$repo": null,
                 "$number": null
             },
+            "yields": "RepoPullRequest",
             "description": "Get a single pull request"
         },
         "create": {
@@ -4123,6 +4145,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<GitPatch>",
             "description": "List pull requests files"
         },
         "check-merged": {
@@ -4215,6 +4238,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "Get comments for a pull request review. (In preview period. See README.)"
         },
         "create-review": {
@@ -4331,6 +4355,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "List comments on a pull request"
         },
         "get-comments-for-repo": {
@@ -4356,6 +4381,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoComment>",
             "description": "List comments in a repository"
         },
         "get-comment": {
@@ -4776,6 +4802,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<Repository>",
             "description": "List public repositories for the specified user."
         },
         "get-for-org": {
@@ -4816,6 +4843,7 @@
                     "description": "The integer ID of the last Repository that you've seen."
                 }
             },
+            "yields": "SearchResult<RepoSlug>",
             "description": "List all public repositories"
         },
         "get-by-id": {
@@ -4824,6 +4852,7 @@
             "params": {
                 "$id": null
             },
+            "yields": "Repository",
             "description": "Get a single repo by id."
         },
         "create": {
@@ -4881,6 +4910,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "Repository",
             "description": "Get a repo for a user."
         },
         "create-for-org": {
@@ -4989,6 +5019,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "Get contributors for the specified repository."
         },
         "get-languages": {
@@ -5049,6 +5080,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<RepoBranch>",
             "description": "List branches. (In preview period. See README.)"
         },
         "get-branch": {
@@ -5061,6 +5093,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "RepoBranch",
             "description": "Get branch. (In preview period. See README.)"
         },
         "get-branch-protection": {
@@ -5461,6 +5494,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "List collaborators"
         },
         "check-collaborator": {
@@ -6998,6 +7032,7 @@
             "params": {
                 "$username": null
             },
+            "yields": "User",
             "description": "Get a single user"
         },
         "get-by-id": {
@@ -7006,6 +7041,7 @@
             "params": {
                 "$id": null
             },
+            "yields": "User",
             "description": "Get a single user by GitHub ID"
         },
         "get": {
@@ -7082,6 +7118,7 @@
                     "description": "The integer ID of the last User that you’ve seen."
                 }
             },
+            "yields": "SearchResult<User>",
             "description": "Get all users"
         },
         "get-orgs": {
@@ -7091,6 +7128,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<OrganizationSlug>",
             "description": "List organizations for the authenticated user."
         },
         "get-org-memberships": {
@@ -7204,6 +7242,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "List a user's followers"
         },
         "get-followers": {
@@ -7213,6 +7252,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "SearchResult<User>",
             "description": "List the authenticated user's followers"
         },
         "get-following-for-user": {

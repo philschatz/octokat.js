@@ -1645,7 +1645,7 @@ export type GitBlob = {
   readonly url: string
 }
 
-export type GitBranch = {
+export type RepoBranch = {
   readonly name: string
   readonly commit: GitBlob
 }
