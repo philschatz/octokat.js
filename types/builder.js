@@ -346,6 +346,9 @@ declare module 'octokat' {
     (error: Error | null, result: T): void
   }
 
+  export type json = any
+  export type FilesMap = any // Unfortunately, the keys of this object are the filenames
+
   // Base types
   ${rootTypes.join('\n')}
 

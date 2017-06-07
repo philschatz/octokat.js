@@ -6,6 +6,9 @@ declare module 'octokat' {
     (error: Error | null, result: T): void
   }
 
+  export type json = any
+  export type FilesMap = any // Unfortunately, the keys of this object are the filenames
+
   // Base types
   export interface ParamFiles { files: Object }
 export interface ParamBranch { branch: String }
@@ -51,38 +54,7 @@ export interface ParamAccessToken { access_token: String }
 export interface ParamAssignees { assignees?: string[] }
 
   // Response Types
-  export type CommitDiff = {
-  readonly url: string
-  readonly html_url: string
-  readonly permalink_url: string
-  readonly diff_url: string
-  readonly patch_url: string
-  readonly base_commit: RepoCommitDiffCommit
-  readonly merge_base_commit: RepoCommitDiffCommit
-  readonly status: string
-  readonly ahead_by: number
-  readonly behind_by: number
-  readonly total_commits: number
-  readonly commits: any[]
-  readonly files: any[]
-}
-
-export type CommitSlugMaybe = {
-  readonly name: string
-  readonly path: string
-  readonly sha: string
-  readonly size: number
-  readonly url: string
-  readonly html_url: string
-  readonly git_url: string
-  readonly download_url: string
-  readonly type: string
-  readonly '_links': { readonly self: string
-  readonly git: string
-  readonly html: string }
-}
-
-export type Download = {
+  export type Download = {
   readonly url: string
   readonly id: number
   readonly html_url: string
@@ -94,1527 +66,13 @@ export type Download = {
   readonly content_type: string
 }
 
-export type Emojis = {
-  readonly '100': string
-  readonly '1234': string
-  readonly '+1': string
-  readonly '-1': string
-  readonly '1st_place_medal': string
-  readonly '2nd_place_medal': string
-  readonly '3rd_place_medal': string
-  readonly '8ball': string
-  readonly a: string
-  readonly ab: string
-  readonly abc: string
-  readonly abcd: string
-  readonly accept: string
-  readonly aerial_tramway: string
-  readonly afghanistan: string
-  readonly airplane: string
-  readonly aland_islands: string
-  readonly alarm_clock: string
-  readonly albania: string
-  readonly alembic: string
-  readonly algeria: string
-  readonly alien: string
-  readonly ambulance: string
-  readonly american_samoa: string
-  readonly amphora: string
-  readonly anchor: string
-  readonly andorra: string
-  readonly angel: string
-  readonly anger: string
-  readonly angola: string
-  readonly angry: string
-  readonly anguilla: string
-  readonly anguished: string
-  readonly ant: string
-  readonly antarctica: string
-  readonly antigua_barbuda: string
-  readonly apple: string
-  readonly aquarius: string
-  readonly argentina: string
-  readonly aries: string
-  readonly armenia: string
-  readonly arrow_backward: string
-  readonly arrow_double_down: string
-  readonly arrow_double_up: string
-  readonly arrow_down: string
-  readonly arrow_down_small: string
-  readonly arrow_forward: string
-  readonly arrow_heading_down: string
-  readonly arrow_heading_up: string
-  readonly arrow_left: string
-  readonly arrow_lower_left: string
-  readonly arrow_lower_right: string
-  readonly arrow_right: string
-  readonly arrow_right_hook: string
-  readonly arrow_up: string
-  readonly arrow_up_down: string
-  readonly arrow_up_small: string
-  readonly arrow_upper_left: string
-  readonly arrow_upper_right: string
-  readonly arrows_clockwise: string
-  readonly arrows_counterclockwise: string
-  readonly art: string
-  readonly articulated_lorry: string
-  readonly artificial_satellite: string
-  readonly aruba: string
-  readonly asterisk: string
-  readonly astonished: string
-  readonly athletic_shoe: string
-  readonly atm: string
-  readonly atom: string
-  readonly atom_symbol: string
-  readonly australia: string
-  readonly austria: string
-  readonly avocado: string
-  readonly azerbaijan: string
-  readonly b: string
-  readonly baby: string
-  readonly baby_bottle: string
-  readonly baby_chick: string
-  readonly baby_symbol: string
-  readonly back: string
-  readonly bacon: string
-  readonly badminton: string
-  readonly baggage_claim: string
-  readonly baguette_bread: string
-  readonly bahamas: string
-  readonly bahrain: string
-  readonly balance_scale: string
-  readonly balloon: string
-  readonly ballot_box: string
-  readonly ballot_box_with_check: string
-  readonly bamboo: string
-  readonly banana: string
-  readonly bangbang: string
-  readonly bangladesh: string
-  readonly bank: string
-  readonly bar_chart: string
-  readonly barbados: string
-  readonly barber: string
-  readonly baseball: string
-  readonly basecamp: string
-  readonly basecampy: string
-  readonly basketball: string
-  readonly basketball_man: string
-  readonly basketball_woman: string
-  readonly bat: string
-  readonly bath: string
-  readonly bathtub: string
-  readonly battery: string
-  readonly beach_umbrella: string
-  readonly bear: string
-  readonly bed: string
-  readonly bee: string
-  readonly beer: string
-  readonly beers: string
-  readonly beetle: string
-  readonly beginner: string
-  readonly belarus: string
-  readonly belgium: string
-  readonly belize: string
-  readonly bell: string
-  readonly bellhop_bell: string
-  readonly benin: string
-  readonly bento: string
-  readonly bermuda: string
-  readonly bhutan: string
-  readonly bicyclist: string
-  readonly bike: string
-  readonly biking_man: string
-  readonly biking_woman: string
-  readonly bikini: string
-  readonly biohazard: string
-  readonly bird: string
-  readonly birthday: string
-  readonly black_circle: string
-  readonly black_flag: string
-  readonly black_heart: string
-  readonly black_joker: string
-  readonly black_large_square: string
-  readonly black_medium_small_square: string
-  readonly black_medium_square: string
-  readonly black_nib: string
-  readonly black_small_square: string
-  readonly black_square_button: string
-  readonly blonde_man: string
-  readonly blonde_woman: string
-  readonly blossom: string
-  readonly blowfish: string
-  readonly blue_book: string
-  readonly blue_car: string
-  readonly blue_heart: string
-  readonly blush: string
-  readonly boar: string
-  readonly boat: string
-  readonly bolivia: string
-  readonly bomb: string
-  readonly book: string
-  readonly bookmark: string
-  readonly bookmark_tabs: string
-  readonly books: string
-  readonly boom: string
-  readonly boot: string
-  readonly bosnia_herzegovina: string
-  readonly botswana: string
-  readonly bouquet: string
-  readonly bow: string
-  readonly bow_and_arrow: string
-  readonly bowing_man: string
-  readonly bowing_woman: string
-  readonly bowling: string
-  readonly bowtie: string
-  readonly boxing_glove: string
-  readonly boy: string
-  readonly brazil: string
-  readonly bread: string
-  readonly bride_with_veil: string
-  readonly bridge_at_night: string
-  readonly briefcase: string
-  readonly british_indian_ocean_territory: string
-  readonly british_virgin_islands: string
-  readonly broken_heart: string
-  readonly brunei: string
-  readonly bug: string
-  readonly building_construction: string
-  readonly bulb: string
-  readonly bulgaria: string
-  readonly bullettrain_front: string
-  readonly bullettrain_side: string
-  readonly burkina_faso: string
-  readonly burrito: string
-  readonly burundi: string
-  readonly bus: string
-  readonly business_suit_levitating: string
-  readonly busstop: string
-  readonly bust_in_silhouette: string
-  readonly busts_in_silhouette: string
-  readonly butterfly: string
-  readonly cactus: string
-  readonly cake: string
-  readonly calendar: string
-  readonly call_me_hand: string
-  readonly calling: string
-  readonly cambodia: string
-  readonly camel: string
-  readonly camera: string
-  readonly camera_flash: string
-  readonly cameroon: string
-  readonly camping: string
-  readonly canada: string
-  readonly canary_islands: string
-  readonly cancer: string
-  readonly candle: string
-  readonly candy: string
-  readonly canoe: string
-  readonly cape_verde: string
-  readonly capital_abcd: string
-  readonly capricorn: string
-  readonly car: string
-  readonly card_file_box: string
-  readonly card_index: string
-  readonly card_index_dividers: string
-  readonly caribbean_netherlands: string
-  readonly carousel_horse: string
-  readonly carrot: string
-  readonly cat: string
-  readonly cat2: string
-  readonly cayman_islands: string
-  readonly cd: string
-  readonly central_african_republic: string
-  readonly chad: string
-  readonly chains: string
-  readonly champagne: string
-  readonly chart: string
-  readonly chart_with_downwards_trend: string
-  readonly chart_with_upwards_trend: string
-  readonly checkered_flag: string
-  readonly cheese: string
-  readonly cherries: string
-  readonly cherry_blossom: string
-  readonly chestnut: string
-  readonly chicken: string
-  readonly children_crossing: string
-  readonly chile: string
-  readonly chipmunk: string
-  readonly chocolate_bar: string
-  readonly christmas_island: string
-  readonly christmas_tree: string
-  readonly church: string
-  readonly cinema: string
-  readonly circus_tent: string
-  readonly city_sunrise: string
-  readonly city_sunset: string
-  readonly cityscape: string
-  readonly cl: string
-  readonly clamp: string
-  readonly clap: string
-  readonly clapper: string
-  readonly classical_building: string
-  readonly clinking_glasses: string
-  readonly clipboard: string
-  readonly clock1: string
-  readonly clock10: string
-  readonly clock1030: string
-  readonly clock11: string
-  readonly clock1130: string
-  readonly clock12: string
-  readonly clock1230: string
-  readonly clock130: string
-  readonly clock2: string
-  readonly clock230: string
-  readonly clock3: string
-  readonly clock330: string
-  readonly clock4: string
-  readonly clock430: string
-  readonly clock5: string
-  readonly clock530: string
-  readonly clock6: string
-  readonly clock630: string
-  readonly clock7: string
-  readonly clock730: string
-  readonly clock8: string
-  readonly clock830: string
-  readonly clock9: string
-  readonly clock930: string
-  readonly closed_book: string
-  readonly closed_lock_with_key: string
-  readonly closed_umbrella: string
-  readonly cloud: string
-  readonly cloud_with_lightning: string
-  readonly cloud_with_lightning_and_rain: string
-  readonly cloud_with_rain: string
-  readonly cloud_with_snow: string
-  readonly clown_face: string
-  readonly clubs: string
-  readonly cn: string
-  readonly cocktail: string
-  readonly cocos_islands: string
-  readonly coffee: string
-  readonly coffin: string
-  readonly cold_sweat: string
-  readonly collision: string
-  readonly colombia: string
-  readonly comet: string
-  readonly comoros: string
-  readonly computer: string
-  readonly computer_mouse: string
-  readonly confetti_ball: string
-  readonly confounded: string
-  readonly confused: string
-  readonly congo_brazzaville: string
-  readonly congo_kinshasa: string
-  readonly congratulations: string
-  readonly construction: string
-  readonly construction_worker: string
-  readonly construction_worker_man: string
-  readonly construction_worker_woman: string
-  readonly control_knobs: string
-  readonly convenience_store: string
-  readonly cook_islands: string
-  readonly cookie: string
-  readonly cool: string
-  readonly cop: string
-  readonly copyright: string
-  readonly corn: string
-  readonly costa_rica: string
-  readonly cote_divoire: string
-  readonly couch_and_lamp: string
-  readonly couple: string
-  readonly couple_with_heart: string
-  readonly couple_with_heart_man_man: string
-  readonly couple_with_heart_woman_man: string
-  readonly couple_with_heart_woman_woman: string
-  readonly couplekiss_man_man: string
-  readonly couplekiss_man_woman: string
-  readonly couplekiss_woman_woman: string
-  readonly cow: string
-  readonly cow2: string
-  readonly cowboy_hat_face: string
-  readonly crab: string
-  readonly crayon: string
-  readonly credit_card: string
-  readonly crescent_moon: string
-  readonly cricket: string
-  readonly croatia: string
-  readonly crocodile: string
-  readonly croissant: string
-  readonly crossed_fingers: string
-  readonly crossed_flags: string
-  readonly crossed_swords: string
-  readonly crown: string
-  readonly cry: string
-  readonly crying_cat_face: string
-  readonly crystal_ball: string
-  readonly cuba: string
-  readonly cucumber: string
-  readonly cupid: string
-  readonly curacao: string
-  readonly curly_loop: string
-  readonly currency_exchange: string
-  readonly curry: string
-  readonly custard: string
-  readonly customs: string
-  readonly cyclone: string
-  readonly cyprus: string
-  readonly czech_republic: string
-  readonly dagger: string
-  readonly dancer: string
-  readonly dancers: string
-  readonly dancing_men: string
-  readonly dancing_women: string
-  readonly dango: string
-  readonly dark_sunglasses: string
-  readonly dart: string
-  readonly dash: string
-  readonly date: string
-  readonly de: string
-  readonly deciduous_tree: string
-  readonly deer: string
-  readonly denmark: string
-  readonly department_store: string
-  readonly derelict_house: string
-  readonly desert: string
-  readonly desert_island: string
-  readonly desktop_computer: string
-  readonly detective: string
-  readonly diamond_shape_with_a_dot_inside: string
-  readonly diamonds: string
-  readonly disappointed: string
-  readonly disappointed_relieved: string
-  readonly dizzy: string
-  readonly dizzy_face: string
-  readonly djibouti: string
-  readonly do_not_litter: string
-  readonly dog: string
-  readonly dog2: string
-  readonly dollar: string
-  readonly dolls: string
-  readonly dolphin: string
-  readonly dominica: string
-  readonly dominican_republic: string
-  readonly door: string
-  readonly doughnut: string
-  readonly dove: string
-  readonly dragon: string
-  readonly dragon_face: string
-  readonly dress: string
-  readonly dromedary_camel: string
-  readonly drooling_face: string
-  readonly droplet: string
-  readonly drum: string
-  readonly duck: string
-  readonly dvd: string
-  readonly 'e-mail': string
-  readonly eagle: string
-  readonly ear: string
-  readonly ear_of_rice: string
-  readonly earth_africa: string
-  readonly earth_americas: string
-  readonly earth_asia: string
-  readonly ecuador: string
-  readonly egg: string
-  readonly eggplant: string
-  readonly egypt: string
-  readonly eight: string
-  readonly eight_pointed_black_star: string
-  readonly eight_spoked_asterisk: string
-  readonly el_salvador: string
-  readonly electric_plug: string
-  readonly electron: string
-  readonly elephant: string
-  readonly email: string
-  readonly end: string
-  readonly envelope: string
-  readonly envelope_with_arrow: string
-  readonly equatorial_guinea: string
-  readonly eritrea: string
-  readonly es: string
-  readonly estonia: string
-  readonly ethiopia: string
-  readonly eu: string
-  readonly euro: string
-  readonly european_castle: string
-  readonly european_post_office: string
-  readonly european_union: string
-  readonly evergreen_tree: string
-  readonly exclamation: string
-  readonly expressionless: string
-  readonly eye: string
-  readonly eye_speech_bubble: string
-  readonly eyeglasses: string
-  readonly eyes: string
-  readonly face_with_head_bandage: string
-  readonly face_with_thermometer: string
-  readonly facepunch: string
-  readonly factory: string
-  readonly falkland_islands: string
-  readonly fallen_leaf: string
-  readonly family: string
-  readonly family_man_boy: string
-  readonly family_man_boy_boy: string
-  readonly family_man_girl: string
-  readonly family_man_girl_boy: string
-  readonly family_man_girl_girl: string
-  readonly family_man_man_boy: string
-  readonly family_man_man_boy_boy: string
-  readonly family_man_man_girl: string
-  readonly family_man_man_girl_boy: string
-  readonly family_man_man_girl_girl: string
-  readonly family_man_woman_boy: string
-  readonly family_man_woman_boy_boy: string
-  readonly family_man_woman_girl: string
-  readonly family_man_woman_girl_boy: string
-  readonly family_man_woman_girl_girl: string
-  readonly family_woman_boy: string
-  readonly family_woman_boy_boy: string
-  readonly family_woman_girl: string
-  readonly family_woman_girl_boy: string
-  readonly family_woman_girl_girl: string
-  readonly family_woman_woman_boy: string
-  readonly family_woman_woman_boy_boy: string
-  readonly family_woman_woman_girl: string
-  readonly family_woman_woman_girl_boy: string
-  readonly family_woman_woman_girl_girl: string
-  readonly faroe_islands: string
-  readonly fast_forward: string
-  readonly fax: string
-  readonly fearful: string
-  readonly feelsgood: string
-  readonly feet: string
-  readonly female_detective: string
-  readonly ferris_wheel: string
-  readonly ferry: string
-  readonly field_hockey: string
-  readonly fiji: string
-  readonly file_cabinet: string
-  readonly file_folder: string
-  readonly film_projector: string
-  readonly film_strip: string
-  readonly finland: string
-  readonly finnadie: string
-  readonly fire: string
-  readonly fire_engine: string
-  readonly fireworks: string
-  readonly first_quarter_moon: string
-  readonly first_quarter_moon_with_face: string
-  readonly fish: string
-  readonly fish_cake: string
-  readonly fishing_pole_and_fish: string
-  readonly fist: string
-  readonly fist_left: string
-  readonly fist_oncoming: string
-  readonly fist_raised: string
-  readonly fist_right: string
-  readonly five: string
-  readonly flags: string
-  readonly flashlight: string
-  readonly fleur_de_lis: string
-  readonly flight_arrival: string
-  readonly flight_departure: string
-  readonly flipper: string
-  readonly floppy_disk: string
-  readonly flower_playing_cards: string
-  readonly flushed: string
-  readonly fog: string
-  readonly foggy: string
-  readonly football: string
-  readonly footprints: string
-  readonly fork_and_knife: string
-  readonly fountain: string
-  readonly fountain_pen: string
-  readonly four: string
-  readonly four_leaf_clover: string
-  readonly fox_face: string
-  readonly fr: string
-  readonly framed_picture: string
-  readonly free: string
-  readonly french_guiana: string
-  readonly french_polynesia: string
-  readonly french_southern_territories: string
-  readonly fried_egg: string
-  readonly fried_shrimp: string
-  readonly fries: string
-  readonly frog: string
-  readonly frowning: string
-  readonly frowning_face: string
-  readonly frowning_man: string
-  readonly frowning_woman: string
-  readonly fu: string
-  readonly fuelpump: string
-  readonly full_moon: string
-  readonly full_moon_with_face: string
-  readonly funeral_urn: string
-  readonly gabon: string
-  readonly gambia: string
-  readonly game_die: string
-  readonly gb: string
-  readonly gear: string
-  readonly gem: string
-  readonly gemini: string
-  readonly georgia: string
-  readonly ghana: string
-  readonly ghost: string
-  readonly gibraltar: string
-  readonly gift: string
-  readonly gift_heart: string
-  readonly girl: string
-  readonly globe_with_meridians: string
-  readonly goal_net: string
-  readonly goat: string
-  readonly goberserk: string
-  readonly godmode: string
-  readonly golf: string
-  readonly golfing_man: string
-  readonly golfing_woman: string
-  readonly gorilla: string
-  readonly grapes: string
-  readonly greece: string
-  readonly green_apple: string
-  readonly green_book: string
-  readonly green_heart: string
-  readonly green_salad: string
-  readonly greenland: string
-  readonly grenada: string
-  readonly grey_exclamation: string
-  readonly grey_question: string
-  readonly grimacing: string
-  readonly grin: string
-  readonly grinning: string
-  readonly guadeloupe: string
-  readonly guam: string
-  readonly guardsman: string
-  readonly guardswoman: string
-  readonly guatemala: string
-  readonly guernsey: string
-  readonly guinea: string
-  readonly guinea_bissau: string
-  readonly guitar: string
-  readonly gun: string
-  readonly guyana: string
-  readonly haircut: string
-  readonly haircut_man: string
-  readonly haircut_woman: string
-  readonly haiti: string
-  readonly hamburger: string
-  readonly hammer: string
-  readonly hammer_and_pick: string
-  readonly hammer_and_wrench: string
-  readonly hamster: string
-  readonly hand: string
-  readonly handbag: string
-  readonly handshake: string
-  readonly hankey: string
-  readonly hash: string
-  readonly hatched_chick: string
-  readonly hatching_chick: string
-  readonly headphones: string
-  readonly hear_no_evil: string
-  readonly heart: string
-  readonly heart_decoration: string
-  readonly heart_eyes: string
-  readonly heart_eyes_cat: string
-  readonly heartbeat: string
-  readonly heartpulse: string
-  readonly hearts: string
-  readonly heavy_check_mark: string
-  readonly heavy_division_sign: string
-  readonly heavy_dollar_sign: string
-  readonly heavy_exclamation_mark: string
-  readonly heavy_heart_exclamation: string
-  readonly heavy_minus_sign: string
-  readonly heavy_multiplication_x: string
-  readonly heavy_plus_sign: string
-  readonly helicopter: string
-  readonly herb: string
-  readonly hibiscus: string
-  readonly high_brightness: string
-  readonly high_heel: string
-  readonly hocho: string
-  readonly hole: string
-  readonly honduras: string
-  readonly honey_pot: string
-  readonly honeybee: string
-  readonly hong_kong: string
-  readonly horse: string
-  readonly horse_racing: string
-  readonly hospital: string
-  readonly hot_pepper: string
-  readonly hotdog: string
-  readonly hotel: string
-  readonly hotsprings: string
-  readonly hourglass: string
-  readonly hourglass_flowing_sand: string
-  readonly house: string
-  readonly house_with_garden: string
-  readonly houses: string
-  readonly hugs: string
-  readonly hungary: string
-  readonly hurtrealbad: string
-  readonly hushed: string
-  readonly ice_cream: string
-  readonly ice_hockey: string
-  readonly ice_skate: string
-  readonly icecream: string
-  readonly iceland: string
-  readonly id: string
-  readonly ideograph_advantage: string
-  readonly imp: string
-  readonly inbox_tray: string
-  readonly incoming_envelope: string
-  readonly india: string
-  readonly indonesia: string
-  readonly information_desk_person: string
-  readonly information_source: string
-  readonly innocent: string
-  readonly interrobang: string
-  readonly iphone: string
-  readonly iran: string
-  readonly iraq: string
-  readonly ireland: string
-  readonly isle_of_man: string
-  readonly israel: string
-  readonly it: string
-  readonly izakaya_lantern: string
-  readonly jack_o_lantern: string
-  readonly jamaica: string
-  readonly japan: string
-  readonly japanese_castle: string
-  readonly japanese_goblin: string
-  readonly japanese_ogre: string
-  readonly jeans: string
-  readonly jersey: string
-  readonly jordan: string
-  readonly joy: string
-  readonly joy_cat: string
-  readonly joystick: string
-  readonly jp: string
-  readonly kaaba: string
-  readonly kazakhstan: string
-  readonly kenya: string
-  readonly key: string
-  readonly keyboard: string
-  readonly keycap_ten: string
-  readonly kick_scooter: string
-  readonly kimono: string
-  readonly kiribati: string
-  readonly kiss: string
-  readonly kissing: string
-  readonly kissing_cat: string
-  readonly kissing_closed_eyes: string
-  readonly kissing_heart: string
-  readonly kissing_smiling_eyes: string
-  readonly kiwi_fruit: string
-  readonly knife: string
-  readonly koala: string
-  readonly koko: string
-  readonly kosovo: string
-  readonly kr: string
-  readonly kuwait: string
-  readonly kyrgyzstan: string
-  readonly label: string
-  readonly lantern: string
-  readonly laos: string
-  readonly large_blue_circle: string
-  readonly large_blue_diamond: string
-  readonly large_orange_diamond: string
-  readonly last_quarter_moon: string
-  readonly last_quarter_moon_with_face: string
-  readonly latin_cross: string
-  readonly latvia: string
-  readonly laughing: string
-  readonly leaves: string
-  readonly lebanon: string
-  readonly ledger: string
-  readonly left_luggage: string
-  readonly left_right_arrow: string
-  readonly leftwards_arrow_with_hook: string
-  readonly lemon: string
-  readonly leo: string
-  readonly leopard: string
-  readonly lesotho: string
-  readonly level_slider: string
-  readonly liberia: string
-  readonly libra: string
-  readonly libya: string
-  readonly liechtenstein: string
-  readonly light_rail: string
-  readonly link: string
-  readonly lion: string
-  readonly lips: string
-  readonly lipstick: string
-  readonly lithuania: string
-  readonly lizard: string
-  readonly lock: string
-  readonly lock_with_ink_pen: string
-  readonly lollipop: string
-  readonly loop: string
-  readonly loud_sound: string
-  readonly loudspeaker: string
-  readonly love_hotel: string
-  readonly love_letter: string
-  readonly low_brightness: string
-  readonly luxembourg: string
-  readonly lying_face: string
-  readonly m: string
-  readonly macau: string
-  readonly macedonia: string
-  readonly madagascar: string
-  readonly mag: string
-  readonly mag_right: string
-  readonly mahjong: string
-  readonly mailbox: string
-  readonly mailbox_closed: string
-  readonly mailbox_with_mail: string
-  readonly mailbox_with_no_mail: string
-  readonly malawi: string
-  readonly malaysia: string
-  readonly maldives: string
-  readonly male_detective: string
-  readonly mali: string
-  readonly malta: string
-  readonly man: string
-  readonly man_artist: string
-  readonly man_astronaut: string
-  readonly man_cartwheeling: string
-  readonly man_cook: string
-  readonly man_dancing: string
-  readonly man_facepalming: string
-  readonly man_factory_worker: string
-  readonly man_farmer: string
-  readonly man_firefighter: string
-  readonly man_health_worker: string
-  readonly man_in_tuxedo: string
-  readonly man_judge: string
-  readonly man_juggling: string
-  readonly man_mechanic: string
-  readonly man_office_worker: string
-  readonly man_pilot: string
-  readonly man_playing_handball: string
-  readonly man_playing_water_polo: string
-  readonly man_scientist: string
-  readonly man_shrugging: string
-  readonly man_singer: string
-  readonly man_student: string
-  readonly man_teacher: string
-  readonly man_technologist: string
-  readonly man_with_gua_pi_mao: string
-  readonly man_with_turban: string
-  readonly mandarin: string
-  readonly mans_shoe: string
-  readonly mantelpiece_clock: string
-  readonly maple_leaf: string
-  readonly marshall_islands: string
-  readonly martial_arts_uniform: string
-  readonly martinique: string
-  readonly mask: string
-  readonly massage: string
-  readonly massage_man: string
-  readonly massage_woman: string
-  readonly mauritania: string
-  readonly mauritius: string
-  readonly mayotte: string
-  readonly meat_on_bone: string
-  readonly medal_military: string
-  readonly medal_sports: string
-  readonly mega: string
-  readonly melon: string
-  readonly memo: string
-  readonly men_wrestling: string
-  readonly menorah: string
-  readonly mens: string
-  readonly metal: string
-  readonly metro: string
-  readonly mexico: string
-  readonly micronesia: string
-  readonly microphone: string
-  readonly microscope: string
-  readonly middle_finger: string
-  readonly milk_glass: string
-  readonly milky_way: string
-  readonly minibus: string
-  readonly minidisc: string
-  readonly mobile_phone_off: string
-  readonly moldova: string
-  readonly monaco: string
-  readonly money_mouth_face: string
-  readonly money_with_wings: string
-  readonly moneybag: string
-  readonly mongolia: string
-  readonly monkey: string
-  readonly monkey_face: string
-  readonly monorail: string
-  readonly montenegro: string
-  readonly montserrat: string
-  readonly moon: string
-  readonly morocco: string
-  readonly mortar_board: string
-  readonly mosque: string
-  readonly motor_boat: string
-  readonly motor_scooter: string
-  readonly motorcycle: string
-  readonly motorway: string
-  readonly mount_fuji: string
-  readonly mountain: string
-  readonly mountain_bicyclist: string
-  readonly mountain_biking_man: string
-  readonly mountain_biking_woman: string
-  readonly mountain_cableway: string
-  readonly mountain_railway: string
-  readonly mountain_snow: string
-  readonly mouse: string
-  readonly mouse2: string
-  readonly movie_camera: string
-  readonly moyai: string
-  readonly mozambique: string
-  readonly mrs_claus: string
-  readonly muscle: string
-  readonly mushroom: string
-  readonly musical_keyboard: string
-  readonly musical_note: string
-  readonly musical_score: string
-  readonly mute: string
-  readonly myanmar: string
-  readonly nail_care: string
-  readonly name_badge: string
-  readonly namibia: string
-  readonly national_park: string
-  readonly nauru: string
-  readonly nauseated_face: string
-  readonly neckbeard: string
-  readonly necktie: string
-  readonly negative_squared_cross_mark: string
-  readonly nepal: string
-  readonly nerd_face: string
-  readonly netherlands: string
-  readonly neutral_face: string
-  readonly new: string
-  readonly new_caledonia: string
-  readonly new_moon: string
-  readonly new_moon_with_face: string
-  readonly new_zealand: string
-  readonly newspaper: string
-  readonly newspaper_roll: string
-  readonly next_track_button: string
-  readonly ng: string
-  readonly ng_man: string
-  readonly ng_woman: string
-  readonly nicaragua: string
-  readonly niger: string
-  readonly nigeria: string
-  readonly night_with_stars: string
-  readonly nine: string
-  readonly niue: string
-  readonly no_bell: string
-  readonly no_bicycles: string
-  readonly no_entry: string
-  readonly no_entry_sign: string
-  readonly no_good: string
-  readonly no_good_man: string
-  readonly no_good_woman: string
-  readonly no_mobile_phones: string
-  readonly no_mouth: string
-  readonly no_pedestrians: string
-  readonly no_smoking: string
-  readonly 'non-potable_water': string
-  readonly norfolk_island: string
-  readonly north_korea: string
-  readonly northern_mariana_islands: string
-  readonly norway: string
-  readonly nose: string
-  readonly notebook: string
-  readonly notebook_with_decorative_cover: string
-  readonly notes: string
-  readonly nut_and_bolt: string
-  readonly o: string
-  readonly o2: string
-  readonly ocean: string
-  readonly octocat: string
-  readonly octopus: string
-  readonly oden: string
-  readonly office: string
-  readonly oil_drum: string
-  readonly ok: string
-  readonly ok_hand: string
-  readonly ok_man: string
-  readonly ok_woman: string
-  readonly old_key: string
-  readonly older_man: string
-  readonly older_woman: string
-  readonly om: string
-  readonly oman: string
-  readonly on: string
-  readonly oncoming_automobile: string
-  readonly oncoming_bus: string
-  readonly oncoming_police_car: string
-  readonly oncoming_taxi: string
-  readonly one: string
-  readonly open_book: string
-  readonly open_file_folder: string
-  readonly open_hands: string
-  readonly open_mouth: string
-  readonly open_umbrella: string
-  readonly ophiuchus: string
-  readonly orange: string
-  readonly orange_book: string
-  readonly orthodox_cross: string
-  readonly outbox_tray: string
-  readonly owl: string
-  readonly ox: string
-  readonly package: string
-  readonly page_facing_up: string
-  readonly page_with_curl: string
-  readonly pager: string
-  readonly paintbrush: string
-  readonly pakistan: string
-  readonly palau: string
-  readonly palestinian_territories: string
-  readonly palm_tree: string
-  readonly panama: string
-  readonly pancakes: string
-  readonly panda_face: string
-  readonly paperclip: string
-  readonly paperclips: string
-  readonly papua_new_guinea: string
-  readonly paraguay: string
-  readonly parasol_on_ground: string
-  readonly parking: string
-  readonly part_alternation_mark: string
-  readonly partly_sunny: string
-  readonly passenger_ship: string
-  readonly passport_control: string
-  readonly pause_button: string
-  readonly paw_prints: string
-  readonly peace_symbol: string
-  readonly peach: string
-  readonly peanuts: string
-  readonly pear: string
-  readonly pen: string
-  readonly pencil: string
-  readonly pencil2: string
-  readonly penguin: string
-  readonly pensive: string
-  readonly performing_arts: string
-  readonly persevere: string
-  readonly person_fencing: string
-  readonly person_frowning: string
-  readonly person_with_blond_hair: string
-  readonly person_with_pouting_face: string
-  readonly peru: string
-  readonly philippines: string
-  readonly phone: string
-  readonly pick: string
-  readonly pig: string
-  readonly pig2: string
-  readonly pig_nose: string
-  readonly pill: string
-  readonly pineapple: string
-  readonly ping_pong: string
-  readonly pisces: string
-  readonly pitcairn_islands: string
-  readonly pizza: string
-  readonly place_of_worship: string
-  readonly plate_with_cutlery: string
-  readonly play_or_pause_button: string
-  readonly point_down: string
-  readonly point_left: string
-  readonly point_right: string
-  readonly point_up: string
-  readonly point_up_2: string
-  readonly poland: string
-  readonly police_car: string
-  readonly policeman: string
-  readonly policewoman: string
-  readonly poodle: string
-  readonly poop: string
-  readonly popcorn: string
-  readonly portugal: string
-  readonly post_office: string
-  readonly postal_horn: string
-  readonly postbox: string
-  readonly potable_water: string
-  readonly potato: string
-  readonly pouch: string
-  readonly poultry_leg: string
-  readonly pound: string
-  readonly pout: string
-  readonly pouting_cat: string
-  readonly pouting_man: string
-  readonly pouting_woman: string
-  readonly pray: string
-  readonly prayer_beads: string
-  readonly pregnant_woman: string
-  readonly previous_track_button: string
-  readonly prince: string
-  readonly princess: string
-  readonly printer: string
-  readonly puerto_rico: string
-  readonly punch: string
-  readonly purple_heart: string
-  readonly purse: string
-  readonly pushpin: string
-  readonly put_litter_in_its_place: string
-  readonly qatar: string
-  readonly question: string
-  readonly rabbit: string
-  readonly rabbit2: string
-  readonly racehorse: string
-  readonly racing_car: string
-  readonly radio: string
-  readonly radio_button: string
-  readonly radioactive: string
-  readonly rage: string
-  readonly rage1: string
-  readonly rage2: string
-  readonly rage3: string
-  readonly rage4: string
-  readonly railway_car: string
-  readonly railway_track: string
-  readonly rainbow: string
-  readonly rainbow_flag: string
-  readonly raised_back_of_hand: string
-  readonly raised_hand: string
-  readonly raised_hand_with_fingers_splayed: string
-  readonly raised_hands: string
-  readonly raising_hand: string
-  readonly raising_hand_man: string
-  readonly raising_hand_woman: string
-  readonly ram: string
-  readonly ramen: string
-  readonly rat: string
-  readonly record_button: string
-  readonly recycle: string
-  readonly red_car: string
-  readonly red_circle: string
-  readonly registered: string
-  readonly relaxed: string
-  readonly relieved: string
-  readonly reminder_ribbon: string
-  readonly repeat: string
-  readonly repeat_one: string
-  readonly rescue_worker_helmet: string
-  readonly restroom: string
-  readonly reunion: string
-  readonly revolving_hearts: string
-  readonly rewind: string
-  readonly rhinoceros: string
-  readonly ribbon: string
-  readonly rice: string
-  readonly rice_ball: string
-  readonly rice_cracker: string
-  readonly rice_scene: string
-  readonly right_anger_bubble: string
-  readonly ring: string
-  readonly robot: string
-  readonly rocket: string
-  readonly rofl: string
-  readonly roll_eyes: string
-  readonly roller_coaster: string
-  readonly romania: string
-  readonly rooster: string
-  readonly rose: string
-  readonly rosette: string
-  readonly rotating_light: string
-  readonly round_pushpin: string
-  readonly rowboat: string
-  readonly rowing_man: string
-  readonly rowing_woman: string
-  readonly ru: string
-  readonly rugby_football: string
-  readonly runner: string
-  readonly running: string
-  readonly running_man: string
-  readonly running_shirt_with_sash: string
-  readonly running_woman: string
-  readonly rwanda: string
-  readonly sa: string
-  readonly sagittarius: string
-  readonly sailboat: string
-  readonly sake: string
-  readonly samoa: string
-  readonly san_marino: string
-  readonly sandal: string
-  readonly santa: string
-  readonly sao_tome_principe: string
-  readonly satellite: string
-  readonly satisfied: string
-  readonly saudi_arabia: string
-  readonly saxophone: string
-  readonly school: string
-  readonly school_satchel: string
-  readonly scissors: string
-  readonly scorpion: string
-  readonly scorpius: string
-  readonly scream: string
-  readonly scream_cat: string
-  readonly scroll: string
-  readonly seat: string
-  readonly secret: string
-  readonly see_no_evil: string
-  readonly seedling: string
-  readonly selfie: string
-  readonly senegal: string
-  readonly serbia: string
-  readonly seven: string
-  readonly seychelles: string
-  readonly shallow_pan_of_food: string
-  readonly shamrock: string
-  readonly shark: string
-  readonly shaved_ice: string
-  readonly sheep: string
-  readonly shell: string
-  readonly shield: string
-  readonly shinto_shrine: string
-  readonly ship: string
-  readonly shipit: string
-  readonly shirt: string
-  readonly shit: string
-  readonly shoe: string
-  readonly shopping: string
-  readonly shopping_cart: string
-  readonly shower: string
-  readonly shrimp: string
-  readonly sierra_leone: string
-  readonly signal_strength: string
-  readonly singapore: string
-  readonly sint_maarten: string
-  readonly six: string
-  readonly six_pointed_star: string
-  readonly ski: string
-  readonly skier: string
-  readonly skull: string
-  readonly skull_and_crossbones: string
-  readonly sleeping: string
-  readonly sleeping_bed: string
-  readonly sleepy: string
-  readonly slightly_frowning_face: string
-  readonly slightly_smiling_face: string
-  readonly slot_machine: string
-  readonly slovakia: string
-  readonly slovenia: string
-  readonly small_airplane: string
-  readonly small_blue_diamond: string
-  readonly small_orange_diamond: string
-  readonly small_red_triangle: string
-  readonly small_red_triangle_down: string
-  readonly smile: string
-  readonly smile_cat: string
-  readonly smiley: string
-  readonly smiley_cat: string
-  readonly smiling_imp: string
-  readonly smirk: string
-  readonly smirk_cat: string
-  readonly smoking: string
-  readonly snail: string
-  readonly snake: string
-  readonly sneezing_face: string
-  readonly snowboarder: string
-  readonly snowflake: string
-  readonly snowman: string
-  readonly snowman_with_snow: string
-  readonly sob: string
-  readonly soccer: string
-  readonly solomon_islands: string
-  readonly somalia: string
-  readonly soon: string
-  readonly sos: string
-  readonly sound: string
-  readonly south_africa: string
-  readonly south_georgia_south_sandwich_islands: string
-  readonly south_sudan: string
-  readonly space_invader: string
-  readonly spades: string
-  readonly spaghetti: string
-  readonly sparkle: string
-  readonly sparkler: string
-  readonly sparkles: string
-  readonly sparkling_heart: string
-  readonly speak_no_evil: string
-  readonly speaker: string
-  readonly speaking_head: string
-  readonly speech_balloon: string
-  readonly speedboat: string
-  readonly spider: string
-  readonly spider_web: string
-  readonly spiral_calendar: string
-  readonly spiral_notepad: string
-  readonly spoon: string
-  readonly squid: string
-  readonly squirrel: string
-  readonly sri_lanka: string
-  readonly st_barthelemy: string
-  readonly st_helena: string
-  readonly st_kitts_nevis: string
-  readonly st_lucia: string
-  readonly st_pierre_miquelon: string
-  readonly st_vincent_grenadines: string
-  readonly stadium: string
-  readonly star: string
-  readonly star2: string
-  readonly star_and_crescent: string
-  readonly star_of_david: string
-  readonly stars: string
-  readonly station: string
-  readonly statue_of_liberty: string
-  readonly steam_locomotive: string
-  readonly stew: string
-  readonly stop_button: string
-  readonly stop_sign: string
-  readonly stopwatch: string
-  readonly straight_ruler: string
-  readonly strawberry: string
-  readonly stuck_out_tongue: string
-  readonly stuck_out_tongue_closed_eyes: string
-  readonly stuck_out_tongue_winking_eye: string
-  readonly studio_microphone: string
-  readonly stuffed_flatbread: string
-  readonly sudan: string
-  readonly sun_behind_large_cloud: string
-  readonly sun_behind_rain_cloud: string
-  readonly sun_behind_small_cloud: string
-  readonly sun_with_face: string
-  readonly sunflower: string
-  readonly sunglasses: string
-  readonly sunny: string
-  readonly sunrise: string
-  readonly sunrise_over_mountains: string
-  readonly surfer: string
-  readonly surfing_man: string
-  readonly surfing_woman: string
-  readonly suriname: string
-  readonly sushi: string
-  readonly suspect: string
-  readonly suspension_railway: string
-  readonly swaziland: string
-  readonly sweat: string
-  readonly sweat_drops: string
-  readonly sweat_smile: string
-  readonly sweden: string
-  readonly sweet_potato: string
-  readonly swimmer: string
-  readonly swimming_man: string
-  readonly swimming_woman: string
-  readonly switzerland: string
-  readonly symbols: string
-  readonly synagogue: string
-  readonly syria: string
-  readonly syringe: string
-  readonly taco: string
-  readonly tada: string
-  readonly taiwan: string
-  readonly tajikistan: string
-  readonly tanabata_tree: string
-  readonly tangerine: string
-  readonly tanzania: string
-  readonly taurus: string
-  readonly taxi: string
-  readonly tea: string
-  readonly telephone: string
-  readonly telephone_receiver: string
-  readonly telescope: string
-  readonly tennis: string
-  readonly tent: string
-  readonly thailand: string
-  readonly thermometer: string
-  readonly thinking: string
-  readonly thought_balloon: string
-  readonly three: string
-  readonly thumbsdown: string
-  readonly thumbsup: string
-  readonly ticket: string
-  readonly tickets: string
-  readonly tiger: string
-  readonly tiger2: string
-  readonly timer_clock: string
-  readonly timor_leste: string
-  readonly tipping_hand_man: string
-  readonly tipping_hand_woman: string
-  readonly tired_face: string
-  readonly tm: string
-  readonly togo: string
-  readonly toilet: string
-  readonly tokelau: string
-  readonly tokyo_tower: string
-  readonly tomato: string
-  readonly tonga: string
-  readonly tongue: string
-  readonly top: string
-  readonly tophat: string
-  readonly tornado: string
-  readonly tr: string
-  readonly trackball: string
-  readonly tractor: string
-  readonly traffic_light: string
-  readonly train: string
-  readonly train2: string
-  readonly tram: string
-  readonly triangular_flag_on_post: string
-  readonly triangular_ruler: string
-  readonly trident: string
-  readonly trinidad_tobago: string
-  readonly triumph: string
-  readonly trolleybus: string
-  readonly trollface: string
-  readonly trophy: string
-  readonly tropical_drink: string
-  readonly tropical_fish: string
-  readonly truck: string
-  readonly trumpet: string
-  readonly tshirt: string
-  readonly tulip: string
-  readonly tumbler_glass: string
-  readonly tunisia: string
-  readonly turkey: string
-  readonly turkmenistan: string
-  readonly turks_caicos_islands: string
-  readonly turtle: string
-  readonly tuvalu: string
-  readonly tv: string
-  readonly twisted_rightwards_arrows: string
-  readonly two: string
-  readonly two_hearts: string
-  readonly two_men_holding_hands: string
-  readonly two_women_holding_hands: string
-  readonly u5272: string
-  readonly u5408: string
-  readonly u55b6: string
-  readonly u6307: string
-  readonly u6708: string
-  readonly u6709: string
-  readonly u6e80: string
-  readonly u7121: string
-  readonly u7533: string
-  readonly u7981: string
-  readonly u7a7a: string
-  readonly uganda: string
-  readonly uk: string
-  readonly ukraine: string
-  readonly umbrella: string
-  readonly unamused: string
-  readonly underage: string
-  readonly unicorn: string
-  readonly united_arab_emirates: string
-  readonly unlock: string
-  readonly up: string
-  readonly upside_down_face: string
-  readonly uruguay: string
-  readonly us: string
-  readonly us_virgin_islands: string
-  readonly uzbekistan: string
-  readonly v: string
-  readonly vanuatu: string
-  readonly vatican_city: string
-  readonly venezuela: string
-  readonly vertical_traffic_light: string
-  readonly vhs: string
-  readonly vibration_mode: string
-  readonly video_camera: string
-  readonly video_game: string
-  readonly vietnam: string
-  readonly violin: string
-  readonly virgo: string
-  readonly volcano: string
-  readonly volleyball: string
-  readonly vs: string
-  readonly vulcan_salute: string
-  readonly walking: string
-  readonly walking_man: string
-  readonly walking_woman: string
-  readonly wallis_futuna: string
-  readonly waning_crescent_moon: string
-  readonly waning_gibbous_moon: string
-  readonly warning: string
-  readonly wastebasket: string
-  readonly watch: string
-  readonly water_buffalo: string
-  readonly watermelon: string
-  readonly wave: string
-  readonly wavy_dash: string
-  readonly waxing_crescent_moon: string
-  readonly waxing_gibbous_moon: string
-  readonly wc: string
-  readonly weary: string
-  readonly wedding: string
-  readonly weight_lifting_man: string
-  readonly weight_lifting_woman: string
-  readonly western_sahara: string
-  readonly whale: string
-  readonly whale2: string
-  readonly wheel_of_dharma: string
-  readonly wheelchair: string
-  readonly white_check_mark: string
-  readonly white_circle: string
-  readonly white_flag: string
-  readonly white_flower: string
-  readonly white_large_square: string
-  readonly white_medium_small_square: string
-  readonly white_medium_square: string
-  readonly white_small_square: string
-  readonly white_square_button: string
-  readonly wilted_flower: string
-  readonly wind_chime: string
-  readonly wind_face: string
-  readonly wine_glass: string
-  readonly wink: string
-  readonly wolf: string
-  readonly woman: string
-  readonly woman_artist: string
-  readonly woman_astronaut: string
-  readonly woman_cartwheeling: string
-  readonly woman_cook: string
-  readonly woman_facepalming: string
-  readonly woman_factory_worker: string
-  readonly woman_farmer: string
-  readonly woman_firefighter: string
-  readonly woman_health_worker: string
-  readonly woman_judge: string
-  readonly woman_juggling: string
-  readonly woman_mechanic: string
-  readonly woman_office_worker: string
-  readonly woman_pilot: string
-  readonly woman_playing_handball: string
-  readonly woman_playing_water_polo: string
-  readonly woman_scientist: string
-  readonly woman_shrugging: string
-  readonly woman_singer: string
-  readonly woman_student: string
-  readonly woman_teacher: string
-  readonly woman_technologist: string
-  readonly woman_with_turban: string
-  readonly womans_clothes: string
-  readonly womans_hat: string
-  readonly women_wrestling: string
-  readonly womens: string
-  readonly world_map: string
-  readonly worried: string
-  readonly wrench: string
-  readonly writing_hand: string
-  readonly x: string
-  readonly yellow_heart: string
-  readonly yemen: string
-  readonly yen: string
-  readonly yin_yang: string
-  readonly yum: string
-  readonly zambia: string
-  readonly zap: string
-  readonly zero: string
-  readonly zimbabwe: string
-  readonly zipper_mouth_face: string
-  readonly zzz: string
-}
-
-export type Event = {
-  readonly id: string
-  readonly type: string
-  readonly actor: OrganizationSlug2
-  readonly repo: RepoSlug
-  readonly payload: { readonly member: User
-  readonly action: string }
-  readonly public: boolean
-  readonly created_at: string
-  readonly org: OrganizationSlug3
+export type EventActor = {
+  readonly id: number
+  readonly login: string
+  readonly display_login: string
+  readonly gravatar_id?: string
+  readonly url: string
+  readonly avatar_url: string
 }
 
 export type File = {
@@ -1632,12 +90,45 @@ export type FileContents = {
   readonly content: string
 }
 
+export type RepoReadmeFile = {
+  readonly name: string
+  readonly path: string
+  readonly sha: string
+  readonly size: number
+  readonly url: string
+  readonly html_url: string
+  readonly git_url: string
+  readonly download_url: string
+  readonly type: 'file'
+  readonly content: string
+  readonly encoding: 'base64'
+  readonly '_links': json
+}
+
 export type FileSlug = {
   readonly filename: string
   readonly type: string
-  readonly language: string
+  readonly language?: string
   readonly raw_url: string
   readonly size: number
+}
+
+export type Gist = {
+  readonly url: string
+  readonly forks_url: string
+  readonly commits_url: string
+  readonly id: string
+  readonly git_pull_url: string
+  readonly git_push_url: string
+  readonly html_url: string
+  readonly files: FilesMap
+  readonly created_at: string
+  readonly updated_at: string
+  readonly description?: string
+  readonly user?: User
+  readonly comments_url: string
+  readonly owner?: User
+  readonly truncated: boolean
 }
 
 export type GitBlob = {
@@ -1661,6 +152,19 @@ export type GitCommit = {
   readonly parents: CommitSlugMaybe[]
 }
 
+export type CommitSlugMaybe = {
+  readonly name: string
+  readonly path: string
+  readonly sha: string
+  readonly size: number
+  readonly url: string
+  readonly html_url: string
+  readonly git_url: string
+  readonly download_url: string
+  readonly type: string
+  readonly '_links': json
+}
+
 export type GitPatch = {
   readonly sha: string
   readonly filename: string
@@ -1682,7 +186,7 @@ export type GitRef = {
   readonly url: string }
 }
 
-export type Issue = {
+export type RepoIssue = {
   readonly url: string
   readonly repository_url: string
   readonly labels_url: string
@@ -1693,18 +197,18 @@ export type Issue = {
   readonly number: number
   readonly title: string
   readonly user: User
-  readonly labels: any[]
+  readonly labels: IssueLabel[]
   readonly state: 'open' | 'closed'
   readonly locked: boolean
-  readonly assignee?: any
-  readonly assignees: any[]
+  readonly assignee?: User
+  readonly assignees: User[]
   readonly milestone?: any
   readonly comments: number
   readonly created_at: string
   readonly updated_at: string
-  readonly closed_at: string
-  readonly body?: any
-  readonly closed_by: User
+  readonly closed_at?: string
+  readonly body?: string
+  readonly closed_by?: User
 }
 
 export type IssueComment = {
@@ -1726,7 +230,7 @@ export type IssueEvent = {
   readonly commit_id?: any
   readonly commit_url?: any
   readonly created_at: string
-  readonly issue: Issue
+  readonly 'RepoIssue'?: RepoIssue
 }
 
 export type IssueLabel = {
@@ -1785,7 +289,7 @@ export type OrganizationSlug = {
   readonly members_url: string
   readonly public_members_url: string
   readonly avatar_url: string
-  readonly description: string
+  readonly description?: string
 }
 
 export type OrganizationSlug2 = {
@@ -1806,18 +310,20 @@ export type OrganizationSlug3 = {
 }
 
 export type Rate = {
-  readonly resources: { readonly core: { readonly limit: number
+  readonly resources: RateResources
+  readonly rate: RateRate
+}
+
+export type RateResources = {
+  readonly core: RateRate
+  readonly search: RateRate
+  readonly graphql: RateRate
+}
+
+export type RateRate = {
+  readonly limit: number
   readonly remaining: number
-  readonly reset: number }
-  readonly search: { readonly limit: number
-  readonly remaining: number
-  readonly reset: number }
-  readonly graphql: { readonly limit: number
-  readonly remaining: number
-  readonly reset: number } }
-  readonly rate: { readonly limit: number
-  readonly remaining: number
-  readonly reset: number }
+  readonly reset: number
 }
 
 export type RepoComment = {
@@ -1834,30 +340,229 @@ export type RepoComment = {
   readonly body: string
 }
 
-export type RepoCommit = {
+export type RepoCommitSingle = {
   readonly sha: string
-  readonly commit: GitCommit
+  readonly commit: RepoCommitSingleSlug
   readonly url: string
   readonly html_url: string
   readonly comments_url: string
   readonly author: User
   readonly committer: User
-  readonly parents: CommitSlugMaybe[]
-  readonly stats: { readonly total: number
-  readonly additions: number
-  readonly deletions: number }
+  readonly parents: RepoCommitSingleSlug[]
+  readonly stats: RepoDiffStats
   readonly files: GitPatch[]
 }
 
-export type RepoCommitDiffCommit = {
+export type RepoCommitSingleSlug = {
+  readonly author: UserSlug
+  readonly committer: UserSlug
+  readonly message: string
+  readonly tree: GitBlob
+  readonly url: string
+  readonly comment_count: number
+}
+
+export type RepoCommitItem = {
   readonly sha: string
-  readonly commit: GitCommit
+  readonly commit: RepoCommitItemSlug1
   readonly url: string
   readonly html_url: string
   readonly comments_url: string
   readonly author: User
   readonly committer: User
-  readonly parents: CommitSlugMaybe[]
+  readonly parents: RepoCommitItemSlug2[]
+  readonly stats?: RepoDiffStats
+}
+
+export type RepoCommitItemSlug1 = {
+  readonly author: UserSlug
+  readonly committer: UserSlug
+  readonly message: string
+  readonly url: string
+  readonly comment_count: number
+  readonly tree: GitBlob
+}
+
+export type RepoCommitItemSlug2 = {
+  readonly sha: string
+  readonly url: string
+  readonly html_url: string
+}
+
+export type RepoDiffStats = {
+  readonly total: number
+  readonly additions: number
+  readonly deletions: number
+}
+
+export type RepoCommitStatus = {
+  readonly state: 'pending' | 'success' | 'error' | 'failure'
+  readonly statuses: any[]
+  readonly sha: string
+  readonly total_count: number
+  readonly commit_url: string
+  readonly url: string
+  readonly repository: RepoSlug
+}
+
+export type RepoContributors = {
+  readonly login: string
+  readonly id: number
+  readonly avatar_url: string
+  readonly gravatar_id: string
+  readonly url: string
+  readonly html_url: string
+  readonly followers_url: string
+  readonly following_url: string
+  readonly gists_url: string
+  readonly starred_url: string
+  readonly subscriptions_url: string
+  readonly organizations_url: string
+  readonly repos_url: string
+  readonly events_url: string
+  readonly received_events_url: string
+  readonly type: 'User' | 'Organization'
+  readonly site_admin: boolean
+  readonly contributions: number
+}
+
+export type RepoStatsContributors = {
+  readonly author: User
+  readonly total: number
+  readonly weeks: RepoStatsContributorsWeek[]
+}
+
+export type RepoStatsContributorsWeek = {
+  readonly w: string
+  readonly a: number
+  readonly d: number
+  readonly c: number
+}
+
+export type RepoStatsCommits = {
+  readonly days: number[]
+  readonly total: number
+  readonly week: number
+}
+
+export type RepoDeployment = {
+  readonly url: string
+  readonly id: number
+  readonly sha: string
+  readonly ref: string
+  readonly task: 'deploy'
+  readonly payload: json
+  readonly environment: string
+  readonly description?: string
+  readonly creator: User
+  readonly created_at: string
+  readonly updated_at: string
+  readonly statuses_url: string
+  readonly repository_url: string
+}
+
+export type RepoEvent = {
+  readonly id: string
+  readonly type: string
+  readonly actor: EventActor
+  readonly repo: RepoSlug
+  readonly payload: RepoEventPayload
+  readonly public: boolean
+  readonly created_at: string
+}
+
+export type RepoEventPayload = {
+  readonly member?: User
+  readonly action?: string
+}
+
+export type RepoPagesBuild = {
+  readonly url: string
+  readonly status: 'built'
+  readonly error: RepoPagesBuildError
+  readonly pusher: User
+  readonly commit: string
+  readonly duration: number
+  readonly created_at: string
+  readonly updated_at: string
+}
+
+export type RepoPagesBuildError = {
+  readonly message?: any
+}
+
+export type RepoPermission = {
+  readonly permission: 'admin' | 'read' | 'write'
+  readonly user: User
+  readonly url: string
+}
+
+export type RepoPullRequest = {
+  readonly url: string
+  readonly comments_url: string
+  readonly html_url: string
+  readonly id: number
+  readonly number: number
+  readonly title: string
+  readonly user: User
+  readonly state: 'open' | 'closed'
+  readonly locked: boolean
+  readonly assignee?: User
+  readonly assignees: User[]
+  readonly milestone?: any
+  readonly comments: number
+  readonly created_at: string
+  readonly updated_at: string
+  readonly closed_at?: string
+  readonly body?: string
+  readonly closed_by?: User
+  readonly merged_at?: string
+  readonly merge_commit_sha?: string
+  readonly requested_reviewers: User[]
+  readonly review_comments_url: string
+  readonly review_comment_url: string
+  readonly statuses_url: string
+  readonly head: RepoPullRequestRef
+  readonly base: RepoPullRequestRef
+  readonly '_links': json
+  readonly merged: boolean
+  readonly mergeable?: boolean
+  readonly rebaseable?: any
+  readonly mergeable_state: 'unknown'
+  readonly merged_by?: User
+  readonly review_comments: number
+  readonly maintainer_can_modify: boolean
+  readonly commits: number
+  readonly additions: number
+  readonly deletions: number
+  readonly changed_files: number
+}
+
+export type RepoPullRequestRef = {
+  readonly label: string
+  readonly ref: string
+  readonly sha: string
+  readonly user: User
+  readonly repo: Repository
+}
+
+export type RepoPullRequestReview = {
+  readonly id: number
+  readonly user: User
+  readonly body: string
+  readonly state: 'COMMENTED' | 'APPROVED' | 'REQUESTED_CHANGES' | 'PENDING'
+  readonly html_url: string
+  readonly pull_request_url: string
+  readonly '_links': json
+  readonly submitted_at: string
+  readonly commit_id: string
+  readonly url?: string
+}
+
+export type RepoStatsParticipation = {
+  readonly all: number[]
+  readonly owner: number[]
+  readonly url: string
 }
 
 export type RepoSlug = {
@@ -1875,6 +580,39 @@ export type RepoSubscription = {
   readonly repository_url: string
 }
 
+export type RepoTrafficClones = {
+  readonly clones: any[]
+  readonly url: string
+  readonly count: number
+  readonly uniques: number
+}
+
+export type RepoTrafficReferrer = {
+  readonly referrer: string
+  readonly count: number
+  readonly uniques: number
+}
+
+export type RepoTrafficPath = {
+  readonly path: string
+  readonly title: string
+  readonly count: number
+  readonly uniques: number
+}
+
+export type RepoTrafficViews = {
+  readonly views: RepoTrafficView[]
+  readonly url: string
+  readonly count: number
+  readonly uniques: number
+}
+
+export type RepoTrafficView = {
+  readonly timestamp: string
+  readonly count: number
+  readonly uniques: number
+}
+
 export type Repository = {
   readonly id: number
   readonly name: string
@@ -1882,7 +620,7 @@ export type Repository = {
   readonly owner: User
   readonly private: boolean
   readonly html_url: string
-  readonly description: string
+  readonly description?: string
   readonly fork: boolean
   readonly url: string
   readonly forks_url: string
@@ -1932,7 +670,7 @@ export type Repository = {
   readonly size: number
   readonly stargazers_count: number
   readonly watchers_count: number
-  readonly language: string
+  readonly language?: string
   readonly has_issues: boolean
   readonly has_projects: boolean
   readonly has_downloads: boolean
@@ -1941,22 +679,91 @@ export type Repository = {
   readonly forks_count: number
   readonly mirror_url?: any
   readonly open_issues_count: number
-  readonly forks: number
+  readonly forks?: number
   readonly open_issues: number
   readonly watchers: number
   readonly default_branch: string
-  readonly permissions: { readonly admin: boolean
+  readonly permissions?: RepositoryPermissions
+}
+
+export type RepositoryPermissions = {
+  readonly admin: boolean
   readonly push: boolean
-  readonly pull: boolean }
+  readonly pull: boolean
+}
+
+export type RootFeeds = {
+  readonly timeline_url: string
+  readonly user_url: string
+  readonly current_user_public_url: string
+  readonly '_links': json
+  readonly url: string
+}
+
+export type RootLicense = {
+  readonly key: string
+  readonly name: string
+  readonly spdx_id: string
+  readonly url: string
+  readonly featured: boolean
+}
+
+export type RootMeta = {
+  readonly verifiable_password_authentication: boolean
+  readonly github_services_sha: string
+  readonly hooks: string[]
+  readonly git: string[]
+  readonly pages: string[]
+  readonly importer: string[]
+  readonly url: string
+}
+
+export type RootNotification = {
+  readonly id: string
+  readonly unread: boolean
+  readonly reason: 'assign' | 'author' | 'comment' | 'invitation' | 'manual' | 'mention' | 'state_change' | 'subscribed' | 'team_mention' | 'review_requested' | 'review_request_removed'
+  readonly updated_at: string
+  readonly last_read_at?: string
+  readonly subject: RootNotificationSubject
+  readonly repository: RepoSlug
+  readonly url: string
+  readonly subscription_url: string
+}
+
+export type RootNotificationSubject = {
+  readonly title: string
+  readonly url: string
+  readonly latest_comment_url?: string
+  readonly type: 'Issue' | 'PullRequest'
+}
+
+export type RootTeam = {
+  readonly name: string
+  readonly id: number
+  readonly slug: string
+  readonly description?: string
+  readonly privacy: 'secret' | 'closed'
+  readonly url: string
+  readonly members_url: string
+  readonly repositories_url: string
+  readonly permission: 'push' | 'pull' | 'admin'
+  readonly members_count: number
+  readonly repos_count: number
+  readonly organization: OrganizationSlug
 }
 
 
 
 
 
+export type Stargazer = {
+  readonly starred_at: string
+  readonly repo: Repository
+}
+
 export type User = {
   readonly login: string
-  readonly name: string
+  readonly name?: string
   readonly id: number
   readonly avatar_url: string
   readonly gravatar_id: string
@@ -1971,7 +778,7 @@ export type User = {
   readonly repos_url: string
   readonly events_url: string
   readonly received_events_url: string
-  readonly type: 'user' | 'org'
+  readonly type: 'User' | 'Organization'
   readonly site_admin: boolean
 }
 
@@ -2100,10 +907,12 @@ export type OctokatReposSubscriptionGetParams = & ParamPage
 & ParamPerPage & {  }
 export type OctokatReposSubscriptionPutParams =  & { subscribed?: Boolean;
 ignored?: Boolean; }
-export type OctokatReposGitBlobsFnGetParams = & ParamPage
+export type OctokatReposGitBlobsFnGetParams = & ParamSha
+& ParamPage
 & ParamPerPage & {  }
 export type OctokatReposGitBlobsPostParams =  & { content: String;
 encoding: String; }
+export type OctokatReposGitCommitsFnGetParams = & ParamSha & {  }
 export type OctokatReposGitCommitsPostParams =  & { message: String;
 tree: String;
 parents: String[];
@@ -2111,6 +920,8 @@ author?: Object;
 committer?: Object; }
 export type OctokatReposGitRefsFnPatchParams = & ParamSha & { force?: Boolean; }
 export type OctokatReposGitRefsTagsGetParams = & ParamPage
+& ParamPerPage & {  }
+export type OctokatReposGitRefsGetParams = & ParamPage
 & ParamPerPage & {  }
 export type OctokatReposGitRefsPostParams = & ParamSha & { ref: String; }
 export type OctokatReposGitTagsPostParams =  & { tag: String;
@@ -2281,10 +1092,15 @@ export type OctokatReposCollaboratorsGetParams = & ParamPage
 & ParamPerPage & { affiliation?: String; }
 export type OctokatReposCommitsFnCommentsGetParams = & ParamPage
 & ParamPerPage & { ref: String; }
+export type OctokatReposCommitsFnCommentsPostParams = & ParamSha
+& ParamBody & { path?: String;
+position?: Number;
+line?: Number; }
 export type OctokatReposCommitsFnStatusesGetParams = & ParamPage
 & ParamPerPage & { ref: String; }
 export type OctokatReposCommitsFnStatusGetParams = & ParamPage
 & ParamPerPage & { ref: String; }
+export type OctokatReposCommitsFnGetParams = & ParamSha & {  }
 export type OctokatReposCommitsGetParams = & ParamSince
 & ParamUntil
 & ParamPage
@@ -2513,6 +1329,7 @@ export type OctokatUsersFnFollowingGetParams = & ParamPage
 & ParamPerPage & {  }
 export type OctokatUsersFnKeysGetParams = & ParamPage
 & ParamPerPage & {  }
+export type OctokatUsersFnGetParams = & ParamId & {  }
 export type OctokatUsersGetParams =  & { since?: Number; }
 export type OctokatNotificationsThreadsSubscriptionGetParams = & ParamId & {  }
 export type OctokatNotificationsThreadsSubscriptionPutParams = & ParamId & { subscribed?: Boolean;
@@ -2524,7 +1341,6 @@ export type OctokatNotificationsGetParams = & ParamSince & { all?: Boolean;
 participating?: Boolean;
 before?: String; }
 export type OctokatNotificationsPutParams =  & { last_read_at?: String; }
-export type OctokatUserFnGetParams = & ParamId & {  }
 export type OctokatUserStarredFnGetParams = & ParamPage
 & ParamPerPage & {  }
 export type OctokatUserStarredGetParams = & ParamDirection
@@ -2799,7 +1615,8 @@ create(params?: OctokatAuthorizationsPostParams, callback?: Callback<any>): Prom
 events: { 
 
 
-fetch(params?: OctokatEventsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatEventsGetParams, callback?: Callback<SearchResult<RepoEvent>>): Promise<SearchResult<RepoEvent>>
+fetchAll(params?: OctokatEventsGetParams, callback?: Callback<RepoEvent[]>): Promise<RepoEvent[]>
 read(params?: OctokatEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatEventsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2810,7 +1627,8 @@ repos(owner: String, repo: String): {
 events: { 
 
 
-fetch(params?: OctokatReposEventsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposEventsGetParams, callback?: Callback<SearchResult<RepoEvent>>): Promise<SearchResult<RepoEvent>>
+fetchAll(params?: OctokatReposEventsGetParams, callback?: Callback<RepoEvent[]>): Promise<RepoEvent[]>
 read(params?: OctokatReposEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposEventsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2876,10 +1694,10 @@ read(params?: OctokatReposIssuesFnReactionsGetParams, callback?: Callback<String
 readBinary(params?: OctokatReposIssuesFnReactionsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposIssuesFnReactionsPostParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposIssuesFnGetParams, callback?: Callback<Issue>): Promise<Issue>
+fetch(params?: OctokatReposIssuesFnGetParams, callback?: Callback<RepoIssue>): Promise<RepoIssue>
 read(params?: OctokatReposIssuesFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesFnGetParams, callback?: Callback<any>): Promise<any>
-update(params?: OctokatReposIssuesFnPatchParams, callback?: Callback<Issue>): Promise<Issue>
+update(params?: OctokatReposIssuesFnPatchParams, callback?: Callback<RepoIssue>): Promise<RepoIssue>
  }
 events: { 
 (issue_event_id: String): { 
@@ -2918,16 +1736,17 @@ fetchAll(params?: OctokatReposIssuesCommentsGetParams, callback?: Callback<Issue
 read(params?: OctokatReposIssuesCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
-fetchAll(params?: OctokatReposIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
+fetch(params?: OctokatReposIssuesGetParams, callback?: Callback<SearchResult<RepoIssue>>): Promise<SearchResult<RepoIssue>>
+fetchAll(params?: OctokatReposIssuesGetParams, callback?: Callback<RepoIssue[]>): Promise<RepoIssue[]>
 read(params?: OctokatReposIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposIssuesGetParams, callback?: Callback<any>): Promise<any>
-create(params: OctokatReposIssuesPostParams, callback?: Callback<Issue>): Promise<Issue>
+create(params: OctokatReposIssuesPostParams, callback?: Callback<RepoIssue>): Promise<RepoIssue>
  }
 notifications: { 
 
 
-fetch(params?: OctokatReposNotificationsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposNotificationsGetParams, callback?: Callback<SearchResult<RootNotification>>): Promise<SearchResult<RootNotification>>
+fetchAll(params?: OctokatReposNotificationsGetParams, callback?: Callback<RootNotification[]>): Promise<RootNotification[]>
 read(params?: OctokatReposNotificationsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposNotificationsGetParams, callback?: Callback<any>): Promise<any>
 add(params?: OctokatReposNotificationsPutParams, callback?: Callback<any>): Promise<any>
@@ -2935,21 +1754,23 @@ add(params?: OctokatReposNotificationsPutParams, callback?: Callback<any>): Prom
 stargazers: { 
 
 
-fetch(params?: OctokatReposStargazersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposStargazersGetParams, callback?: Callback<SearchResult<Stargazer>>): Promise<SearchResult<Stargazer>>
+fetchAll(params?: OctokatReposStargazersGetParams, callback?: Callback<Stargazer[]>): Promise<Stargazer[]>
 read(params?: OctokatReposStargazersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposStargazersGetParams, callback?: Callback<any>): Promise<any>
  }
 subscribers: { 
 
 
-fetch(params?: OctokatReposSubscribersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposSubscribersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatReposSubscribersGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatReposSubscribersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposSubscribersGetParams, callback?: Callback<any>): Promise<any>
  }
 subscription: { 
 
 
-fetch(params?: OctokatReposSubscriptionGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposSubscriptionGetParams, callback?: Callback<RepoSubscription>): Promise<RepoSubscription>
 read(params?: OctokatReposSubscriptionGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposSubscriptionGetParams, callback?: Callback<any>): Promise<any>
 add(params?: OctokatReposSubscriptionPutParams, callback?: Callback<any>): Promise<any>
@@ -2958,10 +1779,10 @@ remove(callback?: Callback<any>): Promise<any>
 git: { 
 
 blobs: { 
-(sha: String): { 
+(blob_sha: String): { 
 
 
-fetch(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<GitBlob>): Promise<GitBlob>
 read(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2969,12 +1790,12 @@ readBinary(params?: OctokatReposGitBlobsFnGetParams, callback?: Callback<any>): 
 create(params: OctokatReposGitBlobsPostParams, callback?: Callback<any>): Promise<any>
  }
 commits: { 
-(sha: String): { 
+(commit_sha: String): { 
 
 
-fetch(callback?: Callback<GitCommit>): Promise<GitCommit>
-read(callback?: Callback<String>): Promise<String>
-readBinary(callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposGitCommitsFnGetParams, callback?: Callback<GitCommit>): Promise<GitCommit>
+read(params?: OctokatReposGitCommitsFnGetParams, callback?: Callback<String>): Promise<String>
+readBinary(params?: OctokatReposGitCommitsFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
 create(params: OctokatReposGitCommitsPostParams, callback?: Callback<GitCommit>): Promise<GitCommit>
@@ -2996,6 +1817,10 @@ fetch(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<GitRef>): P
 read(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposGitRefsTagsGetParams, callback?: Callback<any>): Promise<any>
  }
+fetch(params?: OctokatReposGitRefsGetParams, callback?: Callback<SearchResult<GitRef>>): Promise<SearchResult<GitRef>>
+fetchAll(params?: OctokatReposGitRefsGetParams, callback?: Callback<GitRef[]>): Promise<GitRef[]>
+read(params?: OctokatReposGitRefsGetParams, callback?: Callback<String>): Promise<String>
+readBinary(params?: OctokatReposGitRefsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposGitRefsPostParams, callback?: Callback<GitRef>): Promise<GitRef>
  }
 tags: { 
@@ -3117,14 +1942,16 @@ pulls: {
 commits: { 
 
 
-fetch(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<SearchResult<RepoCommitItem>>): Promise<SearchResult<RepoCommitItem>>
+fetchAll(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<RepoCommitItem[]>): Promise<RepoCommitItem[]>
 read(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnCommitsGetParams, callback?: Callback<any>): Promise<any>
  }
 files: { 
 
 
-fetch(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<SearchResult<GitPatch>>): Promise<SearchResult<GitPatch>>
+fetchAll(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<GitPatch[]>): Promise<GitPatch[]>
 read(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnFilesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3137,12 +1964,13 @@ readBinary(params?: OctokatReposPullsFnMergeGetParams, callback?: Callback<any>)
 add(params?: OctokatReposPullsFnMergePutParams, callback?: Callback<any>): Promise<any>
  }
 reviews: { 
-(review_id: String): { 
+(review_id: Number): { 
 
 comments: { 
 
 
-fetch(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
+fetchAll(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnReviewsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3156,12 +1984,13 @@ dismissals: {
 
 add(params?: OctokatReposPullsFnReviewsFnDismissalsPutParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposPullsFnReviewsFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnReviewsFnGetParams, callback?: Callback<RepoPullRequestReview>): Promise<RepoPullRequestReview>
 read(params?: OctokatReposPullsFnReviewsFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnReviewsFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<SearchResult<RepoPullRequestReview>>): Promise<SearchResult<RepoPullRequestReview>>
+fetchAll(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<RepoPullRequestReview[]>): Promise<RepoPullRequestReview[]>
 read(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnReviewsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatReposPullsFnReviewsPostParams, callback?: Callback<any>): Promise<any>
@@ -3169,7 +1998,8 @@ create(params?: OctokatReposPullsFnReviewsPostParams, callback?: Callback<any>):
 comments: { 
 
 
-fetch(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
+fetchAll(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposPullsFnCommentsPostParams, callback?: Callback<any>): Promise<any>
@@ -3183,7 +2013,7 @@ readBinary(params?: OctokatReposPullsFnRequestedReviewersGetParams, callback?: C
 create(params?: OctokatReposPullsFnRequestedReviewersPostParams, callback?: Callback<any>): Promise<any>
 remove(params?: OctokatReposPullsFnRequestedReviewersDeleteParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposPullsFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsFnGetParams, callback?: Callback<RepoPullRequest>): Promise<RepoPullRequest>
 read(params?: OctokatReposPullsFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsFnGetParams, callback?: Callback<any>): Promise<any>
 update(params?: OctokatReposPullsFnPatchParams, callback?: Callback<any>): Promise<any>
@@ -3206,11 +2036,13 @@ update(params?: OctokatReposPullsCommentsFnPatchParams, callback?: Callback<any>
 remove(params?: OctokatReposPullsCommentsFnDeleteParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposPullsCommentsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsCommentsGetParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
+fetchAll(params?: OctokatReposPullsCommentsGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(params?: OctokatReposPullsCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsCommentsGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposPullsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPullsGetParams, callback?: Callback<SearchResult<RepoPullRequest>>): Promise<SearchResult<RepoPullRequest>>
+fetchAll(params?: OctokatReposPullsGetParams, callback?: Callback<RepoPullRequest[]>): Promise<RepoPullRequest[]>
 read(params?: OctokatReposPullsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPullsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposPullsPostParams, callback?: Callback<any>): Promise<any>
@@ -3226,8 +2058,7 @@ read(params?: OctokatReposCommentsFnReactionsGetParams, callback?: Callback<Stri
 readBinary(params?: OctokatReposCommentsFnReactionsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposCommentsFnReactionsPostParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposCommentsFnGetParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
-fetchAll(params?: OctokatReposCommentsFnGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
+fetch(params?: OctokatReposCommentsFnGetParams, callback?: Callback<RepoComment>): Promise<RepoComment>
 read(params?: OctokatReposCommentsFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCommentsFnGetParams, callback?: Callback<any>): Promise<any>
 update(params?: OctokatReposCommentsFnPatchParams, callback?: Callback<SearchResult<RepoComment>>): Promise<SearchResult<RepoComment>>
@@ -3242,14 +2073,15 @@ readBinary(params?: OctokatReposCommentsGetParams, callback?: Callback<any>): Pr
 contributors: { 
 
 
-fetch(params?: OctokatReposContributorsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposContributorsGetParams, callback?: Callback<SearchResult<RepoContributors>>): Promise<SearchResult<RepoContributors>>
+fetchAll(params?: OctokatReposContributorsGetParams, callback?: Callback<RepoContributors[]>): Promise<RepoContributors[]>
 read(params?: OctokatReposContributorsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposContributorsGetParams, callback?: Callback<any>): Promise<any>
  }
 languages: { 
 
 
-fetch(params?: OctokatReposLanguagesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposLanguagesGetParams, callback?: Callback<json>): Promise<json>
 read(params?: OctokatReposLanguagesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposLanguagesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3332,12 +2164,13 @@ readBinary(params?: OctokatReposBranchesFnProtectionGetParams, callback?: Callba
 add(params: OctokatReposBranchesFnProtectionPutParams, callback?: Callback<any>): Promise<any>
 remove(params?: OctokatReposBranchesFnProtectionDeleteParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposBranchesFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposBranchesFnGetParams, callback?: Callback<RepoBranch>): Promise<RepoBranch>
 read(params?: OctokatReposBranchesFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposBranchesFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposBranchesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposBranchesGetParams, callback?: Callback<SearchResult<RepoBranch>>): Promise<SearchResult<RepoBranch>>
+fetchAll(params?: OctokatReposBranchesGetParams, callback?: Callback<RepoBranch[]>): Promise<RepoBranch[]>
 read(params?: OctokatReposBranchesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposBranchesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3347,7 +2180,7 @@ collaborators: {
 permission: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<RepoPermission>): Promise<RepoPermission>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -3358,12 +2191,13 @@ add(params?: OctokatReposCollaboratorsFnPutParams, callback?: Callback<any>): Pr
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<any>): Promise<any>
  }
 commits: { 
-(ref: String): { 
+(commit_sha: String): { 
 
 comments: { 
 
@@ -3372,6 +2206,7 @@ fetch(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<Search
 fetchAll(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<RepoComment[]>): Promise<RepoComment[]>
 read(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatReposCommitsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
+create(params?: OctokatReposCommitsFnCommentsPostParams, callback?: Callback<any>): Promise<any>
  }
 statuses: { 
 
@@ -3383,17 +2218,17 @@ readBinary(params: OctokatReposCommitsFnStatusesGetParams, callback?: Callback<a
 status: { 
 
 
-fetch(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<any>): Promise<any>
+fetch(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<RepoCommitStatus>): Promise<RepoCommitStatus>
 read(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatReposCommitsFnStatusGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(callback?: Callback<RepoCommit>): Promise<RepoCommit>
-read(callback?: Callback<String>): Promise<String>
-readBinary(callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposCommitsFnGetParams, callback?: Callback<RepoCommitSingle>): Promise<RepoCommitSingle>
+read(params?: OctokatReposCommitsFnGetParams, callback?: Callback<String>): Promise<String>
+readBinary(params?: OctokatReposCommitsFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposCommitsGetParams, callback?: Callback<SearchResult<RepoCommitDiffCommit>>): Promise<SearchResult<RepoCommitDiffCommit>>
-fetchAll(params?: OctokatReposCommitsGetParams, callback?: Callback<RepoCommitDiffCommit[]>): Promise<RepoCommitDiffCommit[]>
+fetch(params?: OctokatReposCommitsGetParams, callback?: Callback<SearchResult<RepoCommitItem>>): Promise<SearchResult<RepoCommitItem>>
+fetchAll(params?: OctokatReposCommitsGetParams, callback?: Callback<RepoCommitItem[]>): Promise<RepoCommitItem[]>
 read(params?: OctokatReposCommitsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCommitsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3410,7 +2245,7 @@ readBinary(callback?: Callback<any>): Promise<any>
 readme: { 
 
 
-fetch(params?: OctokatReposReadmeGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposReadmeGetParams, callback?: Callback<RepoReadmeFile>): Promise<RepoReadmeFile>
 read(params?: OctokatReposReadmeGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposReadmeGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3428,7 +2263,7 @@ remove(params: OctokatReposContentsDeleteParams, callback?: Callback<any>): Prom
 
 
 // Syntactic shortcut used here
-tarball(ref: String): { 
+tarball(tarball_ref: String): { 
 
 
 fetch(params?: OctokatReposTarballGetParams, callback?: Callback<any>): Promise<any>
@@ -3438,7 +2273,7 @@ readBinary(params?: OctokatReposTarballGetParams, callback?: Callback<any>): Pro
 
 
 // Syntactic shortcut used here
-zipball(ref: String): { 
+zipball(tarball_ref: String): { 
 
 
 fetch(params?: OctokatReposZipballGetParams, callback?: Callback<any>): Promise<any>
@@ -3475,7 +2310,8 @@ create(params?: OctokatReposDeploymentsFnStatusesPostParams, callback?: Callback
 
  }
 
-fetch(params?: OctokatReposDeploymentsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposDeploymentsGetParams, callback?: Callback<SearchResult<RepoDeployment>>): Promise<SearchResult<RepoDeployment>>
+fetchAll(params?: OctokatReposDeploymentsGetParams, callback?: Callback<RepoDeployment[]>): Promise<RepoDeployment[]>
 read(params?: OctokatReposDeploymentsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposDeploymentsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposDeploymentsPostParams, callback?: Callback<any>): Promise<any>
@@ -3513,18 +2349,19 @@ builds: {
 (build_id: String): { 
 
 
-fetch(params?: OctokatReposPagesBuildsFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPagesBuildsFnGetParams, callback?: Callback<RepoPagesBuild>): Promise<RepoPagesBuild>
 read(params?: OctokatReposPagesBuildsFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPagesBuildsFnGetParams, callback?: Callback<any>): Promise<any>
  }
 latest: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<RepoPagesBuild>): Promise<RepoPagesBuild>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatReposPagesBuildsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposPagesBuildsGetParams, callback?: Callback<SearchResult<RepoPagesBuild>>): Promise<SearchResult<RepoPagesBuild>>
+fetchAll(params?: OctokatReposPagesBuildsGetParams, callback?: Callback<RepoPagesBuild[]>): Promise<RepoPagesBuild[]>
 read(params?: OctokatReposPagesBuildsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposPagesBuildsGetParams, callback?: Callback<any>): Promise<any>
 create(callback?: Callback<any>): Promise<any>
@@ -3589,35 +2426,36 @@ stats: {
 contributors: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<json>): Promise<json>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 commitActivity: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<json>): Promise<json>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 codeFrequency: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<json>): Promise<json>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 participation: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<RepoStatsParticipation>): Promise<RepoStatsParticipation>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 punchCard: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<SearchResult<number[]>>): Promise<SearchResult<number[]>>
+fetchAll(callback?: Callback<number[][]>): Promise<number[][]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -3638,14 +2476,16 @@ popular: {
 referrers: { 
 
 
-fetch(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<SearchResult<RepoTrafficReferrer>>): Promise<SearchResult<RepoTrafficReferrer>>
+fetchAll(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<RepoTrafficReferrer[]>): Promise<RepoTrafficReferrer[]>
 read(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTrafficPopularReferrersGetParams, callback?: Callback<any>): Promise<any>
  }
 paths: { 
 
 
-fetch(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callback<SearchResult<RepoTrafficPath>>): Promise<SearchResult<RepoTrafficPath>>
+fetchAll(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callback<RepoTrafficPath[]>): Promise<RepoTrafficPath[]>
 read(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3654,14 +2494,14 @@ readBinary(params?: OctokatReposTrafficPopularPathsGetParams, callback?: Callbac
 views: { 
 
 
-fetch(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<RepoTrafficViews>): Promise<RepoTrafficViews>
 read(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTrafficViewsGetParams, callback?: Callback<any>): Promise<any>
  }
 clones: { 
 
 
-fetch(params?: OctokatReposTrafficClonesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatReposTrafficClonesGetParams, callback?: Callback<RepoTrafficClones>): Promise<RepoTrafficClones>
 read(params?: OctokatReposTrafficClonesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposTrafficClonesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3692,7 +2532,7 @@ read(params?: OctokatReposHooksGetParams, callback?: Callback<String>): Promise<
 readBinary(params?: OctokatReposHooksGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatReposHooksPostParams, callback?: Callback<any>): Promise<any>
  }
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<Repository>): Promise<Repository>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatReposPatchParams, callback?: Callback<any>): Promise<any>
@@ -3727,8 +2567,8 @@ readBinary(params?: OctokatOrgsEventsGetParams, callback?: Callback<any>): Promi
 issues: { 
 
 
-fetch(params?: OctokatOrgsIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
-fetchAll(params?: OctokatOrgsIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
+fetch(params?: OctokatOrgsIssuesGetParams, callback?: Callback<SearchResult<RepoIssue>>): Promise<SearchResult<RepoIssue>>
+fetchAll(params?: OctokatOrgsIssuesGetParams, callback?: Callback<RepoIssue[]>): Promise<RepoIssue[]>
 read(params?: OctokatOrgsIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3834,7 +2674,8 @@ remove(callback?: Callback<any>): Promise<any>
 teams: { 
 
 
-fetch(params?: OctokatOrgsTeamsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatOrgsTeamsGetParams, callback?: Callback<SearchResult<RootTeam>>): Promise<SearchResult<RootTeam>>
+fetchAll(params?: OctokatOrgsTeamsGetParams, callback?: Callback<RootTeam[]>): Promise<RootTeam[]>
 read(params?: OctokatOrgsTeamsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsTeamsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatOrgsTeamsPostParams, callback?: Callback<any>): Promise<any>
@@ -3904,11 +2745,13 @@ receivedEvents: {
 public: { 
 
 
-fetch(params?: OctokatUsersFnReceivedEventsPublicGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnReceivedEventsPublicGetParams, callback?: Callback<SearchResult<RepoEvent>>): Promise<SearchResult<RepoEvent>>
+fetchAll(params?: OctokatUsersFnReceivedEventsPublicGetParams, callback?: Callback<RepoEvent[]>): Promise<RepoEvent[]>
 read(params?: OctokatUsersFnReceivedEventsPublicGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnReceivedEventsPublicGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<SearchResult<RepoEvent>>): Promise<SearchResult<RepoEvent>>
+fetchAll(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<RepoEvent[]>): Promise<RepoEvent[]>
 read(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnReceivedEventsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3917,7 +2760,8 @@ events: {
 public: { 
 
 
-fetch(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<SearchResult<RepoEvent>>): Promise<SearchResult<RepoEvent>>
+fetchAll(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<RepoEvent[]>): Promise<RepoEvent[]>
 read(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnEventsPublicGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3931,14 +2775,16 @@ read(params?: OctokatUsersFnEventsOrgsGetParams, callback?: Callback<String>): P
 readBinary(params?: OctokatUsersFnEventsOrgsGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUsersFnEventsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnEventsGetParams, callback?: Callback<SearchResult<RepoEvent>>): Promise<SearchResult<RepoEvent>>
+fetchAll(params?: OctokatUsersFnEventsGetParams, callback?: Callback<RepoEvent[]>): Promise<RepoEvent[]>
 read(params?: OctokatUsersFnEventsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnEventsGetParams, callback?: Callback<any>): Promise<any>
  }
 starred: { 
 
 
-fetch(params?: OctokatUsersFnStarredGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnStarredGetParams, callback?: Callback<SearchResult<Stargazer>>): Promise<SearchResult<Stargazer>>
+fetchAll(params?: OctokatUsersFnStarredGetParams, callback?: Callback<Stargazer[]>): Promise<Stargazer[]>
 read(params?: OctokatUsersFnStarredGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnStarredGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3952,7 +2798,8 @@ readBinary(params?: OctokatUsersFnSubscriptionsGetParams, callback?: Callback<an
 gists: { 
 
 
-fetch(params?: OctokatUsersFnGistsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnGistsGetParams, callback?: Callback<SearchResult<Gist>>): Promise<SearchResult<Gist>>
+fetchAll(params?: OctokatUsersFnGistsGetParams, callback?: Callback<Gist[]>): Promise<Gist[]>
 read(params?: OctokatUsersFnGistsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnGistsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3967,14 +2814,16 @@ readBinary(params?: OctokatUsersFnOrgsGetParams, callback?: Callback<any>): Prom
 repos: { 
 
 
-fetch(params?: OctokatUsersFnReposGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnReposGetParams, callback?: Callback<SearchResult<Repository>>): Promise<SearchResult<Repository>>
+fetchAll(params?: OctokatUsersFnReposGetParams, callback?: Callback<Repository[]>): Promise<Repository[]>
 read(params?: OctokatUsersFnReposGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnReposGetParams, callback?: Callback<any>): Promise<any>
  }
 followers: { 
 
 
-fetch(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3987,7 +2836,8 @@ read(params: OctokatUsersFnFollowingFnGetParams, callback?: Callback<String>): P
 readBinary(params: OctokatUsersFnFollowingFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<Boolean>): Promise<Boolean>
+fetch(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4010,19 +2860,20 @@ suspended: {
 add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-fetch(callback?: Callback<any>): Promise<any>
-read(callback?: Callback<String>): Promise<String>
-readBinary(callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersFnGetParams, callback?: Callback<User>): Promise<User>
+read(params?: OctokatUsersFnGetParams, callback?: Callback<String>): Promise<String>
+readBinary(params?: OctokatUsersFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUsersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUsersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatUsersGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatUsersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersGetParams, callback?: Callback<any>): Promise<any>
  }
 feeds: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<RootFeeds>): Promise<RootFeeds>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -4047,19 +2898,14 @@ readBinary(params?: OctokatNotificationsThreadsGetParams, callback?: Callback<an
 update(params?: OctokatNotificationsThreadsPatchParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatNotificationsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatNotificationsGetParams, callback?: Callback<SearchResult<RootNotification>>): Promise<SearchResult<RootNotification>>
+fetchAll(params?: OctokatNotificationsGetParams, callback?: Callback<RootNotification[]>): Promise<RootNotification[]>
 read(params?: OctokatNotificationsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatNotificationsGetParams, callback?: Callback<any>): Promise<any>
 add(params?: OctokatNotificationsPutParams, callback?: Callback<any>): Promise<any>
  }
 user: { 
-(username: String): { 
 
-
-fetch(params?: OctokatUserFnGetParams, callback?: Callback<any>): Promise<any>
-read(params?: OctokatUserFnGetParams, callback?: Callback<String>): Promise<String>
-readBinary(params?: OctokatUserFnGetParams, callback?: Callback<any>): Promise<any>
- }
 starred: { 
 (owner: String, repo: String): { 
 
@@ -4071,7 +2917,8 @@ add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUserStarredGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUserStarredGetParams, callback?: Callback<SearchResult<Repository>>): Promise<SearchResult<Repository>>
+fetchAll(params?: OctokatUserStarredGetParams, callback?: Callback<Repository[]>): Promise<Repository[]>
 read(params?: OctokatUserStarredGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserStarredGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4085,8 +2932,8 @@ readBinary(params?: OctokatUserSubscriptionsGetParams, callback?: Callback<any>)
 issues: { 
 
 
-fetch(params?: OctokatUserIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
-fetchAll(params?: OctokatUserIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
+fetch(params?: OctokatUserIssuesGetParams, callback?: Callback<SearchResult<RepoIssue>>): Promise<SearchResult<RepoIssue>>
+fetchAll(params?: OctokatUserIssuesGetParams, callback?: Callback<RepoIssue[]>): Promise<RepoIssue[]>
 read(params?: OctokatUserIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4102,7 +2949,8 @@ create(params?: OctokatUserReposPostParams, callback?: Callback<any>): Promise<a
 orgs: { 
 
 
-fetch(params?: OctokatUserOrgsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUserOrgsGetParams, callback?: Callback<SearchResult<OrganizationSlug>>): Promise<SearchResult<OrganizationSlug>>
+fetchAll(params?: OctokatUserOrgsGetParams, callback?: Callback<OrganizationSlug[]>): Promise<OrganizationSlug[]>
 read(params?: OctokatUserOrgsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserOrgsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4127,7 +2975,8 @@ readBinary(params?: OctokatUserMembershipsOrgsGetParams, callback?: Callback<any
 teams: { 
 
 
-fetch(params?: OctokatUserTeamsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUserTeamsGetParams, callback?: Callback<SearchResult<RootTeam>>): Promise<SearchResult<RootTeam>>
+fetchAll(params?: OctokatUserTeamsGetParams, callback?: Callback<RootTeam[]>): Promise<RootTeam[]>
 read(params?: OctokatUserTeamsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserTeamsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4152,7 +3001,8 @@ remove(params: OctokatUserEmailsDeleteParams, callback?: Callback<any>): Promise
 followers: { 
 
 
-fetch(params?: OctokatUserFollowersGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatUserFollowersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
+fetchAll(params?: OctokatUserFollowersGetParams, callback?: Callback<User[]>): Promise<User[]>
 read(params?: OctokatUserFollowersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserFollowersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4256,7 +3106,8 @@ remove(params?: OctokatGistsFnStarDeleteParams, callback?: Callback<any>): Promi
 forks: { 
 
 
-fetch(params?: OctokatGistsFnForksGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatGistsFnForksGetParams, callback?: Callback<SearchResult<Gist>>): Promise<SearchResult<Gist>>
+fetchAll(params?: OctokatGistsFnForksGetParams, callback?: Callback<Gist[]>): Promise<Gist[]>
 read(params?: OctokatGistsFnForksGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatGistsFnForksGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatGistsFnForksPostParams, callback?: Callback<any>): Promise<any>
@@ -4277,7 +3128,7 @@ read(params?: OctokatGistsFnCommentsGetParams, callback?: Callback<String>): Pro
 readBinary(params?: OctokatGistsFnCommentsGetParams, callback?: Callback<any>): Promise<any>
 create(params?: OctokatGistsFnCommentsPostParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatGistsFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatGistsFnGetParams, callback?: Callback<Gist>): Promise<Gist>
 read(params?: OctokatGistsFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatGistsFnGetParams, callback?: Callback<any>): Promise<any>
 update(params?: OctokatGistsFnPatchParams, callback?: Callback<any>): Promise<any>
@@ -4286,18 +3137,21 @@ remove(params?: OctokatGistsFnDeleteParams, callback?: Callback<any>): Promise<a
 public: { 
 
 
-fetch(params?: OctokatGistsPublicGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatGistsPublicGetParams, callback?: Callback<SearchResult<Gist>>): Promise<SearchResult<Gist>>
+fetchAll(params?: OctokatGistsPublicGetParams, callback?: Callback<Gist[]>): Promise<Gist[]>
 read(params?: OctokatGistsPublicGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatGistsPublicGetParams, callback?: Callback<any>): Promise<any>
  }
 starred: { 
 
 
-fetch(params?: OctokatGistsStarredGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatGistsStarredGetParams, callback?: Callback<SearchResult<Gist>>): Promise<SearchResult<Gist>>
+fetchAll(params?: OctokatGistsStarredGetParams, callback?: Callback<Gist[]>): Promise<Gist[]>
 read(params?: OctokatGistsStarredGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatGistsStarredGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatGistsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatGistsGetParams, callback?: Callback<SearchResult<Gist>>): Promise<SearchResult<Gist>>
+fetchAll(params?: OctokatGistsGetParams, callback?: Callback<Gist[]>): Promise<Gist[]>
 read(params?: OctokatGistsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatGistsGetParams, callback?: Callback<any>): Promise<any>
 create(params: OctokatGistsPostParams, callback?: Callback<any>): Promise<any>
@@ -4356,15 +3210,15 @@ readBinary(params?: OctokatInstallationRepositoriesGetParams, callback?: Callbac
 issues: { 
 
 
-fetch(params?: OctokatIssuesGetParams, callback?: Callback<SearchResult<Issue>>): Promise<SearchResult<Issue>>
-fetchAll(params?: OctokatIssuesGetParams, callback?: Callback<Issue[]>): Promise<Issue[]>
+fetch(params?: OctokatIssuesGetParams, callback?: Callback<SearchResult<RepoIssue>>): Promise<SearchResult<RepoIssue>>
+fetchAll(params?: OctokatIssuesGetParams, callback?: Callback<RepoIssue[]>): Promise<RepoIssue[]>
 read(params?: OctokatIssuesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatIssuesGetParams, callback?: Callback<any>): Promise<any>
  }
 emojis: { 
 
 
-fetch(callback?: Callback<Emojis>): Promise<Emojis>
+fetch(callback?: Callback<json>): Promise<json>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -4379,7 +3233,8 @@ read(params: OctokatGitignoreTemplatesFnGetParams, callback?: Callback<String>):
 readBinary(params: OctokatGitignoreTemplatesFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<SearchResult<string>>): Promise<SearchResult<string>>
+fetchAll(callback?: Callback<string[]>): Promise<string[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -4389,12 +3244,13 @@ licenses: {
 (license: String): { 
 
 
-fetch(params: OctokatLicensesFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params: OctokatLicensesFnGetParams, callback?: Callback<RootLicense>): Promise<RootLicense>
 read(params: OctokatLicensesFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatLicensesFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<SearchResult<RootLicense>>): Promise<SearchResult<RootLicense>>
+fetchAll(callback?: Callback<RootLicense[]>): Promise<RootLicense[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -4410,7 +3266,7 @@ create(params: OctokatMarkdownPostParams, callback?: Callback<any>): Promise<any
 meta: { 
 
 
-fetch(callback?: Callback<any>): Promise<any>
+fetch(callback?: Callback<RootMeta>): Promise<RootMeta>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -4424,7 +3280,8 @@ readBinary(callback?: Callback<any>): Promise<any>
 organizations: { 
 
 
-fetch(params?: OctokatOrganizationsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatOrganizationsGetParams, callback?: Callback<SearchResult<OrganizationSlug>>): Promise<SearchResult<OrganizationSlug>>
+fetchAll(params?: OctokatOrganizationsGetParams, callback?: Callback<OrganizationSlug[]>): Promise<OrganizationSlug[]>
 read(params?: OctokatOrganizationsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrganizationsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -4473,7 +3330,7 @@ fetch(params?: OctokatTeamsInvitationsGetParams, callback?: Callback<any>): Prom
 read(params?: OctokatTeamsInvitationsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatTeamsInvitationsGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatTeamsGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatTeamsGetParams, callback?: Callback<RootTeam>): Promise<RootTeam>
 read(params?: OctokatTeamsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatTeamsGetParams, callback?: Callback<any>): Promise<any>
 update(params?: OctokatTeamsPatchParams, callback?: Callback<any>): Promise<any>
@@ -4573,12 +3430,13 @@ fetch(params?: OctokatRepositoriesFnInvitationsGetParams, callback?: Callback<an
 read(params?: OctokatRepositoriesFnInvitationsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatRepositoriesFnInvitationsGetParams, callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatRepositoriesFnGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatRepositoriesFnGetParams, callback?: Callback<Repository>): Promise<Repository>
 read(params?: OctokatRepositoriesFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatRepositoriesFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatRepositoriesGetParams, callback?: Callback<any>): Promise<any>
+fetch(params?: OctokatRepositoriesGetParams, callback?: Callback<SearchResult<RepoSlug>>): Promise<SearchResult<RepoSlug>>
+fetchAll(params?: OctokatRepositoriesGetParams, callback?: Callback<RepoSlug[]>): Promise<RepoSlug[]>
 read(params?: OctokatRepositoriesGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatRepositoriesGetParams, callback?: Callback<any>): Promise<any>
  }
