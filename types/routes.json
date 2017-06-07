@@ -3019,7 +3019,7 @@
             "url": "/emojis",
             "method": "GET",
             "params": {},
-            "yields": "Emojis",
+            "yields": "json",
             "description": "Lists all the emojis available to use on GitHub."
         },
         "get-gitignore-templates": {
