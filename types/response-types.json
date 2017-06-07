@@ -1,23 +1,5 @@
 {
 
-"CommitSlugMaybe": {
-  "name": { "type": "string", "required": true },
-  "path": { "type": "string", "required": true },
-  "sha": { "type": "string", "required": true },
-  "size": { "type": "number", "required": true },
-  "url": { "type": "string", "required": true },
-  "html_url": { "type": "string", "required": true },
-  "git_url": { "type": "string", "required": true },
-  "download_url": { "type": "string", "required": true },
-  "type": { "type": "string", "required": true },
-  "_links": { "type": "json", "required": true }
-},
-
-"CommitSlug2": {
-  "sha": { "type": "string", "required": true },
-  "url": { "type": "string", "required": true },
-  "html_url": { "type": "string", "required": true } },
-
 "Download": {
   "url": { "type": "string", "required": true },
   "id": { "type": "number", "required": true },
@@ -1617,13 +1599,19 @@
   "message": { "type": "string", "required": true },
   "parents": { "type": "CommitSlugMaybe[]", "required": true } },
 
-"GitCommitSlug": {
-  "author": { "type": "UserSlug", "required": true },
-  "committer": { "type": "UserSlug", "required": true },
-  "message": { "type": "string", "required": true },
-  "tree": { "type": "GitBlob", "required": true },
+"CommitSlugMaybe": {
+  "name": { "type": "string", "required": true },
+  "path": { "type": "string", "required": true },
+  "sha": { "type": "string", "required": true },
+  "size": { "type": "number", "required": true },
   "url": { "type": "string", "required": true },
-  "comment_count": { "type": "number", "required": true } },
+  "html_url": { "type": "string", "required": true },
+  "git_url": { "type": "string", "required": true },
+  "download_url": { "type": "string", "required": true },
+  "type": { "type": "string", "required": true },
+  "_links": { "type": "json", "required": true }
+},
+
 
 "GitPatch": {
   "sha": { "type": "string", "required": true },
@@ -1791,50 +1779,53 @@
   "updated_at": { "type": "string", "required": true },
   "body": { "type": "string", "required": true } },
 
-"RepoCommitWithFiles": {
+"RepoCommitSingle": {
   "sha": { "type": "string", "required": true },
-  "commit": { "type": "GitCommit", "required": true },
+  "commit": { "type": "RepoCommitSingleSlug", "required": true },
   "url": { "type": "string", "required": true },
   "html_url": { "type": "string", "required": true },
   "comments_url": { "type": "string", "required": true },
   "author": { "type": "User", "required": true },
   "committer": { "type": "User", "required": true },
-  "parents": { "type": "CommitSlugMaybe[]", "required": true },
+  "parents": { "type": "RepoCommitSingleSlug[]", "required": true },
   "stats": { "type": "RepoDiffStats", "required": true },
   "files": { "type": "GitPatch[]", "required": true }
 },
 
-"RepoCommit": {
+"RepoCommitSingleSlug": {
+  "author": { "type": "UserSlug", "required": true },
+  "committer": { "type": "UserSlug", "required": true },
+  "message": { "type": "string", "required": true },
+  "tree": { "type": "GitBlob", "required": true },
+  "url": { "type": "string", "required": true },
+  "comment_count": { "type": "number", "required": true }
+},
+
+"RepoCommitItem": {
   "sha": { "type": "string", "required": true },
-  "commit": { "type": "RepoCommitSlug", "required": true },
+  "commit": { "type": "RepoCommitItemSlug1", "required": true },
   "url": { "type": "string", "required": true },
   "html_url": { "type": "string", "required": true },
   "comments_url": { "type": "string", "required": true },
   "author": { "type": "User", "required": true },
   "committer": { "type": "User", "required": true },
-  "parents": { "type": "CommitSlug2[]", "required": true },
+  "parents": { "type": "RepoCommitItemSlug2[]", "required": true },
   "stats": { "type": "RepoDiffStats", "required": false }
 },
 
-"RepoCommitSlug": {
+"RepoCommitItemSlug1": {
   "author": { "type": "UserSlug", "required": true },
   "committer": { "type": "UserSlug", "required": true },
   "message": { "type": "string", "required": true },
   "url": { "type": "string", "required": true },
   "comment_count": { "type": "number", "required": true },
-  "tree": { "type": "GitBlob", "required": true } },
+  "tree": { "type": "GitBlob", "required": true }
+},
 
-"RepoCommitSlug2": {
+"RepoCommitItemSlug2": {
   "sha": { "type": "string", "required": true },
-  "commit": { "type": "GitCommitSlug", "required": true },
   "url": { "type": "string", "required": true },
-  "html_url": { "type": "string", "required": true },
-  "comments_url": { "type": "string", "required": true },
-  "author": { "type": "User", "required": true },
-  "committer": { "type": "User", "required": true },
-  "parents": { "type": "CommitSlugMaybe[]", "required": true },
-  "stats": { "type": "RepoDiffStats", "required": true },
-  "files": { "type": "GitPatch[]", "required": true }
+  "html_url": { "type": "string", "required": true }
 },
 
 "RepoDiffStats": {

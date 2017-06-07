@@ -4141,7 +4141,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<RepoCommit>",
+            "yields": "SearchResult<RepoCommitItem>",
             "description": "List commits on a pull request"
         },
         "get-files": {
@@ -5699,7 +5699,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<RepoCommit>",
+            "yields": "SearchResult<RepoCommitItem>",
             "description": "List commits on a repository."
         },
         "get-commit": {
@@ -5710,7 +5710,7 @@
                 "$repo": null,
                 "$sha": null
             },
-            "yields": "RepoCommitSlug2",
+            "yields": "RepoCommitSingle",
             "description": "Get a single commit."
         },
         "get-sha-of-commit-ref": {
@@ -5721,7 +5721,7 @@
                 "$repo": null,
                 "$ref": null
             },
-            "yields": "RepoCommitWithFiles",
+            "yields": "RepoCommitSingle",
             "description": "Get the SHA-1 of a commit reference."
         },
         "compare-commits": {
