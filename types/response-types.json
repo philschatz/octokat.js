@@ -1,18 +1,4 @@
 {
-"CommitDiff": {
-  "url": { "type": "string", "required": true },
-  "html_url": { "type": "string", "required": true },
-  "permalink_url": { "type": "string", "required": true },
-  "diff_url": { "type": "string", "required": true },
-  "patch_url": { "type": "string", "required": true },
-  "base_commit": { "type": "RepoCommitMaybe", "required": true },
-  "merge_base_commit": { "type": "RepoCommitMaybe", "required": true },
-  "status": { "type": "string", "required": true },
-  "ahead_by": { "type": "number", "required": true },
-  "behind_by": { "type": "number", "required": true },
-  "total_commits": { "type": "number", "required": true },
-  "commits": { "type": "any[]", "required": true },
-  "files": { "type": "any[]", "required": true } },
 
 "CommitSlugMaybe": {
   "name": { "type": "string", "required": true },
@@ -1775,18 +1761,22 @@
   "avatar_url": { "type": "string", "required": true } },
 
 "Rate": {
-  "resources": { "type": { "core": { "type": { "limit": { "type": "number", "required": true },
-"remaining": { "type": "number", "required": true },
-"reset": { "type": "number", "required": true } }, "required": true },
-"search": { "type": { "limit": { "type": "number", "required": true },
-"remaining": { "type": "number", "required": true },
-"reset": { "type": "number", "required": true } }, "required": true },
-"graphql": { "type": { "limit": { "type": "number", "required": true },
-"remaining": { "type": "number", "required": true },
-"reset": { "type": "number", "required": true } }, "required": true } }, "required": true },
-  "rate": { "type": { "limit": { "type": "number", "required": true },
-"remaining": { "type": "number", "required": true },
-"reset": { "type": "number", "required": true } }, "required": true } },
+  "resources": { "type": "RateResources", "required": true },
+  "rate": { "type": "RateRate", "required": true }
+},
+
+"RateResources": {
+  "core": { "type": "RateRate", "required": true },
+  "search": { "type": "RateRate", "required": true },
+  "graphql": { "type": "RateRate", "required": true }
+},
+
+"RateRate": {
+  "limit": { "type": "number", "required": true },
+  "remaining": { "type": "number", "required": true },
+  "reset": { "type": "number", "required": true }
+},
+
 
 "RepoComment": {
   "url": { "type": "string", "required": true },
@@ -1801,7 +1791,7 @@
   "updated_at": { "type": "string", "required": true },
   "body": { "type": "string", "required": true } },
 
-"RepoCommit": {
+"RepoCommitWithFiles": {
   "sha": { "type": "string", "required": true },
   "commit": { "type": "GitCommit", "required": true },
   "url": { "type": "string", "required": true },
@@ -1810,12 +1800,11 @@
   "author": { "type": "User", "required": true },
   "committer": { "type": "User", "required": true },
   "parents": { "type": "CommitSlugMaybe[]", "required": true },
-  "stats": { "type": { "total": { "type": "number", "required": true },
-"additions": { "type": "number", "required": true },
-"deletions": { "type": "number", "required": true } }, "required": true },
-  "files": { "type": "GitPatch[]", "required": true } },
+  "stats": { "type": "RepoDiffStats", "required": true },
+  "files": { "type": "GitPatch[]", "required": true }
+},
 
-"RepoCommit2": {
+"RepoCommit": {
   "sha": { "type": "string", "required": true },
   "commit": { "type": "RepoCommitSlug", "required": true },
   "url": { "type": "string", "required": true },
@@ -1824,19 +1813,8 @@
   "author": { "type": "User", "required": true },
   "committer": { "type": "User", "required": true },
   "parents": { "type": "CommitSlug2[]", "required": true },
-  "stats": { "type": { "total": { "type": "number", "required": true },
-"additions": { "type": "number", "required": true },
-"deletions": { "type": "number", "required": true } }, "required": true } },
-
-"RepoCommitMaybe": {
-  "sha": { "type": "string", "required": false },
-  "commit": { "type": "GitCommit", "required": true },
-  "url": { "type": "string", "required": true },
-  "html_url": { "type": "string", "required": true },
-  "comments_url": { "type": "string", "required": true },
-  "author": { "type": "User", "required": true },
-  "committer": { "type": "User", "required": true },
-  "parents": { "type": "CommitSlugMaybe[]", "required": true } },
+  "stats": { "type": "RepoDiffStats", "required": false }
+},
 
 "RepoCommitSlug": {
   "author": { "type": "UserSlug", "required": true },
@@ -1855,10 +1833,15 @@
   "author": { "type": "User", "required": true },
   "committer": { "type": "User", "required": true },
   "parents": { "type": "CommitSlugMaybe[]", "required": true },
-  "stats": { "type": { "total": { "type": "number", "required": true },
-"additions": { "type": "number", "required": true },
-"deletions": { "type": "number", "required": true } }, "required": true },
-  "files": { "type": "GitPatch[]", "required": true } },
+  "stats": { "type": "RepoDiffStats", "required": true },
+  "files": { "type": "GitPatch[]", "required": true }
+},
+
+"RepoDiffStats": {
+  "total": { "type": "number", "required": true },
+  "additions": { "type": "number", "required": true },
+  "deletions": { "type": "number", "required": true }
+},
 
 "RepoCommitStatus": {
   "state": { "type": ["pending", "success", "error", "failure"], "required": true },
@@ -2136,9 +2119,13 @@
   "open_issues": { "type": "number", "required": true },
   "watchers": { "type": "number", "required": true },
   "default_branch": { "type": "string", "required": true },
-  "permissions": { "type": { "admin": { "type": "boolean", "required": true },
-"push": { "type": "boolean", "required": true },
-"pull": { "type": "boolean", "required": true } }, "required": true } },
+  "permissions": { "type": "RepositoryPermissions", "required": false } },
+
+"RepositoryPermissions": {
+  "admin": { "type": "boolean", "required": true },
+  "push": { "type": "boolean", "required": true },
+  "pull": { "type": "boolean", "required": true }
+},
 
 "RootFeeds": {
   "timeline_url": { "type": "string", "required": true },

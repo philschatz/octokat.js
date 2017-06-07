@@ -57,8 +57,8 @@ export interface ParamAssignees { assignees?: string[] }
   readonly permalink_url: string
   readonly diff_url: string
   readonly patch_url: string
-  readonly base_commit: RepoCommitMaybe
-  readonly merge_base_commit: RepoCommitMaybe
+  readonly base_commit: RepoCommitDiffCommit
+  readonly merge_base_commit: RepoCommitDiffCommit
   readonly status: string
   readonly ahead_by: number
   readonly behind_by: number
@@ -1849,7 +1849,7 @@ export type RepoCommit = {
   readonly files: GitPatch[]
 }
 
-export type RepoCommitMaybe = {
+export type RepoCommitDiffCommit = {
   readonly sha: string
   readonly commit: GitCommit
   readonly url: string
@@ -3392,8 +3392,8 @@ read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposCommitsGetParams, callback?: Callback<SearchResult<RepoCommitMaybe>>): Promise<SearchResult<RepoCommitMaybe>>
-fetchAll(params?: OctokatReposCommitsGetParams, callback?: Callback<RepoCommitMaybe[]>): Promise<RepoCommitMaybe[]>
+fetch(params?: OctokatReposCommitsGetParams, callback?: Callback<SearchResult<RepoCommitDiffCommit>>): Promise<SearchResult<RepoCommitDiffCommit>>
+fetchAll(params?: OctokatReposCommitsGetParams, callback?: Callback<RepoCommitDiffCommit[]>): Promise<RepoCommitDiffCommit[]>
 read(params?: OctokatReposCommitsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCommitsGetParams, callback?: Callback<any>): Promise<any>
  }
