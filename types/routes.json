@@ -5030,7 +5030,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<RepoContributors>",
             "description": "Get contributors for the specified repository."
         },
         "get-languages": {
@@ -5042,6 +5042,7 @@
                 "$page": null,
                 "$per_page": null
             },
+            "yields": "json",
             "description": "Get languages for the specified repository."
         },
         "get-teams": {
@@ -6614,6 +6615,8 @@
                 "$owner": null,
                 "$repo": null
             },
+            "__yields": "RepoStatsContributors",
+            "yields": "json",
             "description": "Get contributors list with additions, deletions, and commit counts."
         },
         "get-stats-commit-activity": {
@@ -6623,6 +6626,8 @@
                 "$owner": null,
                 "$repo": null
             },
+            "__yields": "RepoStatsCommits",
+            "yields": "json",
             "description": "Get the last year of commit activity data."
         },
         "get-stats-code-frequency": {
@@ -6632,6 +6637,7 @@
                 "$owner": null,
                 "$repo": null
             },
+            "yields": "json",
             "description": "Get the number of additions and deletions per week."
         },
         "get-stats-participation": {

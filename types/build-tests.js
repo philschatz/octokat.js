@@ -80,13 +80,6 @@ const URL_EXCEPTIONS = [
 
   '/repos/:owner/:repo/issues/comments/:issue_comment_id/reactions',
   '/repos/:owner/:repo/pulls/:pull_request_number/merge',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
 ]
 
 

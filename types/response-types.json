@@ -1867,7 +1867,48 @@
   "total_count": { "type": "number", "required": true },
   "commit_url": { "type": "string", "required": true },
   "url": { "type": "string", "required": true },
-  "repository": { "type": "RepoSlug", "required": true } },
+  "repository": { "type": "RepoSlug", "required": true }
+},
+
+"RepoContributors": {
+  "login": { "type": "string", "required": true },
+  "id": { "type": "number", "required": true },
+  "avatar_url": { "type": "string", "required": true },
+  "gravatar_id": { "type": "string", "required": true },
+  "url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true },
+  "followers_url": { "type": "string", "required": true },
+  "following_url": { "type": "string", "required": true },
+  "gists_url": { "type": "string", "required": true },
+  "starred_url": { "type": "string", "required": true },
+  "subscriptions_url": { "type": "string", "required": true },
+  "organizations_url": { "type": "string", "required": true },
+  "repos_url": { "type": "string", "required": true },
+  "events_url": { "type": "string", "required": true },
+  "received_events_url": { "type": "string", "required": true },
+  "type": { "type": ["User", "Organization"], "required": true },
+  "site_admin": { "type": "boolean", "required": true },
+  "contributions": { "type": "number", "required": true }
+},
+
+"RepoStatsContributors": {
+  "author": { "type": "User", "required": true },
+  "total": { "type": "number", "required": true },
+  "weeks": { "type": "RepoStatsContributorsWeek[]", "required": true }
+},
+
+"RepoStatsContributorsWeek": {
+  "w": { "type": "string", "required": true },
+  "a": { "type": "number", "required": true },
+  "d": { "type": "number", "required": true },
+  "c": { "type": "number", "required": true }
+},
+
+"RepoStatsCommits": {
+  "days": { "type": "number[]", "required": true },
+  "total": { "type": "number", "required": true },
+  "week": { "type": "number", "required": true }
+},
 
 "RepoDeployment": {
   "url": { "type": "string", "required": true },
