@@ -104,7 +104,7 @@ const validators = Object.keys(responseTypes).map((responseTypeName) => {
             break;
           case 'Number':
           case 'number':
-            testFields.push(`if(!Number.isFinite(response${fieldNameEscaped})) { return false }`)
+            testFields.push(`if(typeof response${fieldNameEscaped} !== 'number') { return false }`)
             return `expect(response${fieldNameEscaped}, 'response.${fieldName}: ' + JSON.stringify(response)).to.be.a('number')`
             break;
           case 'Boolean':

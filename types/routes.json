@@ -1291,7 +1291,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "Get watchers for repository."
         },
         "get-watched-repos-for-user": {
@@ -2325,7 +2325,7 @@
                 "$owner": null,
                 "$repo": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "List assignees"
         },
         "check-assignee": {
@@ -3277,7 +3277,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserWithName>",
             "description": "Members list"
         },
         "check-membership": {
@@ -3305,7 +3305,7 @@
             "params": {
                 "$org": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserWithName>",
             "description": "Public members list"
         },
         "check-public-membership": {
@@ -5506,7 +5506,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "List collaborators"
         },
         "check-collaborator": {
@@ -7037,7 +7037,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserWithName>",
             "description": "Search users."
         },
         "email": {
@@ -7062,7 +7062,7 @@
             "params": {
                 "$username": null
             },
-            "yields": "User",
+            "yields": "UserWithName",
             "description": "Get a single user"
         },
         "get-by-id": {
@@ -7071,14 +7071,14 @@
             "params": {
                 "$id": null
             },
-            "yields": "User",
+            "yields": "UserWithName",
             "description": "Get a single user by GitHub ID"
         },
         "get": {
             "url": "/user",
             "method": "GET",
             "params": {},
-            "yields": "User",
+            "yields": "UserWithName",
             "description": "Get the authenticated user"
         },
         "update": {
@@ -7148,7 +7148,7 @@
                     "description": "The integer ID of the last User that you’ve seen."
                 }
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "Get all users"
         },
         "get-orgs": {
@@ -7273,7 +7273,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "List a user's followers"
         },
         "get-followers": {
@@ -7283,7 +7283,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "List the authenticated user's followers"
         },
         "get-following-for-user": {
@@ -7294,7 +7294,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "List who a user is following"
         },
         "get-following": {
@@ -7304,7 +7304,7 @@
                 "$page": null,
                 "$per_page": null
             },
-            "yields": "SearchResult<User>",
+            "yields": "SearchResult<UserNoName>",
             "description": "List who the authenticated user is following"
         },
         "check-following": {

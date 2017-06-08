@@ -71,9 +71,9 @@
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
   "description": { "type": "string", "required": false },
-  "user": { "type": "User", "required": false },
+  "user": { "type": "UserWithName", "required": false },
   "comments_url": { "type": "string", "required": true },
-  "owner": { "type": "User", "required": false },
+  "owner": { "type": "UserWithName", "required": false },
   "truncated": { "type": "boolean", "required": true }
 },
 
@@ -144,19 +144,19 @@
   "id": { "type": "number", "required": true },
   "number": { "type": "number", "required": true },
   "title": { "type": "string", "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "labels": { "type": "IssueLabel[]", "required": true },
   "state": { "type": ["open", "closed"], "required": true },
   "locked": { "type": "boolean", "required": true },
-  "assignee": { "type": "User", "required": false },
-  "assignees": { "type": "User[]", "required": true },
+  "assignee": { "type": "UserNoName", "required": false },
+  "assignees": { "type": "UserNoName[]", "required": true },
   "milestone": { "type": "any", "required": false },
   "comments": { "type": "number", "required": true },
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
   "closed_at": { "type": "string", "required": false },
   "body": { "type": "string", "required": false },
-  "closed_by": { "type": "User", "required": false }
+  "closed_by": { "type": "UserNoName", "required": false }
 },
 
 "IssueComment": {
@@ -164,7 +164,7 @@
   "html_url": { "type": "string", "required": true },
   "issue_url": { "type": "string", "required": true },
   "id": { "type": "number", "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
   "body": { "type": "string", "required": true }
@@ -173,7 +173,7 @@
 "IssueEvent": {
   "id": { "type": "number", "required": true },
   "url": { "type": "string", "required": true },
-  "actor": { "type": "User", "required": true },
+  "actor": { "type": "UserNoName", "required": true },
   "event": { "type": "string", "required": true },
   "commit_id": { "type": "any", "required": false },
   "commit_url": { "type": "any", "required": false },
@@ -280,7 +280,7 @@
   "url": { "type": "string", "required": true },
   "html_url": { "type": "string", "required": true },
   "id": { "type": "number", "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "position": { "type": "any", "required": false },
   "line": { "type": "any", "required": false },
   "path": { "type": "any", "required": false },
@@ -296,8 +296,8 @@
   "url": { "type": "string", "required": true },
   "html_url": { "type": "string", "required": true },
   "comments_url": { "type": "string", "required": true },
-  "author": { "type": "User", "required": true },
-  "committer": { "type": "User", "required": true },
+  "author": { "type": "UserNoName", "required": true },
+  "committer": { "type": "UserNoName", "required": true },
   "parents": { "type": "RepoCommitSingleSlug[]", "required": true },
   "stats": { "type": "RepoDiffStats", "required": true },
   "files": { "type": "GitPatch[]", "required": true }
@@ -318,8 +318,8 @@
   "url": { "type": "string", "required": true },
   "html_url": { "type": "string", "required": true },
   "comments_url": { "type": "string", "required": true },
-  "author": { "type": "User", "required": true },
-  "committer": { "type": "User", "required": true },
+  "author": { "type": "UserNoName", "required": true },
+  "committer": { "type": "UserNoName", "required": true },
   "parents": { "type": "RepoCommitItemSlug2[]", "required": true },
   "stats": { "type": "RepoDiffStats", "required": false }
 },
@@ -377,7 +377,7 @@
 },
 
 "RepoStatsContributors": {
-  "author": { "type": "User", "required": true },
+  "author": { "type": "UserWithName", "required": true },
   "total": { "type": "number", "required": true },
   "weeks": { "type": "RepoStatsContributorsWeek[]", "required": true }
 },
@@ -404,7 +404,7 @@
   "payload": { "type": "json", "required": true },
   "environment": { "type": "string", "required": true },
   "description": { "type": "string", "required": false },
-  "creator": { "type": "User", "required": true },
+  "creator": { "type": "UserNoName", "required": true },
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
   "statuses_url": { "type": "string", "required": true },
@@ -422,7 +422,7 @@
 },
 
 "RepoEventPayload": {
-  "member": { "type": "User", "required": false },
+  "member": { "type": "UserWithName", "required": false },
   "action": { "type": "string", "required": false }
 },
 
@@ -430,7 +430,7 @@
   "url": { "type": "string", "required": true },
   "status": { "type": ["built"], "required": true },
   "error": { "type": "RepoPagesBuildError", "required": true },
-  "pusher": { "type": "User", "required": true },
+  "pusher": { "type": "UserNoName", "required": true },
   "commit": { "type": "string", "required": true },
   "duration": { "type": "number", "required": true },
   "created_at": { "type": "string", "required": true },
@@ -443,7 +443,7 @@
 
 "RepoPermission": {
   "permission": { "type": ["admin", "read", "write"], "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "url": { "type": "string", "required": true }
 },
 
@@ -454,21 +454,21 @@
   "id": { "type": "number", "required": true },
   "number": { "type": "number", "required": true },
   "title": { "type": "string", "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "state": { "type": ["open", "closed"], "required": true },
   "locked": { "type": "boolean", "required": true },
-  "assignee": { "type": "User", "required": false },
-  "assignees": { "type": "User[]", "required": true },
+  "assignee": { "type": "UserNoName", "required": false },
+  "assignees": { "type": "UserWithName[]", "required": true },
   "milestone": { "type": "any", "required": false },
   "comments": { "type": "number", "required": true },
   "created_at": { "type": "string", "required": true },
   "updated_at": { "type": "string", "required": true },
   "closed_at": { "type": "string", "required": false },
   "body": { "type": "string", "required": false },
-  "closed_by": { "type": "User", "required": false },
+  "closed_by": { "type": "UserNoName", "required": false },
   "merged_at": { "type": "string", "required": false },
   "merge_commit_sha": { "type": "string", "required": false },
-  "requested_reviewers": { "type": "User[]", "required": true },
+  "requested_reviewers": { "type": "UserWithName[]", "required": true },
   "review_comments_url": { "type": "string", "required": true },
   "review_comment_url": { "type": "string", "required": true },
   "statuses_url": { "type": "string", "required": true },
@@ -479,7 +479,7 @@
   "mergeable": { "type": "boolean", "required": false },
   "rebaseable": { "type": "any", "required": false },
   "mergeable_state": { "type": ["unknown"], "required": true },
-  "merged_by": { "type": "User", "required": false },
+  "merged_by": { "type": "UserNoName", "required": false },
   "review_comments": { "type": "number", "required": true },
   "maintainer_can_modify": { "type": "boolean", "required": true },
   "commits": { "type": "number", "required": true },
@@ -492,13 +492,13 @@
   "label": { "type": "string", "required": true },
   "ref": { "type": "string", "required": true },
   "sha": { "type": "string", "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "repo": { "type": "Repository", "required": true }
 },
 
 "RepoPullRequestReview": {
   "id": { "type": "number", "required": true },
-  "user": { "type": "User", "required": true },
+  "user": { "type": "UserNoName", "required": true },
   "body": { "type": "string", "required": true },
   "state": { "type": ["COMMENTED", "APPROVED", "REQUESTED_CHANGES", "PENDING"], "required": true },
   "html_url": { "type": "string", "required": true },
@@ -567,7 +567,7 @@
   "id": { "type": "number", "required": true },
   "name": { "type": "string", "required": true },
   "full_name": { "type": "string", "required": true },
-  "owner": { "type": "User", "required": true },
+  "owner": { "type": "UserNoName", "required": true },
   "private": { "type": "boolean", "required": true },
   "html_url": { "type": "string", "required": true },
   "description": { "type": "string", "required": false },
@@ -714,9 +714,29 @@
   "repo": { "type": "Repository", "required": true }
 },
 
-"User": {
+"UserWithName": {
   "login": { "type": "string", "required": true },
-  "name": { "type": "string", "required": false },
+  "name": { "type": "string", "required": true },
+  "id": { "type": "number", "required": true },
+  "avatar_url": { "type": "string", "required": true },
+  "gravatar_id": { "type": "string", "required": true },
+  "url": { "type": "string", "required": true },
+  "html_url": { "type": "string", "required": true },
+  "followers_url": { "type": "string", "required": true },
+  "following_url": { "type": "string", "required": true },
+  "gists_url": { "type": "string", "required": true },
+  "starred_url": { "type": "string", "required": true },
+  "subscriptions_url": { "type": "string", "required": true },
+  "organizations_url": { "type": "string", "required": true },
+  "repos_url": { "type": "string", "required": true },
+  "events_url": { "type": "string", "required": true },
+  "received_events_url": { "type": "string", "required": true },
+  "type": { "type": ["User", "Organization"], "required": true },
+  "site_admin": { "type": "boolean", "required": true }
+},
+
+"UserNoName": {
+  "login": { "type": "string", "required": true },
   "id": { "type": "number", "required": true },
   "avatar_url": { "type": "string", "required": true },
   "gravatar_id": { "type": "string", "required": true },

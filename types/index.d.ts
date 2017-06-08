@@ -125,9 +125,9 @@ export type Gist = {
   readonly created_at: string
   readonly updated_at: string
   readonly description?: string
-  readonly user?: User
+  readonly user?: UserWithName
   readonly comments_url: string
-  readonly owner?: User
+  readonly owner?: UserWithName
   readonly truncated: boolean
 }
 
@@ -196,19 +196,19 @@ export type RepoIssue = {
   readonly id: number
   readonly number: number
   readonly title: string
-  readonly user: User
+  readonly user: UserNoName
   readonly labels: IssueLabel[]
   readonly state: 'open' | 'closed'
   readonly locked: boolean
-  readonly assignee?: User
-  readonly assignees: User[]
+  readonly assignee?: UserNoName
+  readonly assignees: UserNoName[]
   readonly milestone?: any
   readonly comments: number
   readonly created_at: string
   readonly updated_at: string
   readonly closed_at?: string
   readonly body?: string
-  readonly closed_by?: User
+  readonly closed_by?: UserNoName
 }
 
 export type IssueComment = {
@@ -216,7 +216,7 @@ export type IssueComment = {
   readonly html_url: string
   readonly issue_url: string
   readonly id: number
-  readonly user: User
+  readonly user: UserNoName
   readonly created_at: string
   readonly updated_at: string
   readonly body: string
@@ -225,7 +225,7 @@ export type IssueComment = {
 export type IssueEvent = {
   readonly id: number
   readonly url: string
-  readonly actor: User
+  readonly actor: UserNoName
   readonly event: string
   readonly commit_id?: any
   readonly commit_url?: any
@@ -330,7 +330,7 @@ export type RepoComment = {
   readonly url: string
   readonly html_url: string
   readonly id: number
-  readonly user: User
+  readonly user: UserNoName
   readonly position?: any
   readonly line?: any
   readonly path?: any
@@ -346,8 +346,8 @@ export type RepoCommitSingle = {
   readonly url: string
   readonly html_url: string
   readonly comments_url: string
-  readonly author: User
-  readonly committer: User
+  readonly author: UserNoName
+  readonly committer: UserNoName
   readonly parents: RepoCommitSingleSlug[]
   readonly stats: RepoDiffStats
   readonly files: GitPatch[]
@@ -368,8 +368,8 @@ export type RepoCommitItem = {
   readonly url: string
   readonly html_url: string
   readonly comments_url: string
-  readonly author: User
-  readonly committer: User
+  readonly author: UserNoName
+  readonly committer: UserNoName
   readonly parents: RepoCommitItemSlug2[]
   readonly stats?: RepoDiffStats
 }
@@ -427,7 +427,7 @@ export type RepoContributors = {
 }
 
 export type RepoStatsContributors = {
-  readonly author: User
+  readonly author: UserWithName
   readonly total: number
   readonly weeks: RepoStatsContributorsWeek[]
 }
@@ -454,7 +454,7 @@ export type RepoDeployment = {
   readonly payload: json
   readonly environment: string
   readonly description?: string
-  readonly creator: User
+  readonly creator: UserNoName
   readonly created_at: string
   readonly updated_at: string
   readonly statuses_url: string
@@ -472,7 +472,7 @@ export type RepoEvent = {
 }
 
 export type RepoEventPayload = {
-  readonly member?: User
+  readonly member?: UserWithName
   readonly action?: string
 }
 
@@ -480,7 +480,7 @@ export type RepoPagesBuild = {
   readonly url: string
   readonly status: 'built'
   readonly error: RepoPagesBuildError
-  readonly pusher: User
+  readonly pusher: UserNoName
   readonly commit: string
   readonly duration: number
   readonly created_at: string
@@ -493,7 +493,7 @@ export type RepoPagesBuildError = {
 
 export type RepoPermission = {
   readonly permission: 'admin' | 'read' | 'write'
-  readonly user: User
+  readonly user: UserNoName
   readonly url: string
 }
 
@@ -504,21 +504,21 @@ export type RepoPullRequest = {
   readonly id: number
   readonly number: number
   readonly title: string
-  readonly user: User
+  readonly user: UserNoName
   readonly state: 'open' | 'closed'
   readonly locked: boolean
-  readonly assignee?: User
-  readonly assignees: User[]
+  readonly assignee?: UserNoName
+  readonly assignees: UserWithName[]
   readonly milestone?: any
   readonly comments: number
   readonly created_at: string
   readonly updated_at: string
   readonly closed_at?: string
   readonly body?: string
-  readonly closed_by?: User
+  readonly closed_by?: UserNoName
   readonly merged_at?: string
   readonly merge_commit_sha?: string
-  readonly requested_reviewers: User[]
+  readonly requested_reviewers: UserWithName[]
   readonly review_comments_url: string
   readonly review_comment_url: string
   readonly statuses_url: string
@@ -529,7 +529,7 @@ export type RepoPullRequest = {
   readonly mergeable?: boolean
   readonly rebaseable?: any
   readonly mergeable_state: 'unknown'
-  readonly merged_by?: User
+  readonly merged_by?: UserNoName
   readonly review_comments: number
   readonly maintainer_can_modify: boolean
   readonly commits: number
@@ -542,13 +542,13 @@ export type RepoPullRequestRef = {
   readonly label: string
   readonly ref: string
   readonly sha: string
-  readonly user: User
+  readonly user: UserNoName
   readonly repo: Repository
 }
 
 export type RepoPullRequestReview = {
   readonly id: number
-  readonly user: User
+  readonly user: UserNoName
   readonly body: string
   readonly state: 'COMMENTED' | 'APPROVED' | 'REQUESTED_CHANGES' | 'PENDING'
   readonly html_url: string
@@ -617,7 +617,7 @@ export type Repository = {
   readonly id: number
   readonly name: string
   readonly full_name: string
-  readonly owner: User
+  readonly owner: UserNoName
   readonly private: boolean
   readonly html_url: string
   readonly description?: string
@@ -761,9 +761,29 @@ export type Stargazer = {
   readonly repo: Repository
 }
 
-export type User = {
+export type UserWithName = {
   readonly login: string
-  readonly name?: string
+  readonly name: string
+  readonly id: number
+  readonly avatar_url: string
+  readonly gravatar_id: string
+  readonly url: string
+  readonly html_url: string
+  readonly followers_url: string
+  readonly following_url: string
+  readonly gists_url: string
+  readonly starred_url: string
+  readonly subscriptions_url: string
+  readonly organizations_url: string
+  readonly repos_url: string
+  readonly events_url: string
+  readonly received_events_url: string
+  readonly type: 'User' | 'Organization'
+  readonly site_admin: boolean
+}
+
+export type UserNoName = {
+  readonly login: string
   readonly id: number
   readonly avatar_url: string
   readonly gravatar_id: string
@@ -1762,8 +1782,8 @@ readBinary(params?: OctokatReposStargazersGetParams, callback?: Callback<any>): 
 subscribers: { 
 
 
-fetch(params?: OctokatReposSubscribersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatReposSubscribersGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatReposSubscribersGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatReposSubscribersGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatReposSubscribersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposSubscribersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -1856,8 +1876,8 @@ read(params: OctokatReposAssigneesFnGetParams, callback?: Callback<String>): Pro
 readBinary(params: OctokatReposAssigneesFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(callback?: Callback<User[]>): Promise<User[]>
+fetch(callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -2191,8 +2211,8 @@ add(params?: OctokatReposCollaboratorsFnPutParams, callback?: Callback<any>): Pr
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatReposCollaboratorsGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2615,8 +2635,8 @@ readBinary(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatOrgsMembersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatOrgsMembersGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatOrgsMembersGetParams, callback?: Callback<SearchResult<UserWithName>>): Promise<SearchResult<UserWithName>>
+fetchAll(params?: OctokatOrgsMembersGetParams, callback?: Callback<UserWithName[]>): Promise<UserWithName[]>
 read(params?: OctokatOrgsMembersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatOrgsMembersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2631,8 +2651,8 @@ add(callback?: Callback<Boolean>): Promise<Boolean>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(callback?: Callback<User[]>): Promise<User[]>
+fetch(callback?: Callback<SearchResult<UserWithName>>): Promise<SearchResult<UserWithName>>
+fetchAll(callback?: Callback<UserWithName[]>): Promise<UserWithName[]>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
@@ -2822,8 +2842,8 @@ readBinary(params?: OctokatUsersFnReposGetParams, callback?: Callback<any>): Pro
 followers: { 
 
 
-fetch(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnFollowersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2836,8 +2856,8 @@ read(params: OctokatUsersFnFollowingFnGetParams, callback?: Callback<String>): P
 readBinary(params: OctokatUsersFnFollowingFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnFollowingGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -2860,13 +2880,13 @@ suspended: {
 add(callback?: Callback<any>): Promise<any>
 remove(callback?: Callback<any>): Promise<any>
  }
-fetch(params?: OctokatUsersFnGetParams, callback?: Callback<User>): Promise<User>
+fetch(params?: OctokatUsersFnGetParams, callback?: Callback<UserWithName>): Promise<UserWithName>
 read(params?: OctokatUsersFnGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersFnGetParams, callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUsersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatUsersGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatUsersGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatUsersGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatUsersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUsersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3001,8 +3021,8 @@ remove(params: OctokatUserEmailsDeleteParams, callback?: Callback<any>): Promise
 followers: { 
 
 
-fetch(params?: OctokatUserFollowersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatUserFollowersGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatUserFollowersGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatUserFollowersGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatUserFollowersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserFollowersGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3017,8 +3037,8 @@ add(callback?: Callback<Boolean>): Promise<Boolean>
 remove(callback?: Callback<any>): Promise<any>
  }
 
-fetch(params?: OctokatUserFollowingGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params?: OctokatUserFollowingGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params?: OctokatUserFollowingGetParams, callback?: Callback<SearchResult<UserNoName>>): Promise<SearchResult<UserNoName>>
+fetchAll(params?: OctokatUserFollowingGetParams, callback?: Callback<UserNoName[]>): Promise<UserNoName[]>
 read(params?: OctokatUserFollowingGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params?: OctokatUserFollowingGetParams, callback?: Callback<any>): Promise<any>
  }
@@ -3079,7 +3099,7 @@ fetch(callback?: Callback<any>): Promise<any>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
  }
-fetch(callback?: Callback<User>): Promise<User>
+fetch(callback?: Callback<UserWithName>): Promise<UserWithName>
 read(callback?: Callback<String>): Promise<String>
 readBinary(callback?: Callback<any>): Promise<any>
 update(params?: OctokatUserPatchParams, callback?: Callback<any>): Promise<any>
@@ -3474,8 +3494,8 @@ readBinary(params?: OctokatSearchIssuesGetParams, callback?: Callback<any>): Pro
 users: { 
 
 
-fetch(params: OctokatSearchUsersGetParams, callback?: Callback<SearchResult<User>>): Promise<SearchResult<User>>
-fetchAll(params: OctokatSearchUsersGetParams, callback?: Callback<User[]>): Promise<User[]>
+fetch(params: OctokatSearchUsersGetParams, callback?: Callback<SearchResult<UserWithName>>): Promise<SearchResult<UserWithName>>
+fetchAll(params: OctokatSearchUsersGetParams, callback?: Callback<UserWithName[]>): Promise<UserWithName[]>
 read(params: OctokatSearchUsersGetParams, callback?: Callback<String>): Promise<String>
 readBinary(params: OctokatSearchUsersGetParams, callback?: Callback<any>): Promise<any>
  }
