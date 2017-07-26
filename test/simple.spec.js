@@ -484,14 +484,13 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       }
 
       return STATE[GH].gists.create(config)
-      .then(gist => { STATE[GIST] = gist })
+      .then(gist => { STATE[GIST] = STATE[GH].fromUrl(gist.url) })
     })
 
     // itIsOk(GIST, 'fetch')
 
     // itIsArray(GIST, 'forks.all')
 
-    // TODO: For some reason this test fails in the browser. Probably POST vs PUT?
     it('can be .starred.add() and .starred.remove()', () =>
       STATE[GIST].star.add()
       .then(() => STATE[GIST].star.remove())

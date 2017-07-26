@@ -7,10 +7,10 @@ if (typeof window !== 'undefined' && window !== null) {
   describe('Status', function () {
     this.timeout(LONG_TIMEOUT)
 
-    it('returns the current system status', () => client.status())
+    it('returns the current system status', () => client.fromUrl('https://status.github.com/api/status.json').fetch())
 
-    it('returns the last human message', () => client.status.lastMessage())
+    it('returns the last human message', () => client.fromUrl('https://status.github.com/api/messages.json').fetch())
 
-    it('returns the most recent status messages', () => client.status.messages())
+    it('returns the most recent status messages', () => client.fromUrl('https://status.github.com/api/last-message.json').fetch())
   })
 }

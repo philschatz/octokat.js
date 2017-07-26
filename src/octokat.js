@@ -4,7 +4,7 @@ const OctokatBase = require('./base')
 const HypermediaPlugin = require('./plugins/hypermedia')
 
 let ALL_PLUGINS = [
-  require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
+  // require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
   require('./plugins/path-validator'),
   require('./plugins/authorization'),
   require('./plugins/preview-apis'),

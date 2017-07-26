@@ -143,7 +143,7 @@ describe('Contents', function () {
             }
             return client.repos(test_repo).contents('test_delete.txt').remove(config)
             .then(function (response) {
-              expect(response.url).is.a('string')
+              expect(response.commit.url).is.a('string')
             })
           })
         })

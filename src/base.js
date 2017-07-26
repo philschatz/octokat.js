@@ -2,7 +2,7 @@ const fetch = require('./adapters/fetch-node')
 const plus = require('./plus')
 const deprecate = require('./deprecate')
 const TREE_OPTIONS = require('./grammar/tree-options')
-const Chainer = require('./chainer')
+const Chainer = require('./chained')
 const { VerbMethods, toPromise } = require('./verb-methods')
 
 // Use the following plugins by default (they should be neglegible additional code)
@@ -42,11 +42,6 @@ let uncamelizeObj = function (obj) {
 let OctokatBase = function (clientOptions = {}) {
   let plugins = clientOptions.plugins || [SimpleVerbsPlugin]
 
-  // TODO remove disableHypermedia
-  let {disableHypermedia} = clientOptions
-  // set defaults
-  if (typeof disableHypermedia === 'undefined' || disableHypermedia === null) { disableHypermedia = false }
-
   // the octokat instance
   let instance = {}
 
@@ -65,26 +60,12 @@ let OctokatBase = function (clientOptions = {}) {
     // For each request, convert the JSON into Objects
     let requester = new Requester(instance, clientOptions, plugins, fetchImpl)
 
-    return requester.request(method, path, data, options).then((val) => {
-      if ((options || {}).raw) { return val }
-
-      if (!disableHypermedia) {
-        let context = {
-          data: val,
-          plugins,
-          requester,
-          instance,
-          clientOptions
-        }
-        return instance._parseWithContextPromise(path, context)
-      } else {
-        return val
-      }
-    })
+    return requester.request(method, path, data, options)
   }
 
-  let verbMethods = new VerbMethods(plugins, {request});
-  (new Chainer(verbMethods)).chain('', null, TREE_OPTIONS, instance)
+  let verbMethods = new VerbMethods(plugins, {request})
+  // attach all the possible methods
+  Chainer(verbMethods, '', '', instance)
 
   // Special case for `me`
   instance.me = instance.user
@@ -124,7 +105,8 @@ let OctokatBase = function (clientOptions = {}) {
   // TODO remove this deprectaion too
   instance._fromUrlWithDefault = function (path, defaultFn, ...args) {
     path = applyHypermedia(path, ...args)
-    verbMethods.injectVerbMethods(path, defaultFn)
+    Chainer(verbMethods, path, '', defaultFn)
+    // verbMethods.injectVerbMethods(path, defaultFn)
     return defaultFn
   }
 
@@ -152,12 +134,6 @@ let OctokatBase = function (clientOptions = {}) {
     }
     return fn
   }
-
-  // Add the GitHub Status API https://status.github.com/api
-  instance.status = instance.fromUrl('https://status.github.com/api/status.json')
-  instance.status.api = instance.fromUrl('https://status.github.com/api.json')
-  instance.status.lastMessage = instance.fromUrl('https://status.github.com/api/last-message.json')
-  instance.status.messages = instance.fromUrl('https://status.github.com/api/messages.json')
 
   return instance
 }

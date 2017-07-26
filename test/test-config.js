@@ -19,7 +19,7 @@ let config = {
 
 if (process && process.env['GH_TOKEN']) {
   config.TOKEN = process.env['GH_TOKEN']
-} else {
+} else if (process) {
   console.warn('===================================')
   console.warn('WARNING: No GitHub token specified')
   console.warn('')
@@ -31,7 +31,7 @@ if (process && process.env['GH_TOKEN']) {
   console.warn('1. create a Personal Access Token at https://github.com/settings/tokens')
   console.warn('  - Note: only add the OAuth scopes you need to write your tests')
   console.warn('2. Copy the token to the clipboard and run the tests like so:')
-  console.warn('  - `GH_TOKEN=d34db33f123456 npm test`')
+  console.warn('  - `GH_TOKEN=123456d34db33f123456 npm test`')
   console.warn('')
   console.warn('===================================')
 }

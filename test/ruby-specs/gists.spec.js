@@ -20,53 +20,55 @@ describe('Gists', function () {
 
       return client.gists.create(newGist)
       .then(gist => {
-        this.gist = gist
-        return this.gist.comments.create({body: ':metal:'})
+        this.gist_val = gist
+        this.gist_fn = client.fromUrl(gist.url)
+        return this.gist_fn.comments.create({body: ':metal:'})
         .then(gistComment => {
-          this.gist_comment = gistComment
+          this.gist_comment_val = gistComment
         })
       }
       )
     })
 
     it('creates a new gist', function () {
-      expect(this.gist.url).to.be.a('string')
-      return expect(this.gist.files['zen.text']).to.be.ok
+      expect(this.gist_val.url).to.be.a('string')
+      return expect(this.gist_val.files['zen.text']).to.be.ok
     })
 
     it('creates a new gist comment', function () {
-      return expect(this.gist_comment.url).to.be.a('string')
+      return expect(this.gist_comment_val.url).to.be.a('string')
     })
 
     it('edit an existing gist', function () {
-      return this.gist.update({description: 'GitHub Zen'})
+      return this.gist_fn.update({description: 'GitHub Zen'})
     })
 
     it('stars an existing gist', function () {
-      return this.gist.star.add()
+      return this.gist_fn.star.add()
       .then(flag => expect(flag).to.be.true)
     })
 
     it('unstars an existing gist', function () {
-      return this.gist.star.remove()
+      return this.gist_fn.star.remove()
       .then(flag => expect(flag).to.be.true)
     })
 
     it('is not starred', function () {
-      return this.gist.star.contains()
+      return this.gist_fn.star.contains()
       .then(flag => expect(flag).to.be.false)
     })
 
     it.skip('forks an existing gist', () =>
       client.gists('839d32ef87bc22ba5231').forks.create()
       .then(gist => {
-        return gist.remove()
+        gist_fn = client.fromUrl(gist.url)
+        return gist_fn.remove()
       }
       )
     )
 
     it('returns the list of gist comments', function () {
-      return this.gist.comments.fetch()
+      return this.gist_fn.comments.fetch()
       .then(comments => {
         return expect(comments).to.be.an.Array
       }
@@ -74,20 +76,20 @@ describe('Gists', function () {
     })
 
     it('returns a gist comment', function () {
-      return this.gist.comments(this.gist_comment.id).fetch()
+      return this.gist_fn.comments(this.gist_comment_val.id).fetch()
       .then(null, e => console.error(e))
     })
 
     it('updates a gist comment', function () {
-      return this.gist.comments(this.gist_comment.id).update({body: ':heart:'})
+      return this.gist_fn.comments(this.gist_comment_val.id).update({body: ':heart:'})
     })
 
     it('deletes a gist comment', function () {
-      return this.gist.comments(this.gist_comment.id).remove()
+      return this.gist_fn.comments(this.gist_comment_val.id).remove()
     })
 
     it('deletes a gist', function () {
-      return this.gist.remove()
+      return this.gist_fn.remove()
     })
   })
 
