@@ -30,6 +30,10 @@ describe('Gists', function () {
       )
     })
 
+    after(function () {
+      delete this.gist_fn // needed for PhantomJS. Otherwise it hangs
+    })
+
     it('creates a new gist', function () {
       expect(this.gist_val.url).to.be.a('string')
       return expect(this.gist_val.files['zen.text']).to.be.ok

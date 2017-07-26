@@ -37,7 +37,9 @@ describe('Commit Comments', function () {
     )
 
     after(() => {
-      return this.commit_comment_fn.remove()
+      const ret = this.commit_comment_fn.remove()
+      delete this.commit_comment_fn // needed for PhantomJS. Otherwise it hangs
+      return ret
     })
 
     it('creates a commit comment', () => {
