@@ -120,7 +120,7 @@ let OctokatBase = function (clientOptions = {}) {
 
   instance._fromUrlCurried = function (path, defaultFn) {
     let fn = function (...templateArgs) {
-      // This conditional logic is for the deprecated .nextPage() call
+      // This conditional logic is for the deprecated .next_page() call
       if (defaultFn && templateArgs.length === 0) {
         return defaultFn.apply(fn)
       } else {

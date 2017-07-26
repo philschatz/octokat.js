@@ -54,7 +54,7 @@ module.exports = new class HyperMedia {
         var fn = (...args) => instance._fromUrlWithDefault(value, defaultFn, ...args)()
       } else {
         var defaultFn = function () {
-          deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()')
+          deprecate('instead of directly calling methods like .next_page(), use .next_page.fetch()')
           return this.fetch()
         }
         var fn = instance._fromUrlCurried(value, defaultFn)

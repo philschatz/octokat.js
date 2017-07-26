@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 29);
+/******/ 	return __webpack_require__(__webpack_require__.s = 28);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,11 +83,62 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
+module.exports = function (message) {
+  if (console && console.warn) {
+    console.warn("Octokat Deprecation: " + message);
+  }
+};
+//# sourceMappingURL=deprecate.js.map
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Converts a dictionary to a query string.
+// Internal helper method
+var toQueryString = function toQueryString(options, omitQuestionMark) {
+  // Returns '' if `options` is empty so this string can always be appended to a URL
+  if (!options || options === {}) {
+    return '';
+  }
+
+  var params = [];
+  var object = options || {};
+  for (var key in object) {
+    var value = object[key];
+    if (value) {
+      params.push(key + '=' + encodeURIComponent(value));
+    }
+  }
+  if (params.length) {
+    if (omitQuestionMark) {
+      return '&' + params.join('&');
+    } else {
+      return '?' + params.join('&');
+    }
+  } else {
+    return '';
+  }
+};
+
+module.exports = toQueryString;
+//# sourceMappingURL=querystring.js.map
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 // Both of these internal methods are really small/simple and we are only
 // working with arrays anyway
-var filter = __webpack_require__(26);
-var forEach = __webpack_require__(25);
-var map = __webpack_require__(27);
+var filter = __webpack_require__(25);
+var forEach = __webpack_require__(24);
+var map = __webpack_require__(26);
 
 // require('underscore-plus')
 var plus = {
@@ -152,64 +203,13 @@ module.exports = plus;
 //# sourceMappingURL=plus.js.map
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function (message) {
-  if (console && console.warn) {
-    console.warn("Octokat Deprecation: " + message);
-  }
-};
-//# sourceMappingURL=deprecate.js.map
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// Converts a dictionary to a query string.
-// Internal helper method
-var toQueryString = function toQueryString(options, omitQuestionMark) {
-  // Returns '' if `options` is empty so this string can always be appended to a URL
-  if (!options || options === {}) {
-    return '';
-  }
-
-  var params = [];
-  var object = options || {};
-  for (var key in object) {
-    var value = object[key];
-    if (value) {
-      params.push(key + '=' + encodeURIComponent(value));
-    }
-  }
-  if (params.length) {
-    if (omitQuestionMark) {
-      return '&' + params.join('&');
-    } else {
-      return '?' + params.join('&');
-    }
-  } else {
-    return '';
-  }
-};
-
-module.exports = toQueryString;
-//# sourceMappingURL=querystring.js.map
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var toQueryString = __webpack_require__(2);
+var toQueryString = __webpack_require__(1);
 
 // new class SimpleVerbs
 module.exports = {
@@ -254,17 +254,19 @@ module.exports = {
 "use strict";
 
 
-var deprecate = __webpack_require__(1);
+var deprecate = __webpack_require__(0);
 var OctokatBase = __webpack_require__(7);
 
-var HypermediaPlugin = __webpack_require__(17);
+var HypermediaPlugin = __webpack_require__(16);
 
 var ALL_PLUGINS = [
 // require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
-__webpack_require__(19), __webpack_require__(13), __webpack_require__(20), __webpack_require__(22), __webpack_require__(3), __webpack_require__(16), __webpack_require__(18),
+__webpack_require__(18), __webpack_require__(13), __webpack_require__(19), __webpack_require__(21), __webpack_require__(3), __webpack_require__(15), __webpack_require__(17),
 // Run cacheHandler after PagedResults so the link headers are remembered
 // but before hypermedia so the object is still serializable
-__webpack_require__(14), __webpack_require__(21), HypermediaPlugin, __webpack_require__(15)];
+__webpack_require__(14), __webpack_require__(20), HypermediaPlugin
+// require('./plugins/camel-case')
+];
 
 var Octokat = function Octokat() {
   var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -327,11 +329,11 @@ if (typeof window.fetch === 'function') {
 /* WEBPACK VAR INJECTION */(function(global) {
 
 var fetch = __webpack_require__(6);
-var plus = __webpack_require__(0);
-var deprecate = __webpack_require__(1);
+var plus = __webpack_require__(2);
+var deprecate = __webpack_require__(0);
 var Chainer = __webpack_require__(8);
 
-var _require = __webpack_require__(24),
+var _require = __webpack_require__(23),
     VerbMethods = _require.VerbMethods,
     toPromise = _require.toPromise;
 
@@ -340,7 +342,7 @@ var _require = __webpack_require__(24),
 
 var SimpleVerbsPlugin = __webpack_require__(3);
 
-var Requester = __webpack_require__(23);
+var Requester = __webpack_require__(22);
 var applyHypermedia = __webpack_require__(12);
 
 // Checks if a response is a Buffer or not
@@ -478,7 +480,7 @@ var OctokatBase = function OctokatBase() {
         templateArgs[_key3] = arguments[_key3];
       }
 
-      // This conditional logic is for the deprecated .nextPage() call
+      // This conditional logic is for the deprecated .next_page() call
       if (defaultFn && templateArgs.length === 0) {
         return defaultFn.apply(fn);
       } else {
@@ -497,7 +499,7 @@ var OctokatBase = function OctokatBase() {
 
 module.exports = OctokatBase;
 //# sourceMappingURL=base.js.map
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(28)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)))
 
 /***/ }),
 /* 8 */
@@ -507,7 +509,7 @@ module.exports = OctokatBase;
 
 
 var TREE_OPTIONS = __webpack_require__(10);
-var plus = __webpack_require__(0);
+var plus = __webpack_require__(2);
 
 var chained = function chained(verbMethods, path, name, fn) {
   fn = fn || function () {
@@ -601,8 +603,8 @@ module.exports = ["octocat", "heads", "applications", "grants", "authorizations"
 "use strict";
 
 
-var toQueryString = __webpack_require__(2);
-var deprecate = __webpack_require__(1);
+var toQueryString = __webpack_require__(1);
+var deprecate = __webpack_require__(0);
 
 module.exports = function (url) {
   // Deprecated interface. Use an Object to specify the args in the template.
@@ -851,93 +853,7 @@ module.exports = new (function () {
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var plus = __webpack_require__(0);
-
-module.exports = new (function () {
-  function CamelCase() {
-    _classCallCheck(this, CamelCase);
-  }
-
-  _createClass(CamelCase, [{
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var data = input.data;
-
-      data = this.replace(data);
-      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      return Promise.resolve(input);
-    }
-  }, {
-    key: 'replace',
-    value: function replace(data) {
-      if (Array.isArray(data)) {
-        return this._replaceArray(data);
-      } else if (typeof data === 'function') {
-        return data;
-      } else if (data instanceof Date) {
-        return data;
-      } else if (data === Object(data)) {
-        return this._replaceObject(data);
-      } else {
-        return data;
-      }
-    }
-  }, {
-    key: '_replaceObject',
-    value: function _replaceObject(orig) {
-      var acc = {};
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(acc, key, value);
-      }
-
-      return acc;
-    }
-  }, {
-    key: '_replaceArray',
-    value: function _replaceArray(orig) {
-      var _this = this;
-
-      var arr = orig.map(function (item) {
-        return _this.replace(item);
-      });
-      // Convert the nextPage methods for paged results
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(arr, key, value);
-      }
-      return arr;
-    }
-
-    // Convert things that end in `_url` to methods which return a Promise
-
-  }, {
-    key: '_replaceKeyValue',
-    value: function _replaceKeyValue(acc, key, value) {
-      return acc[plus.camelize(key)] = this.replace(value);
-    }
-  }]);
-
-  return CamelCase;
-}())();
-//# sourceMappingURL=camel-case.js.map
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var toQueryString = __webpack_require__(2);
+var toQueryString = __webpack_require__(1);
 
 var pushAll = function pushAll(target, source) {
   if (!Array.isArray(source)) {
@@ -951,7 +867,7 @@ var getMore = function getMore(fetchable, requester, acc) {
   if (nextPagePromise) {
     return nextPagePromise.then(function (results) {
       pushAll(acc, results.items);
-      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+      // TODO: handle `items.next_page = string/function`, `items.next_page = string/function`
       return getMore(results, requester, acc);
     });
   } else {
@@ -965,10 +881,10 @@ var fetchNextPage = function fetchNextPage(obj, requester) {
     return requester.request('GET', obj.next_page_url, null, null);
   } else if (obj.next_page) {
     return obj.next_page.fetch();
-  } else if (typeof obj.nextPageUrl === 'string') {
-    return requester.request('GET', obj.nextPageUrl, null, null);
-  } else if (obj.nextPage) {
-    return obj.nextPage.fetch();
+  } else if (typeof obj.next_page_url === 'string') {
+    return requester.request('GET', obj.next_page_url, null, null);
+  } else if (obj.next_page) {
+    return obj.next_page.fetch();
   } else {
     return false;
   }
@@ -983,7 +899,7 @@ module.exports = {
         return requester.request('GET', '' + path + toQueryString(query), null, null).then(function (results) {
           var acc = [];
           pushAll(acc, results.items);
-          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+          // TODO: handle `items.next_page = string/function`, `items.next_page = string/function`
           return getMore(results, requester, acc);
         });
       };
@@ -993,7 +909,7 @@ module.exports = {
 //# sourceMappingURL=fetch-all.js.map
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1003,7 +919,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var deprecate = __webpack_require__(1);
+var deprecate = __webpack_require__(0);
 
 module.exports = new (function () {
   function HyperMedia() {
@@ -1079,7 +995,7 @@ module.exports = new (function () {
           };
         } else {
           var defaultFn = function defaultFn() {
-            deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
+            deprecate('instead of directly calling methods like .next_page(), use .next_page.fetch()');
             return this.fetch();
           };
           var fn = instance._fromUrlCurried(value, defaultFn);
@@ -1116,7 +1032,7 @@ module.exports = new (function () {
 //# sourceMappingURL=hypermedia.js.map
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1177,7 +1093,7 @@ module.exports = new (function () {
 //# sourceMappingURL=pagination.js.map
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1212,7 +1128,7 @@ module.exports = new (function () {
 //# sourceMappingURL=path-validator.js.map
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1258,7 +1174,7 @@ module.exports = new (function () {
 //# sourceMappingURL=preview-apis.js.map
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1268,7 +1184,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var toQueryString = __webpack_require__(2);
+var toQueryString = __webpack_require__(1);
 
 module.exports = new (function () {
   function ReadBinary() {
@@ -1338,7 +1254,7 @@ function __range__(left, right, inclusive) {
 //# sourceMappingURL=read-binary.js.map
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1371,7 +1287,7 @@ module.exports = new (function () {
 //# sourceMappingURL=use-post-instead-of-patch.js.map
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1381,7 +1297,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(2),
     filter = _require.filter,
     map = _require.map;
 
@@ -1613,7 +1529,7 @@ function __guardFunc__(func, transform) {
 //# sourceMappingURL=requester.js.map
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1629,7 +1545,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = __webpack_require__(0),
+var _require = __webpack_require__(2),
     filter = _require.filter,
     forOwn = _require.forOwn,
     extend = _require.extend;
@@ -1755,7 +1671,7 @@ exports.toPromise = toPromise;
 //# sourceMappingURL=verb-methods.js.map
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports) {
 
 /**
@@ -1783,7 +1699,7 @@ module.exports = arrayEach;
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports) {
 
 /**
@@ -1814,7 +1730,7 @@ module.exports = arrayFilter;
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports) {
 
 /**
@@ -1841,7 +1757,7 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports) {
 
 var g;
@@ -1868,7 +1784,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(4);

@@ -12,7 +12,7 @@ let getMore = function (fetchable, requester, acc) {
   if (nextPagePromise) {
     return nextPagePromise.then((results) => {
       pushAll(acc, results.items)
-      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+      // TODO: handle `items.next_page = string/function`, `items.next_page = string/function`
       return getMore(results, requester, acc)
     })
   } else {
@@ -26,10 +26,10 @@ var fetchNextPage = function (obj, requester) {
     return requester.request('GET', obj.next_page_url, null, null)
   } else if (obj.next_page) {
     return obj.next_page.fetch()
-  } else if (typeof obj.nextPageUrl === 'string') {
-    return requester.request('GET', obj.nextPageUrl, null, null)
-  } else if (obj.nextPage) {
-    return obj.nextPage.fetch()
+  } else if (typeof obj.next_page_url === 'string') {
+    return requester.request('GET', obj.next_page_url, null, null)
+  } else if (obj.next_page) {
+    return obj.next_page.fetch()
   } else {
     return false
   }
@@ -45,7 +45,7 @@ module.exports = {
         .then((results) => {
           let acc = []
           pushAll(acc, results.items)
-          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+          // TODO: handle `items.next_page = string/function`, `items.next_page = string/function`
           return getMore(results, requester, acc)
         })
       }

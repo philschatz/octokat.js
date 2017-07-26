@@ -19,8 +19,8 @@ let ALL_PLUGINS = [
   require('./plugins/cache-handler'),
   require('./plugins/read-binary'),
 
-  HypermediaPlugin,
-  require('./plugins/camel-case')
+  HypermediaPlugin
+  // require('./plugins/camel-case')
 ]
 
 let Octokat = function (clientOptions = {}) {
