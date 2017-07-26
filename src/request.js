@@ -1,5 +1,3 @@
-const { filter, map } = require('./plus')
-
 // Request Function
 // ===============================
 //
@@ -9,11 +7,8 @@ const { filter, map } = require('./plus')
 // # Construct the request function.
 // It contains all the auth credentials passed in to the client constructor
 
-let EVENT_ID = 0 // counter for the emitter so it is easier to match up requests
-
-
 module.exports = class Requestor {
-  constructor(fetchImpl, userAgent, usePostInsteadOfPatch) {
+  constructor (fetchImpl, userAgent, usePostInsteadOfPatch) {
     this._fetchImpl = fetchImpl
     // Set the `User-Agent` because it is required and NodeJS
     // does not send one by default.
@@ -22,7 +17,7 @@ module.exports = class Requestor {
     this._usePostInsteadOfPatch = usePostInsteadOfPatch
   }
 
-  request(method, path, data, isRaw, isBase64, isBoolean, contentType, acceptHeader) {
+  request (method, path, data, isRaw, isBase64, isBoolean, contentType, acceptHeader) {
     if (!/^http/.test(path)) {
       throw new Error('BUG: All Paths must be absolute (start with https://)')
     }
@@ -115,13 +110,11 @@ module.exports = class Requestor {
             headers: response.headers,
             ok: response.ok,
             size: response.size,
-            timeout: response.timeout,
+            timeout: response.timeout
           },
           additional: additional
         }
       })
-
     })
-
   }
 }

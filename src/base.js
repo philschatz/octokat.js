@@ -1,7 +1,6 @@
 const fetch = require('./adapters/fetch-node')
 const plus = require('./plus')
 const deprecate = require('./deprecate')
-const TREE_OPTIONS = require('./grammar/tree-options')
 const Chainer = require('./chained')
 const { VerbMethods, toPromise } = require('./verb-methods')
 
