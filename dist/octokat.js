@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 31);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,14 +83,65 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 
+module.exports = function (message) {
+  if (console && console.warn) {
+    console.warn("Octokat Deprecation: " + message);
+  }
+};
+//# sourceMappingURL=deprecate.js.map
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Converts a dictionary to a query string.
+// Internal helper method
+var toQueryString = function toQueryString(options, omitQuestionMark) {
+  // Returns '' if `options` is empty so this string can always be appended to a URL
+  if (!options || options === {}) {
+    return '';
+  }
+
+  var params = [];
+  var object = options || {};
+  for (var key in object) {
+    var value = object[key];
+    if (value) {
+      params.push(key + '=' + encodeURIComponent(value));
+    }
+  }
+  if (params.length) {
+    if (omitQuestionMark) {
+      return '&' + params.join('&');
+    } else {
+      return '?' + params.join('&');
+    }
+  } else {
+    return '';
+  }
+};
+
+module.exports = toQueryString;
+//# sourceMappingURL=querystring.js.map
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 // Both of these internal methods are really small/simple and we are only
 // working with arrays anyway
-var filter = __webpack_require__(28);
-var forEach = __webpack_require__(27);
-var map = __webpack_require__(29
+var filter = __webpack_require__(23);
+var forEach = __webpack_require__(22);
+var map = __webpack_require__(24);
 
 // require('underscore-plus')
-);var plus = {
+var plus = {
   camelize: function camelize(string) {
     if (string) {
       return string.replace(/[_-]+(\w)/g, function (m) {
@@ -152,379 +203,16 @@ module.exports = plus;
 //# sourceMappingURL=plus.js.map
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function (message) {
-  if (console && console.warn) {
-    console.warn("Octokat Deprecation: " + message);
-  }
-};
-//# sourceMappingURL=deprecate.js.map
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// Converts a dictionary to a query string.
-// Internal helper method
-var toQueryString = function toQueryString(options, omitQuestionMark) {
-  // Returns '' if `options` is empty so this string can always be appended to a URL
-  if (!options || options === {}) {
-    return '';
-  }
-
-  var params = [];
-  var object = options || {};
-  for (var key in object) {
-    var value = object[key];
-    if (value) {
-      params.push(key + '=' + encodeURIComponent(value));
-    }
-  }
-  if (params.length) {
-    if (omitQuestionMark) {
-      return '&' + params.join('&');
-    } else {
-      return '?' + params.join('&');
-    }
-  } else {
-    return '';
-  }
-};
-
-module.exports = toQueryString;
-//# sourceMappingURL=querystring.js.map
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var plus = __webpack_require__(0
-
-// Daisy-Chainer
-// ===============================
-//
-// Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
-// Constructs a URL for the verb methods (like `.fetch` and `.create`).
-
-);module.exports = function () {
-  function Chainer(_verbMethods) {
-    _classCallCheck(this, Chainer);
-
-    this._verbMethods = _verbMethods;
-  }
-
-  _createClass(Chainer, [{
-    key: 'chain',
-    value: function chain(path, name, contextTree, fn) {
-      var _this = this;
-
-      if (typeof fn === 'undefined' || fn === null) {
-        fn = function fn() {
-          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          if (!args.length) {
-            throw new Error('BUG! must be called with at least one argument');
-          }
-          var separator = '/';
-          // Special-case compare because its args turn into '...' instead of the usual '/'
-          if (name === 'compare') {
-            separator = '...';
-          }
-          return _this.chain(path + '/' + args.join(separator), name, contextTree);
-        };
-      }
-
-      this._verbMethods.injectVerbMethods(path, fn);
-
-      if (typeof fn === 'function' || (typeof fn === 'undefined' ? 'undefined' : _typeof(fn)) === 'object') {
-        for (name in contextTree || {}) {
-          (function (name) {
-            // Delete the key if it already exists
-            delete fn[plus.camelize(name)];
-
-            return Object.defineProperty(fn, plus.camelize(name), {
-              configurable: true,
-              enumerable: true,
-              get: function get() {
-                return _this.chain(path + '/' + name, name, contextTree[name]);
-              }
-            });
-          })(name);
-        }
-      }
-
-      return fn;
-    }
-  }]);
-
-  return Chainer;
-}();
-//# sourceMappingURL=chainer.js.map
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _module$exports;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-// Reuse these fields because there are 2 URL structures for accessing repositores:
-// - `/repos/philschatz/octokat.js/...`
-// - `/repositories/20044005/...`
-var REPO_FIELDS = {
-  'readme': false,
-  'tarball': false,
-  'zipball': false,
-  'compare': false,
-  'deployments': {
-    'statuses': false
-  },
-  'hooks': {
-    'tests': false
-  },
-  'assignees': false,
-  'languages': false,
-  'teams': false,
-  'tags': false,
-  'branches': false,
-  'contributors': false,
-  'subscribers': false,
-  'subscription': false,
-  'stargazers': false,
-  'comments': false,
-  'downloads': false,
-  'forks': false,
-  'milestones': {
-    'labels': false
-  },
-  'labels': false,
-  'releases': {
-    'assets': false,
-    'latest': false,
-    'tags': false
-  },
-  'events': false,
-  'notifications': false,
-  'merges': false,
-  'statuses': false,
-  'pulls': {
-    'merge': false,
-    'comments': false,
-    'commits': false,
-    'files': false,
-    'events': false,
-    'labels': false,
-    'requested_reviewers': false,
-    'reviews': {
-      'comments': false,
-      'events': false,
-      'dismissals': false
-    }
-  },
-  'pages': {
-    'builds': {
-      'latest': false
-    }
-  },
-  'commits': {
-    'comments': false,
-    'status': false,
-    'statuses': false
-  },
-  'contents': false,
-  'collaborators': {
-    'permission': false
-  },
-  'projects': false,
-  'issues': {
-    'events': false,
-    'comments': false,
-    'labels': false
-  },
-  'git': {
-    'refs': {
-      'heads': false,
-      'tags': false
-    },
-    'trees': false,
-    'blobs': false,
-    'commits': false
-  },
-  'stats': {
-    'contributors': false,
-    'commit_activity': false,
-    'code_frequency': false,
-    'participation': false,
-    'punch_card': false
-  },
-  'traffic': {
-    'popular': {
-      'referrers': false,
-      'paths': false
-    },
-    'views': false,
-    'clones': false
-  }
-};
-
-module.exports = (_module$exports = {
-  'zen': false,
-  'octocat': false,
-  'organizations': false,
-  'issues': false,
-  'emojis': false,
-  'markdown': false,
-  'meta': false,
-  'rate_limit': false,
-  'feeds': false,
-  'events': false,
-  'repositories': false,
-  'notifications': {
-    'threads': {
-      'subscription': false
-    }
-  },
-  'gitignore': {
-    'templates': false
-  },
-  'user': {
-    'repos': false,
-    'orgs': false,
-    'followers': false,
-    'following': false,
-    'emails': false,
-    'issues': false,
-    'public_emails': false,
-    'starred': false,
-    'teams': false
-  },
-  'orgs': {
-    'repos': false,
-    'issues': false,
-    'members': false,
-    'events': false,
-    'projects': false,
-    'teams': false
-  },
-  'projects': {
-    'columns': {
-      'moves': false,
-      'cards': {
-        'moves': false
-      }
-    }
-  },
-  'teams': {
-    'members': false,
-    'memberships': false,
-    'repos': false
-  },
-  'users': {
-    'repos': false,
-    'orgs': false,
-    'gists': false,
-    'followers': false,
-    'following': false,
-    'keys': false,
-    'starred': false,
-    'received_events': {
-      'public': false
-    },
-    'events': {
-      'public': false,
-      'orgs': false
-    },
-    // Enterprise-only:
-    'site_admin': false,
-    'suspended': false
-  },
-
-  'search': {
-    'repositories': false,
-    'commits': false,
-    'issues': false,
-    'users': false,
-    'code': false
-  },
-  'gists': {
-    'public': false,
-    'starred': false,
-    'star': false,
-    'comments': false,
-    'forks': false
-  },
-  'repos': REPO_FIELDS
-}, _defineProperty(_module$exports, 'repositories', REPO_FIELDS), _defineProperty(_module$exports, 'licenses', false), _defineProperty(_module$exports, 'authorizations', {
-  'clients': false
-}), _defineProperty(_module$exports, 'applications', {
-  'tokens': false
-}), _defineProperty(_module$exports, 'enterprise', {
-  'settings': {
-    'license': false
-  },
-  'stats': {
-    'issues': false,
-    'hooks': false,
-    'milestones': false,
-    'orgs': false,
-    'comments': false,
-    'pages': false,
-    'users': false,
-    'gists': false,
-    'pulls': false,
-    'repos': false,
-    'all': false
-  }
-}), _defineProperty(_module$exports, 'staff', {
-  'indexing_jobs': false
-}), _defineProperty(_module$exports, 'setup', {
-  'api': {
-    'start': false, // POST
-    'upgrade': false, // POST
-    'configcheck': false, // GET
-    'configure': false, // POST
-    'settings': { // GET/PUT
-      'authorized-keys': false // GET/POST/DELETE
-    },
-    'maintenance': false // GET/POST
-  }
-}), _module$exports);
-//# sourceMappingURL=tree-options.js.map
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var toQueryString = __webpack_require__(2
+var toQueryString = __webpack_require__(1);
 
 // new class SimpleVerbs
-);module.exports = {
+module.exports = {
   verbs: {
     fetch: function fetch(path, query) {
       return { method: 'GET', path: '' + path + toQueryString(query) };
@@ -560,164 +248,26 @@ var toQueryString = __webpack_require__(2
 //# sourceMappingURL=simple-verbs.js.map
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+var deprecate = __webpack_require__(0);
+var OctokatBase = __webpack_require__(7);
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var HypermediaPlugin = __webpack_require__(15);
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var _require = __webpack_require__(0
-
-// When `origFn` is not passed a callback as the last argument then return a
-// Promise, or error if no Promise can be found (see `plugins/promise/*` for
-// some strategies for loading a Promise implementation)
-),
-    filter = _require.filter,
-    forOwn = _require.forOwn,
-    extend = _require.extend;
-
-var toPromise = function toPromise(orig) {
-  return function () {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var last = args[args.length - 1];
-    if (typeof last === 'function') {
-      // The last arg is a callback function
-      args.pop();
-      return orig.apply(undefined, args).then(function (v) {
-        last(null, v);
-      }).catch(function (err) {
-        last(err);
-      });
-    } else if (typeof Promise !== 'undefined') {
-      return orig.apply(undefined, args);
-    } else {
-      throw new Error('You must specify a callback or have a promise library loaded');
-    }
-  };
-};
-
-var VerbMethods = function () {
-  function VerbMethods(plugins, _requester) {
-    _classCallCheck(this, VerbMethods);
-
-    this._requester = _requester;
-    if (!this._requester) {
-      throw new Error('Octokat BUG: request is required');
-    }
-
-    var promisePlugins = filter(plugins, function (_ref) {
-      var promiseCreator = _ref.promiseCreator;
-      return promiseCreator;
-    });
-    if (promisePlugins) {
-      this._promisePlugin = promisePlugins[0];
-    }
-
-    this._syncVerbs = {};
-    var iterable = filter(plugins, function (_ref2) {
-      var verbs = _ref2.verbs;
-      return verbs;
-    });
-    for (var i = 0; i < iterable.length; i++) {
-      var plugin = iterable[i];
-      extend(this._syncVerbs, plugin.verbs);
-    }
-    this._asyncVerbs = {};
-    var iterable1 = filter(plugins, function (_ref3) {
-      var asyncVerbs = _ref3.asyncVerbs;
-      return asyncVerbs;
-    });
-    for (var j = 0; j < iterable1.length; j++) {
-      var _plugin = iterable1[j];
-      extend(this._asyncVerbs, _plugin.asyncVerbs);
-    }
-  }
-
-  // Injects verb methods onto `obj`
-
-
-  _createClass(VerbMethods, [{
-    key: 'injectVerbMethods',
-    value: function injectVerbMethods(path, obj) {
-      var _this = this;
-
-      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') {
-        obj.url = path; // Mostly for testing
-        forOwn(this._syncVerbs, function (verbFunc, verbName) {
-          obj[verbName] = function () {
-            var makeRequest = function makeRequest() {
-              for (var _len2 = arguments.length, originalArgs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-                originalArgs[_key2] = arguments[_key2];
-              }
-
-              var data = void 0,
-                  method = void 0,
-                  options = void 0;
-
-              var _verbFunc = verbFunc.apply(undefined, [path].concat(originalArgs));
-
-              method = _verbFunc.method;
-              path = _verbFunc.path;
-              data = _verbFunc.data;
-              options = _verbFunc.options;
-
-              return _this._requester.request(method, path, data, options);
-            };
-            return toPromise(makeRequest).apply(undefined, arguments);
-          };
-        });
-
-        forOwn(this._asyncVerbs, function (verbFunc, verbName) {
-          obj[verbName] = function () {
-            var makeRequest = verbFunc(_this._requester, path // Curried function
-            );return toPromise(makeRequest).apply(undefined, arguments);
-          };
-        });
-      } else {
-        // console.warn('BUG: Attempted to injectVerbMethods on a ' + (typeof obj));
-      }
-
-      return obj;
-    }
-  }]);
-
-  return VerbMethods;
-}();
-
-exports.VerbMethods = VerbMethods;
-exports.toPromise = toPromise;
-//# sourceMappingURL=verb-methods.js.map
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var deprecate = __webpack_require__(1);
-var OctokatBase = __webpack_require__(10);
-
-var HypermediaPlugin = __webpack_require__(19);
-
-var ALL_PLUGINS = [__webpack_require__(20), // re-chain methods when we detect an object (issue, comment, user, etc)
-__webpack_require__(22), __webpack_require__(15), __webpack_require__(23), __webpack_require__(25), __webpack_require__(5), __webpack_require__(18), __webpack_require__(21),
+var ALL_PLUGINS = [
+// require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
+// require('./plugins/path-validator'),
+__webpack_require__(12), __webpack_require__(17), __webpack_require__(19), __webpack_require__(3), __webpack_require__(14), __webpack_require__(16),
 // Run cacheHandler after PagedResults so the link headers are remembered
 // but before hypermedia so the object is still serializable
-__webpack_require__(16), __webpack_require__(24), HypermediaPlugin, __webpack_require__(17)];
+__webpack_require__(13), __webpack_require__(18), HypermediaPlugin
+// require('./plugins/camel-case')
+];
 
 var Octokat = function Octokat() {
   var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -747,7 +297,7 @@ module.exports = Octokat;
 //# sourceMappingURL=octokat.js.map
 
 /***/ }),
-/* 8 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -757,7 +307,7 @@ module.exports = btoa;
 //# sourceMappingURL=base64-browser.js.map
 
 /***/ }),
-/* 9 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -773,32 +323,31 @@ if (typeof window.fetch === 'function') {
 //# sourceMappingURL=fetch-browser.js.map
 
 /***/ }),
-/* 10 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-var fetch = __webpack_require__(9);
-var plus = __webpack_require__(0);
-var deprecate = __webpack_require__(1);
-var TREE_OPTIONS = __webpack_require__(4);
-var Chainer = __webpack_require__(3);
+var fetch = __webpack_require__(6);
+var plus = __webpack_require__(2);
+var deprecate = __webpack_require__(0);
+var Chainer = __webpack_require__(8);
 
-var _require = __webpack_require__(6
-
-// Use the following plugins by default (they should be neglegible additional code)
-),
+var _require = __webpack_require__(21),
     VerbMethods = _require.VerbMethods,
     toPromise = _require.toPromise;
 
-var SimpleVerbsPlugin = __webpack_require__(5);
+// Use the following plugins by default (they should be neglegible additional code)
 
-var Requester = __webpack_require__(26);
-var applyHypermedia = __webpack_require__(14
+
+var SimpleVerbsPlugin = __webpack_require__(3);
+
+var Requester = __webpack_require__(20);
+var applyHypermedia = __webpack_require__(11);
 
 // Checks if a response is a Buffer or not
-);var isBuffer = function isBuffer(data) {
+var isBuffer = function isBuffer(data) {
   if (typeof global['Buffer'] !== 'undefined') {
     return global['Buffer'].isBuffer(data);
   } else {
@@ -832,14 +381,6 @@ var OctokatBase = function OctokatBase() {
 
   var plugins = clientOptions.plugins || [SimpleVerbsPlugin];
 
-  // TODO remove disableHypermedia
-  var disableHypermedia = clientOptions.disableHypermedia;
-  // set defaults
-
-  if (typeof disableHypermedia === 'undefined' || disableHypermedia === null) {
-    disableHypermedia = false;
-  }
-
   // the octokat instance
   var instance = {};
 
@@ -861,31 +402,15 @@ var OctokatBase = function OctokatBase() {
     // For each request, convert the JSON into Objects
     var requester = new Requester(instance, clientOptions, plugins, fetchImpl);
 
-    return requester.request(method, path, data, options).then(function (val) {
-      if ((options || {}).raw) {
-        return val;
-      }
-
-      if (!disableHypermedia) {
-        var context = {
-          data: val,
-          plugins: plugins,
-          requester: requester,
-          instance: instance,
-          clientOptions: clientOptions
-        };
-        return instance._parseWithContextPromise(path, context);
-      } else {
-        return val;
-      }
-    });
+    return requester.request(method, path, data, options);
   };
 
   var verbMethods = new VerbMethods(plugins, { request: request });
-  new Chainer(verbMethods).chain('', null, TREE_OPTIONS, instance
+  // attach all the possible methods
+  Chainer(verbMethods, '', '', instance);
 
   // Special case for `me`
-  );instance.me = instance.user;
+  instance.me = instance.user;
 
   instance.parse = function (data) {
     // The signature of toPromise has cb as the 1st arg
@@ -932,7 +457,8 @@ var OctokatBase = function OctokatBase() {
     }
 
     path = applyHypermedia.apply(undefined, [path].concat(args));
-    verbMethods.injectVerbMethods(path, defaultFn);
+    Chainer(verbMethods, path, '', defaultFn);
+    // verbMethods.injectVerbMethods(path, defaultFn)
     return defaultFn;
   };
 
@@ -955,7 +481,7 @@ var OctokatBase = function OctokatBase() {
         templateArgs[_key3] = arguments[_key3];
       }
 
-      // This conditional logic is for the deprecated .nextPage() call
+      // This conditional logic is for the deprecated .next_page() call
       if (defaultFn && templateArgs.length === 0) {
         return defaultFn.apply(fn);
       } else {
@@ -969,50 +495,69 @@ var OctokatBase = function OctokatBase() {
     return fn;
   };
 
-  // Add the GitHub Status API https://status.github.com/api
-  instance.status = instance.fromUrl('https://status.github.com/api/status.json');
-  instance.status.api = instance.fromUrl('https://status.github.com/api.json');
-  instance.status.lastMessage = instance.fromUrl('https://status.github.com/api/last-message.json');
-  instance.status.messages = instance.fromUrl('https://status.github.com/api/messages.json');
-
   return instance;
 };
 
 module.exports = OctokatBase;
 //# sourceMappingURL=base.js.map
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(25)))
 
 /***/ }),
-/* 11 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-// Generated by CoffeeScript 1.12.6
-(function () {
-  module.exports = {
-    'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(repos(\/[^\/]+){2}|repositories\/([0-9]+))$/,
-    'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
-    'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(repos(\/[^\/]+){2}|repositories\/([0-9]+))\/(issues|pulls)\/[^\/]+$/,
-    'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
-    'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
-    'teams': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/teams\/[^\/]+$/,
-    'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
+var TREE_OPTIONS = __webpack_require__(10);
+var plus = __webpack_require__(2);
+
+var chained = function chained(verbMethods, path, name, fn) {
+  fn = fn || function () {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    if (!args.length) {
+      throw new Error('BUG! must be called with at least one argument');
+    }
+    // TODO: Validate the args (in DEBUG mode) using the `path` to look up
+
+    var separator = name === 'compare' ? '...' : '/';
+    var pathWithArgs = path + '/' + args.join(separator);
+    return chained(verbMethods, pathWithArgs, '');
   };
-}).call(undefined);
 
-//# sourceMappingURL=object-matcher.js.map
-//# sourceMappingURL=object-matcher.js.map
+  // inject the child options
+  TREE_OPTIONS.forEach(function (name) {
+    Object.defineProperty(fn, plus.camelize(name), {
+      configurable: true,
+      enumerable: true,
+      get: function get() {
+        return chained(verbMethods, path + '/' + name, name);
+      }
+    });
+  });
+
+  // Inject the verb methods
+  verbMethods.injectVerbMethods(path, fn);
+
+  fn.__path = path;
+
+  return fn;
+};
+
+module.exports = chained;
+//# sourceMappingURL=chained.js.map
 
 /***/ }),
-/* 12 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-// Generated by CoffeeScript 1.12.6
+// Generated by CoffeeScript 1.12.7
 (function () {
   module.exports = {
     'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
@@ -1027,29 +572,25 @@ module.exports = OctokatBase;
 //# sourceMappingURL=preview-headers.js.map
 
 /***/ }),
-/* 13 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-// Generated by CoffeeScript 1.12.6
-(function () {
-  module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|organizations|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|repositories(\/\d+)?|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|public_emails|starred|starred(\/[^\/]+){2}|teams)|orgs\/[^\/]+|orgs\/[^\/]+\/(repos|issues|members|events|teams|projects)|projects\/[0-9]+|projects\/[0-9]+\/columns|projects\/columns\/[0-9]+|projects\/columns\/[0-9]+\/moves|projects\/columns\/[0-9]+\/cards|projects\/columns\/cards\/[0-9]+|projects\/columns\/cards\/[0-9]+\/moves|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|commits|issues|users|code)|gists\/(public|starred|([a-f0-9]{20,32}|[0-9]+)|([a-f0-9]{20,32}|[0-9]+)\/forks|([a-f0-9]{20,32}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20,32}|[0-9]+)\/star)|repos(\/[^\/]+){2}|(repos(\/[^\/]+){2}|repositories\/([0-9]+))\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|collaborators\/([^\/]+)\/permission|projects|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge|requested_reviewers|reviews(\/[0-9]+)?|reviews(\/[0-9]+)\/(comments|events|dismissals))|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card)|traffic\/(popular\/(referrers|paths)|views|clones))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
-}).call(undefined);
-
-//# sourceMappingURL=url-validator.js.map
-//# sourceMappingURL=url-validator.js.map
+// This file is autogenerated from routes.json
+module.exports = ["octocat", "heads", "applications", "grants", "authorizations", "clients", "tokens", "events", "repos", "issues", "networks", "orgs", "users", "received_events", "public", "feeds", "notifications", "threads", "subscription", "stargazers", "starred", "user", "subscribers", "subscriptions", "gists", "commits", "star", "forks", "comments", "git", "blobs", "refs", "tags", "trees", "integration", "installations", "access_tokens", "identity", "installation", "repositories", "lock", "assignees", "labels", "milestones", "timeline", "migrations", "archive", "import", "authors", "lfs", "large_files", "emojis", "gitignore", "templates", "licenses", "license", "markdown", "raw", "meta", "rate_limit", "organizations", "members", "public_members", "memberships", "invitations", "outside_collaborators", "outside_collaborator", "teams", "hooks", "pings", "blocks", "projects", "columns", "cards", "moves", "pulls", "files", "merge", "reviews", "dismissals", "requested_reviewers", "reactions", "contributors", "languages", "branches", "protection", "required_status_checks", "contexts", "required_pull_request_reviews", "restrictions", "collaborators", "permission", "community", "profile", "compare", "readme", "contents", "tarball", "zipball", "keys", "deployments", "statuses", "downloads", "merges", "pages", "builds", "latest", "releases", "assets", "stats", "commit_activity", "code_frequency", "participation", "punch_card", "status", "traffic", "popular", "referrers", "paths", "views", "clones", "tests", "search", "code", "legacy", "email", "public_emails", "emails", "followers", "following", "gpg_keys", "site_admin", "suspended", "repository_invitations", "enterprise", "admin", "ldap", "mapping", "sync", "settings", "pre_receive_environments", "pre-receive-hooks", "staff", "indexing_jobs", "zen"];
+//# sourceMappingURL=tree-options.js.map
 
 /***/ }),
-/* 14 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var toQueryString = __webpack_require__(2);
-var deprecate = __webpack_require__(1);
+var toQueryString = __webpack_require__(1);
+var deprecate = __webpack_require__(0);
 
 module.exports = function (url) {
   // Deprecated interface. Use an Object to specify the args in the template.
@@ -1076,8 +617,8 @@ module.exports = function (url) {
     // replace it
     switch (match[1]) {
       case '/':
-        var fieldName = match.slice(2, match.length - 1 // omit the braces and the slash
-        );var fieldValue = templateParams[fieldName];
+        var fieldName = match.slice(2, match.length - 1); // omit the braces and the slash
+        var fieldValue = templateParams[fieldName];
         if (fieldValue) {
           if (/\//.test(fieldValue)) {
             throw new Error('Octokat Error: this field must not contain slashes: ' + fieldName);
@@ -1086,8 +627,8 @@ module.exports = function (url) {
         }
         break;
       case '+':
-        fieldName = match.slice(2, match.length - 1 // omit the braces and the `+`
-        );fieldValue = templateParams[fieldName];
+        fieldName = match.slice(2, match.length - 1); // omit the braces and the `+`
+        fieldValue = templateParams[fieldName];
         if (fieldValue) {
           param = fieldValue;
         }
@@ -1100,8 +641,8 @@ module.exports = function (url) {
         //
         // When match contains `,` or
         // `args.length is 1` and args[0] is object match the args to those in the template
-        var optionalNames = match.slice(2, -2 + 1).split(',' // omit the braces and the `?` before splitting
-        );var optionalParams = {};
+        var optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
+        var optionalParams = {};
         for (var j = 0; j < optionalNames.length; j++) {
           fieldName = optionalNames[j];
           optionalParams[fieldName] = templateParams[fieldName];
@@ -1109,19 +650,19 @@ module.exports = function (url) {
         param = toQueryString(optionalParams);
         break;
       case '&':
-        optionalNames = match.slice(2, -2 + 1).split(',' // omit the braces and the `?` before splitting
-        );optionalParams = {};
+        optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
+        optionalParams = {};
         for (var k = 0; k < optionalNames.length; k++) {
           fieldName = optionalNames[k];
           optionalParams[fieldName] = templateParams[fieldName];
         }
-        param = toQueryString(optionalParams, true // true means omitQuestionMark
-        );break;
+        param = toQueryString(optionalParams, true); // true means omitQuestionMark
+        break;
 
       default:
         // This is a required field. ie `{repoName}`
-        fieldName = match.slice(1, match.length - 1 // omit the braces
-        );if (templateParams[fieldName]) {
+        fieldName = match.slice(1, match.length - 1); // omit the braces
+        if (templateParams[fieldName]) {
           param = templateParams[fieldName];
         } else {
           throw new Error('Octokat Error: Required parameter is missing: ' + fieldName);
@@ -1137,7 +678,7 @@ module.exports = function (url) {
 //# sourceMappingURL=hypermedia.js.map
 
 /***/ }),
-/* 15 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1147,7 +688,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var base64encode = __webpack_require__(8);
+var base64encode = __webpack_require__(5);
 
 module.exports = new (function () {
   function Authorization() {
@@ -1183,7 +724,7 @@ module.exports = new (function () {
 //# sourceMappingURL=authorization.js.map
 
 /***/ }),
-/* 16 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1292,99 +833,13 @@ module.exports = new (function () {
 //# sourceMappingURL=cache-handler.js.map
 
 /***/ }),
-/* 17 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var plus = __webpack_require__(0);
-
-module.exports = new (function () {
-  function CamelCase() {
-    _classCallCheck(this, CamelCase);
-  }
-
-  _createClass(CamelCase, [{
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var data = input.data;
-
-      data = this.replace(data);
-      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      return Promise.resolve(input);
-    }
-  }, {
-    key: 'replace',
-    value: function replace(data) {
-      if (Array.isArray(data)) {
-        return this._replaceArray(data);
-      } else if (typeof data === 'function') {
-        return data;
-      } else if (data instanceof Date) {
-        return data;
-      } else if (data === Object(data)) {
-        return this._replaceObject(data);
-      } else {
-        return data;
-      }
-    }
-  }, {
-    key: '_replaceObject',
-    value: function _replaceObject(orig) {
-      var acc = {};
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(acc, key, value);
-      }
-
-      return acc;
-    }
-  }, {
-    key: '_replaceArray',
-    value: function _replaceArray(orig) {
-      var _this = this;
-
-      var arr = orig.map(function (item) {
-        return _this.replace(item);
-      });
-      // Convert the nextPage methods for paged results
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(arr, key, value);
-      }
-      return arr;
-    }
-
-    // Convert things that end in `_url` to methods which return a Promise
-
-  }, {
-    key: '_replaceKeyValue',
-    value: function _replaceKeyValue(acc, key, value) {
-      return acc[plus.camelize(key)] = this.replace(value);
-    }
-  }]);
-
-  return CamelCase;
-}())();
-//# sourceMappingURL=camel-case.js.map
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var toQueryString = __webpack_require__(2);
+var toQueryString = __webpack_require__(1);
 
 var pushAll = function pushAll(target, source) {
   if (!Array.isArray(source)) {
@@ -1397,9 +852,9 @@ var getMore = function getMore(fetchable, requester, acc) {
   var nextPagePromise = fetchNextPage(fetchable, requester);
   if (nextPagePromise) {
     return nextPagePromise.then(function (results) {
-      pushAll(acc, results.items
-      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-      );return getMore(results, requester, acc);
+      pushAll(acc, results.items);
+      // TODO: handle `items.next_page = string/function`, `items.next_page = string/function`
+      return getMore(results, requester, acc);
     });
   } else {
     return acc;
@@ -1412,10 +867,10 @@ var fetchNextPage = function fetchNextPage(obj, requester) {
     return requester.request('GET', obj.next_page_url, null, null);
   } else if (obj.next_page) {
     return obj.next_page.fetch();
-  } else if (typeof obj.nextPageUrl === 'string') {
-    return requester.request('GET', obj.nextPageUrl, null, null);
-  } else if (obj.nextPage) {
-    return obj.nextPage.fetch();
+  } else if (typeof obj.next_page_url === 'string') {
+    return requester.request('GET', obj.next_page_url, null, null);
+  } else if (obj.next_page) {
+    return obj.next_page.fetch();
   } else {
     return false;
   }
@@ -1429,9 +884,9 @@ module.exports = {
         // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
         return requester.request('GET', '' + path + toQueryString(query), null, null).then(function (results) {
           var acc = [];
-          pushAll(acc, results.items
-          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-          );return getMore(results, requester, acc);
+          pushAll(acc, results.items);
+          // TODO: handle `items.next_page = string/function`, `items.next_page = string/function`
+          return getMore(results, requester, acc);
         });
       };
     }
@@ -1440,7 +895,7 @@ module.exports = {
 //# sourceMappingURL=fetch-all.js.map
 
 /***/ }),
-/* 19 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1450,7 +905,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var deprecate = __webpack_require__(1);
+var deprecate = __webpack_require__(0);
 
 module.exports = new (function () {
   function HyperMedia() {
@@ -1526,7 +981,7 @@ module.exports = new (function () {
           };
         } else {
           var defaultFn = function defaultFn() {
-            deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
+            deprecate('instead of directly calling methods like .next_page(), use .next_page.fetch()');
             return this.fetch();
           };
           var fn = instance._fromUrlCurried(value, defaultFn);
@@ -1563,87 +1018,7 @@ module.exports = new (function () {
 //# sourceMappingURL=hypermedia.js.map
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var OBJECT_MATCHER = __webpack_require__(11);
-var TREE_OPTIONS = __webpack_require__(4);
-
-var _require = __webpack_require__(6),
-    VerbMethods = _require.VerbMethods;
-
-var Chainer = __webpack_require__(3);
-
-module.exports = new (function () {
-  function ObjectChainer() {
-    _classCallCheck(this, ObjectChainer);
-  }
-
-  _createClass(ObjectChainer, [{
-    key: 'chainChildren',
-    value: function chainChildren(chainer, url, obj) {
-      return function () {
-        var result = [];
-        for (var key in OBJECT_MATCHER) {
-          var re = OBJECT_MATCHER[key];
-          var item = void 0;
-          if (re.test(obj.url)) {
-            var context = TREE_OPTIONS;
-            var iterable = key.split('.');
-            for (var i = 0; i < iterable.length; i++) {
-              var k = iterable[i];
-              context = context[k];
-            }
-            item = chainer.chain(url, k, context, obj);
-          }
-          result.push(item);
-        }
-        return result;
-      }();
-    }
-  }, {
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var plugins = input.plugins,
-          requester = input.requester,
-          data = input.data,
-          url = input.url;
-      // unless data
-      //    throw new Error('BUG! Expected JSON data to exist')
-
-      var verbMethods = new VerbMethods(plugins, requester);
-      var chainer = new Chainer(verbMethods);
-      if (url) {
-        chainer.chain(url, true, {}, data);
-        this.chainChildren(chainer, url, data);
-      } else {
-        chainer.chain('', null, {}, data
-        // For the paged results, rechain all children in the array
-        );if (Array.isArray(data)) {
-          for (var i = 0; i < data.length; i++) {
-            var datum = data[i];
-            this.chainChildren(chainer, datum.url, datum);
-          }
-        }
-      }
-
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return ObjectChainer;
-}())();
-//# sourceMappingURL=object-chainer.js.map
-
-/***/ }),
-/* 21 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1681,14 +1056,14 @@ module.exports = new (function () {
         };var linksHeader = jqXHR.headers.get('Link');
         if (linksHeader) {
           linksHeader.split(',').forEach(function (part) {
-            var _part$match = part.match(/<([^>]+)>; rel="([^"]+)"/
-            // Add the pagination functions on the JSON since Promises resolve one value
-            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-            ),
+            var _part$match = part.match(/<([^>]+)>; rel="([^"]+)"/),
                 _part$match2 = _slicedToArray(_part$match, 3),
                 unusedField = _part$match2[0],
                 href = _part$match2[1],
                 rel = _part$match2[2];
+            // Add the pagination functions on the JSON since Promises resolve one value
+            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
+
 
             data[rel + '_page_url'] = href;
           });
@@ -1704,7 +1079,7 @@ module.exports = new (function () {
 //# sourceMappingURL=pagination.js.map
 
 /***/ }),
-/* 22 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1714,42 +1089,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var URL_VALIDATOR = __webpack_require__(13);
-
-module.exports = new (function () {
-  function PathValidator() {
-    _classCallCheck(this, PathValidator);
-  }
-
-  _createClass(PathValidator, [{
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input) {
-      var path = input.path;
-
-      if (!URL_VALIDATOR.test(path)) {
-        var err = 'Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=' + path;
-        console.warn(err);
-      }
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return PathValidator;
-}())();
-//# sourceMappingURL=path-validator.js.map
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PREVIEW_HEADERS = __webpack_require__(12);
+var PREVIEW_HEADERS = __webpack_require__(9);
 
 var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
   for (var key in PREVIEW_HEADERS) {
@@ -1785,7 +1125,7 @@ module.exports = new (function () {
 //# sourceMappingURL=preview-apis.js.map
 
 /***/ }),
-/* 24 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1795,7 +1135,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var toQueryString = __webpack_require__(2);
+var toQueryString = __webpack_require__(1);
 
 module.exports = new (function () {
   function ReadBinary() {
@@ -1865,7 +1205,7 @@ function __range__(left, right, inclusive) {
 //# sourceMappingURL=read-binary.js.map
 
 /***/ }),
-/* 25 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1898,7 +1238,7 @@ module.exports = new (function () {
 //# sourceMappingURL=use-post-instead-of-patch.js.map
 
 /***/ }),
-/* 26 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1908,7 +1248,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _require = __webpack_require__(0
+var _require = __webpack_require__(2),
+    filter = _require.filter,
+    map = _require.map;
 
 // Request Function
 // ===============================
@@ -1918,10 +1260,6 @@ var _require = __webpack_require__(0
 
 // # Construct the request function.
 // It contains all the auth credentials passed in to the client constructor
-
-),
-    filter = _require.filter,
-    map = _require.map;
 
 var EVENT_ID = 0; // counter for the emitter so it is easier to match up requests
 
@@ -2053,12 +1391,12 @@ module.exports = function () {
             if (response.headers.get('X-RateLimit-Limit')) {
               var rateLimit = parseFloat(response.headers.get('X-RateLimit-Limit'));
               var rateLimitRemaining = parseFloat(response.headers.get('X-RateLimit-Remaining'));
-              var rateLimitReset = parseFloat(response.headers.get('X-RateLimit-Reset')
+              var rateLimitReset = parseFloat(response.headers.get('X-RateLimit-Reset'));
               // Reset time is in seconds, not milliseconds
               // if rateLimitReset
               //   rateLimitReset = new Date(rateLimitReset * 1000)
 
-              );var emitterRate = {
+              var emitterRate = {
                 remaining: rateLimitRemaining,
                 limit: rateLimit,
                 reset: rateLimitReset
@@ -2142,7 +1480,149 @@ function __guardFunc__(func, transform) {
 //# sourceMappingURL=requester.js.map
 
 /***/ }),
-/* 27 */
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _require = __webpack_require__(2),
+    filter = _require.filter,
+    forOwn = _require.forOwn,
+    extend = _require.extend;
+
+// When `origFn` is not passed a callback as the last argument then return a
+// Promise, or error if no Promise can be found (see `plugins/promise/*` for
+// some strategies for loading a Promise implementation)
+
+
+var toPromise = function toPromise(orig) {
+  return function () {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var last = args[args.length - 1];
+    if (typeof last === 'function') {
+      // The last arg is a callback function
+      args.pop();
+      return orig.apply(undefined, args).then(function (v) {
+        last(null, v);
+      }).catch(function (err) {
+        last(err);
+      });
+    } else if (typeof Promise !== 'undefined') {
+      return orig.apply(undefined, args);
+    } else {
+      throw new Error('You must specify a callback or have a promise library loaded');
+    }
+  };
+};
+
+var VerbMethods = function () {
+  function VerbMethods(plugins, _requester) {
+    _classCallCheck(this, VerbMethods);
+
+    this._requester = _requester;
+    if (!this._requester) {
+      throw new Error('Octokat BUG: request is required');
+    }
+
+    var promisePlugins = filter(plugins, function (_ref) {
+      var promiseCreator = _ref.promiseCreator;
+      return promiseCreator;
+    });
+    if (promisePlugins) {
+      this._promisePlugin = promisePlugins[0];
+    }
+
+    this._syncVerbs = {};
+    var iterable = filter(plugins, function (_ref2) {
+      var verbs = _ref2.verbs;
+      return verbs;
+    });
+    for (var i = 0; i < iterable.length; i++) {
+      var plugin = iterable[i];
+      extend(this._syncVerbs, plugin.verbs);
+    }
+    this._asyncVerbs = {};
+    var iterable1 = filter(plugins, function (_ref3) {
+      var asyncVerbs = _ref3.asyncVerbs;
+      return asyncVerbs;
+    });
+    for (var j = 0; j < iterable1.length; j++) {
+      var _plugin = iterable1[j];
+      extend(this._asyncVerbs, _plugin.asyncVerbs);
+    }
+  }
+
+  // Injects verb methods onto `obj`
+
+
+  _createClass(VerbMethods, [{
+    key: 'injectVerbMethods',
+    value: function injectVerbMethods(path, obj) {
+      var _this = this;
+
+      if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') {
+        obj.url = path; // Mostly for testing
+        forOwn(this._syncVerbs, function (verbFunc, verbName) {
+          obj[verbName] = function () {
+            var makeRequest = function makeRequest() {
+              for (var _len2 = arguments.length, originalArgs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                originalArgs[_key2] = arguments[_key2];
+              }
+
+              var data = void 0,
+                  method = void 0,
+                  options = void 0;
+
+              var _verbFunc = verbFunc.apply(undefined, [path].concat(originalArgs));
+
+              method = _verbFunc.method;
+              path = _verbFunc.path;
+              data = _verbFunc.data;
+              options = _verbFunc.options;
+
+              return _this._requester.request(method, path, data, options);
+            };
+            return toPromise(makeRequest).apply(undefined, arguments);
+          };
+        });
+
+        forOwn(this._asyncVerbs, function (verbFunc, verbName) {
+          obj[verbName] = function () {
+            var makeRequest = verbFunc(_this._requester, path); // Curried function
+            return toPromise(makeRequest).apply(undefined, arguments);
+          };
+        });
+      } else {
+        // console.warn('BUG: Attempted to injectVerbMethods on a ' + (typeof obj));
+      }
+
+      return obj;
+    }
+  }]);
+
+  return VerbMethods;
+}();
+
+exports.VerbMethods = VerbMethods;
+exports.toPromise = toPromise;
+//# sourceMappingURL=verb-methods.js.map
+
+/***/ }),
+/* 22 */
 /***/ (function(module, exports) {
 
 /**
@@ -2170,7 +1650,7 @@ module.exports = arrayEach;
 
 
 /***/ }),
-/* 28 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /**
@@ -2201,7 +1681,7 @@ module.exports = arrayFilter;
 
 
 /***/ }),
-/* 29 */
+/* 24 */
 /***/ (function(module, exports) {
 
 /**
@@ -2228,7 +1708,7 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 30 */
+/* 25 */
 /***/ (function(module, exports) {
 
 var g;
@@ -2255,10 +1735,10 @@ module.exports = g;
 
 
 /***/ }),
-/* 31 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(7);
+module.exports = __webpack_require__(4);
 
 
 /***/ })

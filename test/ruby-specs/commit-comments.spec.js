@@ -29,28 +29,31 @@ describe('Commit Comments', function () {
         this.commit = items[0]
         return client.repos(test_repo).commits(this.commit.sha).comments.create({body: ':metal:\n:sparkles:\n:cake:'})
         .then(commitComment => {
-          this.commit_comment = commitComment
+          this.commit_comment_value = commitComment
+          this.commit_comment_fn = client.fromUrl(commitComment.url)
         })
       }
       )
     )
 
     after(() => {
-      return this.commit_comment.remove()
+      const ret = this.commit_comment_fn.remove()
+      delete this.commit_comment_fn // needed for PhantomJS. Otherwise it hangs
+      return ret
     })
 
     it('creates a commit comment', () => {
-      return expect(this.commit_comment.user.login).to.not.be.null
+      return expect(this.commit_comment_value.user.login).to.not.be.null
     })
 
     it('updates a commit comment', () => {
-      return this.commit_comment.update({body: ':penguin:'})
+      return this.commit_comment_fn.update({body: ':penguin:'})
       .then(null, err => console.error(err))
       .then(updatedComment => expect(updatedComment.body).to.equal(':penguin:'))
     })
 
     it('deletes a commit comment', () => {
-      return this.commit_comment.remove()
+      return this.commit_comment_fn.remove()
     })
   })
 })

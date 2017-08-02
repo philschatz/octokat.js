@@ -197,10 +197,10 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
 
   describe('Paged Results', function () {
     describe('Deprecated Notation', function () {
-      it(`${GH}.gists.public.fetch().then(results) -> results.nextPage()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.next_page()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(({nextPage}) =>
-          nextPage()
+        .then(({next_page}) =>
+          next_page()
           .then(function ({items}) {
             expect(items).to.be.an('array')
             return expect(items).to.have.length.at.least(1)
@@ -208,39 +208,39 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         )
       )
 
-      it(`${GH}.gists.public.fetch().then(results) -> results.prevPage()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.prev_page()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(({nextPage}) =>
-          nextPage()
-          .then(({prevPage}) =>
-            prevPage()
+        .then(({next_page}) =>
+          next_page()
+          .then(({prev_page}) =>
+            prev_page()
             .then(function () {})
           )
         )
       )
 
-      it(`${GH}.gists.public.fetch().then(results) -> results.firstPage()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.first_page()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(({nextPage}) =>
-          nextPage()
-          .then(({firstPage}) =>
-            firstPage()
+        .then(({next_page}) =>
+          next_page()
+          .then(({first_page}) =>
+            first_page()
             .then(function () {})
           )
         )
       )
 
-      it(`${GH}.gists.public.fetch().then(results) -> results.lastPage()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.last_page()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(({lastPage}) => lastPage())
+        .then(({last_page}) => last_page())
       )
     })
 
     describe('New Notation', function () {
-      it(`${GH}.gists.public.fetch().then(results) -> results.nextPage.fetch()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.next_page.fetch()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(({nextPage}) =>
-          nextPage.fetch()
+        .then(({next_page}) =>
+          next_page.fetch()
           .then(function ({items}) {
             expect(items).to.be.an('array')
             return expect(items).to.have.length.at.least(1)
@@ -248,31 +248,31 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
         )
       )
 
-      it(`${GH}.gists.public.fetch().then(results) -> results.prevPage.fetch()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.prev_page.fetch()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(({nextPage}) =>
-          nextPage.fetch()
-          .then(({prevPage}) =>
-            prevPage.fetch()
+        .then(({next_page}) =>
+          next_page.fetch()
+          .then(({prev_page}) =>
+            prev_page.fetch()
             .then(function () {})
           )
         )
       )
 
-      it(`${GH}.gists.public.fetch().then(results) -> results.firstPage.fetch()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.first_page.fetch()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
         .then(results =>
-          results.nextPage.fetch()
+          results.next_page.fetch()
           .then(moreResults =>
-            moreResults.firstPage.fetch()
+            moreResults.first_page.fetch()
             .then(function () {})
           )
         )
       )
 
-      it(`${GH}.gists.public.fetch().then(results) -> results.lastPage.fetch()`, () =>
+      it(`${GH}.gists.public.fetch().then(results) -> results.last_page.fetch()`, () =>
         trapFail(STATE[GH].gists.public.fetch())
-        .then(results => results.lastPage.fetch())
+        .then(results => results.last_page.fetch())
       )
     })
   })
@@ -304,7 +304,7 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     itIsArray(REPO, 'releases.fetchAll')
     itIsArray(REPO, 'issues.fetchAll')
 
-    it(`camelCases URL fields that are not templated (ie ${REPO}.htmlUrl)`, () =>
+    it.skip(`camelCases URL fields that are not templated (ie ${REPO}.htmlUrl)`, () =>
       STATE[REPO].fetch().then(repo => expect(repo.htmlUrl).to.be.a('string'))
     )
 
@@ -417,9 +417,9 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
     itIsArray(USER, 'receivedEvents.fetch')
     itIsArray(USER, 'starred.fetch')
 
-    it(`camelCases URL fields that are not templated (ie ${USER}.avatarUrl)`, () =>
+    it.skip(`camelCases URL fields that are not templated (ie ${USER}.avatarUrl)`, () =>
       STATE[USER].fetch().then(function (repo) {
-        expect(repo.htmlUrl).to.be.a('string')
+        expect(repo.html_url).to.be.a('string')
         return expect(repo.avatarUrl).to.be.a('string')
       })
     )
@@ -484,14 +484,13 @@ describe(`${GH} = new Octokat({token: ...})`, function () {
       }
 
       return STATE[GH].gists.create(config)
-      .then(gist => { STATE[GIST] = gist })
+      .then(gist => { STATE[GIST] = STATE[GH].fromUrl(gist.url) })
     })
 
     // itIsOk(GIST, 'fetch')
 
     // itIsArray(GIST, 'forks.all')
 
-    // TODO: For some reason this test fails in the browser. Probably POST vs PUT?
     it('can be .starred.add() and .starred.remove()', () =>
       STATE[GIST].star.add()
       .then(() => STATE[GIST].star.remove())

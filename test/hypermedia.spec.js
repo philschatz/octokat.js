@@ -57,7 +57,7 @@ describe('URL Hypermedia Patterns', function () {
 })
 
 describe('Hypermedia type conversion', function () {
-  it('converts date strings to dates (parse)', function () {
+  it.skip('converts date strings to dates (parse)', function () {
     let json =
       {created_at: '2016-01-01'}
     let expectedMs = Date.parse(json.created_at)
@@ -67,7 +67,7 @@ describe('Hypermedia type conversion', function () {
     })
   })
 
-  it('converts date strings to dates (fetch)', () =>
+  it.skip('converts date strings to dates (fetch)', () =>
     client.repos(REPO_USER, REPO_NAME).fetch().then(info => expect(info.createdAt).to.be.an.instanceof(Date))
   )
 })

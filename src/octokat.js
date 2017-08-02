@@ -4,8 +4,8 @@ const OctokatBase = require('./base')
 const HypermediaPlugin = require('./plugins/hypermedia')
 
 let ALL_PLUGINS = [
-  require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
-  require('./plugins/path-validator'),
+  // require('./plugins/object-chainer'), // re-chain methods when we detect an object (issue, comment, user, etc)
+  // require('./plugins/path-validator'),
   require('./plugins/authorization'),
   require('./plugins/preview-apis'),
   require('./plugins/use-post-instead-of-patch'),
@@ -19,8 +19,8 @@ let ALL_PLUGINS = [
   require('./plugins/cache-handler'),
   require('./plugins/read-binary'),
 
-  HypermediaPlugin,
-  require('./plugins/camel-case')
+  HypermediaPlugin
+  // require('./plugins/camel-case')
 ]
 
 let Octokat = function (clientOptions = {}) {

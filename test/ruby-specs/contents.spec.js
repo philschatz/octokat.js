@@ -79,8 +79,8 @@ describe('Contents', function () {
 
     it('creates repository contents at a path', () => {
       const repo = client.repos(test_repo)
-      return repo.fetch().then(({defaultBranch}) => {
-        return repo.branches(defaultBranch).fetch().then(({commit}) => {
+      return repo.fetch().then(({default_branch}) => {
+        return repo.branches(default_branch).fetch().then(({commit}) => {
           let config = {
             message: 'I am commit-ing',
             content: btoa('Here be the content\n')
@@ -97,8 +97,8 @@ describe('Contents', function () {
     it('updates repository contents at a path', () => {
       // Prep work (from previous test)
       const repo = client.repos(test_repo)
-      return repo.fetch().then(({defaultBranch}) => {
-        return repo.branches(defaultBranch).fetch().then(({commit}) => {
+      return repo.fetch().then(({default_branch}) => {
+        return repo.branches(default_branch).fetch().then(({commit}) => {
           let config = {
             message: 'I am commit-ing',
             content: btoa('Here be the content\n')
@@ -125,8 +125,8 @@ describe('Contents', function () {
     it('deletes repository contents at a path', () => {
       // Prep work (from previous test)
       const repo = client.repos(test_repo)
-      return repo.fetch().then(({defaultBranch}) => {
-        return repo.branches(defaultBranch).fetch().then(({commit}) => {
+      return repo.fetch().then(({default_branch}) => {
+        return repo.branches(default_branch).fetch().then(({commit}) => {
           let config = {
             message: 'I am commit-ing for removal',
             content: btoa('Here be the content\n')
@@ -143,7 +143,7 @@ describe('Contents', function () {
             }
             return client.repos(test_repo).contents('test_delete.txt').remove(config)
             .then(function (response) {
-              expect(response.url).is.a('string')
+              expect(response.commit.url).is.a('string')
             })
           })
         })
