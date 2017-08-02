@@ -12,7 +12,7 @@
 
 Octokat.js provides a minimal higher-level wrapper around [GitHub's API](https://developer.github.com).
 It is being developed in the context of an [EPUB3 Textbook editor for GitHub](https://github.com/oerpub/github-bookeditor)
- and a [simple serverless kanban board](https://github.com/philschatz/gh-board) ([demo](http://philschatz.com/gh-board)). It is also [used](https://github.com/desktop/desktop/blob/master/app/package.json#L32) in the [official github desktop client](https://desktop.github.com/)!
+ and a [simple serverless kanban board](https://github.com/philschatz/gh-board) ([demo](http://philschatz.com/gh-board)).
 
 This package can be used in `nodejs` **or** in the browser as an AMD module or using browserify.
 
