@@ -389,9 +389,11 @@ To use the Enterprise APIs add the root URL when instantiating Octokat:
 ```js
 var octo = new Octokat({
   token: 'API_TOKEN',
-  rootURL: 'https://example.com/api/v3'
+  githubEndpoint: 'https://example.com/api/v3'
 })
 ```
+
+You can also set the githubEndpoint as an environmental token called `GITHUB_ENDPOINT`.
 
 ## Using EcmaScript 6 Generators
 
