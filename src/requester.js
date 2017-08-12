@@ -16,7 +16,7 @@ module.exports = class Requester {
     // Provide an option to override the default URL
     this._instance = _instance
     this._clientOptions = _clientOptions
-    if (this._clientOptions.rootURL == null) { this._clientOptions.rootURL = 'https://api.github.com' }
+    if (this._clientOptions.githubEndpoint == null) { this._clientOptions.githubEndpoint = process.env.GITHUB_ENDPOINT || 'https://api.github.com' }
     if (this._clientOptions.useETags == null) { this._clientOptions.useETags = true }
     if (this._clientOptions.usePostInsteadOfPatch == null) { this._clientOptions.usePostInsteadOfPatch = false }
     if (this._clientOptions.userAgent == null) {
@@ -53,7 +53,7 @@ module.exports = class Requester {
 
     // Only prefix the path when it does not begin with http.
     // This is so pagination works (which provides absolute URLs).
-    if (!/^http/.test(path)) { path = `${this._clientOptions.rootURL}${path}` }
+    if (!/^http/.test(path)) { path = `${this._clientOptions.githubEndpoint}${path}` }
 
     let headers = {
       'Accept': this._clientOptions.acceptHeader || 'application/json'
