@@ -56,8 +56,12 @@ module.exports = class Requester {
     if (!/^http/.test(path)) { path = `${this._clientOptions.rootURL}${path}` }
 
     let headers = {
-      'Accept': this._clientOptions.acceptHeader || 'application/json',
-      'User-Agent': this._clientOptions.userAgent || 'octokat.js'
+      'Accept': this._clientOptions.acceptHeader || 'application/json'
+    }
+
+    // Safari/Firefox do not like setting the user-agent header
+    if (this._clientOptions.userAgent) {
+      headers['User-Agent'] = this._clientOptions.userAgent
     }
 
     let acc = {method, path, headers, options, clientOptions: this._clientOptions}
