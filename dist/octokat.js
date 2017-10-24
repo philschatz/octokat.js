@@ -1912,6 +1912,8 @@ var _require = __webpack_require__(0),
     filter = _require.filter,
     map = _require.map;
 
+var fs = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"fs\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+
 // Request Function
 // ===============================
 //
@@ -1922,6 +1924,8 @@ var _require = __webpack_require__(0),
 // It contains all the auth credentials passed in to the client constructor
 
 var EVENT_ID = 0; // counter for the emitter so it is easier to match up requests
+
+var NAMED_TYPES = {};
 
 module.exports = function () {
   function Requester(_instance) {
@@ -2087,6 +2091,135 @@ module.exports = function () {
             // } else if (options.isBoolean) {
             //   throw new Error(`Octokat Bug? got a response to a boolean question that was not 204 or 404.  ${fetchArgs.method} ${path} Status: ${response.status}`)
           } else if (response.status >= 200 && response.status < 300 || response.status === 304 || response.status === 302 || response.status === 0) {
+            var guessTypeName = function guessTypeName(data) {
+              if (!data) {
+                return null;
+              }
+              // if (data.truncated) { return 'Gist' }
+              if (data.has_organization_projects) {
+                return 'Organization';
+              } else if (data.public_members_url) {
+                return 'OrganizationSlug';
+              } else if (data.collaborators_url) {
+                return 'Repository';
+              } else if (data.pull_request) {
+                return 'PullRequest';
+              } else if (data.labels_url) {
+                return 'Issue';
+              } else if (data.download_count) {
+                return 'Download';
+              } else if (data.stats) {
+                return 'RepoCommit';
+              } else if (data.tree) {
+                return 'GitCommit';
+              } else if (data.ref) {
+                return 'GitRef';
+              } else if (data.commit && data.name) {
+                return 'GitBranch';
+              } else if (data.issue_url) {
+                return 'IssueComment';
+              } else if (data.commit_id && data.actor) {
+                return 'IssueEvent';
+              } else if (data.color) {
+                return 'IssueLabel';
+              } else if (data.position) {
+                return 'RepoComment';
+              } else if (data.followers_url) {
+                return 'User';
+              } else if (data.diff_url && data.permalink_url && data.base_commit) {
+                return 'CommitDiff';
+              } else if (data.diff_url) {
+                return 'CommitDiffSlug';
+              } else if (data.encoding) {
+                return 'RepoFileContents';
+              } else if (data.sha && data.url && Object.keys(data).length === 2) {
+                return 'GitBlob';
+              } else if (data.subscribed) {
+                return 'RepoSubscription';
+              } else if (data.payload) {
+                return 'Event';
+              } else if (data.display_login) {
+                return 'OrganizationSlug2';
+              } else if (data.patch) {
+                return 'GitPatch';
+              } else if (data.name && data.email && data.date) {
+                return 'UserSlug';
+              } else if (data.id && data.name && data.url) {
+                return 'RepoSlug';
+              } else if (data.id && data.login && data.url && data.avatar_url) {
+                return 'OrganizationSlug3';
+              } else if (data.filename && data.type && data.language && data.raw_url && data.size && data.content) {
+                return 'FileContents';
+              } else if (data.filename && data.type && data.language && data.raw_url && data.size) {
+                return 'FileSlug';
+              } else if (data.sha && data.commit && data.url && data.html_url && data.comments_url && data.author && data.committer && data.parents) {
+                return 'RepoCommitMaybe';
+              } else if (data.sha && data.url && data.html_url /*&& Object.keys(data).length === 3*/) {
+                  return 'CommitSlugMaybe';
+                } else if (data.sha && data.filename && data.status && data.blob_url && data.raw_url && data.contents_url && data.patch) {
+                return 'CommitFile';
+              } else if (data.funeral_urn) {
+                return 'Emojis';
+              } else if (data.total_count && data.items) {
+                return 'SearchResult<T>';
+              }
+              // else if (data.) { return '' }
+              // else if (data.) { return '' }
+              // else if (data.) { return '' }
+              // else if (data.) { return '' }
+              else {
+                  console.log('TYPEBUG: ', data);
+                }
+            };
+
+            var _buildTypescriptRec = function _buildTypescriptRec(data) {
+              if (!data) {
+                return;
+              }
+              var ret = Object.keys(data).map(function (key) {
+                var value = data[key];
+                var valType = 'any';
+                var isOptional = false;
+                if (Array.isArray(value)) {
+                  // Recurse on the 1st entry, or just mark it as `any[]`
+                  if (value[0]) {
+                    // TODO: This might be a problem if the nested types are unnamed
+                    valType = _buildTypescriptRec(value[0]) + '[]';
+                  } else {
+                    valType = 'any[]';
+                  }
+                } else if (value === null) {
+                  isOptional = true;
+                  valType = 'any';
+                } else if (typeof value === 'boolean') {
+                  valType = 'boolean';
+                } else if (typeof value === 'number') {
+                  valType = 'number';
+                } else if (typeof value === 'string') {
+                  valType = 'string';
+                } else {
+                  // Recurse
+                  var _guessed = guessTypeName(value);
+
+                  if (_guessed) {
+                    valType = _guessed;
+                    _buildTypescriptRec(value); // just so the guessed field is saved
+                  } else {
+                    valType = _buildTypescriptRec(value);
+                  }
+                }
+                return 'readonly \'' + key + '\'' + (isOptional ? '?' : '') + ': ' + valType + ';'; // extra quotes are because of the emoji list
+              });
+
+              var guessed = guessTypeName(data);
+              if (guessed) {
+                fs.writeFileSync('response-types/' + guessed + '.type', 'export type ' + guessed + ' = { ' + ret.join('\n') + ' };\n\n');
+                return guessed;
+              }
+
+              return '{ ' + ret.join('\n') + ' }';
+            };
+
             // If it was a boolean question and the server responded with 204 ignore.
             var dataPromise = void 0;
 
@@ -2111,6 +2244,18 @@ module.exports = function () {
             }
 
             return dataPromise.then(function (data) {
+              if (Array.isArray(data)) {
+                // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', 'Array', '\t', data[0].url ? data[0].url : 'unknown?', '\t', JSON.stringify(Object.keys(data[0])));
+                _buildTypescriptRec(data[0]);
+              } else if (data && data.url) {
+                // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', 'JSON', '\t', data.url, '\t', JSON.stringify(Object.keys(data)));
+                _buildTypescriptRec(data);
+              } else if (!data) {
+                // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', 'null');
+              } else if (typeof data === 'string') {} else if (Object.keys(data).length > 0) {
+                _buildTypescriptRec(data);
+                // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', typeof data);
+              }
               acc = {
                 clientOptions: _this._clientOptions,
                 plugins: _this._plugins,

@@ -1,5 +1,7 @@
 const { filter, map } = require('./plus')
 
+const fs = require('fs')
+
 // Request Function
 // ===============================
 //
@@ -10,6 +12,9 @@ const { filter, map } = require('./plus')
 // It contains all the auth credentials passed in to the client constructor
 
 let EVENT_ID = 0 // counter for the emitter so it is easier to match up requests
+
+const NAMED_TYPES = {}
+
 
 module.exports = class Requester {
   constructor (_instance, _clientOptions = {}, plugins, fetchImpl) {
@@ -155,7 +160,118 @@ module.exports = class Requester {
             }
           }
 
+          function guessTypeName(data) {
+            if (!data) {
+              return null
+            }
+            // if (data.truncated) { return 'Gist' }
+            if (data.has_organization_projects) { return 'Organization' }
+            else if (data.public_members_url) { return 'OrganizationSlug' }
+            else if (data.collaborators_url) { return 'Repository' }
+            else if (data.pull_request) { return 'PullRequest' }
+            else if (data.labels_url) { return 'Issue' }
+            else if (data.download_count) { return 'Download' }
+            else if (data.stats) { return 'RepoCommit' }
+            else if (data.tree) { return 'GitCommit' }
+            else if (data.ref) { return 'GitRef' }
+            else if (data.commit && data.name) { return 'GitBranch' }
+            else if (data.issue_url) { return 'IssueComment' }
+            else if (data.commit_id && data.actor) { return 'IssueEvent' }
+            else if (data.color) { return 'IssueLabel' }
+            else if (data.position) { return 'RepoComment' }
+            else if (data.followers_url) { return 'User' }
+            else if (data.diff_url && data.permalink_url && data.base_commit) { return 'CommitDiff' }
+            else if (data.diff_url) { return 'CommitDiffSlug' }
+            else if (data.encoding) { return 'RepoFileContents' }
+            else if (data.sha && data.url && Object.keys(data).length === 2) { return 'GitBlob' }
+            else if (data.subscribed) { return 'RepoSubscription' }
+            else if (data.payload) { return 'Event' }
+            else if (data.display_login) { return 'OrganizationSlug2' }
+            else if (data.patch) { return 'GitPatch' }
+            else if (data.name && data.email && data.date) { return 'UserSlug' }
+            else if (data.id && data.name && data.url) { return 'RepoSlug' }
+            else if (data.id && data.login && data.url && data.avatar_url) { return 'OrganizationSlug3' }
+            else if (data.filename && data.type && data.language && data.raw_url && data.size && data.content) { return 'FileContents' }
+            else if (data.filename && data.type && data.language && data.raw_url && data.size) { return 'FileSlug' }
+            else if (data.sha && data.commit && data.url && data.html_url && data.comments_url && data.author && data.committer && data.parents) { return 'RepoCommitMaybe' }
+            else if (data.sha && data.url && data.html_url /*&& Object.keys(data).length === 3*/) { return 'CommitSlugMaybe' }
+            else if (data.sha && data.filename && data.status && data.blob_url && data.raw_url && data.contents_url && data.patch) { return 'CommitFile' }
+            else if (data.funeral_urn) { return 'Emojis' }
+            else if (data.total_count && data.items) { return 'SearchResult<T>' }
+            // else if (data.) { return '' }
+            // else if (data.) { return '' }
+            // else if (data.) { return '' }
+            // else if (data.) { return '' }
+            else { console.log('TYPEBUG: ', data);}
+          }
+
+
+          function buildTypescriptRec(data) {
+            if (!data) {
+              return
+            }
+            const ret = Object.keys(data).map((key) => {
+              const value = data[key]
+              let valType = 'any'
+              let isOptional = false
+              if (Array.isArray(value)) {
+                // Recurse on the 1st entry, or just mark it as `any[]`
+                if (value[0]) {
+                  // TODO: This might be a problem if the nested types are unnamed
+                  valType = `${buildTypescriptRec(value[0])}[]`
+                } else {
+                  valType = 'any[]'
+                }
+
+              } else if (value === null) {
+                isOptional = true
+                valType = 'any'
+              } else if (typeof value === 'boolean') {
+                valType = 'boolean'
+              } else if (typeof value === 'number') {
+                valType = 'number'
+              } else if (typeof value === 'string') {
+                valType = 'string'
+              } else {
+                // Recurse
+                const guessed = guessTypeName(value)
+
+                if (guessed) {
+                  valType = guessed
+                  buildTypescriptRec(value) // just so the guessed field is saved
+
+                } else {
+                  valType = buildTypescriptRec(value)
+                }
+              }
+              return `readonly '${key}'${isOptional? '?' : ''}: ${valType};` // extra quotes are because of the emoji list
+
+            })
+
+            const guessed = guessTypeName(data)
+            if (guessed) {
+              fs.writeFileSync('response-types/' + guessed + '.type', `export type ${guessed} = { ${ret.join('\n')} };\n\n`)
+              return guessed
+            }
+
+            return `{ ${ret.join('\n')} }`
+          }
+
           return dataPromise.then((data) => {
+            if (Array.isArray(data)) {
+              // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', 'Array', '\t', data[0].url ? data[0].url : 'unknown?', '\t', JSON.stringify(Object.keys(data[0])));
+              buildTypescriptRec(data[0])
+            } else if (data && data.url) {
+              // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', 'JSON', '\t', data.url, '\t', JSON.stringify(Object.keys(data)));
+              buildTypescriptRec(data)
+            } else if (!data) {
+              // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', 'null');
+            } else if (typeof data === 'string') {
+
+            } else if (Object.keys(data).length > 0){
+              buildTypescriptRec(data)
+              // console.log('PHIL', '\t', path, '\t', fetchArgs.method, '\t', typeof data);
+            }
             acc = {
               clientOptions: this._clientOptions,
               plugins: this._plugins,
