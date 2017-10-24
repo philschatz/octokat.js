@@ -40,7 +40,7 @@
     "chai": "~3.5.0",
     "codecov": "^2.0.1",
     "coffee-script": "^1.12.1",
-    "coffeelint": "^1.15.7",
+    "coffeelint": "^2.0.5",
     "es6-promise": "4.1.1",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^8.0.0",
