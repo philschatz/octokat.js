@@ -41,7 +41,7 @@
     "codecov": "^2.0.1",
     "coffee-script": "^1.12.1",
     "coffeelint": "^1.15.7",
-    "es6-promise": "4.1.1",
+    "es6-promise": "4.2.3",
     "eslint": "^4.1.0",
     "eslint-config-standard": "^8.0.0",
     "eslint-plugin-promise": "^3.4.0",
