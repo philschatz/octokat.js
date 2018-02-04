@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "fetch-vcr": "^1.1.0",
-    "lodash": "^4.16.4",
+    "lodash": "4.17.4",
     "node-fetch": "^1.6.3"
   },
   "devDependencies": {
