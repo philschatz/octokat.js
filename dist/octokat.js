@@ -7,7 +7,7 @@
 		exports["Octokat"] = factory();
 	else
 		root["Octokat"] = factory();
-})(this, function() {
+})(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -43,9 +43,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -73,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 31);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -85,9 +82,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 // Both of these internal methods are really small/simple and we are only
 // working with arrays anyway
-var filter = __webpack_require__(28);
-var forEach = __webpack_require__(27);
-var map = __webpack_require__(29);
+var filter = __webpack_require__(12);
+var forEach = __webpack_require__(13);
+var map = __webpack_require__(14);
 
 // require('underscore-plus')
 var plus = {
@@ -204,84 +201,6 @@ module.exports = toQueryString;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var plus = __webpack_require__(0);
-
-// Daisy-Chainer
-// ===============================
-//
-// Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
-// Constructs a URL for the verb methods (like `.fetch` and `.create`).
-
-module.exports = function () {
-  function Chainer(_verbMethods) {
-    _classCallCheck(this, Chainer);
-
-    this._verbMethods = _verbMethods;
-  }
-
-  _createClass(Chainer, [{
-    key: 'chain',
-    value: function chain(path, name, contextTree, fn) {
-      var _this = this;
-
-      if (typeof fn === 'undefined' || fn === null) {
-        fn = function fn() {
-          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          if (!args.length) {
-            throw new Error('BUG! must be called with at least one argument');
-          }
-          var separator = '/';
-          // Special-case compare because its args turn into '...' instead of the usual '/'
-          if (name === 'compare') {
-            separator = '...';
-          }
-          return _this.chain(path + '/' + args.join(separator), name, contextTree);
-        };
-      }
-
-      this._verbMethods.injectVerbMethods(path, fn);
-
-      if (typeof fn === 'function' || (typeof fn === 'undefined' ? 'undefined' : _typeof(fn)) === 'object') {
-        for (name in contextTree || {}) {
-          (function (name) {
-            // Delete the key if it already exists
-            delete fn[plus.camelize(name)];
-
-            return Object.defineProperty(fn, plus.camelize(name), {
-              configurable: true,
-              enumerable: true,
-              get: function get() {
-                return _this.chain(path + '/' + name, name, contextTree[name]);
-              }
-            });
-          })(name);
-        }
-      }
-
-      return fn;
-    }
-  }]);
-
-  return Chainer;
-}();
-//# sourceMappingURL=chainer.js.map
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -515,52 +434,85 @@ module.exports = (_module$exports = {
 //# sourceMappingURL=tree-options.js.map
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var toQueryString = __webpack_require__(2);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-// new class SimpleVerbs
-module.exports = {
-  verbs: {
-    fetch: function fetch(path, query) {
-      return { method: 'GET', path: '' + path + toQueryString(query) };
-    },
-    read: function read(path, query) {
-      return { method: 'GET', path: '' + path + toQueryString(query), options: { isRaw: true } };
-    },
-    remove: function remove(path, data) {
-      return { method: 'DELETE', path: path, data: data, options: { isBoolean: true } };
-    },
-    create: function create(path, data, contentType) {
-      if (contentType) {
-        return { method: 'POST', path: path, data: data, options: { isRaw: true, contentType: contentType } };
-      } else {
-        return { method: 'POST', path: path, data: data };
-      }
-    },
-    update: function update(path, data) {
-      return { method: 'PATCH', path: path, data: data };
-    },
-    add: function add(path, data) {
-      return { method: 'PUT', path: path, data: data, options: { isBoolean: true } };
-    },
-    contains: function contains(path) {
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-      return { method: 'GET', path: path + '/' + args.join('/'), options: { isBoolean: true } };
-    }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var plus = __webpack_require__(0);
+
+// Daisy-Chainer
+// ===============================
+//
+// Generates the functions so `octo.repos(...).issues.comments.fetch()` works.
+// Constructs a URL for the verb methods (like `.fetch` and `.create`).
+
+module.exports = function () {
+  function Chainer(_verbMethods) {
+    _classCallCheck(this, Chainer);
+
+    this._verbMethods = _verbMethods;
   }
-};
-//# sourceMappingURL=simple-verbs.js.map
+
+  _createClass(Chainer, [{
+    key: 'chain',
+    value: function chain(path, name, contextTree, fn) {
+      var _this = this;
+
+      if (typeof fn === 'undefined' || fn === null) {
+        fn = function fn() {
+          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          if (!args.length) {
+            throw new Error('BUG! must be called with at least one argument');
+          }
+          var separator = '/';
+          // Special-case compare because its args turn into '...' instead of the usual '/'
+          if (name === 'compare') {
+            separator = '...';
+          }
+          return _this.chain(path + '/' + args.join(separator), name, contextTree);
+        };
+      }
+
+      this._verbMethods.injectVerbMethods(path, fn);
+
+      if (typeof fn === 'function' || (typeof fn === 'undefined' ? 'undefined' : _typeof(fn)) === 'object') {
+        for (name in contextTree || {}) {
+          (function (name) {
+            // Delete the key if it already exists
+            delete fn[plus.camelize(name)];
+
+            return Object.defineProperty(fn, plus.camelize(name), {
+              configurable: true,
+              enumerable: true,
+              get: function get() {
+                return _this.chain(path + '/' + name, name, contextTree[name]);
+              }
+            });
+          })(name);
+        }
+      }
+
+      return fn;
+    }
+  }]);
+
+  return Chainer;
+}();
+//# sourceMappingURL=chainer.js.map
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -702,22 +654,74 @@ exports.toPromise = toPromise;
 //# sourceMappingURL=verb-methods.js.map
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var toQueryString = __webpack_require__(2);
+
+// new class SimpleVerbs
+module.exports = {
+  verbs: {
+    fetch: function fetch(path, query) {
+      return { method: 'GET', path: '' + path + toQueryString(query) };
+    },
+    read: function read(path, query) {
+      return { method: 'GET', path: '' + path + toQueryString(query), options: { isRaw: true } };
+    },
+    remove: function remove(path, data) {
+      return { method: 'DELETE', path: path, data: data, options: { isBoolean: true } };
+    },
+    create: function create(path, data, contentType) {
+      if (contentType) {
+        return { method: 'POST', path: path, data: data, options: { isRaw: true, contentType: contentType } };
+      } else {
+        return { method: 'POST', path: path, data: data };
+      }
+    },
+    update: function update(path, data) {
+      return { method: 'PATCH', path: path, data: data };
+    },
+    add: function add(path, data) {
+      return { method: 'PUT', path: path, data: data, options: { isBoolean: true } };
+    },
+    contains: function contains(path) {
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      return { method: 'GET', path: path + '/' + args.join('/'), options: { isBoolean: true } };
+    }
+  }
+};
+//# sourceMappingURL=simple-verbs.js.map
+
+/***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(8);
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var deprecate = __webpack_require__(1);
-var OctokatBase = __webpack_require__(10);
+var OctokatBase = __webpack_require__(9);
 
-var HypermediaPlugin = __webpack_require__(19);
+var HypermediaPlugin = __webpack_require__(17);
 
-var ALL_PLUGINS = [__webpack_require__(20), // re-chain methods when we detect an object (issue, comment, user, etc)
-__webpack_require__(22), __webpack_require__(15), __webpack_require__(23), __webpack_require__(25), __webpack_require__(5), __webpack_require__(18), __webpack_require__(21),
+var ALL_PLUGINS = [__webpack_require__(18), // re-chain methods when we detect an object (issue, comment, user, etc)
+__webpack_require__(20), __webpack_require__(22), __webpack_require__(24), __webpack_require__(26), __webpack_require__(6), __webpack_require__(27), __webpack_require__(28),
 // Run cacheHandler after PagedResults so the link headers are remembered
 // but before hypermedia so the object is still serializable
-__webpack_require__(16), __webpack_require__(24), HypermediaPlugin, __webpack_require__(17)];
+__webpack_require__(29), __webpack_require__(30), HypermediaPlugin, __webpack_require__(31)];
 
 var Octokat = function Octokat() {
   var clientOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -747,55 +751,29 @@ module.exports = Octokat;
 //# sourceMappingURL=octokat.js.map
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = btoa;
-//# sourceMappingURL=base64-browser.js.map
-
-/***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-if (typeof window.fetch === 'function') {
-  module.exports = window.fetch.bind(window);
-} else {
-  module.exports = function () {
-    throw new Error('Octokat Error: window.fetch function not found. Either use the https://npmjs.com/package/whatwg-fetch polyfill or set Octokat.Fetch variable to be the fetch function');
-  };
-}
-//# sourceMappingURL=fetch-browser.js.map
-
-/***/ }),
-/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
-var fetch = __webpack_require__(9);
+var fetch = __webpack_require__(11);
 var plus = __webpack_require__(0);
 var deprecate = __webpack_require__(1);
-var TREE_OPTIONS = __webpack_require__(4);
-var Chainer = __webpack_require__(3);
+var TREE_OPTIONS = __webpack_require__(3);
+var Chainer = __webpack_require__(4);
 
-var _require = __webpack_require__(6),
+var _require = __webpack_require__(5),
     VerbMethods = _require.VerbMethods,
     toPromise = _require.toPromise;
 
 // Use the following plugins by default (they should be neglegible additional code)
 
 
-var SimpleVerbsPlugin = __webpack_require__(5);
+var SimpleVerbsPlugin = __webpack_require__(6);
 
-var Requester = __webpack_require__(26);
-var applyHypermedia = __webpack_require__(14);
+var Requester = __webpack_require__(15);
+var applyHypermedia = __webpack_require__(16);
 
 // Checks if a response is a Buffer or not
 var isBuffer = function isBuffer(data) {
@@ -980,7 +958,34 @@ var OctokatBase = function OctokatBase() {
 
 module.exports = OctokatBase;
 //# sourceMappingURL=base.js.map
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(30)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
 
 /***/ }),
 /* 11 */
@@ -989,916 +994,103 @@ module.exports = OctokatBase;
 "use strict";
 
 
-// Generated by CoffeeScript 1.12.7
-(function () {
-  module.exports = {
-    'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(repos(\/[^\/]+){2}|repositories\/([0-9]+))$/,
-    'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
-    'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(repos(\/[^\/]+){2}|repositories\/([0-9]+))\/(issues|pulls)\/[^\/]+$/,
-    'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
-    'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
-    'teams': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/teams\/[^\/]+$/,
-    'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
+if (typeof window.fetch === 'function') {
+  module.exports = window.fetch.bind(window);
+} else {
+  module.exports = function () {
+    throw new Error('Octokat Error: window.fetch function not found. Either use the https://npmjs.com/package/whatwg-fetch polyfill or set Octokat.Fetch variable to be the fetch function');
   };
-}).call(undefined);
-
-//# sourceMappingURL=object-matcher.js.map
-//# sourceMappingURL=object-matcher.js.map
+}
+//# sourceMappingURL=fetch-browser.js.map
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+/**
+ * A specialized version of `_.filter` for arrays without support for
+ * iteratee shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} predicate The function invoked per iteration.
+ * @returns {Array} Returns the new filtered array.
+ */
+function arrayFilter(array, predicate) {
+  var index = -1,
+      length = array == null ? 0 : array.length,
+      resIndex = 0,
+      result = [];
 
+  while (++index < length) {
+    var value = array[index];
+    if (predicate(value, index, array)) {
+      result[resIndex++] = value;
+    }
+  }
+  return result;
+}
 
-// Generated by CoffeeScript 1.12.7
-(function () {
-  module.exports = {
-    'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
-    'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/,
-    'application/vnd.github.cloak-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/search\/commits$/,
-    'application/vnd.github.black-cat-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos(\/[^\/]+){2}\/pulls\/[0-9]+\/(|requested_reviewers|reviews(\/[0-9]+)?|reviews(\/[0-9]+)\/(comments|events|dismissals))$/,
-    'application/vnd.github.inertia-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/repos(\/[^\/]+){2}\/projects|\/orgs\/([^\/]+)\/projects|\/projects\/([0-9]+|[0-9]+\/columns|columns|columns\/[0-9]+|columns\/[0-9]+\/moves|columns\/[0-9]+\/cards|columns\/cards\/[0-9]+|columns\/cards\/[0-9]+\/moves))$/
-  };
-}).call(undefined);
+module.exports = arrayFilter;
 
-//# sourceMappingURL=preview-headers.js.map
-//# sourceMappingURL=preview-headers.js.map
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+/**
+ * A specialized version of `_.forEach` for arrays without support for
+ * iteratee shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns `array`.
+ */
+function arrayEach(array, iteratee) {
+  var index = -1,
+      length = array == null ? 0 : array.length;
 
+  while (++index < length) {
+    if (iteratee(array[index], index, array) === false) {
+      break;
+    }
+  }
+  return array;
+}
 
-// Generated by CoffeeScript 1.12.7
-(function () {
-  module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|repositories(\/\d+)?|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|public_emails|starred|starred(\/[^\/]+){2}|teams)|(orgs\/[^\/]+)|((organizations)(\/\d+)?)|(orgs\/[^\/]+)|(organizations\/\d+)\/(repos|issues|members|events|teams|projects)|projects\/[0-9]+|projects\/[0-9]+\/columns|projects\/columns\/[0-9]+|projects\/columns\/[0-9]+\/moves|projects\/columns\/[0-9]+\/cards|projects\/columns\/cards\/[0-9]+|projects\/columns\/cards\/[0-9]+\/moves|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|commits|issues|users|code)|gists\/(public|starred|([a-f0-9]{20,32}|[0-9]+)|([a-f0-9]{20,32}|[0-9]+)\/forks|([a-f0-9]{20,32}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20,32}|[0-9]+)\/star)|repos(\/[^\/]+){2}|(repos(\/[^\/]+){2}|repositories\/([0-9]+))\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|collaborators\/([^\/]+)\/permission|projects|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge|requested_reviewers|reviews(\/[0-9]+)?|reviews(\/[0-9]+)\/(comments|events|dismissals))|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card)|traffic\/(popular\/(referrers|paths)|views|clones))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
-}).call(undefined);
+module.exports = arrayEach;
 
-//# sourceMappingURL=url-validator.js.map
-//# sourceMappingURL=url-validator.js.map
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
+/**
+ * A specialized version of `_.map` for arrays without support for iteratee
+ * shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function arrayMap(array, iteratee) {
+  var index = -1,
+      length = array == null ? 0 : array.length,
+      result = Array(length);
 
-
-var toQueryString = __webpack_require__(2);
-var deprecate = __webpack_require__(1);
-
-module.exports = function (url) {
-  // Deprecated interface. Use an Object to specify the args in the template.
-  // the order of fields in the template should not matter.
-  var m = void 0;
-  if ((arguments.length <= 1 ? 0 : arguments.length - 1) === 0) {
-    var templateParams = {};
-  } else {
-    if ((arguments.length <= 1 ? 0 : arguments.length - 1) > 1) {
-      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args');
-    }
-
-    var templateParams = arguments.length <= 1 ? undefined : arguments[1];
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
   }
+  return result;
+}
 
-  // url can contain {name} or {/name} in the URL.
-  // for every arg passed in, replace {...} with that arg
-  // and remove the rest (they may or may not be optional)
-  var i = 0;
-  while (m = /(\{[^\}]+\})/.exec(url)) {
-    // `match` is something like `{/foo}` or `{?foo,bar}` or `{foo}` (last one means it is required)
-    var match = m[1];
-    var param = '';
-    // replace it
-    switch (match[1]) {
-      case '/':
-        var fieldName = match.slice(2, match.length - 1); // omit the braces and the slash
-        var fieldValue = templateParams[fieldName];
-        if (fieldValue) {
-          if (/\//.test(fieldValue)) {
-            throw new Error('Octokat Error: this field must not contain slashes: ' + fieldName);
-          }
-          param = '/' + fieldValue;
-        }
-        break;
-      case '+':
-        fieldName = match.slice(2, match.length - 1); // omit the braces and the `+`
-        fieldValue = templateParams[fieldName];
-        if (fieldValue) {
-          param = fieldValue;
-        }
-        break;
-      case '?':
-        // Strip off the "{?" and the trailing "}"
-        // For example, the URL is `/assets{?name,label}`
-        //   which turns into `/assets?name=foo.zip`
-        // Used to upload releases via the repo releases API.
-        //
-        // When match contains `,` or
-        // `args.length is 1` and args[0] is object match the args to those in the template
-        var optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
-        var optionalParams = {};
-        for (var j = 0; j < optionalNames.length; j++) {
-          fieldName = optionalNames[j];
-          optionalParams[fieldName] = templateParams[fieldName];
-        }
-        param = toQueryString(optionalParams);
-        break;
-      case '&':
-        optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
-        optionalParams = {};
-        for (var k = 0; k < optionalNames.length; k++) {
-          fieldName = optionalNames[k];
-          optionalParams[fieldName] = templateParams[fieldName];
-        }
-        param = toQueryString(optionalParams, true); // true means omitQuestionMark
-        break;
+module.exports = arrayMap;
 
-      default:
-        // This is a required field. ie `{repoName}`
-        fieldName = match.slice(1, match.length - 1); // omit the braces
-        if (templateParams[fieldName]) {
-          param = templateParams[fieldName];
-        } else {
-          throw new Error('Octokat Error: Required parameter is missing: ' + fieldName);
-        }
-    }
-
-    url = url.replace(match, param);
-    i++;
-  }
-
-  return url;
-};
-//# sourceMappingURL=hypermedia.js.map
 
 /***/ }),
 /* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var base64encode = __webpack_require__(8);
-
-module.exports = new (function () {
-  function Authorization() {
-    _classCallCheck(this, Authorization);
-  }
-
-  _createClass(Authorization, [{
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input) {
-      if (input.headers == null) {
-        input.headers = {};
-      }
-      var headers = input.headers,
-          _input$clientOptions = input.clientOptions,
-          token = _input$clientOptions.token,
-          username = _input$clientOptions.username,
-          password = _input$clientOptions.password;
-
-      if (token || username && password) {
-        if (token) {
-          var auth = 'token ' + token;
-        } else {
-          var auth = 'Basic ' + base64encode(username + ':' + password);
-        }
-        input.headers['Authorization'] = auth;
-      }
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return Authorization;
-}())();
-//# sourceMappingURL=authorization.js.map
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = new (function () {
-  function CacheHandler() {
-    _classCallCheck(this, CacheHandler);
-
-    this._cachedETags = {};
-  }
-
-  // Default cacheHandler methods
-
-
-  _createClass(CacheHandler, [{
-    key: 'get',
-    value: function get(method, path) {
-      return this._cachedETags[method + ' ' + path];
-    }
-  }, {
-    key: 'add',
-    value: function add(method, path, eTag, data, status) {
-      return this._cachedETags[method + ' ' + path] = { eTag: eTag, data: data, status: status };
-    }
-  }, {
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input) {
-      var clientOptions = input.clientOptions,
-          method = input.method,
-          path = input.path;
-
-      if (input.headers == null) {
-        input.headers = {};
-      }
-      var cacheHandler = clientOptions.cacheHandler || this;
-      // Send the ETag if re-requesting a URL
-      if (cacheHandler.get(method, path)) {
-        input.headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
-      } else {
-        // The browser will sneak in a 'If-Modified-Since' header if the GET has been requested before
-        // but for some reason the cached response does not seem to be available
-        // in the jqXHR object.
-        // So, the first time a URL is requested set this date to 0 so we always get a response the 1st time
-        // a URL is requested.
-        input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
-      }
-
-      return Promise.resolve(input);
-    }
-  }, {
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input, cb) {
-      var clientOptions = input.clientOptions,
-          request = input.request,
-          status = input.status,
-          jqXHR = input.jqXHR,
-          data = input.data;
-
-      if (!jqXHR) {
-        return Promise.resolve(input);
-      } // The plugins are all used in `octo.parse()` which does not have a jqXHR
-
-      // Since this can be called via `octo.parse`, skip caching when there is no jqXHR
-      if (jqXHR) {
-        var method = request.method,
-            path = request.path; // This is also not defined when octo.parse is called
-
-        var cacheHandler = clientOptions.cacheHandler || this;
-        if (status === 304 || status === 0) {
-          var ref = cacheHandler.get(method, path);
-          if (ref) {
-            var eTag;
-
-            // Set a flag on the object so users know this is a cached response
-            // if (typeof data !== 'string') {
-            //   data.__IS_CACHED = eTag || true
-            // }
-            data = ref.data;
-            status = ref.status;
-            eTag = ref.eTag;
-          } else {
-            throw new Error('ERROR: Bug in Octokat cacheHandler for path \'' + method + ' ' + path + '\'. It had an eTag but not the cached response.');
-          }
-        } else {
-          // Cache the response to reuse later
-          if (method === 'GET' && jqXHR.headers.get('ETag')) {
-            var eTag = jqXHR.headers.get('ETag');
-            cacheHandler.add(method, path, eTag, data, jqXHR.status);
-          }
-        }
-
-        input.data = data;
-        input.status = status;
-        return Promise.resolve(input);
-      }
-    }
-  }]);
-
-  return CacheHandler;
-}())();
-//# sourceMappingURL=cache-handler.js.map
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var plus = __webpack_require__(0);
-
-module.exports = new (function () {
-  function CamelCase() {
-    _classCallCheck(this, CamelCase);
-  }
-
-  _createClass(CamelCase, [{
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var data = input.data;
-
-      data = this.replace(data);
-      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      return Promise.resolve(input);
-    }
-  }, {
-    key: 'replace',
-    value: function replace(data) {
-      if (Array.isArray(data)) {
-        return this._replaceArray(data);
-      } else if (typeof data === 'function') {
-        return data;
-      } else if (data instanceof Date) {
-        return data;
-      } else if (data === Object(data)) {
-        return this._replaceObject(data);
-      } else {
-        return data;
-      }
-    }
-  }, {
-    key: '_replaceObject',
-    value: function _replaceObject(orig) {
-      var acc = {};
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(acc, key, value);
-      }
-
-      return acc;
-    }
-  }, {
-    key: '_replaceArray',
-    value: function _replaceArray(orig) {
-      var _this = this;
-
-      var arr = orig.map(function (item) {
-        return _this.replace(item);
-      });
-      // Convert the nextPage methods for paged results
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(arr, key, value);
-      }
-      return arr;
-    }
-
-    // Convert things that end in `_url` to methods which return a Promise
-
-  }, {
-    key: '_replaceKeyValue',
-    value: function _replaceKeyValue(acc, key, value) {
-      return acc[plus.camelize(key)] = this.replace(value);
-    }
-  }]);
-
-  return CamelCase;
-}())();
-//# sourceMappingURL=camel-case.js.map
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var toQueryString = __webpack_require__(2);
-
-var pushAll = function pushAll(target, source) {
-  if (!Array.isArray(source)) {
-    throw new Error('Octokat Error: Calling fetchAll on a request that does not yield an array');
-  }
-  return target.push.apply(target, source);
-};
-
-var getMore = function getMore(fetchable, requester, acc) {
-  var nextPagePromise = fetchNextPage(fetchable, requester);
-  if (nextPagePromise) {
-    return nextPagePromise.then(function (results) {
-      pushAll(acc, results.items);
-      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-      return getMore(results, requester, acc);
-    });
-  } else {
-    return acc;
-  }
-};
-
-// TODO: HACK to handle camelCase and hypermedia plugins
-var fetchNextPage = function fetchNextPage(obj, requester) {
-  if (typeof obj.next_page_url === 'string') {
-    return requester.request('GET', obj.next_page_url, null, null);
-  } else if (obj.next_page) {
-    return obj.next_page.fetch();
-  } else if (typeof obj.nextPageUrl === 'string') {
-    return requester.request('GET', obj.nextPageUrl, null, null);
-  } else if (obj.nextPage) {
-    return obj.nextPage.fetch();
-  } else {
-    return false;
-  }
-};
-
-// new class FetchAll
-module.exports = {
-  asyncVerbs: {
-    fetchAll: function fetchAll(requester, path) {
-      return function (query) {
-        // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
-        return requester.request('GET', '' + path + toQueryString(query), null, null).then(function (results) {
-          var acc = [];
-          pushAll(acc, results.items);
-          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
-          return getMore(results, requester, acc);
-        });
-      };
-    }
-  }
-};
-//# sourceMappingURL=fetch-all.js.map
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var deprecate = __webpack_require__(1);
-
-module.exports = new (function () {
-  function HyperMedia() {
-    _classCallCheck(this, HyperMedia);
-  }
-
-  _createClass(HyperMedia, [{
-    key: 'replace',
-    value: function replace(instance, data) {
-      if (Array.isArray(data)) {
-        return this._replaceArray(instance, data);
-      } else if (typeof data === 'function') {
-        return data;
-      } else if (data instanceof Date) {
-        return data;
-      } else if (data === Object(data)) {
-        return this._replaceObject(instance, data);
-      } else {
-        return data;
-      }
-    }
-  }, {
-    key: '_replaceObject',
-    value: function _replaceObject(instance, orig) {
-      var acc = {};
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(instance, acc, key, value);
-      }
-
-      return acc;
-    }
-  }, {
-    key: '_replaceArray',
-    value: function _replaceArray(instance, orig) {
-      var _this = this;
-
-      var arr = orig.map(function (item) {
-        return _this.replace(instance, item);
-      });
-      // Convert the nextPage methods for paged results
-      var iterable = Object.keys(orig);
-      for (var i = 0; i < iterable.length; i++) {
-        var key = iterable[i];
-        var value = orig[key];
-        this._replaceKeyValue(instance, arr, key, value);
-      }
-      return arr;
-    }
-
-    // Convert things that end in `_url` to methods which return a Promise
-
-  }, {
-    key: '_replaceKeyValue',
-    value: function _replaceKeyValue(instance, acc, key, value) {
-      if (/_url$/.test(key)) {
-        if (/^upload_url$/.test(key)) {
-          // POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
-          var defaultFn = function defaultFn() {
-            // TODO: Maybe always set isRaw=true when contentType is provided
-            deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');
-            return defaultFn.create.apply(defaultFn, arguments);
-          };
-
-          var fn = function fn() {
-            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-              args[_key] = arguments[_key];
-            }
-
-            return instance._fromUrlWithDefault.apply(instance, [value, defaultFn].concat(args))();
-          };
-        } else {
-          var defaultFn = function defaultFn() {
-            deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
-            return this.fetch();
-          };
-          var fn = instance._fromUrlCurried(value, defaultFn);
-        }
-
-        var newKey = key.substring(0, key.length - '_url'.length);
-        acc[newKey] = fn;
-        // add a camelCase URL field for retrieving non-templated URLs
-        // like `avatarUrl` and `htmlUrl`
-        if (!/\{/.test(value)) {
-          return acc[key] = value;
-        }
-      } else if (/_at$/.test(key)) {
-        // Ignore null dates so we do not get `Wed Dec 31 1969`
-        return acc[key] = value ? new Date(value) : null;
-      } else {
-        return acc[key] = this.replace(instance, value);
-      }
-    }
-  }, {
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var instance = input.instance,
-          data = input.data;
-
-      data = this.replace(instance, data);
-      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return HyperMedia;
-}())();
-//# sourceMappingURL=hypermedia.js.map
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var OBJECT_MATCHER = __webpack_require__(11);
-var TREE_OPTIONS = __webpack_require__(4);
-
-var _require = __webpack_require__(6),
-    VerbMethods = _require.VerbMethods;
-
-var Chainer = __webpack_require__(3);
-
-module.exports = new (function () {
-  function ObjectChainer() {
-    _classCallCheck(this, ObjectChainer);
-  }
-
-  _createClass(ObjectChainer, [{
-    key: 'chainChildren',
-    value: function chainChildren(chainer, url, obj) {
-      return function () {
-        var result = [];
-        for (var key in OBJECT_MATCHER) {
-          var re = OBJECT_MATCHER[key];
-          var item = void 0;
-          if (re.test(obj.url)) {
-            var context = TREE_OPTIONS;
-            var iterable = key.split('.');
-            for (var i = 0; i < iterable.length; i++) {
-              var k = iterable[i];
-              context = context[k];
-            }
-            item = chainer.chain(url, k, context, obj);
-          }
-          result.push(item);
-        }
-        return result;
-      }();
-    }
-  }, {
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var plugins = input.plugins,
-          requester = input.requester,
-          data = input.data,
-          url = input.url;
-      // unless data
-      //    throw new Error('BUG! Expected JSON data to exist')
-
-      var verbMethods = new VerbMethods(plugins, requester);
-      var chainer = new Chainer(verbMethods);
-      if (url) {
-        chainer.chain(url, true, {}, data);
-        this.chainChildren(chainer, url, data);
-      } else {
-        chainer.chain('', null, {}, data);
-        // For the paged results, rechain all children in the array
-        if (Array.isArray(data)) {
-          for (var i = 0; i < data.length; i++) {
-            var datum = data[i];
-            this.chainChildren(chainer, datum.url, datum);
-          }
-        }
-      }
-
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return ObjectChainer;
-}())();
-//# sourceMappingURL=object-chainer.js.map
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = new (function () {
-  function Pagination() {
-    _classCallCheck(this, Pagination);
-  }
-
-  _createClass(Pagination, [{
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var jqXHR = input.jqXHR,
-          data = input.data;
-
-      if (!jqXHR) {
-        return Promise.resolve(input);
-      } // The plugins are all used in `octo.parse()` which does not have a jqXHR
-
-      // Only JSON responses have next/prev/first/last link headers
-      // Add them to data so the resolved value is iterable
-
-      if (Array.isArray(data)) {
-        data = { items: data.slice() // Convert to object so we can add the next/prev/first/last link headers
-
-          // Parse the Link headers
-          // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
-        };var linksHeader = jqXHR.headers.get('Link');
-        if (linksHeader) {
-          linksHeader.split(',').forEach(function (part) {
-            var _part$match = part.match(/<([^>]+)>; rel="([^"]+)"/),
-                _part$match2 = _slicedToArray(_part$match, 3),
-                unusedField = _part$match2[0],
-                href = _part$match2[1],
-                rel = _part$match2[2];
-            // Add the pagination functions on the JSON since Promises resolve one value
-            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
-
-
-            data[rel + '_page_url'] = href;
-          });
-        }
-        input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
-      }
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return Pagination;
-}())();
-//# sourceMappingURL=pagination.js.map
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var URL_VALIDATOR = __webpack_require__(13);
-
-module.exports = new (function () {
-  function PathValidator() {
-    _classCallCheck(this, PathValidator);
-  }
-
-  _createClass(PathValidator, [{
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input) {
-      var path = input.path;
-
-      if (!URL_VALIDATOR.test(path)) {
-        var err = 'Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=' + path;
-        console.warn(err);
-      }
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return PathValidator;
-}())();
-//# sourceMappingURL=path-validator.js.map
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var PREVIEW_HEADERS = __webpack_require__(12);
-
-var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
-  for (var key in PREVIEW_HEADERS) {
-    var val = PREVIEW_HEADERS[key];
-    if (val.test(url)) {
-      return key;
-    }
-  }
-};
-
-// Use the preview API header if one of the routes match the preview APIs
-module.exports = new (function () {
-  function PreviewApis() {
-    _classCallCheck(this, PreviewApis);
-  }
-
-  _createClass(PreviewApis, [{
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input) {
-      var path = input.path;
-
-      var acceptHeader = DEFAULT_HEADER(path);
-      if (acceptHeader) {
-        input.headers['Accept'] = acceptHeader;
-      }
-
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return PreviewApis;
-}())();
-//# sourceMappingURL=preview-apis.js.map
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var toQueryString = __webpack_require__(2);
-
-module.exports = new (function () {
-  function ReadBinary() {
-    _classCallCheck(this, ReadBinary);
-
-    this.verbs = {
-      readBinary: function readBinary(path, query) {
-        return { method: 'GET', path: '' + path + toQueryString(query), options: { isRaw: true, isBase64: true } };
-      }
-    };
-  }
-
-  _createClass(ReadBinary, [{
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input) {
-      var options = input.options;
-
-      if (options) {
-        var isBase64 = options.isBase64;
-
-        if (isBase64) {
-          input.headers['Accept'] = 'application/vnd.github.raw';
-          input.mimeType = 'text/plain; charset=x-user-defined';
-        }
-      }
-      return Promise.resolve(input);
-    }
-  }, {
-    key: 'responseMiddlewareAsync',
-    value: function responseMiddlewareAsync(input) {
-      var options = input.options,
-          data = input.data;
-
-      if (options) {
-        var isBase64 = options.isBase64;
-        // Convert the response to a Base64 encoded string
-
-        if (isBase64) {
-          // Convert raw data to binary chopping off the higher-order bytes in each char.
-          // Useful for Base64 encoding.
-          var converted = '';
-          var iterable = __range__(0, data.length, false);
-          for (var j = 0; j < iterable.length; j++) {
-            var i = iterable[j];
-            converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
-          }
-
-          input.data = converted; // or throw new Error('BUG! Expected JSON data to exist')
-        }
-      }
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return ReadBinary;
-}())();
-
-function __range__(left, right, inclusive) {
-  var range = [];
-  var ascending = left < right;
-  var end = !inclusive ? right : ascending ? right + 1 : right - 1;
-  for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    range.push(i);
-  }
-  return range;
-}
-//# sourceMappingURL=read-binary.js.map
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-module.exports = new (function () {
-  function UsePostInsteadOfPatch() {
-    _classCallCheck(this, UsePostInsteadOfPatch);
-  }
-
-  _createClass(UsePostInsteadOfPatch, [{
-    key: 'requestMiddlewareAsync',
-    value: function requestMiddlewareAsync(input, cb) {
-      var usePostInsteadOfPatch = input.clientOptions.usePostInsteadOfPatch,
-          method = input.method;
-
-      if (usePostInsteadOfPatch && method === 'PATCH') {
-        input.method = 'POST';
-      }
-      return Promise.resolve(input);
-    }
-  }]);
-
-  return UsePostInsteadOfPatch;
-}())();
-//# sourceMappingURL=use-post-instead-of-patch.js.map
-
-/***/ }),
-/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2143,124 +1335,929 @@ function __guardFunc__(func, transform) {
 //# sourceMappingURL=requester.js.map
 
 /***/ }),
-/* 27 */
-/***/ (function(module, exports) {
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/**
- * A specialized version of `_.forEach` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns `array`.
- */
-function arrayEach(array, iteratee) {
-  var index = -1,
-      length = array == null ? 0 : array.length;
+"use strict";
 
-  while (++index < length) {
-    if (iteratee(array[index], index, array) === false) {
-      break;
+
+var toQueryString = __webpack_require__(2);
+var deprecate = __webpack_require__(1);
+
+module.exports = function (url) {
+  // Deprecated interface. Use an Object to specify the args in the template.
+  // the order of fields in the template should not matter.
+  var m = void 0;
+  if ((arguments.length <= 1 ? 0 : arguments.length - 1) === 0) {
+    var templateParams = {};
+  } else {
+    if ((arguments.length <= 1 ? 0 : arguments.length - 1) > 1) {
+      deprecate('When filling in a template URL pass all the field to fill in 1 object instead of comma-separated args');
+    }
+
+    var templateParams = arguments.length <= 1 ? undefined : arguments[1];
+  }
+
+  // url can contain {name} or {/name} in the URL.
+  // for every arg passed in, replace {...} with that arg
+  // and remove the rest (they may or may not be optional)
+  var i = 0;
+  while (m = /(\{[^\}]+\})/.exec(url)) {
+    // `match` is something like `{/foo}` or `{?foo,bar}` or `{foo}` (last one means it is required)
+    var match = m[1];
+    var param = '';
+    // replace it
+    switch (match[1]) {
+      case '/':
+        var fieldName = match.slice(2, match.length - 1); // omit the braces and the slash
+        var fieldValue = templateParams[fieldName];
+        if (fieldValue) {
+          if (/\//.test(fieldValue)) {
+            throw new Error('Octokat Error: this field must not contain slashes: ' + fieldName);
+          }
+          param = '/' + fieldValue;
+        }
+        break;
+      case '+':
+        fieldName = match.slice(2, match.length - 1); // omit the braces and the `+`
+        fieldValue = templateParams[fieldName];
+        if (fieldValue) {
+          param = fieldValue;
+        }
+        break;
+      case '?':
+        // Strip off the "{?" and the trailing "}"
+        // For example, the URL is `/assets{?name,label}`
+        //   which turns into `/assets?name=foo.zip`
+        // Used to upload releases via the repo releases API.
+        //
+        // When match contains `,` or
+        // `args.length is 1` and args[0] is object match the args to those in the template
+        var optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
+        var optionalParams = {};
+        for (var j = 0; j < optionalNames.length; j++) {
+          fieldName = optionalNames[j];
+          optionalParams[fieldName] = templateParams[fieldName];
+        }
+        param = toQueryString(optionalParams);
+        break;
+      case '&':
+        optionalNames = match.slice(2, -2 + 1).split(','); // omit the braces and the `?` before splitting
+        optionalParams = {};
+        for (var k = 0; k < optionalNames.length; k++) {
+          fieldName = optionalNames[k];
+          optionalParams[fieldName] = templateParams[fieldName];
+        }
+        param = toQueryString(optionalParams, true); // true means omitQuestionMark
+        break;
+
+      default:
+        // This is a required field. ie `{repoName}`
+        fieldName = match.slice(1, match.length - 1); // omit the braces
+        if (templateParams[fieldName]) {
+          param = templateParams[fieldName];
+        } else {
+          throw new Error('Octokat Error: Required parameter is missing: ' + fieldName);
+        }
+    }
+
+    url = url.replace(match, param);
+    i++;
+  }
+
+  return url;
+};
+//# sourceMappingURL=hypermedia.js.map
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var deprecate = __webpack_require__(1);
+
+module.exports = new (function () {
+  function HyperMedia() {
+    _classCallCheck(this, HyperMedia);
+  }
+
+  _createClass(HyperMedia, [{
+    key: 'replace',
+    value: function replace(instance, data) {
+      if (Array.isArray(data)) {
+        return this._replaceArray(instance, data);
+      } else if (typeof data === 'function') {
+        return data;
+      } else if (data instanceof Date) {
+        return data;
+      } else if (data === Object(data)) {
+        return this._replaceObject(instance, data);
+      } else {
+        return data;
+      }
+    }
+  }, {
+    key: '_replaceObject',
+    value: function _replaceObject(instance, orig) {
+      var acc = {};
+      var iterable = Object.keys(orig);
+      for (var i = 0; i < iterable.length; i++) {
+        var key = iterable[i];
+        var value = orig[key];
+        this._replaceKeyValue(instance, acc, key, value);
+      }
+
+      return acc;
+    }
+  }, {
+    key: '_replaceArray',
+    value: function _replaceArray(instance, orig) {
+      var _this = this;
+
+      var arr = orig.map(function (item) {
+        return _this.replace(instance, item);
+      });
+      // Convert the nextPage methods for paged results
+      var iterable = Object.keys(orig);
+      for (var i = 0; i < iterable.length; i++) {
+        var key = iterable[i];
+        var value = orig[key];
+        this._replaceKeyValue(instance, arr, key, value);
+      }
+      return arr;
+    }
+
+    // Convert things that end in `_url` to methods which return a Promise
+
+  }, {
+    key: '_replaceKeyValue',
+    value: function _replaceKeyValue(instance, acc, key, value) {
+      if (/_url$/.test(key)) {
+        if (/^upload_url$/.test(key)) {
+          // POST https://<upload_url>/repos/:owner/:repo/releases/:id/assets?name=foo.zip
+          var defaultFn = function defaultFn() {
+            // TODO: Maybe always set isRaw=true when contentType is provided
+            deprecate('call .upload({name, label}).create(data, contentType)' + ' instead of .upload(name, data, contentType)');
+            return defaultFn.create.apply(defaultFn, arguments);
+          };
+
+          var fn = function fn() {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+              args[_key] = arguments[_key];
+            }
+
+            return instance._fromUrlWithDefault.apply(instance, [value, defaultFn].concat(args))();
+          };
+        } else {
+          var defaultFn = function defaultFn() {
+            deprecate('instead of directly calling methods like .nextPage(), use .nextPage.fetch()');
+            return this.fetch();
+          };
+          var fn = instance._fromUrlCurried(value, defaultFn);
+        }
+
+        var newKey = key.substring(0, key.length - '_url'.length);
+        acc[newKey] = fn;
+        // add a camelCase URL field for retrieving non-templated URLs
+        // like `avatarUrl` and `htmlUrl`
+        if (!/\{/.test(value)) {
+          return acc[key] = value;
+        }
+      } else if (/_at$/.test(key)) {
+        // Ignore null dates so we do not get `Wed Dec 31 1969`
+        return acc[key] = value ? new Date(value) : null;
+      } else {
+        return acc[key] = this.replace(instance, value);
+      }
+    }
+  }, {
+    key: 'responseMiddlewareAsync',
+    value: function responseMiddlewareAsync(input) {
+      var instance = input.instance,
+          data = input.data;
+
+      data = this.replace(instance, data);
+      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return HyperMedia;
+}())();
+//# sourceMappingURL=hypermedia.js.map
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var OBJECT_MATCHER = __webpack_require__(19);
+var TREE_OPTIONS = __webpack_require__(3);
+
+var _require = __webpack_require__(5),
+    VerbMethods = _require.VerbMethods;
+
+var Chainer = __webpack_require__(4);
+
+module.exports = new (function () {
+  function ObjectChainer() {
+    _classCallCheck(this, ObjectChainer);
+  }
+
+  _createClass(ObjectChainer, [{
+    key: 'chainChildren',
+    value: function chainChildren(chainer, url, obj) {
+      return function () {
+        var result = [];
+        for (var key in OBJECT_MATCHER) {
+          var re = OBJECT_MATCHER[key];
+          var item = void 0;
+          if (re.test(obj.url)) {
+            var context = TREE_OPTIONS;
+            var iterable = key.split('.');
+            for (var i = 0; i < iterable.length; i++) {
+              var k = iterable[i];
+              context = context[k];
+            }
+            item = chainer.chain(url, k, context, obj);
+          }
+          result.push(item);
+        }
+        return result;
+      }();
+    }
+  }, {
+    key: 'responseMiddlewareAsync',
+    value: function responseMiddlewareAsync(input) {
+      var plugins = input.plugins,
+          requester = input.requester,
+          data = input.data,
+          url = input.url;
+      // unless data
+      //    throw new Error('BUG! Expected JSON data to exist')
+
+      var verbMethods = new VerbMethods(plugins, requester);
+      var chainer = new Chainer(verbMethods);
+      if (url) {
+        chainer.chain(url, true, {}, data);
+        this.chainChildren(chainer, url, data);
+      } else {
+        chainer.chain('', null, {}, data);
+        // For the paged results, rechain all children in the array
+        if (Array.isArray(data)) {
+          for (var i = 0; i < data.length; i++) {
+            var datum = data[i];
+            this.chainChildren(chainer, datum.url, datum);
+          }
+        }
+      }
+
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return ObjectChainer;
+}())();
+//# sourceMappingURL=object-chainer.js.map
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Generated by CoffeeScript 1.12.7
+(function () {
+  module.exports = {
+    'repos': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(repos(\/[^\/]+){2}|repositories\/([0-9]+))$/,
+    'gists': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/gists\/[^\/]+$/,
+    'issues': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/(repos(\/[^\/]+){2}|repositories\/([0-9]+))\/(issues|pulls)\/[^\/]+$/,
+    'users': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/[^\/]+$/,
+    'orgs': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/orgs\/[^\/]+$/,
+    'teams': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/teams\/[^\/]+$/,
+    'repos.comments': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos\/[^\/]+\/[^\/]+\/comments\/[^\/]+$/
+  };
+}).call(undefined);
+
+//# sourceMappingURL=object-matcher.js.map
+//# sourceMappingURL=object-matcher.js.map
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var URL_VALIDATOR = __webpack_require__(21);
+
+module.exports = new (function () {
+  function PathValidator() {
+    _classCallCheck(this, PathValidator);
+  }
+
+  _createClass(PathValidator, [{
+    key: 'requestMiddlewareAsync',
+    value: function requestMiddlewareAsync(input) {
+      var path = input.path;
+
+      if (!URL_VALIDATOR.test(path)) {
+        var err = 'Octokat BUG: Invalid Path. If this is actually a valid path then please update the URL_VALIDATOR. path=' + path;
+        console.warn(err);
+      }
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return PathValidator;
+}())();
+//# sourceMappingURL=path-validator.js.map
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Generated by CoffeeScript 1.12.7
+(function () {
+  module.exports = /^(https:\/\/status.github.com\/api\/(status.json|last-message.json|messages.json)$)|(https?:\/\/[^\/]+)?(\/api\/v3)?\/(zen|octocat|users|issues|gists|emojis|markdown|meta|rate_limit|feeds|events|repositories(\/\d+)?|notifications|notifications\/threads(\/[^\/]+)|notifications\/threads(\/[^\/]+)\/subscription|gitignore\/templates(\/[^\/]+)?|user(\/\d+)?|user(\/\d+)?\/(|repos|orgs|followers|following(\/[^\/]+)?|emails(\/[^\/]+)?|issues|public_emails|starred|starred(\/[^\/]+){2}|teams)|(orgs\/[^\/]+)|((organizations)(\/\d+)?)|(orgs\/[^\/]+)|(organizations\/\d+)\/(repos|issues|members|events|teams|projects)|projects\/[0-9]+|projects\/[0-9]+\/columns|projects\/columns\/[0-9]+|projects\/columns\/[0-9]+\/moves|projects\/columns\/[0-9]+\/cards|projects\/columns\/cards\/[0-9]+|projects\/columns\/cards\/[0-9]+\/moves|teams\/[^\/]+|teams\/[^\/]+\/(members(\/[^\/]+)?|memberships\/[^\/]+|repos|repos(\/[^\/]+){2})|users\/[^\/]+|users\/[^\/]+\/(repos|orgs|gists|followers|following(\/[^\/]+){0,2}|keys|starred|received_events(\/public)?|events(\/public)?|events\/orgs\/[^\/]+)|search\/(repositories|commits|issues|users|code)|gists\/(public|starred|([a-f0-9]{20,32}|[0-9]+)|([a-f0-9]{20,32}|[0-9]+)\/forks|([a-f0-9]{20,32}|[0-9]+)\/comments(\/[0-9]+)?|([a-f0-9]{20,32}|[0-9]+)\/star)|repos(\/[^\/]+){2}|(repos(\/[^\/]+){2}|repositories\/([0-9]+))\/(readme|tarball(\/[^\/]+)?|zipball(\/[^\/]+)?|compare\/([^\.{3}]+)\.{3}([^\.{3}]+)|deployments(\/[0-9]+)?|deployments\/[0-9]+\/statuses(\/[0-9]+)?|hooks|hooks\/[^\/]+|hooks\/[^\/]+\/tests|assignees|languages|teams|tags|branches(\/[^\/]+){0,2}|contributors|subscribers|subscription|stargazers|comments(\/[0-9]+)?|downloads(\/[0-9]+)?|forks|milestones|milestones\/[0-9]+|milestones\/[0-9]+\/labels|labels(\/[^\/]+)?|releases|releases\/([0-9]+)|releases\/([0-9]+)\/assets|releases\/latest|releases\/tags\/([^\/]+)|releases\/assets\/([0-9]+)|events|notifications|merges|statuses\/[a-f0-9]{40}|pages|pages\/builds|pages\/builds\/latest|commits|commits\/[a-f0-9]{40}|commits\/[a-f0-9]{40}\/(comments|status|statuses)?|contents\/|contents(\/[^\/]+)*|collaborators(\/[^\/]+)?|collaborators\/([^\/]+)\/permission|projects|(issues|pulls)|(issues|pulls)\/(events|events\/[0-9]+|comments(\/[0-9]+)?|[0-9]+|[0-9]+\/events|[0-9]+\/comments|[0-9]+\/labels(\/[^\/]+)?)|pulls\/[0-9]+\/(files|commits|merge|requested_reviewers|reviews(\/[0-9]+)?|reviews(\/[0-9]+)\/(comments|events|dismissals))|git\/(refs|refs\/(.+|heads(\/[^\/]+)?|tags(\/[^\/]+)?)|trees(\/[^\/]+)?|blobs(\/[a-f0-9]{40}$)?|commits(\/[a-f0-9]{40}$)?)|stats\/(contributors|commit_activity|code_frequency|participation|punch_card)|traffic\/(popular\/(referrers|paths)|views|clones))|licenses|licenses\/([^\/]+)|authorizations|authorizations\/((\d+)|clients\/([^\/]{20})|clients\/([^\/]{20})\/([^\/]+))|applications\/([^\/]{20})\/tokens|applications\/([^\/]{20})\/tokens\/([^\/]+)|enterprise\/(settings\/license|stats\/(issues|hooks|milestones|orgs|comments|pages|users|gists|pulls|repos|all))|staff\/indexing_jobs|users\/[^\/]+\/(site_admin|suspended)|setup\/api\/(start|upgrade|configcheck|configure|settings(authorized-keys)?|maintenance))(\?.*)?$/;
+}).call(undefined);
+
+//# sourceMappingURL=url-validator.js.map
+//# sourceMappingURL=url-validator.js.map
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var base64encode = __webpack_require__(23);
+
+module.exports = new (function () {
+  function Authorization() {
+    _classCallCheck(this, Authorization);
+  }
+
+  _createClass(Authorization, [{
+    key: 'requestMiddlewareAsync',
+    value: function requestMiddlewareAsync(input) {
+      if (input.headers == null) {
+        input.headers = {};
+      }
+      var headers = input.headers,
+          _input$clientOptions = input.clientOptions,
+          token = _input$clientOptions.token,
+          username = _input$clientOptions.username,
+          password = _input$clientOptions.password;
+
+      if (token || username && password) {
+        if (token) {
+          var auth = 'token ' + token;
+        } else {
+          var auth = 'Basic ' + base64encode(username + ':' + password);
+        }
+        input.headers['Authorization'] = auth;
+      }
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return Authorization;
+}())();
+//# sourceMappingURL=authorization.js.map
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = btoa;
+//# sourceMappingURL=base64-browser.js.map
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var PREVIEW_HEADERS = __webpack_require__(25);
+
+var DEFAULT_HEADER = function DEFAULT_HEADER(url) {
+  for (var key in PREVIEW_HEADERS) {
+    var val = PREVIEW_HEADERS[key];
+    if (val.test(url)) {
+      return key;
     }
   }
-  return array;
-}
+};
 
-module.exports = arrayEach;
+// Use the preview API header if one of the routes match the preview APIs
+module.exports = new (function () {
+  function PreviewApis() {
+    _classCallCheck(this, PreviewApis);
+  }
 
+  _createClass(PreviewApis, [{
+    key: 'requestMiddlewareAsync',
+    value: function requestMiddlewareAsync(input) {
+      var path = input.path;
+
+      var acceptHeader = DEFAULT_HEADER(path);
+      if (acceptHeader) {
+        input.headers['Accept'] = acceptHeader;
+      }
+
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return PreviewApis;
+}())();
+//# sourceMappingURL=preview-apis.js.map
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// Generated by CoffeeScript 1.12.7
+(function () {
+  module.exports = {
+    'application/vnd.github.drax-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/licenses|\/licenses\/([^\/]+)|\/repos\/([^\/]+)\/([^\/]+))$/,
+    'application/vnd.github.v3.star+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/users\/([^\/]+)\/starred$/,
+    'application/vnd.github.cloak-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/search\/commits$/,
+    'application/vnd.github.black-cat-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?\/repos(\/[^\/]+){2}\/pulls\/[0-9]+\/(|requested_reviewers|reviews(\/[0-9]+)?|reviews(\/[0-9]+)\/(comments|events|dismissals))$/,
+    'application/vnd.github.inertia-preview+json': /^(https?:\/\/[^\/]+)?(\/api\/v3)?(\/repos(\/[^\/]+){2}\/projects|\/orgs\/([^\/]+)\/projects|\/projects\/([0-9]+|[0-9]+\/columns|columns|columns\/[0-9]+|columns\/[0-9]+\/moves|columns\/[0-9]+\/cards|columns\/cards\/[0-9]+|columns\/cards\/[0-9]+\/moves))$/
+  };
+}).call(undefined);
+
+//# sourceMappingURL=preview-headers.js.map
+//# sourceMappingURL=preview-headers.js.map
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = new (function () {
+  function UsePostInsteadOfPatch() {
+    _classCallCheck(this, UsePostInsteadOfPatch);
+  }
+
+  _createClass(UsePostInsteadOfPatch, [{
+    key: 'requestMiddlewareAsync',
+    value: function requestMiddlewareAsync(input, cb) {
+      var usePostInsteadOfPatch = input.clientOptions.usePostInsteadOfPatch,
+          method = input.method;
+
+      if (usePostInsteadOfPatch && method === 'PATCH') {
+        input.method = 'POST';
+      }
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return UsePostInsteadOfPatch;
+}())();
+//# sourceMappingURL=use-post-instead-of-patch.js.map
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var toQueryString = __webpack_require__(2);
+
+var pushAll = function pushAll(target, source) {
+  if (!Array.isArray(source)) {
+    throw new Error('Octokat Error: Calling fetchAll on a request that does not yield an array');
+  }
+  return target.push.apply(target, source);
+};
+
+var getMore = function getMore(fetchable, requester, acc) {
+  var nextPagePromise = fetchNextPage(fetchable, requester);
+  if (nextPagePromise) {
+    return nextPagePromise.then(function (results) {
+      pushAll(acc, results.items);
+      // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+      return getMore(results, requester, acc);
+    });
+  } else {
+    return acc;
+  }
+};
+
+// TODO: HACK to handle camelCase and hypermedia plugins
+var fetchNextPage = function fetchNextPage(obj, requester) {
+  if (typeof obj.next_page_url === 'string') {
+    return requester.request('GET', obj.next_page_url, null, null);
+  } else if (obj.next_page) {
+    return obj.next_page.fetch();
+  } else if (typeof obj.nextPageUrl === 'string') {
+    return requester.request('GET', obj.nextPageUrl, null, null);
+  } else if (obj.nextPage) {
+    return obj.nextPage.fetch();
+  } else {
+    return false;
+  }
+};
+
+// new class FetchAll
+module.exports = {
+  asyncVerbs: {
+    fetchAll: function fetchAll(requester, path) {
+      return function (query) {
+        // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
+        return requester.request('GET', '' + path + toQueryString(query), null, null).then(function (results) {
+          var acc = [];
+          pushAll(acc, results.items);
+          // TODO: handle `items.next_page = string/function`, `items.nextPage = string/function`
+          return getMore(results, requester, acc);
+        });
+      };
+    }
+  }
+};
+//# sourceMappingURL=fetch-all.js.map
 
 /***/ }),
 /* 28 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-/**
- * A specialized version of `_.filter` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} predicate The function invoked per iteration.
- * @returns {Array} Returns the new filtered array.
- */
-function arrayFilter(array, predicate) {
-  var index = -1,
-      length = array == null ? 0 : array.length,
-      resIndex = 0,
-      result = [];
+"use strict";
 
-  while (++index < length) {
-    var value = array[index];
-    if (predicate(value, index, array)) {
-      result[resIndex++] = value;
-    }
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = new (function () {
+  function Pagination() {
+    _classCallCheck(this, Pagination);
   }
-  return result;
-}
 
-module.exports = arrayFilter;
+  _createClass(Pagination, [{
+    key: 'responseMiddlewareAsync',
+    value: function responseMiddlewareAsync(input) {
+      var jqXHR = input.jqXHR,
+          data = input.data;
 
+      if (!jqXHR) {
+        return Promise.resolve(input);
+      } // The plugins are all used in `octo.parse()` which does not have a jqXHR
+
+      // Only JSON responses have next/prev/first/last link headers
+      // Add them to data so the resolved value is iterable
+
+      if (Array.isArray(data)) {
+        data = { items: data.slice() // Convert to object so we can add the next/prev/first/last link headers
+
+          // Parse the Link headers
+          // of the form `<http://a.com>; rel="next", <https://b.com?a=b&c=d>; rel="previous"`
+        };var linksHeader = jqXHR.headers.get('Link');
+        if (linksHeader) {
+          linksHeader.split(',').forEach(function (part) {
+            var _part$match = part.match(/<([^>]+)>; rel="([^"]+)"/),
+                _part$match2 = _slicedToArray(_part$match, 3),
+                unusedField = _part$match2[0],
+                href = _part$match2[1],
+                rel = _part$match2[2];
+            // Add the pagination functions on the JSON since Promises resolve one value
+            // Name the functions `nextPage`, `previousPage`, `firstPage`, `lastPage`
+
+
+            data[rel + '_page_url'] = href;
+          });
+        }
+        input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
+      }
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return Pagination;
+}())();
+//# sourceMappingURL=pagination.js.map
 
 /***/ }),
 /* 29 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-/**
- * A specialized version of `_.map` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- */
-function arrayMap(array, iteratee) {
-  var index = -1,
-      length = array == null ? 0 : array.length,
-      result = Array(length);
+"use strict";
 
-  while (++index < length) {
-    result[index] = iteratee(array[index], index, array);
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+module.exports = new (function () {
+  function CacheHandler() {
+    _classCallCheck(this, CacheHandler);
+
+    this._cachedETags = {};
   }
-  return result;
-}
 
-module.exports = arrayMap;
+  // Default cacheHandler methods
 
+
+  _createClass(CacheHandler, [{
+    key: 'get',
+    value: function get(method, path) {
+      return this._cachedETags[method + ' ' + path];
+    }
+  }, {
+    key: 'add',
+    value: function add(method, path, eTag, data, status) {
+      return this._cachedETags[method + ' ' + path] = { eTag: eTag, data: data, status: status };
+    }
+  }, {
+    key: 'requestMiddlewareAsync',
+    value: function requestMiddlewareAsync(input) {
+      var clientOptions = input.clientOptions,
+          method = input.method,
+          path = input.path;
+
+      if (input.headers == null) {
+        input.headers = {};
+      }
+      var cacheHandler = clientOptions.cacheHandler || this;
+      // Send the ETag if re-requesting a URL
+      if (cacheHandler.get(method, path)) {
+        input.headers['If-None-Match'] = cacheHandler.get(method, path).eTag;
+      } else {
+        // The browser will sneak in a 'If-Modified-Since' header if the GET has been requested before
+        // but for some reason the cached response does not seem to be available
+        // in the jqXHR object.
+        // So, the first time a URL is requested set this date to 0 so we always get a response the 1st time
+        // a URL is requested.
+        input.headers['If-Modified-Since'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
+      }
+
+      return Promise.resolve(input);
+    }
+  }, {
+    key: 'responseMiddlewareAsync',
+    value: function responseMiddlewareAsync(input, cb) {
+      var clientOptions = input.clientOptions,
+          request = input.request,
+          status = input.status,
+          jqXHR = input.jqXHR,
+          data = input.data;
+
+      if (!jqXHR) {
+        return Promise.resolve(input);
+      } // The plugins are all used in `octo.parse()` which does not have a jqXHR
+
+      // Since this can be called via `octo.parse`, skip caching when there is no jqXHR
+      if (jqXHR) {
+        var method = request.method,
+            path = request.path; // This is also not defined when octo.parse is called
+
+        var cacheHandler = clientOptions.cacheHandler || this;
+        if (status === 304 || status === 0) {
+          var ref = cacheHandler.get(method, path);
+          if (ref) {
+            var eTag;
+
+            // Set a flag on the object so users know this is a cached response
+            // if (typeof data !== 'string') {
+            //   data.__IS_CACHED = eTag || true
+            // }
+            data = ref.data;
+            status = ref.status;
+            eTag = ref.eTag;
+          } else {
+            throw new Error('ERROR: Bug in Octokat cacheHandler for path \'' + method + ' ' + path + '\'. It had an eTag but not the cached response.');
+          }
+        } else {
+          // Cache the response to reuse later
+          if (method === 'GET' && jqXHR.headers.get('ETag')) {
+            var eTag = jqXHR.headers.get('ETag');
+            cacheHandler.add(method, path, eTag, data, jqXHR.status);
+          }
+        }
+
+        input.data = data;
+        input.status = status;
+        return Promise.resolve(input);
+      }
+    }
+  }]);
+
+  return CacheHandler;
+}())();
+//# sourceMappingURL=cache-handler.js.map
 
 /***/ }),
 /* 30 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-var g;
+"use strict";
 
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
 
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var toQueryString = __webpack_require__(2);
+
+module.exports = new (function () {
+  function ReadBinary() {
+    _classCallCheck(this, ReadBinary);
+
+    this.verbs = {
+      readBinary: function readBinary(path, query) {
+        return { method: 'GET', path: '' + path + toQueryString(query), options: { isRaw: true, isBase64: true } };
+      }
+    };
+  }
+
+  _createClass(ReadBinary, [{
+    key: 'requestMiddlewareAsync',
+    value: function requestMiddlewareAsync(input) {
+      var options = input.options;
+
+      if (options) {
+        var isBase64 = options.isBase64;
+
+        if (isBase64) {
+          input.headers['Accept'] = 'application/vnd.github.raw';
+          input.mimeType = 'text/plain; charset=x-user-defined';
+        }
+      }
+      return Promise.resolve(input);
+    }
+  }, {
+    key: 'responseMiddlewareAsync',
+    value: function responseMiddlewareAsync(input) {
+      var options = input.options,
+          data = input.data;
+
+      if (options) {
+        var isBase64 = options.isBase64;
+        // Convert the response to a Base64 encoded string
+
+        if (isBase64) {
+          // Convert raw data to binary chopping off the higher-order bytes in each char.
+          // Useful for Base64 encoding.
+          var converted = '';
+          var iterable = __range__(0, data.length, false);
+          for (var j = 0; j < iterable.length; j++) {
+            var i = iterable[j];
+            converted += String.fromCharCode(data.charCodeAt(i) & 0xff);
+          }
+
+          input.data = converted; // or throw new Error('BUG! Expected JSON data to exist')
+        }
+      }
+      return Promise.resolve(input);
+    }
+  }]);
+
+  return ReadBinary;
+}())();
+
+function __range__(left, right, inclusive) {
+  var range = [];
+  var ascending = left < right;
+  var end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  for (var i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+    range.push(i);
+  }
+  return range;
 }
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
+//# sourceMappingURL=read-binary.js.map
 
 /***/ }),
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(7);
+"use strict";
 
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var plus = __webpack_require__(0);
+
+module.exports = new (function () {
+  function CamelCase() {
+    _classCallCheck(this, CamelCase);
+  }
+
+  _createClass(CamelCase, [{
+    key: 'responseMiddlewareAsync',
+    value: function responseMiddlewareAsync(input) {
+      var data = input.data;
+
+      data = this.replace(data);
+      input.data = data; // or throw new Error('BUG! Expected JSON data to exist')
+      return Promise.resolve(input);
+    }
+  }, {
+    key: 'replace',
+    value: function replace(data) {
+      if (Array.isArray(data)) {
+        return this._replaceArray(data);
+      } else if (typeof data === 'function') {
+        return data;
+      } else if (data instanceof Date) {
+        return data;
+      } else if (data === Object(data)) {
+        return this._replaceObject(data);
+      } else {
+        return data;
+      }
+    }
+  }, {
+    key: '_replaceObject',
+    value: function _replaceObject(orig) {
+      var acc = {};
+      var iterable = Object.keys(orig);
+      for (var i = 0; i < iterable.length; i++) {
+        var key = iterable[i];
+        var value = orig[key];
+        this._replaceKeyValue(acc, key, value);
+      }
+
+      return acc;
+    }
+  }, {
+    key: '_replaceArray',
+    value: function _replaceArray(orig) {
+      var _this = this;
+
+      var arr = orig.map(function (item) {
+        return _this.replace(item);
+      });
+      // Convert the nextPage methods for paged results
+      var iterable = Object.keys(orig);
+      for (var i = 0; i < iterable.length; i++) {
+        var key = iterable[i];
+        var value = orig[key];
+        this._replaceKeyValue(arr, key, value);
+      }
+      return arr;
+    }
+
+    // Convert things that end in `_url` to methods which return a Promise
+
+  }, {
+    key: '_replaceKeyValue',
+    value: function _replaceKeyValue(acc, key, value) {
+      return acc[plus.camelize(key)] = this.replace(value);
+    }
+  }]);
+
+  return CamelCase;
+}())();
+//# sourceMappingURL=camel-case.js.map
 
 /***/ })
 /******/ ]);
