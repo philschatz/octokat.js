@@ -19,7 +19,6 @@ module.exports = /// ^
       zen
     | octocat
     | users
-    | organizations
     | issues
     | gists
     | emojis
@@ -48,8 +47,8 @@ module.exports = /// ^
       | teams
     )
 
-    | orgs/  [^/]+
-    | orgs/  [^/]+ / (
+    | (orgs/  [^/]+) | ((organizations)(/ \d+)? )
+    | (orgs/  [^/]+) | ( organizations/ \d+) / (
           repos
         | issues
         | members
