@@ -41,7 +41,8 @@ var fetchNextPage = function (obj, requester, cb) {
 // new class FetchAll
 module.exports = {
   asyncVerbs: {
-    fetchAll (requester, path) { return (cb, query) =>
+    fetchAll (requester, path) {
+      return (cb, query) =>
       // TODO: Pass in the instance so we can just call fromUrl maybe? and we don't rely on hypermedia to create nextPage
       requester.request('GET', `${path}${toQueryString(query)}`, null, null, function (err, results) {
         if (err) { return cb(err) }

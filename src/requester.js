@@ -204,7 +204,7 @@ module.exports = class Requester {
                 try {
                   json = JSON.parse(jqXHR.responseText)
                 } catch (error) {
-                  cb({message: 'Error Parsing Response'})
+                  cb(new Error('Error Parsing Response'))
                 }
               } else {
                 // In the case of 404 errors, `responseText` is an empty string

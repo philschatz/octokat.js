@@ -1,7 +1,6 @@
 const plus = require('../plus')
 
 module.exports = new class CamelCase {
-
   responseMiddlewareAsync (input, cb) {
     let {data} = input
     data = this.replace(data)
