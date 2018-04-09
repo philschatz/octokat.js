@@ -84,5 +84,9 @@
     "./dist/node/adapters/base64-node.js": "./dist/node/adapters/base64-browser.js"
   },
   "tonicExampleFilename": "examples/tonic-example.js",
+  "browser": {
+    "fs": false,
+    "child_process": false
+  },
   "license": "MIT"
 }
