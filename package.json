@@ -57,7 +57,7 @@
     "remap-istanbul": "^0.10.0",
     "snazzy": "^7.1.0",
     "standard": "^9.0.0",
-    "webpack": "^3.0.0",
+    "webpack": "^4.10.0",
     "whatwg-fetch": "^2.0.3"
   },
   "repository": {
