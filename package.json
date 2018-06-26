@@ -42,7 +42,7 @@
     "coffee-script": "^1.12.1",
     "coffeelint": "^1.15.7",
     "es6-promise": "4.2.0",
-    "eslint": "^4.1.0",
+    "eslint": "^5.0.1",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^3.0.0",
