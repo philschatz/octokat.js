@@ -55,7 +55,7 @@
     "parallelshell": "^3.0.0",
     "phantomjs-prebuilt": "^2.1.14",
     "remap-istanbul": "^0.10.0",
-    "snazzy": "^7.1.0",
+    "snazzy": "^8.0.0",
     "standard": "^9.0.0",
     "webpack": "^3.0.0",
     "whatwg-fetch": "^2.0.3"
