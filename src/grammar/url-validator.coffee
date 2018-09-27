@@ -188,6 +188,7 @@ module.exports = /// ^
             | trees (/[^/]+)? # Can be a sha or a branch name
             | blobs (/[a-f0-9]{40}$)?
             | commits (/[a-f0-9]{40}$)?
+            | tags (/[^/]+)?
           )
         | stats/ (
               contributors

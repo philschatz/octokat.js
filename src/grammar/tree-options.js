@@ -78,7 +78,8 @@ const REPO_FIELDS = {
     },
     'trees': false,
     'blobs': false,
-    'commits': false
+    'commits': false,
+    'tags': false
   },
   'stats': {
     'contributors': false,
