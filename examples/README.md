@@ -27,6 +27,8 @@ repo.commits.fetch({"since":"2011-01-20"})
 repo.commits(COMMIT_ID).comments.create({"body":":metal:\n:sparkles:\n:cake:"})
 repo.commits(COMMIT_ID).fetch()
 repo.commits(COMMIT_ID).comments.fetch()
+repo.commits(COMMIT_ID).statuses.fetch()
+repo.commits(COMMIT_ID).statuses.create({"state":"success","targetUrl":"https://example.com/details"})
 
 repo.compare(COMMIT_ID1, COMMIT_ID2).fetch()
 
