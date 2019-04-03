@@ -38,7 +38,7 @@
     "babel-loader": "^7.0.0",
     "babel-preset-es2015": "^6.16.0",
     "chai": "~3.5.0",
-    "codecov": "^3.0.0",
+    "codecov": "^3.3.0",
     "coffee-script": "^1.12.1",
     "coffeelint": "^1.15.7",
     "es6-promise": "4.2.0",
