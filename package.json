@@ -30,7 +30,7 @@
   "dependencies": {
     "fetch-vcr": "^2.0.0",
     "lodash": "^4.16.4",
-    "node-fetch": "^2.0.0"
+    "node-fetch": "^2.4.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
