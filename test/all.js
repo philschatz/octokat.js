@@ -1,5 +1,0 @@
-require('./emitter.spec')
-require('./ruby-specs/all')
-require('./simple.spec')
-require('./object.spec')
-require('./hypermedia.spec')
